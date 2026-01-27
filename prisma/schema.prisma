@@ -169,7 +169,6 @@ model Subscription {
   stripePriceId        String?
   status               String    @default("inactive") // active, canceled, past_due, trialing, inactive
   plan                 String    @default("starter") // starter, growth, enterprise
-  scheduledPlanChange  String?   // Plan scheduled to change at period end (for downgrades)
   currentPeriodStart   DateTime?
   currentPeriodEnd     DateTime?
   cancelAtPeriodEnd    Boolean   @default(false)

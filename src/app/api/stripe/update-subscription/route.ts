@@ -109,8 +109,6 @@ export async function POST(request: NextRequest) {
       where: { userId: user.id },
       data: {
         plan: newPlanId,
-        // If downgrade, set scheduledPlanChange to indicate pending change
-        scheduledPlanChange: upgrading ? null : newPlanId,
         updatedAt: new Date(),
       },
     });
