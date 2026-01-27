@@ -1,0 +1,247 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ============================================================================
+// Authentication & Users
+// ============================================================================
+
+model User {
+  id              String    @id @default(cuid())
+  email           String    @unique
+  passwordHash    String
+  name            String
+  emailVerified   Boolean   @default(false)
+  verifyToken     String?   @unique
+  verifyExpires   DateTime?
+  resetToken      String?   @unique
+  resetExpires    DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  // Relations
+  sessions      Session[]
+  businesses    Business[]
+  calculations  Calculation[]
+  subscription  Subscription?
+
+  @@index([email])
+  @@index([verifyToken])
+  @@index([resetToken])
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  userAgent String?
+  ipAddress String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([token])
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+// ============================================================================
+// Business & Nexus
+// ============================================================================
+
+model Business {
+  id           String   @id @default(cuid())
+  userId       String
+  name         String
+  address      String?
+  city         String?
+  state        String?
+  zip          String?
+  businessType String   @default("ecommerce")
+  ein          String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Relations
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  nexusStates NexusState[]
+  filings     Filing[]
+
+  @@index([userId])
+}
+
+model NexusState {
+  id                 String   @id @default(cuid())
+  businessId         String
+  stateCode          String
+  stateName          String
+  hasNexus           Boolean  @default(false)
+  nexusType          String?  // physical, economic, affiliate, click-through, marketplace
+  registrationNumber String?
+  registrationDate   DateTime?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  // Relations
+  business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+
+  @@unique([businessId, stateCode])
+  @@index([businessId])
+  @@index([stateCode])
+}
+
+// ============================================================================
+// Tax Calculations
+// ============================================================================
+
+model Calculation {
+  id          String   @id @default(cuid())
+  userId      String
+  amount      Decimal  @db.Decimal(12, 2)
+  stateCode   String
+  stateName   String
+  category    String   @default("general")
+  taxRate     Decimal  @db.Decimal(6, 4)
+  taxAmount   Decimal  @db.Decimal(12, 2)
+  total       Decimal  @db.Decimal(12, 2)
+  fromAddress String?  // JSON string for origin address
+  toAddress   String?  // JSON string for destination address
+  source      String   @default("manual") // manual, api, import
+  createdAt   DateTime @default(now())
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([stateCode])
+  @@index([createdAt])
+}
+
+// ============================================================================
+// Filing Management
+// ============================================================================
+
+model Filing {
+  id           String    @id @default(cuid())
+  businessId   String
+  stateCode    String
+  stateName    String
+  period       String    // monthly, quarterly, annual
+  periodStart  DateTime
+  periodEnd    DateTime
+  dueDate      DateTime
+  status       String    @default("pending") // pending, filed, overdue, extension
+  estimatedTax Decimal?  @db.Decimal(12, 2)
+  actualTax    Decimal?  @db.Decimal(12, 2)
+  filedAt      DateTime?
+  confirmationNumber String?
+  notes        String?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  // Relations
+  business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+
+  @@unique([businessId, stateCode, periodStart])
+  @@index([businessId])
+  @@index([stateCode])
+  @@index([dueDate])
+  @@index([status])
+}
+
+// ============================================================================
+// Subscriptions (Stripe)
+// ============================================================================
+
+model Subscription {
+  id                   String    @id @default(cuid())
+  userId               String    @unique
+  stripeCustomerId     String    @unique
+  stripeSubscriptionId String?   @unique
+  stripePriceId        String?
+  status               String    @default("inactive") // active, canceled, past_due, trialing, inactive
+  plan                 String    @default("starter") // starter, growth, enterprise
+  currentPeriodStart   DateTime?
+  currentPeriodEnd     DateTime?
+  cancelAtPeriodEnd    Boolean   @default(false)
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([stripeCustomerId])
+  @@index([stripeSubscriptionId])
+  @@index([status])
+}
+
+// ============================================================================
+// Tax Rate Cache (to reduce API calls)
+// ============================================================================
+
+model TaxRateCache {
+  id           String   @id @default(cuid())
+  stateCode    String
+  zipCode      String?
+  city         String?
+  combinedRate Decimal  @db.Decimal(6, 4)
+  stateRate    Decimal  @db.Decimal(6, 4)
+  countyRate   Decimal  @db.Decimal(6, 4)
+  cityRate     Decimal  @db.Decimal(6, 4)
+  specialRate  Decimal  @db.Decimal(6, 4)
+  source       String   @default("taxjar") // taxjar, local, manual
+  validFrom    DateTime @default(now())
+  validUntil   DateTime
+  createdAt    DateTime @default(now())
+
+  @@unique([stateCode, zipCode, city])
+  @@index([stateCode])
+  @@index([zipCode])
+  @@index([validUntil])
+}
+
+// ============================================================================
+// Email Logs
+// ============================================================================
+
+model EmailLog {
+  id        String   @id @default(cuid())
+  userId    String?
+  to        String
+  subject   String
+  template  String   // welcome, verification, reset, reminder, summary
+  status    String   @default("sent") // sent, failed, bounced
+  messageId String?  // Resend message ID
+  error     String?
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([to])
+  @@index([template])
+  @@index([createdAt])
+}
+
+// ============================================================================
+// Notification Preferences
+// ============================================================================
+
+model NotificationPreference {
+  id                     String  @id @default(cuid())
+  userId                 String  @unique
+  emailDeadlineReminders Boolean @default(true)
+  emailWeeklyDigest      Boolean @default(true)
+  emailNewRates          Boolean @default(false)
+  reminderDaysBefore     Int     @default(7)
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
+
+  @@index([userId])
+}

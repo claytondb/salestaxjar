@@ -1,36 +1,200 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# SalesTaxJar
+
+A modern sales tax calculation and compliance platform built with Next.js 16, Prisma 7, and PostgreSQL.
+
+## Features
+
+- 🧮 **Tax Calculator** - Calculate sales tax for all 50 US states with category-specific rates
+- 🗺️ **Nexus Tracking** - Track your sales tax nexus across states
+- 📊 **Dashboard** - Overview of your tax obligations and upcoming filings
+- 📅 **Filing Reminders** - Automated email reminders for filing deadlines
+- 💳 **Subscription Billing** - Stripe-powered subscription management
+- 🔐 **Secure Auth** - Database-backed authentication with bcrypt and JWT
+- 📧 **Email System** - Resend-powered transactional emails
+
+## Tech Stack
+
+- **Framework:** Next.js 16 (App Router, Turbopack)
+- **Database:** PostgreSQL with Prisma 7
+- **Auth:** bcrypt + JWT + HTTP-only cookies
+- **Payments:** Stripe Subscriptions
+- **Email:** Resend
+- **Tax API:** TaxJar (optional, with local fallback)
+- **Rate Limiting:** Upstash Redis (optional, with in-memory fallback)
+- **Styling:** Tailwind CSS 4
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+
+- Node.js 18+
+- PostgreSQL database (local or cloud)
+- npm or yarn
+
+### Installation
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/yourusername/salestaxjar.git
+   cd salestaxjar
+   ```
+
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+3. Copy the environment example file:
+   ```bash
+   cp .env.example .env.local
+   ```
+
+4. Configure your environment variables (see [Environment Variables](#environment-variables) below)
+
+5. Generate Prisma client:
+   ```bash
+   npx prisma generate
+   ```
+
+6. Run database migrations:
+   ```bash
+   npx prisma migrate deploy
+   ```
+
+7. Start the development server:
+   ```bash
+   npm run dev
+   ```
+
+8. Open [http://localhost:3000](http://localhost:3000)
+
+## Environment Variables
+
+### Required for Production
+
+| Variable | Description |
+|----------|-------------|
+| `DATABASE_URL` | PostgreSQL connection URL (pooled for serverless) |
+| `JWT_SECRET` | Secret key for JWT signing (generate with `openssl rand -base64 32`) |
+
+### Optional Services
+
+These services gracefully degrade if not configured:
+
+| Variable | Description | Fallback |
+|----------|-------------|----------|
+| `STRIPE_SECRET_KEY` | Stripe secret API key | Demo billing mode |
+| `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | Stripe publishable key | - |
+| `STRIPE_WEBHOOK_SECRET` | Stripe webhook signing secret | - |
+| `STRIPE_STARTER_PRICE_ID` | Stripe Price ID for Starter plan | - |
+| `STRIPE_GROWTH_PRICE_ID` | Stripe Price ID for Growth plan | - |
+| `STRIPE_ENTERPRISE_PRICE_ID` | Stripe Price ID for Enterprise plan | - |
+| `TAXJAR_API_KEY` | TaxJar API key | Local tax rates |
+| `TAXJAR_API_URL` | TaxJar API URL (sandbox or production) | Production URL |
+| `RESEND_API_KEY` | Resend API key for emails | Console logging |
+| `FROM_EMAIL` | Email sender address | Default sender |
+| `UPSTASH_REDIS_REST_URL` | Upstash Redis URL | In-memory rate limiting |
+| `UPSTASH_REDIS_REST_TOKEN` | Upstash Redis token | - |
+| `NEXT_PUBLIC_APP_URL` | Public URL of your app | http://localhost:3000 |
+
+### Vercel Deployment
+
+For Vercel deployment, set these environment variables in your project settings:
+
+**Required:**
+- `DATABASE_URL` - Use Vercel Postgres or any PostgreSQL provider
+- `JWT_SECRET` - Generate a secure random string
+
+**Recommended:**
+- `STRIPE_SECRET_KEY` - For billing functionality
+- `STRIPE_WEBHOOK_SECRET` - For subscription webhooks
+- `RESEND_API_KEY` - For email functionality
+- `NEXT_PUBLIC_APP_URL` - Your production domain
+
+## Database Setup
+
+### Option 1: Vercel Postgres
+
+1. Create a Vercel Postgres database in your project dashboard
+2. The `DATABASE_URL` will be automatically available
+
+### Option 2: Other PostgreSQL Providers
+
+1. Create a PostgreSQL database (Supabase, Neon, Railway, etc.)
+2. Get the connection string and set as `DATABASE_URL`
+
+### Running Migrations
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+# Development
+npx prisma migrate dev
+
+# Production
+npx prisma migrate deploy
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## API Routes
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Authentication
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- `POST /api/auth/signup` - Create new account
+- `POST /api/auth/login` - Sign in
+- `POST /api/auth/logout` - Sign out
+- `GET /api/auth/me` - Get current user
 
-## Learn More
+### Tax Calculation
 
-To learn more about Next.js, take a look at the following resources:
+- `POST /api/tax/calculate` - Calculate tax for a transaction
+- `GET /api/tax/rates` - Get tax rates (all states or specific)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Email
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- `POST /api/email/send-verification` - Send verification email
+- `POST /api/email/verify` - Verify email with token
+- `POST /api/email/forgot-password` - Request password reset
+- `POST /api/email/reset-password` - Reset password with token
 
-## Deploy on Vercel
+### Stripe
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- `POST /api/stripe/create-checkout-session` - Start subscription checkout
+- `POST /api/stripe/create-portal-session` - Open billing portal
+- `POST /api/stripe/webhook` - Handle Stripe events
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Development
+
+```bash
+# Start dev server
+npm run dev
+
+# Type check
+npm run lint
+
+# Build for production
+npm run build
+
+# Start production server
+npm run start
+```
+
+## Prisma Commands
+
+```bash
+# Generate Prisma Client
+npx prisma generate
+
+# Create and apply migrations
+npx prisma migrate dev
+
+# Apply migrations (production)
+npx prisma migrate deploy
+
+# Open Prisma Studio
+npx prisma studio
+
+# Reset database
+npx prisma migrate reset
+```
+
+## License
+
+MIT License - see LICENSE file for details
