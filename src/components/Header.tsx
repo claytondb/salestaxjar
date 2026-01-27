@@ -148,9 +148,9 @@ export default function Header() {
             <span className="text-2xl font-bold text-white">SalesTaxJar</span>
           </Link>
           <nav className="hidden md:flex gap-6">
-            <a href="/#features" className="text-gray-300 hover:text-white transition">Features</a>
-            <a href="/#pricing" className="text-gray-300 hover:text-white transition">Pricing</a>
-            <a href="/#calculator" className="text-gray-300 hover:text-white transition">Calculator</a>
+            <Link href="/#features" className="text-gray-300 hover:text-white transition">Features</Link>
+            <Link href="/#pricing" className="text-gray-300 hover:text-white transition">Pricing</Link>
+            <Link href="/#calculator" className="text-gray-300 hover:text-white transition">Calculator</Link>
           </nav>
           <div className="flex gap-3">
             <Link href="/login" className="text-gray-300 hover:text-white px-4 py-2 transition">

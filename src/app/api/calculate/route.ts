@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { calculateTax, getStateByCode, stateTaxRates } from '@/data/taxRates';
+import { calculateTax, getStateByCode } from '@/data/taxRates';
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;

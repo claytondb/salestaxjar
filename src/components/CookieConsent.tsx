@@ -18,9 +18,22 @@ const defaultPreferences: CookiePreferences = {
 };
 
 export default function CookieConsent() {
+  // Initialize preferences from localStorage if available
+  const [preferences, setPreferences] = useState<CookiePreferences>(() => {
+    if (typeof window === 'undefined') return defaultPreferences;
+    try {
+      const consent = localStorage.getItem('salestaxjar_cookie_consent');
+      if (consent) {
+        return JSON.parse(consent);
+      }
+    } catch {
+      // Ignore parse errors
+    }
+    return defaultPreferences;
+  });
+  
   const [showBanner, setShowBanner] = useState(false);
   const [showPreferences, setShowPreferences] = useState(false);
-  const [preferences, setPreferences] = useState<CookiePreferences>(defaultPreferences);
 
   useEffect(() => {
     // Check if user has already consented
@@ -29,13 +42,6 @@ export default function CookieConsent() {
       // Small delay before showing banner for better UX
       const timer = setTimeout(() => setShowBanner(true), 1000);
       return () => clearTimeout(timer);
-    } else {
-      try {
-        const savedPrefs = JSON.parse(consent);
-        setPreferences(savedPrefs);
-      } catch {
-        setShowBanner(true);
-      }
     }
   }, []);
 

@@ -11,6 +11,10 @@ export default function FilingsPage() {
   const router = useRouter();
   const [filter, setFilter] = useState<'all' | 'pending' | 'filed' | 'overdue'>('all');
   const [viewMode, setViewMode] = useState<'list' | 'calendar'>('list');
+  
+  // Use state for current time to avoid calling Date.now() during render
+  // Initialize with a function to avoid the impure call during render
+  const [currentTime] = useState<number>(() => Date.now());
 
   useEffect(() => {
     if (!isLoading && !user) {
@@ -171,7 +175,7 @@ export default function FilingsPage() {
                   <div className="divide-y divide-white/10">
                     {filteredDeadlines.map((deadline) => {
                       const dueDate = new Date(deadline.dueDate);
-                      const daysUntil = Math.ceil((dueDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24));
+                      const daysUntil = Math.ceil((dueDate.getTime() - currentTime) / (1000 * 60 * 60 * 24));
                       const isUrgent = daysUntil <= 7 && daysUntil > 0;
                       const isPast = daysUntil < 0;
                       

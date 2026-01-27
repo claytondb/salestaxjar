@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
@@ -18,6 +18,10 @@ export default function DashboardPage() {
     isLoading 
   } = useAuth();
   const router = useRouter();
+  
+  // Use state for current time to avoid calling Date.now() during render
+  // Initialize with a function to avoid the impure call during render
+  const [currentTime] = useState<number>(() => Date.now());
 
   useEffect(() => {
     if (!isLoading && !user) {
@@ -176,7 +180,7 @@ export default function DashboardPage() {
                 <div className="space-y-4">
                   {upcomingDeadlines.map((deadline) => {
                     const dueDate = new Date(deadline.dueDate);
-                    const daysUntil = Math.ceil((dueDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24));
+                    const daysUntil = Math.ceil((dueDate.getTime() - currentTime) / (1000 * 60 * 60 * 24));
                     const isUrgent = daysUntil <= 7;
                     
                     return (

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { constructWebhookEvent, getPlanByPriceId, isStripeConfigured } from '@/lib/stripe';
 import { prisma } from '@/lib/prisma';
+import { sendPaymentFailedEmail } from '@/lib/email';
 import Stripe from 'stripe';
 
 // Note: Next.js App Router handles raw body automatically for webhooks
@@ -182,5 +183,22 @@ async function handlePaymentFailed(invoice: Stripe.Invoice) {
     },
   });
 
-  // TODO: Send email notification about failed payment
+  // Send email notification about failed payment
+  try {
+    const subscription = await prisma.subscription.findUnique({
+      where: { stripeCustomerId: customerId },
+      include: { user: true },
+    });
+
+    if (subscription?.user) {
+      await sendPaymentFailedEmail({
+        to: subscription.user.email,
+        name: subscription.user.name,
+        userId: subscription.user.id,
+      });
+      console.log('Payment failed email sent to:', subscription.user.email);
+    }
+  } catch (error) {
+    console.error('Failed to send payment failed email:', error);
+  }
 }

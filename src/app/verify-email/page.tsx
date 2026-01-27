@@ -11,17 +11,26 @@ function VerifyEmailContent() {
   const router = useRouter();
   const token = searchParams.get('token');
   
-  const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
+  const [status, setStatus] = useState<'loading' | 'success' | 'error' | 'init'>('init');
   const [error, setError] = useState<string>('');
 
   useEffect(() => {
-    if (!token) {
-      setStatus('error');
-      setError('No verification token provided');
-      return;
-    }
-
+    // Use a flag to track if we should proceed with verification
+    let cancelled = false;
+    
     const verifyEmail = async () => {
+      if (!token) {
+        if (!cancelled) {
+          setStatus('error');
+          setError('No verification token provided');
+        }
+        return;
+      }
+
+      if (!cancelled) {
+        setStatus('loading');
+      }
+
       try {
         const response = await fetch('/api/email/verify', {
           method: 'POST',
@@ -30,6 +39,8 @@ function VerifyEmailContent() {
         });
 
         const data = await response.json();
+
+        if (cancelled) return;
 
         if (!response.ok) {
           setStatus('error');
@@ -41,15 +52,23 @@ function VerifyEmailContent() {
         
         // Redirect to dashboard after 3 seconds
         setTimeout(() => {
-          router.push('/dashboard');
+          if (!cancelled) {
+            router.push('/dashboard');
+          }
         }, 3000);
-      } catch (err) {
-        setStatus('error');
-        setError('An error occurred during verification');
+      } catch {
+        if (!cancelled) {
+          setStatus('error');
+          setError('An error occurred during verification');
+        }
       }
     };
 
     verifyEmail();
+    
+    return () => {
+      cancelled = true;
+    };
   }, [token, router]);
 
   return (
@@ -58,7 +77,7 @@ function VerifyEmailContent() {
       
       <main className="max-w-md mx-auto px-4 py-20">
         <div className="bg-white/10 backdrop-blur rounded-xl border border-white/10 p-8 text-center">
-          {status === 'loading' && (
+          {(status === 'loading' || status === 'init') && (
             <>
               <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-emerald-500 mx-auto mb-6"></div>
               <h1 className="text-2xl font-bold text-white mb-2">Verifying Email</h1>

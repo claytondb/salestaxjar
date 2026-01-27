@@ -186,7 +186,6 @@ export function validateName(name: string): boolean {
 
 // Data encryption for localStorage (demo - use proper encryption in production)
 // In production, sensitive data should be stored server-side in encrypted databases
-const STORAGE_KEY_PREFIX = 'stj_';
 
 export function encryptForStorage(data: string): string {
   // Demo: Base64 encode with a marker

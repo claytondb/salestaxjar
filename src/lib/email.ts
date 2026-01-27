@@ -269,6 +269,84 @@ View filing details: ${params.dashboardUrl}`,
   };
 }
 
+// Payment Failed Email
+function paymentFailedTemplate(params: { name: string; billingUrl: string }): EmailTemplate {
+  return {
+    subject: 'Action Required: Payment Failed for Your SalesTaxJar Subscription',
+    html: `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f4f4f5;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f4f4f5; padding: 40px 20px;">
+    <tr>
+      <td align="center">
+        <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 600px; background-color: #ffffff; border-radius: 8px; overflow: hidden;">
+          <tr>
+            <td style="background: linear-gradient(135deg, #0f172a 0%, #581c87 100%); padding: 40px; text-align: center;">
+              <h1 style="margin: 0; color: #10b981; font-size: 28px; font-weight: bold;">SalesTaxJar</h1>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding: 40px;">
+              <div style="background-color: #fef2f2; border-left: 4px solid #ef4444; padding: 16px; margin-bottom: 24px; border-radius: 4px;">
+                <strong style="color: #dc2626;">⚠️ Payment Failed</strong>
+              </div>
+              
+              <h2 style="margin: 0 0 20px; color: #0f172a; font-size: 24px;">Hi ${params.name},</h2>
+              <p style="margin: 0 0 20px; color: #475569; font-size: 16px; line-height: 1.6;">
+                We were unable to process your payment for your SalesTaxJar subscription. To avoid any interruption to your service, please update your payment method.
+              </p>
+              
+              <table width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td align="center" style="padding: 20px 0;">
+                    <a href="${params.billingUrl}" style="display: inline-block; background-color: #10b981; color: #ffffff; text-decoration: none; padding: 14px 32px; border-radius: 6px; font-weight: 600; font-size: 16px;">
+                      Update Payment Method
+                    </a>
+                  </td>
+                </tr>
+              </table>
+              
+              <p style="margin: 20px 0 0; color: #475569; font-size: 14px; line-height: 1.6;">
+                If you believe this is an error or need assistance, please don't hesitate to contact our support team.
+              </p>
+              
+              <p style="margin: 20px 0 0; color: #94a3b8; font-size: 14px;">
+                If your payment method is already up to date, your bank may have declined the charge. Please contact them for more information.
+              </p>
+            </td>
+          </tr>
+          <tr>
+            <td style="background-color: #f8fafc; padding: 24px; text-align: center; border-top: 1px solid #e2e8f0;">
+              <p style="margin: 0; color: #94a3b8; font-size: 12px;">
+                © ${new Date().getFullYear()} SalesTaxJar. All rights reserved.
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`,
+    text: `Payment Failed for Your SalesTaxJar Subscription
+
+Hi ${params.name},
+
+We were unable to process your payment for your SalesTaxJar subscription. To avoid any interruption to your service, please update your payment method.
+
+Update your payment method here: ${params.billingUrl}
+
+If you believe this is an error or need assistance, please contact our support team.
+
+If your payment method is already up to date, your bank may have declined the charge. Please contact them for more information.`,
+  };
+}
+
 // Monthly Tax Summary Email
 function monthlySummaryTemplate(params: {
   name: string;
@@ -522,6 +600,22 @@ export async function sendFilingReminderEmail(params: {
     to: params.to,
     template,
     templateName: 'reminder',
+    userId: params.userId,
+  });
+}
+
+export async function sendPaymentFailedEmail(params: {
+  to: string;
+  name: string;
+  userId: string;
+}): Promise<{ success: boolean; error?: string }> {
+  const billingUrl = `${APP_URL}/settings?tab=billing`;
+  const template = paymentFailedTemplate({ name: params.name, billingUrl });
+
+  return sendEmail({
+    to: params.to,
+    template,
+    templateName: 'payment_failed',
     userId: params.userId,
   });
 }

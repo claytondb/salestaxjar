@@ -6,7 +6,6 @@ import { useRouter } from 'next/navigation';
 import { stateTaxRates, calculateTax, getNoTaxStates, taxRateMetadata } from '@/data/taxRates';
 import { useAuth } from '@/context/AuthContext';
 import Footer from '@/components/Footer';
-import TaxDisclaimer from '@/components/TaxDisclaimer';
 
 export default function Home() {
   const { user, isLoading } = useAuth();
