@@ -12,6 +12,20 @@ import {
   BillingInfo,
   AppState,
 } from '@/types';
+import {
+  hashPassword,
+  verifyPassword,
+  generateSessionToken,
+  getSessionFromStorage,
+  saveSessionToStorage,
+  clearSession,
+  checkRateLimit,
+  resetRateLimit,
+  validateEmail,
+  validatePassword,
+  validateName,
+  sanitizeInput,
+} from '@/lib/security';
 
 interface AuthContextType {
   user: User | null;
@@ -107,17 +121,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const loadState = () => {
       try {
+        // First check if there's a valid session
+        const session = getSessionFromStorage();
+        
         const savedState = localStorage.getItem('salestaxjar_state');
         if (savedState) {
           const state: AppState = JSON.parse(savedState);
-          setUser(state.user);
-          setBusinessProfile(state.businessProfile);
-          setNexusStates(state.nexusStates || []);
-          setCalculations(state.calculations || []);
-          setFilingDeadlines(state.filingDeadlines || []);
-          setConnectedPlatforms(state.connectedPlatforms || defaultPlatforms);
-          setNotifications(state.notifications || defaultNotifications);
-          setBilling(state.billing || defaultBilling);
+          
+          // Only restore user if session is valid
+          if (session && state.user) {
+            setUser(state.user);
+            setBusinessProfile(state.businessProfile);
+            setNexusStates(state.nexusStates || []);
+            setCalculations(state.calculations || []);
+            setFilingDeadlines(state.filingDeadlines || []);
+            setConnectedPlatforms(state.connectedPlatforms || defaultPlatforms);
+            setNotifications(state.notifications || defaultNotifications);
+            setBilling(state.billing || defaultBilling);
+          } else if (!session && state.user) {
+            // Session expired, clear user but keep other data
+            console.log('Session expired, please log in again');
+            localStorage.removeItem('salestaxjar_state');
+          }
         }
       } catch (e) {
         console.error('Failed to load state:', e);
@@ -145,20 +170,50 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [user, businessProfile, nexusStates, calculations, filingDeadlines, connectedPlatforms, notifications, billing, isLoading]);
 
   const login = async (email: string, password: string): Promise<{ success: boolean; error?: string }> => {
+    // Sanitize inputs
+    const sanitizedEmail = sanitizeInput(email).toLowerCase();
+    
+    // Validate email format
+    if (!validateEmail(sanitizedEmail)) {
+      return { success: false, error: 'Please enter a valid email address' };
+    }
+
+    // Check rate limiting
+    const rateCheck = checkRateLimit(`login:${sanitizedEmail}`);
+    if (!rateCheck.allowed) {
+      return { 
+        success: false, 
+        error: `Too many login attempts. Please try again in ${rateCheck.waitTime} minutes.` 
+      };
+    }
+    
     // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 800));
     
     // Check for existing user in localStorage
     const users = JSON.parse(localStorage.getItem('salestaxjar_users') || '[]');
-    const existingUser = users.find((u: any) => u.email === email);
+    const existingUser = users.find((u: any) => u.email.toLowerCase() === sanitizedEmail);
     
     if (!existingUser) {
       return { success: false, error: 'No account found with this email' };
     }
     
-    if (existingUser.password !== password) {
-      return { success: false, error: 'Incorrect password' };
+    // Verify password using secure comparison
+    if (!verifyPassword(password, existingUser.password)) {
+      return { 
+        success: false, 
+        error: rateCheck.attemptsRemaining 
+          ? `Incorrect password. ${rateCheck.attemptsRemaining} attempts remaining.`
+          : 'Incorrect password'
+      };
     }
+    
+    // Reset rate limit on successful login
+    resetRateLimit(`login:${sanitizedEmail}`);
+    
+    // Create session token
+    const session = generateSessionToken(existingUser.id);
+    saveSessionToStorage(session);
     
     const loggedInUser: User = {
       id: existingUser.id,
@@ -172,25 +227,61 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const signup = async (email: string, password: string, name: string): Promise<{ success: boolean; error?: string }> => {
+    // Sanitize inputs
+    const sanitizedEmail = sanitizeInput(email).toLowerCase();
+    const sanitizedName = sanitizeInput(name);
+    
+    // Validate email
+    if (!validateEmail(sanitizedEmail)) {
+      return { success: false, error: 'Please enter a valid email address' };
+    }
+    
+    // Validate name
+    if (!validateName(sanitizedName)) {
+      return { success: false, error: 'Please enter a valid name (letters, spaces, hyphens only)' };
+    }
+    
+    // Validate password strength
+    const passwordValidation = validatePassword(password);
+    if (!passwordValidation.valid) {
+      return { success: false, error: passwordValidation.errors[0] };
+    }
+
+    // Check rate limiting for signups
+    const rateCheck = checkRateLimit(`signup:${sanitizedEmail}`);
+    if (!rateCheck.allowed) {
+      return { 
+        success: false, 
+        error: `Too many signup attempts. Please try again in ${rateCheck.waitTime} minutes.` 
+      };
+    }
+    
     // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 800));
     
     // Check if email already exists
     const users = JSON.parse(localStorage.getItem('salestaxjar_users') || '[]');
-    if (users.some((u: any) => u.email === email)) {
+    if (users.some((u: any) => u.email.toLowerCase() === sanitizedEmail)) {
       return { success: false, error: 'An account with this email already exists' };
     }
     
+    // Hash password before storing
+    const hashedPassword = hashPassword(password);
+    
     const newUser = {
       id: crypto.randomUUID(),
-      email,
-      password,
-      name,
+      email: sanitizedEmail,
+      password: hashedPassword,
+      name: sanitizedName,
       createdAt: new Date().toISOString(),
     };
     
     users.push(newUser);
     localStorage.setItem('salestaxjar_users', JSON.stringify(users));
+    
+    // Create session token
+    const session = generateSessionToken(newUser.id);
+    saveSessionToStorage(session);
     
     const loggedInUser: User = {
       id: newUser.id,
@@ -213,6 +304,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setNotifications(defaultNotifications);
     setBilling(defaultBilling);
     localStorage.removeItem('salestaxjar_state');
+    clearSession(); // Clear session token
   };
 
   const updateBusinessProfile = (profile: BusinessProfile) => {

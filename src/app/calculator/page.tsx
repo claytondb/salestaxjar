@@ -4,7 +4,9 @@ import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import Header from '@/components/Header';
-import { stateTaxRates, getStateByCode } from '@/data/taxRates';
+import Footer from '@/components/Footer';
+import TaxDisclaimer, { StateAuthorityLink } from '@/components/TaxDisclaimer';
+import { stateTaxRates, getStateByCode, taxRateMetadata } from '@/data/taxRates';
 import { TaxCalculation, ProductCategory, productCategories, categoryModifiers } from '@/types';
 
 interface BulkResult {
@@ -229,10 +231,16 @@ export default function CalculatorPage() {
       <Header />
       
       <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="mb-8">
+        <div className="mb-6">
           <h1 className="text-3xl font-bold text-white mb-2">Tax Calculator</h1>
           <p className="text-gray-400">Calculate sales tax with product category support</p>
+          <p className="text-xs text-gray-500 mt-1">
+            📅 Tax rates last updated: {taxRateMetadata.lastUpdated} | Effective: {taxRateMetadata.effectiveDate}
+          </p>
         </div>
+
+        {/* Tax Disclaimer Banner */}
+        <TaxDisclaimer variant="banner" className="mb-6" />
 
         {/* Mode Toggle */}
         <div className="flex gap-2 mb-6">
@@ -339,6 +347,10 @@ export default function CalculatorPage() {
                         </p>
                       </div>
                     )}
+                    <div className="mt-4 pt-4 border-t border-emerald-500/20">
+                      <StateAuthorityLink stateCode={selectedState} />
+                      <TaxDisclaimer variant="compact" className="mt-2" />
+                    </div>
                   </div>
                 )}
               </div>
@@ -488,9 +500,22 @@ export default function CalculatorPage() {
                 </table>
               </div>
             )}
+
+            {/* Disclaimer below bulk upload */}
+            <TaxDisclaimer variant="inline" className="mt-6" />
           </div>
         )}
+
+        {/* Professional advice recommendation */}
+        <div className="mt-8 p-4 bg-blue-500/10 border border-blue-500/30 rounded-lg">
+          <p className="text-blue-400 text-sm text-center">
+            💼 <strong>Need professional tax advice?</strong> We recommend consulting with a CPA or tax attorney 
+            for complex tax situations, multi-state filing requirements, or product-specific exemptions.
+          </p>
+        </div>
       </main>
+
+      <Footer />
     </div>
   );
 }

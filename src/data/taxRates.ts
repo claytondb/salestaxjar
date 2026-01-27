@@ -1,6 +1,20 @@
 // US State Sales Tax Rates (2024-2025)
-// Source: Various state departments of revenue
-// Note: These are BASE state rates. Local taxes may apply.
+// 
+// IMPORTANT DISCLAIMER:
+// These rates are ESTIMATES based on publicly available data and should not be
+// relied upon for tax filing purposes. Always verify with official state sources.
+//
+// Sources:
+// - Tax Foundation (taxfoundation.org)
+// - State Departments of Revenue
+// - Sales Tax Institute
+//
+// Last Updated: January 2025
+// Effective Date: January 1, 2025
+//
+// Note: These are BASE state rates combined with AVERAGE local rates.
+// Actual local taxes vary significantly by city, county, and special district.
+// Some products may be exempt or have reduced rates not reflected here.
 
 export interface TaxRate {
   state: string;
@@ -11,6 +25,21 @@ export interface TaxRate {
   hasLocalTax: boolean;
   notes?: string;
 }
+
+// Metadata about the tax rate data
+export const taxRateMetadata = {
+  lastUpdated: "2025-01-01",
+  effectiveDate: "2025-01-01",
+  nextScheduledUpdate: "2025-04-01",
+  sources: [
+    { name: "Tax Foundation", url: "https://taxfoundation.org/", description: "State and local sales tax rates" },
+    { name: "Sales Tax Institute", url: "https://www.salestaxinstitute.com/", description: "Sales tax research and resources" },
+    { name: "State DOR websites", url: null, description: "Individual state departments of revenue" },
+  ],
+  disclaimer: "Tax rates are estimates based on publicly available data. Actual rates may vary by jurisdiction. This is not tax advice. Consult a qualified tax professional.",
+  localTaxNote: "Local rates shown are state-wide averages. Actual local taxes (city, county, special district) may be higher or lower depending on the specific location.",
+  exemptionNote: "Product category exemptions are simplified. Many states have complex exemption rules based on price thresholds, specific product types, or intended use.",
+};
 
 export const stateTaxRates: TaxRate[] = [
   { state: "Alabama", stateCode: "AL", stateRate: 4.00, avgLocalRate: 5.24, combinedRate: 9.24, hasLocalTax: true },

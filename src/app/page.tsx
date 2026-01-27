@@ -3,8 +3,10 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { stateTaxRates, calculateTax, getNoTaxStates } from '@/data/taxRates';
+import { stateTaxRates, calculateTax, getNoTaxStates, taxRateMetadata } from '@/data/taxRates';
 import { useAuth } from '@/context/AuthContext';
+import Footer from '@/components/Footer';
+import TaxDisclaimer from '@/components/TaxDisclaimer';
 
 export default function Home() {
   const { user, isLoading } = useAuth();
@@ -181,6 +183,15 @@ export default function Home() {
             <p className="text-center text-gray-400 text-sm mt-4">
               <Link href="/signup" className="text-emerald-400 hover:text-emerald-300">Sign up</Link> to access advanced features like product categories, bulk calculations, and export
             </p>
+
+            {/* Disclaimer */}
+            <div className="mt-6 text-center">
+              <p className="text-xs text-gray-500">
+                📅 Rates updated: {taxRateMetadata.lastUpdated} |{' '}
+                <span className="text-yellow-500">⚠️</span> Estimates only - not tax advice.{' '}
+                <Link href="/terms" className="text-emerald-400 hover:text-emerald-300">See full disclaimer</Link>
+              </p>
+            </div>
           </div>
         </div>
       </section>
@@ -349,27 +360,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="border-t border-white/10 py-8 sm:py-12 px-4">
-        <div className="max-w-6xl mx-auto">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-gradient-to-br from-green-400 to-emerald-600 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold">$</span>
-              </div>
-              <span className="text-xl font-bold text-white">SalesTaxJar</span>
-            </div>
-            <div className="flex gap-6 text-gray-400">
-              <a href="#" className="hover:text-white transition">Privacy</a>
-              <a href="#" className="hover:text-white transition">Terms</a>
-              <a href="#" className="hover:text-white transition">Contact</a>
-            </div>
-            <div className="text-gray-400 text-sm">
-              © 2025 SalesTaxJar. All rights reserved.
-            </div>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

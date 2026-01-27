@@ -2,10 +2,13 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import Header from '@/components/Header';
+import Footer from '@/components/Footer';
 import { BusinessProfile, BillingInfo } from '@/types';
 import { stateTaxRates } from '@/data/taxRates';
+import { exportUserData, deleteAllUserData } from '@/lib/security';
 
 const businessTypes = [
   { value: 'retail', label: 'Retail Store' },
@@ -55,6 +58,8 @@ export default function SettingsPage() {
   const router = useRouter();
 
   const [activeTab, setActiveTab] = useState('profile');
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [deleteConfirmText, setDeleteConfirmText] = useState('');
   const [isSaving, setIsSaving] = useState(false);
   const [saveMessage, setSaveMessage] = useState('');
 
@@ -94,10 +99,34 @@ export default function SettingsPage() {
   // Handle hash navigation
   useEffect(() => {
     const hash = window.location.hash.replace('#', '');
-    if (hash && ['profile', 'account', 'notifications', 'platforms', 'billing'].includes(hash)) {
+    if (hash && ['profile', 'account', 'notifications', 'platforms', 'billing', 'privacy'].includes(hash)) {
       setActiveTab(hash);
     }
   }, []);
+
+  // Data export handler
+  const handleExportData = () => {
+    const data = exportUserData();
+    const blob = new Blob([data], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `salestaxjar-data-export-${new Date().toISOString().split('T')[0]}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    setSaveMessage('Data exported successfully!');
+    setTimeout(() => setSaveMessage(''), 3000);
+  };
+
+  // Account deletion handler
+  const handleDeleteAccount = () => {
+    if (deleteConfirmText.toLowerCase() !== 'delete my account') {
+      setSaveMessage('Please type "delete my account" to confirm');
+      return;
+    }
+    deleteAllUserData();
+    router.push('/');
+  };
 
   const handleSaveProfile = async () => {
     setIsSaving(true);
@@ -173,6 +202,7 @@ export default function SettingsPage() {
                 { id: 'notifications', label: 'Notifications', icon: '🔔' },
                 { id: 'platforms', label: 'Platforms', icon: '🔗' },
                 { id: 'billing', label: 'Billing', icon: '💳' },
+                { id: 'privacy', label: 'Data & Privacy', icon: '🔒' },
               ].map((tab) => (
                 <button
                   key={tab.id}
@@ -344,9 +374,15 @@ export default function SettingsPage() {
 
                 <hr className="border-white/10 my-8" />
 
-                <h3 className="text-lg font-semibold text-white mb-4">Danger Zone</h3>
-                <button className="bg-red-500/20 hover:bg-red-500/30 text-red-400 px-4 py-2 rounded-lg text-sm font-medium transition border border-red-500/30">
-                  Delete Account
+                <h3 className="text-lg font-semibold text-white mb-4">Password</h3>
+                <p className="text-gray-400 text-sm mb-4">
+                  Password management is available in the Data &amp; Privacy section.
+                </p>
+                <button 
+                  onClick={() => setActiveTab('privacy')}
+                  className="text-emerald-400 hover:text-emerald-300 text-sm font-medium"
+                >
+                  Go to Data &amp; Privacy →
                 </button>
               </div>
             )}
@@ -599,9 +635,171 @@ export default function SettingsPage() {
                 </div>
               </div>
             )}
+
+            {/* Data & Privacy Tab */}
+            {activeTab === 'privacy' && (
+              <div className="space-y-6">
+                {/* Privacy Overview */}
+                <div className="bg-white/10 backdrop-blur rounded-xl border border-white/10 p-6">
+                  <h2 className="text-xl font-semibold text-white mb-4">Data & Privacy</h2>
+                  <p className="text-gray-400 mb-4">
+                    We take your privacy seriously. Below you can manage your data and privacy settings.
+                    For more information, see our{' '}
+                    <Link href="/privacy" className="text-emerald-400 hover:text-emerald-300">Privacy Policy</Link>.
+                  </p>
+                  
+                  <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-4">
+                    <p className="text-yellow-400 text-sm">
+                      <strong>⚠️ Demo Mode:</strong> This application uses browser localStorage for data storage. 
+                      In production, all data would be securely encrypted and stored on protected servers.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Your Rights */}
+                <div className="bg-white/10 backdrop-blur rounded-xl border border-white/10 p-6">
+                  <h2 className="text-xl font-semibold text-white mb-4">Your Data Rights</h2>
+                  <p className="text-gray-400 mb-4">
+                    Under GDPR and CCPA, you have the following rights regarding your personal data:
+                  </p>
+                  <ul className="space-y-2 text-gray-300 text-sm">
+                    <li className="flex items-center gap-2">
+                      <span className="text-emerald-400">✓</span>
+                      <strong>Right to Access:</strong> You can request a copy of your data
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <span className="text-emerald-400">✓</span>
+                      <strong>Right to Portability:</strong> Export your data in a machine-readable format
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <span className="text-emerald-400">✓</span>
+                      <strong>Right to Erasure:</strong> Delete your account and all associated data
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <span className="text-emerald-400">✓</span>
+                      <strong>Right to Rectification:</strong> Update or correct your information
+                    </li>
+                  </ul>
+                </div>
+
+                {/* Export Data */}
+                <div className="bg-white/10 backdrop-blur rounded-xl border border-white/10 p-6">
+                  <h2 className="text-xl font-semibold text-white mb-2">Export Your Data</h2>
+                  <p className="text-gray-400 mb-4">
+                    Download all your data in JSON format. This includes your profile, calculations, 
+                    settings, and preferences.
+                  </p>
+                  <button
+                    onClick={handleExportData}
+                    className="bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-3 rounded-lg font-medium transition flex items-center gap-2"
+                  >
+                    <span>📥</span>
+                    Export All Data
+                  </button>
+                </div>
+
+                {/* Data Retention */}
+                <div className="bg-white/10 backdrop-blur rounded-xl border border-white/10 p-6">
+                  <h2 className="text-xl font-semibold text-white mb-4">Data Retention</h2>
+                  <div className="space-y-3 text-sm">
+                    <div className="flex justify-between p-3 bg-white/5 rounded-lg">
+                      <span className="text-gray-300">Account Data</span>
+                      <span className="text-gray-400">While account is active + 30 days</span>
+                    </div>
+                    <div className="flex justify-between p-3 bg-white/5 rounded-lg">
+                      <span className="text-gray-300">Tax Calculations</span>
+                      <span className="text-gray-400">7 years (legal requirement)</span>
+                    </div>
+                    <div className="flex justify-between p-3 bg-white/5 rounded-lg">
+                      <span className="text-gray-300">Usage Logs</span>
+                      <span className="text-gray-400">90 days</span>
+                    </div>
+                    <div className="flex justify-between p-3 bg-white/5 rounded-lg">
+                      <span className="text-gray-300">Cookie Preferences</span>
+                      <span className="text-gray-400">1 year</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Delete Account */}
+                <div className="bg-red-500/10 backdrop-blur rounded-xl border border-red-500/30 p-6">
+                  <h2 className="text-xl font-semibold text-red-400 mb-2">⚠️ Delete Account</h2>
+                  <p className="text-gray-400 mb-4">
+                    Permanently delete your account and all associated data. This action cannot be undone.
+                    Some data may be retained for legal compliance purposes.
+                  </p>
+                  
+                  {!showDeleteConfirm ? (
+                    <button
+                      onClick={() => setShowDeleteConfirm(true)}
+                      className="bg-red-500/20 hover:bg-red-500/30 text-red-400 px-6 py-3 rounded-lg font-medium transition border border-red-500/30"
+                    >
+                      Delete My Account
+                    </button>
+                  ) : (
+                    <div className="space-y-4">
+                      <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-4">
+                        <p className="text-red-300 text-sm mb-3">
+                          To confirm deletion, please type <strong>&quot;delete my account&quot;</strong> below:
+                        </p>
+                        <input
+                          type="text"
+                          value={deleteConfirmText}
+                          onChange={(e) => setDeleteConfirmText(e.target.value)}
+                          className="w-full px-4 py-2 bg-white/10 border border-red-500/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-red-500"
+                          placeholder="delete my account"
+                        />
+                      </div>
+                      <div className="flex gap-3">
+                        <button
+                          onClick={() => {
+                            setShowDeleteConfirm(false);
+                            setDeleteConfirmText('');
+                          }}
+                          className="px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg transition"
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          onClick={handleDeleteAccount}
+                          disabled={deleteConfirmText.toLowerCase() !== 'delete my account'}
+                          className="px-6 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg font-medium transition disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          Permanently Delete Account
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Contact for Privacy */}
+                <div className="bg-white/10 backdrop-blur rounded-xl border border-white/10 p-6">
+                  <h2 className="text-xl font-semibold text-white mb-4">Privacy Contact</h2>
+                  <p className="text-gray-400 mb-4">
+                    For any privacy-related inquiries or to exercise your data rights, contact us:
+                  </p>
+                  <div className="space-y-2 text-sm">
+                    <p className="text-gray-300">
+                      📧 Email:{' '}
+                      <a href="mailto:privacy@salestaxjar.com" className="text-emerald-400 hover:text-emerald-300">
+                        privacy@salestaxjar.com
+                      </a>
+                    </p>
+                    <p className="text-gray-300">
+                      🇪🇺 GDPR DPO:{' '}
+                      <a href="mailto:dpo@salestaxjar.com" className="text-emerald-400 hover:text-emerald-300">
+                        dpo@salestaxjar.com
+                      </a>
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </main>
+
+      <Footer />
     </div>
   );
 }
