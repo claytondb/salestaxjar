@@ -205,7 +205,14 @@ export default function SettingsPage() {
         }
       }
     } else {
-      setProrationPreview(null);
+      // No card on file - still need to determine if it's an upgrade for display
+      const currentPlan = plans.find(p => p.id === billing.plan);
+      const newPlan = plans.find(p => p.id === planId);
+      if (currentPlan && newPlan) {
+        setProrationPreview({
+          isUpgrade: newPlan.tier > currentPlan.tier,
+        });
+      }
     }
   };
 
