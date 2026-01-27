@@ -69,9 +69,6 @@ export default function Home() {
       {/* Hero Section */}
       <section className="py-12 sm:py-20 px-4">
         <div className="max-w-4xl mx-auto text-center">
-          <div className="inline-block px-4 py-1 bg-emerald-500/20 rounded-full text-emerald-400 text-sm font-medium mb-6">
-            🚀 Trusted by 10,000+ e-commerce sellers
-          </div>
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-6 leading-tight">
             Sales Tax Compliance<br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400">
@@ -79,7 +76,7 @@ export default function Home() {
             </span>
           </h1>
           <p className="text-lg sm:text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
-            Automatically calculate, collect, and file sales tax for all 45+ states. 
+            Calculate sales tax, track nexus obligations, and manage filing deadlines for all 50 states.
             Stay compliant without the headache. Starting at just <span className="text-emerald-400 font-semibold">$29/month</span>.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -91,28 +88,6 @@ export default function Home() {
             </button>
           </div>
           <p className="text-gray-400 text-sm mt-4">No credit card required • Cancel anytime</p>
-        </div>
-      </section>
-
-      {/* Stats */}
-      <section className="py-12 border-y border-white/10 bg-white/5">
-        <div className="max-w-6xl mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-          <div>
-            <div className="text-3xl sm:text-4xl font-bold text-white">45+</div>
-            <div className="text-gray-400 text-sm sm:text-base">States Covered</div>
-          </div>
-          <div>
-            <div className="text-3xl sm:text-4xl font-bold text-white">99.9%</div>
-            <div className="text-gray-400 text-sm sm:text-base">Accuracy Rate</div>
-          </div>
-          <div>
-            <div className="text-3xl sm:text-4xl font-bold text-white">$2M+</div>
-            <div className="text-gray-400 text-sm sm:text-base">Taxes Filed</div>
-          </div>
-          <div>
-            <div className="text-3xl sm:text-4xl font-bold text-white">24/7</div>
-            <div className="text-gray-400 text-sm sm:text-base">Support</div>
-          </div>
         </div>
       </section>
 
@@ -193,6 +168,16 @@ export default function Home() {
               </p>
             </div>
           </div>
+
+          {/* Important Disclaimer Banner */}
+          <div className="mt-8 p-4 bg-yellow-500/10 border border-yellow-500/30 rounded-xl">
+            <p className="text-yellow-200/90 text-sm text-center leading-relaxed">
+              <span className="font-semibold">⚠️ Important:</span> SalesTaxJar provides tax calculation tools and compliance resources. 
+              We are not a licensed CPA, tax attorney, or registered tax preparer. Our calculations are estimates based on 
+              publicly available state tax rates and should not be considered tax advice. Always verify rates with official 
+              state sources and consult a qualified tax professional for your specific situation.
+            </p>
+          </div>
         </div>
       </section>
 
@@ -210,36 +195,47 @@ export default function Home() {
             {[
               {
                 icon: "🧮",
-                title: "Auto-Calculate",
-                desc: "Real-time tax calculation for all 12,000+ US tax jurisdictions"
-              },
-              {
-                icon: "🔗",
-                title: "Easy Integration",
-                desc: "One-click connect with Shopify, Amazon, Etsy, WooCommerce & more"
-              },
-              {
-                icon: "📋",
-                title: "Auto-File Returns",
-                desc: "We file your returns automatically in every state you need"
+                title: "Tax Calculator",
+                desc: "Calculate state-level sales tax rates instantly (local jurisdictions coming soon)",
+                comingSoon: false
               },
               {
                 icon: "📊",
                 title: "Dashboard",
-                desc: "See all your tax liabilities and nexus obligations at a glance"
+                desc: "See all your tax liabilities and nexus obligations at a glance",
+                comingSoon: false
+              },
+              {
+                icon: "📍",
+                title: "Nexus Tracking",
+                desc: "Track your economic nexus thresholds across all states",
+                comingSoon: false
               },
               {
                 icon: "🔔",
                 title: "Deadline Alerts",
-                desc: "Never miss a filing deadline with smart reminders"
+                desc: "Never miss a filing deadline with smart reminders",
+                comingSoon: false
               },
               {
-                icon: "🛡️",
-                title: "Audit Support",
-                desc: "We've got your back if you ever face a sales tax audit"
+                icon: "🔗",
+                title: "Integrations",
+                desc: "Connect with Shopify, Amazon, Etsy, WooCommerce & more",
+                comingSoon: true
+              },
+              {
+                icon: "📋",
+                title: "Auto-Filing",
+                desc: "Automated filing of returns in every state you need",
+                comingSoon: true
               }
             ].map((feature, i) => (
-              <div key={i} className="bg-white/10 backdrop-blur rounded-xl p-6 border border-white/10 hover:border-emerald-500/50 transition">
+              <div key={i} className="bg-white/10 backdrop-blur rounded-xl p-6 border border-white/10 hover:border-emerald-500/50 transition relative">
+                {feature.comingSoon && (
+                  <span className="absolute top-3 right-3 text-xs bg-yellow-500/20 text-yellow-400 px-2 py-1 rounded-full font-medium">
+                    Coming Soon
+                  </span>
+                )}
                 <div className="text-3xl sm:text-4xl mb-4">{feature.icon}</div>
                 <h3 className="text-lg sm:text-xl font-semibold text-white mb-2">{feature.title}</h3>
                 <p className="text-gray-400 text-sm sm:text-base">{feature.desc}</p>
@@ -269,11 +265,18 @@ export default function Home() {
                 <span className="text-gray-400">/month</span>
               </div>
               <ul className="space-y-3 mb-8">
-                {["Up to 500 orders/mo", "3 state filings included", "Shopify integration", "Email support"].map((item, i) => (
-                  <li key={i} className="flex items-center gap-2 text-gray-300 text-sm sm:text-base">
-                    <span className="text-emerald-400">✓</span> {item}
-                  </li>
-                ))}
+                <li className="flex items-center gap-2 text-gray-300 text-sm sm:text-base">
+                  <span className="text-emerald-400">✓</span> Up to 500 orders/mo
+                </li>
+                <li className="flex items-center gap-2 text-gray-300 text-sm sm:text-base">
+                  <span className="text-emerald-400">✓</span> Tax calculator
+                </li>
+                <li className="flex items-center gap-2 text-gray-300 text-sm sm:text-base">
+                  <span className="text-emerald-400">✓</span> Email support
+                </li>
+                <li className="flex items-center gap-2 text-gray-400 text-sm sm:text-base">
+                  <span className="text-yellow-400">◷</span> Integrations (Coming Soon)
+                </li>
               </ul>
               <Link href="/signup" className="block w-full py-3 border border-emerald-500 text-emerald-400 rounded-lg hover:bg-emerald-500/10 transition text-center">
                 Start Free Trial
@@ -292,11 +295,21 @@ export default function Home() {
                 <span className="text-gray-400">/month</span>
               </div>
               <ul className="space-y-3 mb-8">
-                {["Up to 5,000 orders/mo", "Unlimited state filings", "All integrations", "Priority support", "Nexus tracking"].map((item, i) => (
-                  <li key={i} className="flex items-center gap-2 text-gray-300 text-sm sm:text-base">
-                    <span className="text-emerald-400">✓</span> {item}
-                  </li>
-                ))}
+                <li className="flex items-center gap-2 text-gray-300 text-sm sm:text-base">
+                  <span className="text-emerald-400">✓</span> Up to 5,000 orders/mo
+                </li>
+                <li className="flex items-center gap-2 text-gray-300 text-sm sm:text-base">
+                  <span className="text-emerald-400">✓</span> Nexus tracking
+                </li>
+                <li className="flex items-center gap-2 text-gray-300 text-sm sm:text-base">
+                  <span className="text-emerald-400">✓</span> Priority support
+                </li>
+                <li className="flex items-center gap-2 text-gray-400 text-sm sm:text-base">
+                  <span className="text-yellow-400">◷</span> All Integrations (Coming Soon)
+                </li>
+                <li className="flex items-center gap-2 text-gray-400 text-sm sm:text-base">
+                  <span className="text-yellow-400">◷</span> Filing Assistance (Coming Soon)
+                </li>
               </ul>
               <Link href="/signup" className="block w-full py-3 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg transition font-medium text-center">
                 Start Free Trial
@@ -312,11 +325,21 @@ export default function Home() {
                 <span className="text-gray-400">/month</span>
               </div>
               <ul className="space-y-3 mb-8">
-                {["Unlimited orders", "Unlimited filings", "Custom integrations", "Dedicated manager", "Audit protection"].map((item, i) => (
-                  <li key={i} className="flex items-center gap-2 text-gray-300 text-sm sm:text-base">
-                    <span className="text-emerald-400">✓</span> {item}
-                  </li>
-                ))}
+                <li className="flex items-center gap-2 text-gray-300 text-sm sm:text-base">
+                  <span className="text-emerald-400">✓</span> Unlimited orders
+                </li>
+                <li className="flex items-center gap-2 text-gray-300 text-sm sm:text-base">
+                  <span className="text-emerald-400">✓</span> Dedicated support
+                </li>
+                <li className="flex items-center gap-2 text-gray-400 text-sm sm:text-base">
+                  <span className="text-yellow-400">◷</span> Custom Integrations (Coming Soon)
+                </li>
+                <li className="flex items-center gap-2 text-gray-400 text-sm sm:text-base">
+                  <span className="text-yellow-400">◷</span> Auto-Filing (Coming Soon)
+                </li>
+                <li className="flex items-center gap-2 text-gray-400 text-sm sm:text-base">
+                  <span className="text-yellow-400">◷</span> Audit Resources (Coming Soon)
+                </li>
               </ul>
               <Link href="/signup" className="block w-full py-3 border border-emerald-500 text-emerald-400 rounded-lg hover:bg-emerald-500/10 transition text-center">
                 Contact Sales
@@ -352,7 +375,7 @@ export default function Home() {
             Ready to Simplify Your Sales Tax?
           </h2>
           <p className="text-gray-400 mb-8 text-lg">
-            Join thousands of sellers who trust SalesTaxJar for compliance
+            Start simplifying your sales tax compliance today
           </p>
           <Link href="/signup" className="inline-block bg-emerald-500 hover:bg-emerald-600 text-white px-8 py-4 rounded-xl font-semibold text-lg transition transform hover:scale-105">
             Start Your Free Trial Today
