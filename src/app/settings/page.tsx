@@ -216,7 +216,7 @@ export default function SettingsPage() {
     setIsCheckingOut(true);
     
     try {
-      const hasActiveSubscription = billing.cardLast4 && billing.plan !== 'free';
+      const hasActiveSubscription = !!billing.cardLast4;
       
       if (hasActiveSubscription) {
         // Update existing subscription
