@@ -4,6 +4,7 @@ export interface User {
   email: string;
   name: string;
   createdAt: string;
+  emailVerified?: boolean;
 }
 
 export interface BusinessProfile {
