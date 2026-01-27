@@ -341,9 +341,9 @@ export async function previewSubscriptionChange(params: {
       },
     });
 
-    // Find proration line items
+    // Find proration line items (check for proration property)
     const prorationItems = invoice.lines.data.filter(
-      line => line.proration
+      line => (line as Stripe.InvoiceLineItem & { proration?: boolean }).proration
     );
     const prorationAmount = prorationItems.reduce(
       (sum, item) => sum + item.amount, 
