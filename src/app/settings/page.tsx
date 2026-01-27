@@ -24,12 +24,14 @@ const plans = [
     id: 'starter', 
     name: 'Starter', 
     price: 29, 
+    tier: 0,
     features: ['Up to 500 orders/mo', '3 state filings', 'Shopify integration', 'Email support']
   },
   { 
     id: 'growth', 
     name: 'Growth', 
     price: 79, 
+    tier: 1,
     features: ['Up to 5,000 orders/mo', 'Unlimited filings', 'All integrations', 'Priority support', 'Nexus tracking'],
     popular: true
   },
@@ -37,6 +39,7 @@ const plans = [
     id: 'enterprise', 
     name: 'Enterprise', 
     price: 199, 
+    tier: 2,
     features: ['Unlimited orders', 'Unlimited filings', 'Custom integrations', 'Dedicated manager', 'Audit protection']
   },
 ];
@@ -62,6 +65,15 @@ export default function SettingsPage() {
   const [deleteConfirmText, setDeleteConfirmText] = useState('');
   const [isSaving, setIsSaving] = useState(false);
   const [saveMessage, setSaveMessage] = useState('');
+  
+  // Billing state
+  const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
+  const [isCheckingOut, setIsCheckingOut] = useState(false);
+  const [prorationPreview, setProrationPreview] = useState<{
+    isUpgrade: boolean;
+    immediateCharge?: number;
+    prorationAmount?: number;
+  } | null>(null);
 
   // Profile form state
   const [profileForm, setProfileForm] = useState<BusinessProfile>({
@@ -154,17 +166,136 @@ export default function SettingsPage() {
     setTimeout(() => setSaveMessage(''), 3000);
   };
 
-  const handleChangePlan = (planId: string) => {
-    const plan = plans.find(p => p.id === planId);
-    if (plan) {
-      updateBilling({
-        ...billing,
-        plan: planId as BillingInfo['plan'],
-        monthlyPrice: plan.price,
-      });
-      setSaveMessage(`Upgraded to ${plan.name} plan!`);
-      setTimeout(() => setSaveMessage(''), 3000);
+  // Handle plan selection (just selects, doesn't purchase)
+  const handleSelectPlan = async (planId: string) => {
+    if (planId === billing.plan) {
+      setSelectedPlan(null);
+      setProrationPreview(null);
+      return;
     }
+    
+    setSelectedPlan(planId);
+    
+    // If user has an active subscription, preview the proration
+    if (billing.cardLast4) {
+      const currentPlan = plans.find(p => p.id === billing.plan);
+      const newPlan = plans.find(p => p.id === planId);
+      
+      if (currentPlan && newPlan) {
+        const isUpgrade = newPlan.tier > currentPlan.tier;
+        
+        if (isUpgrade) {
+          // For upgrades, we could fetch proration preview from API
+          // For now, show estimated difference
+          const daysInMonth = 30;
+          const daysRemaining = 15; // Approximate
+          const currentDaily = currentPlan.price / daysInMonth;
+          const newDaily = newPlan.price / daysInMonth;
+          const prorationAmount = (newDaily - currentDaily) * daysRemaining;
+          
+          setProrationPreview({
+            isUpgrade: true,
+            immediateCharge: Math.max(0, prorationAmount),
+            prorationAmount: prorationAmount,
+          });
+        } else {
+          setProrationPreview({
+            isUpgrade: false,
+          });
+        }
+      }
+    } else {
+      setProrationPreview(null);
+    }
+  };
+
+  // Handle checkout / plan change
+  const handleCheckout = async () => {
+    if (!selectedPlan) return;
+    
+    setIsCheckingOut(true);
+    
+    try {
+      const hasActiveSubscription = billing.cardLast4 && billing.plan !== 'free';
+      
+      if (hasActiveSubscription) {
+        // Update existing subscription
+        const response = await fetch('/api/stripe/update-subscription', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            newPlanId: selectedPlan,
+            action: 'update'
+          }),
+        });
+        
+        const data = await response.json();
+        
+        if (!response.ok) {
+          throw new Error(data.error || 'Failed to update subscription');
+        }
+        
+        // Update local state
+        const plan = plans.find(p => p.id === selectedPlan);
+        if (plan) {
+          updateBilling({
+            ...billing,
+            plan: selectedPlan as BillingInfo['plan'],
+            monthlyPrice: plan.price,
+          });
+        }
+        
+        setSaveMessage(data.message);
+        setSelectedPlan(null);
+        setProrationPreview(null);
+      } else {
+        // New subscription - go to Stripe Checkout
+        const response = await fetch('/api/stripe/create-checkout-session', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ planId: selectedPlan }),
+        });
+        
+        const data = await response.json();
+        
+        if (!response.ok) {
+          if (data.demo) {
+            // Demo mode - simulate success
+            const plan = plans.find(p => p.id === selectedPlan);
+            if (plan) {
+              updateBilling({
+                ...billing,
+                plan: selectedPlan as BillingInfo['plan'],
+                monthlyPrice: plan.price,
+                cardLast4: '4242',
+                cardBrand: 'Visa',
+                nextBillingDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toLocaleDateString(),
+              });
+            }
+            setSaveMessage(`Subscribed to ${plan?.name} plan! (Demo mode)`);
+            setSelectedPlan(null);
+            setProrationPreview(null);
+          } else {
+            throw new Error(data.error || 'Failed to create checkout session');
+          }
+        } else if (data.url) {
+          // Redirect to Stripe Checkout
+          window.location.href = data.url;
+          return;
+        }
+      }
+    } catch (error) {
+      setSaveMessage(`Error: ${error instanceof Error ? error.message : 'Something went wrong'}`);
+    } finally {
+      setIsCheckingOut(false);
+      setTimeout(() => setSaveMessage(''), 5000);
+    }
+  };
+
+  // Cancel pending plan selection
+  const handleCancelSelection = () => {
+    setSelectedPlan(null);
+    setProrationPreview(null);
   };
 
   if (isLoading || !user) {
@@ -547,52 +678,140 @@ export default function SettingsPage() {
 
                 {/* Plan Selection */}
                 <div className="bg-white/10 backdrop-blur rounded-xl border border-white/10 p-6">
-                  <h2 className="text-xl font-semibold text-white mb-6">Available Plans</h2>
+                  <h2 className="text-xl font-semibold text-white mb-2">Available Plans</h2>
+                  <p className="text-gray-400 text-sm mb-6">Select a plan to see pricing details</p>
                   <div className="grid md:grid-cols-3 gap-4">
-                    {plans.map((plan) => (
-                      <div 
-                        key={plan.id}
-                        className={`p-6 rounded-xl border transition ${
-                          billing.plan === plan.id 
-                            ? 'bg-emerald-500/20 border-emerald-500' 
-                            : plan.popular 
-                              ? 'bg-white/5 border-emerald-500/50' 
-                              : 'bg-white/5 border-white/10'
-                        }`}
-                      >
-                        {plan.popular && (
-                          <span className="px-2 py-0.5 bg-emerald-500 text-white text-xs rounded-full mb-3 inline-block">
-                            Most Popular
-                          </span>
-                        )}
-                        <h3 className="text-lg font-semibold text-white">{plan.name}</h3>
-                        <div className="mt-2 mb-4">
-                          <span className="text-3xl font-bold text-white">${plan.price}</span>
-                          <span className="text-gray-400">/mo</span>
-                        </div>
-                        <ul className="space-y-2 mb-6">
-                          {plan.features.map((feature, i) => (
-                            <li key={i} className="flex items-center gap-2 text-sm text-gray-300">
-                              <span className="text-emerald-400">✓</span>
-                              {feature}
-                            </li>
-                          ))}
-                        </ul>
-                        <button
-                          onClick={() => handleChangePlan(plan.id)}
-                          disabled={billing.plan === plan.id}
-                          className={`w-full py-2 rounded-lg font-medium transition ${
-                            billing.plan === plan.id
-                              ? 'bg-emerald-500/20 text-emerald-400 cursor-default'
-                              : 'bg-emerald-500 hover:bg-emerald-600 text-white'
+                    {plans.map((plan) => {
+                      const isCurrentPlan = billing.plan === plan.id;
+                      const isSelected = selectedPlan === plan.id;
+                      
+                      return (
+                        <div 
+                          key={plan.id}
+                          onClick={() => !isCurrentPlan && handleSelectPlan(plan.id)}
+                          className={`p-6 rounded-xl border transition cursor-pointer ${
+                            isSelected
+                              ? 'bg-purple-500/20 border-purple-500 ring-2 ring-purple-500'
+                              : isCurrentPlan 
+                                ? 'bg-emerald-500/20 border-emerald-500' 
+                                : plan.popular 
+                                  ? 'bg-white/5 border-emerald-500/50 hover:bg-white/10' 
+                                  : 'bg-white/5 border-white/10 hover:bg-white/10'
                           }`}
                         >
-                          {billing.plan === plan.id ? 'Current Plan' : 'Select Plan'}
-                        </button>
-                      </div>
-                    ))}
+                          <div className="flex items-center justify-between mb-2">
+                            {plan.popular && !isCurrentPlan && (
+                              <span className="px-2 py-0.5 bg-emerald-500 text-white text-xs rounded-full">
+                                Most Popular
+                              </span>
+                            )}
+                            {isCurrentPlan && (
+                              <span className="px-2 py-0.5 bg-emerald-500/30 text-emerald-400 text-xs rounded-full">
+                                Current
+                              </span>
+                            )}
+                            {isSelected && (
+                              <span className="px-2 py-0.5 bg-purple-500 text-white text-xs rounded-full">
+                                Selected
+                              </span>
+                            )}
+                          </div>
+                          <h3 className="text-lg font-semibold text-white">{plan.name}</h3>
+                          <div className="mt-2 mb-4">
+                            <span className="text-3xl font-bold text-white">${plan.price}</span>
+                            <span className="text-gray-400">/mo</span>
+                          </div>
+                          <ul className="space-y-2 mb-4">
+                            {plan.features.map((feature, i) => (
+                              <li key={i} className="flex items-center gap-2 text-sm text-gray-300">
+                                <span className="text-emerald-400">✓</span>
+                                {feature}
+                              </li>
+                            ))}
+                          </ul>
+                          {isCurrentPlan && (
+                            <div className="text-center py-2 text-gray-400 text-sm">
+                              Your current plan
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
+
+                {/* Plan Change Summary & Checkout */}
+                {selectedPlan && (
+                  <div className="bg-purple-500/10 backdrop-blur rounded-xl border border-purple-500/30 p-6">
+                    <h2 className="text-xl font-semibold text-white mb-4">
+                      {prorationPreview?.isUpgrade ? '⬆️ Upgrade Summary' : '⬇️ Downgrade Summary'}
+                    </h2>
+                    
+                    {prorationPreview?.isUpgrade ? (
+                      <div className="space-y-3 mb-6">
+                        <p className="text-gray-300">
+                          You&apos;re upgrading from <strong>{billing.plan.charAt(0).toUpperCase() + billing.plan.slice(1)}</strong> to{' '}
+                          <strong>{plans.find(p => p.id === selectedPlan)?.name}</strong>.
+                        </p>
+                        {prorationPreview.immediateCharge !== undefined && prorationPreview.immediateCharge > 0 && (
+                          <div className="bg-white/5 rounded-lg p-4">
+                            <div className="flex justify-between text-sm">
+                              <span className="text-gray-400">Prorated charge (remaining days)</span>
+                              <span className="text-white font-medium">~${prorationPreview.immediateCharge.toFixed(2)}</span>
+                            </div>
+                            <p className="text-gray-500 text-xs mt-2">
+                              You&apos;ll be charged the difference for the remainder of your billing cycle.
+                            </p>
+                          </div>
+                        )}
+                        <p className="text-emerald-400 text-sm">
+                          ✓ Your upgrade will take effect immediately
+                        </p>
+                      </div>
+                    ) : (
+                      <div className="space-y-3 mb-6">
+                        <p className="text-gray-300">
+                          You&apos;re downgrading from <strong>{billing.plan.charAt(0).toUpperCase() + billing.plan.slice(1)}</strong> to{' '}
+                          <strong>{plans.find(p => p.id === selectedPlan)?.name}</strong>.
+                        </p>
+                        <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-4">
+                          <p className="text-yellow-400 text-sm">
+                            ⚠️ Your current plan will remain active until the end of your billing period.
+                            The new plan will take effect on your next billing date.
+                          </p>
+                        </div>
+                        <p className="text-gray-400 text-sm">
+                          Next billing date: {billing.nextBillingDate || 'N/A'}
+                        </p>
+                      </div>
+                    )}
+
+                    <div className="flex gap-3">
+                      <button
+                        onClick={handleCancelSelection}
+                        className="px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg transition"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        onClick={handleCheckout}
+                        disabled={isCheckingOut}
+                        className="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-2 rounded-lg font-medium transition disabled:opacity-50 flex items-center justify-center gap-2"
+                      >
+                        {isCheckingOut ? (
+                          <>
+                            <span className="animate-spin">⏳</span>
+                            Processing...
+                          </>
+                        ) : billing.cardLast4 ? (
+                          prorationPreview?.isUpgrade ? 'Confirm Upgrade' : 'Confirm Downgrade'
+                        ) : (
+                          'Proceed to Checkout'
+                        )}
+                      </button>
+                    </div>
+                  </div>
+                )}
 
                 {/* Payment Method */}
                 <div className="bg-white/10 backdrop-blur rounded-xl border border-white/10 p-6">
@@ -619,17 +838,7 @@ export default function SettingsPage() {
                   ) : (
                     <div className="text-center py-8">
                       <p className="text-gray-400 mb-4">No payment method on file</p>
-                      <button 
-                        onClick={() => updateBilling({ 
-                          ...billing, 
-                          cardLast4: '4242', 
-                          cardBrand: 'Visa',
-                          nextBillingDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toLocaleDateString()
-                        })}
-                        className="bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-lg font-medium transition"
-                      >
-                        Add Payment Method
-                      </button>
+                      <p className="text-gray-500 text-sm">Select a plan above to add a payment method</p>
                     </div>
                   )}
                 </div>
