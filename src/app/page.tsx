@@ -13,6 +13,31 @@ export default function Home() {
   const [amount, setAmount] = useState<string>('100');
   const [selectedState, setSelectedState] = useState<string>('CA');
   const [result, setResult] = useState<{ tax: number; total: number; rate: number } | null>(null);
+  
+  // Rotating business examples for "get back to ___"
+  const businesses = [
+    "making bead jewelry",
+    "roasting coffee beans",
+    "designing t-shirts",
+    "crafting candles",
+    "baking sourdough",
+    "knitting sweaters",
+    "building furniture",
+    "brewing kombucha",
+    "painting portraits",
+    "selling vintage finds",
+    "making hot sauce",
+    "growing succulents",
+  ];
+  const [businessIndex, setBusinessIndex] = useState(0);
+  
+  // Rotate through businesses
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setBusinessIndex((prev) => (prev + 1) % businesses.length);
+    }, 2500);
+    return () => clearInterval(interval);
+  }, [businesses.length]);
 
   // Redirect logged-in users to dashboard
   useEffect(() => {
@@ -74,12 +99,15 @@ export default function Home() {
           </p>
           
           {/* The Solution (crystal clear headline) */}
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-6 leading-tight">
-            We Handle Your Sales Tax<br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400">
-              So You Don&apos;t Have To
-            </span>
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-4 leading-tight">
+            We Handle Your Sales Tax
           </h1>
+          <p className="text-xl sm:text-2xl text-gray-300 mb-6">
+            So you can get back to{' '}
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400 font-semibold border-b-2 border-emerald-400/50 pb-1 inline-block min-w-[200px] transition-all duration-300">
+              {businesses[businessIndex]}
+            </span>
+          </p>
           
           {/* What it does in plain English */}
           <p className="text-lg sm:text-xl text-gray-300 mb-4 max-w-2xl mx-auto">
