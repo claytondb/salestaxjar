@@ -26,7 +26,7 @@ export default function CookiePolicyPage() {
 
             <section>
               <h2 className="text-xl font-semibold text-white mb-4">2. How We Use Cookies</h2>
-              <p>SalesTaxJar uses cookies for the following purposes:</p>
+              <p>Sails uses cookies for the following purposes:</p>
               
               <div className="mt-4 space-y-4">
                 <div className="bg-white/5 rounded-lg p-4">
@@ -216,7 +216,7 @@ export default function CookiePolicyPage() {
                 If you have questions about our use of cookies, please contact us:
               </p>
               <div className="mt-4 p-4 bg-white/5 rounded-lg">
-                <p>Email: <a href="mailto:privacy@salestaxjar.com" className="text-emerald-400 hover:text-emerald-300">privacy@salestaxjar.com</a></p>
+                <p>Email: <a href="mailto:privacy@sails.tax" className="text-emerald-400 hover:text-emerald-300">privacy@sails.tax</a></p>
               </div>
             </section>
           </div>

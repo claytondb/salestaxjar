@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { exchangeCodeForToken, saveAmazonConnection } from '@/lib/platforms/amazon';
 
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://salestaxjar.vercel.app';
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://sails.tax';
 
 /**
  * GET /api/platforms/amazon/callback

@@ -76,7 +76,7 @@ const faqs = [
     a: 'Not yet, but it\'s coming soon! Right now we help you calculate what you owe and remind you of deadlines. Auto-filing is our most requested feature and it\'s in development.',
   },
   {
-    q: 'Is SalesTaxJar a CPA or tax advisor?',
+    q: 'Is Sails a CPA or tax advisor?',
     a: 'No. We\'re a software tool that helps you track and calculate sales tax. We\'re not licensed to give tax advice. For complex situations, we recommend consulting a tax professional.',
   },
   {
@@ -112,7 +112,7 @@ export default function PricingPage() {
               <div className="w-10 h-10 bg-gradient-to-br from-green-400 to-emerald-600 rounded-lg flex items-center justify-center">
                 <span className="text-white font-bold text-xl">$</span>
               </div>
-              <span className="text-2xl font-bold text-white">SalesTaxJar</span>
+              <span className="text-2xl font-bold text-white">Sails</span>
             </Link>
             <div className="flex gap-3">
               {isLoading ? null : user ? (
@@ -220,7 +220,7 @@ export default function PricingPage() {
               <DollarSign className="w-5 h-5" /> Save thousands compared to competitors
             </p>
             <p className="text-gray-300 text-sm">
-              Similar services charge $100-$500/month or more. SalesTaxJar gives you the essentials at a price that makes sense for small businesses.
+              Similar services charge $100-$500/month or more. Sails gives you the essentials at a price that makes sense for small businesses.
             </p>
           </div>
         </div>

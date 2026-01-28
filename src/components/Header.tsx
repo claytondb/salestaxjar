@@ -23,7 +23,7 @@ export default function Header() {
                 <div className="w-9 h-9 bg-gradient-to-br from-green-400 to-emerald-600 rounded-lg flex items-center justify-center">
                   <span className="text-white font-bold text-lg">$</span>
                 </div>
-                <span className="text-xl font-bold text-white hidden sm:inline">SalesTaxJar</span>
+                <span className="text-xl font-bold text-white hidden sm:inline">Sails</span>
               </Link>
               
               {/* Desktop Navigation */}
@@ -145,7 +145,7 @@ export default function Header() {
             <div className="w-10 h-10 bg-gradient-to-br from-green-400 to-emerald-600 rounded-lg flex items-center justify-center">
               <span className="text-white font-bold text-xl">$</span>
             </div>
-            <span className="text-2xl font-bold text-white">SalesTaxJar</span>
+            <span className="text-2xl font-bold text-white">Sails</span>
           </Link>
           <nav className="hidden md:flex gap-6">
             <Link href="/#features" className="text-gray-300 hover:text-white transition">Features</Link>

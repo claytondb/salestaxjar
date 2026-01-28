@@ -1,4 +1,4 @@
-// Security utilities for SalesTaxJar
+// Security utilities for Sails
 // Note: This is a demo implementation. In production, use proper bcrypt and server-side auth.
 
 const DEMO_WARNING = `

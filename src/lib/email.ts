@@ -6,8 +6,8 @@ const RESEND_API_KEY = process.env.RESEND_API_KEY;
 const resend = RESEND_API_KEY ? new Resend(RESEND_API_KEY) : null;
 
 // Email configuration
-const FROM_EMAIL = process.env.FROM_EMAIL || 'SalesTaxJar <noreply@salestaxjar.com>';
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://salestaxjar.com';
+const FROM_EMAIL = process.env.FROM_EMAIL || 'Sails <noreply@sails.tax>';
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://sails.tax';
 
 // Check if email is configured
 export function isEmailConfigured(): boolean {
@@ -27,14 +27,14 @@ interface EmailTemplate {
 // Welcome / Verification Email
 function welcomeEmailTemplate(params: { name: string; verifyUrl: string }): EmailTemplate {
   return {
-    subject: 'Welcome to SalesTaxJar - Verify Your Email',
+    subject: 'Welcome to Sails - Verify Your Email',
     html: `
 <!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Welcome to SalesTaxJar</title>
+  <title>Welcome to Sails</title>
 </head>
 <body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f4f4f5;">
   <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f4f4f5; padding: 40px 20px;">
@@ -44,7 +44,7 @@ function welcomeEmailTemplate(params: { name: string; verifyUrl: string }): Emai
           <!-- Header -->
           <tr>
             <td style="background: linear-gradient(135deg, #0f172a 0%, #581c87 100%); padding: 40px; text-align: center;">
-              <h1 style="margin: 0; color: #10b981; font-size: 28px; font-weight: bold;">SalesTaxJar</h1>
+              <h1 style="margin: 0; color: #10b981; font-size: 28px; font-weight: bold;">Sails</h1>
               <p style="margin: 10px 0 0; color: #94a3b8; font-size: 14px;">Sales Tax Automation Made Simple</p>
             </td>
           </tr>
@@ -54,7 +54,7 @@ function welcomeEmailTemplate(params: { name: string; verifyUrl: string }): Emai
             <td style="padding: 40px;">
               <h2 style="margin: 0 0 20px; color: #0f172a; font-size: 24px;">Welcome, ${params.name}! 🎉</h2>
               <p style="margin: 0 0 20px; color: #475569; font-size: 16px; line-height: 1.6;">
-                Thanks for signing up for SalesTaxJar. We're excited to help you simplify your sales tax compliance.
+                Thanks for signing up for Sails. We're excited to help you simplify your sales tax compliance.
               </p>
               <p style="margin: 0 0 30px; color: #475569; font-size: 16px; line-height: 1.6;">
                 Please verify your email address by clicking the button below:
@@ -81,7 +81,7 @@ function welcomeEmailTemplate(params: { name: string; verifyUrl: string }): Emai
           <tr>
             <td style="background-color: #f8fafc; padding: 24px; text-align: center; border-top: 1px solid #e2e8f0;">
               <p style="margin: 0; color: #94a3b8; font-size: 12px;">
-                © ${new Date().getFullYear()} SalesTaxJar. All rights reserved.
+                © ${new Date().getFullYear()} Sails. All rights reserved.
               </p>
             </td>
           </tr>
@@ -91,7 +91,7 @@ function welcomeEmailTemplate(params: { name: string; verifyUrl: string }): Emai
   </table>
 </body>
 </html>`,
-    text: `Welcome to SalesTaxJar, ${params.name}!
+    text: `Welcome to Sails, ${params.name}!
 
 Thanks for signing up. Please verify your email address by visiting:
 ${params.verifyUrl}
@@ -105,7 +105,7 @@ If you didn't create an account, you can safely ignore this email.`,
 // Password Reset Email
 function passwordResetTemplate(params: { name: string; resetUrl: string }): EmailTemplate {
   return {
-    subject: 'Reset Your SalesTaxJar Password',
+    subject: 'Reset Your Sails Password',
     html: `
 <!DOCTYPE html>
 <html>
@@ -120,7 +120,7 @@ function passwordResetTemplate(params: { name: string; resetUrl: string }): Emai
         <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 600px; background-color: #ffffff; border-radius: 8px; overflow: hidden;">
           <tr>
             <td style="background: linear-gradient(135deg, #0f172a 0%, #581c87 100%); padding: 40px; text-align: center;">
-              <h1 style="margin: 0; color: #10b981; font-size: 28px; font-weight: bold;">SalesTaxJar</h1>
+              <h1 style="margin: 0; color: #10b981; font-size: 28px; font-weight: bold;">Sails</h1>
             </td>
           </tr>
           <tr>
@@ -148,7 +148,7 @@ function passwordResetTemplate(params: { name: string; resetUrl: string }): Emai
           <tr>
             <td style="background-color: #f8fafc; padding: 24px; text-align: center; border-top: 1px solid #e2e8f0;">
               <p style="margin: 0; color: #94a3b8; font-size: 12px;">
-                © ${new Date().getFullYear()} SalesTaxJar. All rights reserved.
+                © ${new Date().getFullYear()} Sails. All rights reserved.
               </p>
             </td>
           </tr>
@@ -158,7 +158,7 @@ function passwordResetTemplate(params: { name: string; resetUrl: string }): Emai
   </table>
 </body>
 </html>`,
-    text: `Reset Your SalesTaxJar Password
+    text: `Reset Your Sails Password
 
 Hi ${params.name},
 
@@ -198,7 +198,7 @@ function filingReminderTemplate(params: {
         <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 600px; background-color: #ffffff; border-radius: 8px; overflow: hidden;">
           <tr>
             <td style="background: linear-gradient(135deg, #0f172a 0%, #581c87 100%); padding: 40px; text-align: center;">
-              <h1 style="margin: 0; color: #10b981; font-size: 28px; font-weight: bold;">SalesTaxJar</h1>
+              <h1 style="margin: 0; color: #10b981; font-size: 28px; font-weight: bold;">Sails</h1>
             </td>
           </tr>
           <tr>
@@ -245,7 +245,7 @@ function filingReminderTemplate(params: {
           <tr>
             <td style="background-color: #f8fafc; padding: 24px; text-align: center; border-top: 1px solid #e2e8f0;">
               <p style="margin: 0; color: #94a3b8; font-size: 12px;">
-                © ${new Date().getFullYear()} SalesTaxJar. <a href="${APP_URL}/settings#notifications" style="color: #94a3b8;">Manage notification preferences</a>
+                © ${new Date().getFullYear()} Sails. <a href="${APP_URL}/settings#notifications" style="color: #94a3b8;">Manage notification preferences</a>
               </p>
             </td>
           </tr>
@@ -272,7 +272,7 @@ View filing details: ${params.dashboardUrl}`,
 // Payment Failed Email
 function paymentFailedTemplate(params: { name: string; billingUrl: string }): EmailTemplate {
   return {
-    subject: 'Action Required: Payment Failed for Your SalesTaxJar Subscription',
+    subject: 'Action Required: Payment Failed for Your Sails Subscription',
     html: `
 <!DOCTYPE html>
 <html>
@@ -287,7 +287,7 @@ function paymentFailedTemplate(params: { name: string; billingUrl: string }): Em
         <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 600px; background-color: #ffffff; border-radius: 8px; overflow: hidden;">
           <tr>
             <td style="background: linear-gradient(135deg, #0f172a 0%, #581c87 100%); padding: 40px; text-align: center;">
-              <h1 style="margin: 0; color: #10b981; font-size: 28px; font-weight: bold;">SalesTaxJar</h1>
+              <h1 style="margin: 0; color: #10b981; font-size: 28px; font-weight: bold;">Sails</h1>
             </td>
           </tr>
           <tr>
@@ -298,7 +298,7 @@ function paymentFailedTemplate(params: { name: string; billingUrl: string }): Em
               
               <h2 style="margin: 0 0 20px; color: #0f172a; font-size: 24px;">Hi ${params.name},</h2>
               <p style="margin: 0 0 20px; color: #475569; font-size: 16px; line-height: 1.6;">
-                We were unable to process your payment for your SalesTaxJar subscription. To avoid any interruption to your service, please update your payment method.
+                We were unable to process your payment for your Sails subscription. To avoid any interruption to your service, please update your payment method.
               </p>
               
               <table width="100%" cellpadding="0" cellspacing="0">
@@ -323,7 +323,7 @@ function paymentFailedTemplate(params: { name: string; billingUrl: string }): Em
           <tr>
             <td style="background-color: #f8fafc; padding: 24px; text-align: center; border-top: 1px solid #e2e8f0;">
               <p style="margin: 0; color: #94a3b8; font-size: 12px;">
-                © ${new Date().getFullYear()} SalesTaxJar. All rights reserved.
+                © ${new Date().getFullYear()} Sails. All rights reserved.
               </p>
             </td>
           </tr>
@@ -333,11 +333,11 @@ function paymentFailedTemplate(params: { name: string; billingUrl: string }): Em
   </table>
 </body>
 </html>`,
-    text: `Payment Failed for Your SalesTaxJar Subscription
+    text: `Payment Failed for Your Sails Subscription
 
 Hi ${params.name},
 
-We were unable to process your payment for your SalesTaxJar subscription. To avoid any interruption to your service, please update your payment method.
+We were unable to process your payment for your Sails subscription. To avoid any interruption to your service, please update your payment method.
 
 Update your payment method here: ${params.billingUrl}
 
@@ -377,7 +377,7 @@ function monthlySummaryTemplate(params: {
         <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 600px; background-color: #ffffff; border-radius: 8px; overflow: hidden;">
           <tr>
             <td style="background: linear-gradient(135deg, #0f172a 0%, #581c87 100%); padding: 40px; text-align: center;">
-              <h1 style="margin: 0; color: #10b981; font-size: 28px; font-weight: bold;">SalesTaxJar</h1>
+              <h1 style="margin: 0; color: #10b981; font-size: 28px; font-weight: bold;">Sails</h1>
               <p style="margin: 10px 0 0; color: #94a3b8; font-size: 14px;">${params.month} Tax Summary</p>
             </td>
           </tr>
@@ -426,7 +426,7 @@ function monthlySummaryTemplate(params: {
           <tr>
             <td style="background-color: #f8fafc; padding: 24px; text-align: center; border-top: 1px solid #e2e8f0;">
               <p style="margin: 0; color: #94a3b8; font-size: 12px;">
-                © ${new Date().getFullYear()} SalesTaxJar. <a href="${APP_URL}/settings#notifications" style="color: #94a3b8;">Manage preferences</a>
+                © ${new Date().getFullYear()} Sails. <a href="${APP_URL}/settings#notifications" style="color: #94a3b8;">Manage preferences</a>
               </p>
             </td>
           </tr>

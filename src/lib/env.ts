@@ -66,7 +66,7 @@ const envConfig = {
   },
   FROM_EMAIL: {
     required: false,
-    default: 'SalesTaxJar <noreply@salestaxjar.com>',
+    default: 'Sails <noreply@sails.tax>',
   },
   
   // Upstash
@@ -133,7 +133,7 @@ export const services = {
 export function logServiceStatus() {
   if (typeof window !== 'undefined') return;
   
-  console.log('\n🔧 SalesTaxJar Service Status:');
+  console.log('\n🔧 Sails Service Status:');
   console.log('━'.repeat(40));
   console.log(`  Database:     ${services.database ? '✅ Connected' : '⚠️  Not configured'}`);
   console.log(`  Stripe:       ${services.stripe ? '✅ Enabled' : '⚠️  Demo mode'}`);

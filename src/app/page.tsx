@@ -84,7 +84,7 @@ export default function Home() {
               <div className="w-10 h-10 bg-gradient-to-br from-green-400 to-emerald-600 rounded-lg flex items-center justify-center">
                 <span className="text-white font-bold text-xl">$</span>
               </div>
-              <span className="text-2xl font-bold text-white">SalesTaxJar</span>
+              <span className="text-2xl font-bold text-white">Sails</span>
             </div>
             <nav className="hidden md:flex gap-6">
               <a href="#features" className="text-gray-300 hover:text-white transition">Features</a>
@@ -140,7 +140,7 @@ export default function Home() {
             Miss a filing and you could face penalties.
           </p>
           <p className="text-lg sm:text-xl text-white font-medium mb-8 max-w-2xl mx-auto">
-            SalesTaxJar tells you exactly what you owe, where you owe it, and when it&apos;s due.
+            Sails tells you exactly what you owe, where you owe it, and when it&apos;s due.
             <span className="text-emerald-400"> Starting at $29/month.</span>
           </p>
 
@@ -221,7 +221,7 @@ export default function Home() {
           <div className="mt-12 flex justify-center items-center gap-4 text-gray-500 text-sm">
             <span className="bg-white/10 px-4 py-2 rounded-lg text-white">Your Store</span>
             <span>→</span>
-            <span className="bg-white/10 px-4 py-2 rounded-lg text-white">SalesTaxJar</span>
+            <span className="bg-white/10 px-4 py-2 rounded-lg text-white">Sails</span>
             <span>→</span>
             <span className="bg-white/10 px-4 py-2 rounded-lg text-white flex items-center gap-1">Tax Filed <Check className="w-4 h-4 text-emerald-400" /></span>
           </div>
@@ -460,7 +460,7 @@ export default function Home() {
             Stop Stressing About Sales Tax
           </h2>
           <p className="text-gray-400 mb-8 text-lg">
-            Try SalesTaxJar free for 14 days. No credit card required.
+            Try Sails free for 14 days. No credit card required.
           </p>
           <Link href="/signup" className="inline-block bg-emerald-500 hover:bg-emerald-600 text-white px-8 py-4 rounded-xl font-semibold text-lg transition transform hover:scale-105">
             Start Your Free Trial

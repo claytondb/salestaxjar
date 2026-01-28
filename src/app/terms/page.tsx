@@ -21,7 +21,7 @@ export default function TermsPage() {
             </h2>
             <div className="text-red-200 space-y-3">
               <p>
-                <strong>SalesTaxJar provides TAX ESTIMATION TOOLS ONLY.</strong> We are NOT a certified public accounting 
+                <strong>Sails provides TAX ESTIMATION TOOLS ONLY.</strong> We are NOT a certified public accounting 
                 (CPA) firm, tax advisory service, or law firm. Our tools are designed to assist with sales tax calculations 
                 but should not be relied upon as the sole basis for tax compliance decisions.
               </p>
@@ -46,7 +46,7 @@ export default function TermsPage() {
             <section>
               <h2 className="text-xl font-semibold text-white mb-4">1. Acceptance of Terms</h2>
               <p>
-                By accessing or using SalesTaxJar (&quot;the Service&quot;), you agree to be bound by these Terms of Service 
+                By accessing or using Sails (&quot;the Service&quot;), you agree to be bound by these Terms of Service 
                 (&quot;Terms&quot;). If you do not agree to these Terms, do not use the Service. We may modify these Terms at 
                 any time, and your continued use of the Service after such modifications constitutes acceptance of the 
                 updated Terms.
@@ -55,7 +55,7 @@ export default function TermsPage() {
 
             <section>
               <h2 className="text-xl font-semibold text-white mb-4">2. Description of Service</h2>
-              <p>SalesTaxJar provides:</p>
+              <p>Sails provides:</p>
               <ul className="list-disc pl-6 space-y-2 mt-2">
                 <li>Sales tax calculation tools for US states and territories</li>
                 <li>Product category-based tax rate estimation</li>
@@ -139,7 +139,7 @@ export default function TermsPage() {
             <section>
               <h2 className="text-xl font-semibold text-white mb-4">6. Indemnification</h2>
               <p>
-                You agree to indemnify, defend, and hold harmless SalesTaxJar, its officers, directors, employees, 
+                You agree to indemnify, defend, and hold harmless Sails, its officers, directors, employees, 
                 and agents from and against any claims, liabilities, damages, losses, and expenses (including reasonable 
                 attorney&apos;s fees) arising out of or in any way connected with:
               </p>
@@ -181,7 +181,7 @@ export default function TermsPage() {
               <h2 className="text-xl font-semibold text-white mb-4">9. Intellectual Property</h2>
               <p>
                 All content, features, and functionality of the Service (including but not limited to text, graphics, 
-                logos, and software) are owned by SalesTaxJar and protected by intellectual property laws. You may not 
+                logos, and software) are owned by Sails and protected by intellectual property laws. You may not 
                 copy, modify, distribute, or create derivative works without our written permission.
               </p>
             </section>
@@ -208,8 +208,8 @@ export default function TermsPage() {
               </ul>
               <p className="mt-4">
                 For disputes under $10,000, we encourage using our support team first: {' '}
-                <a href="mailto:support@salestaxjar.com" className="text-emerald-400 hover:text-emerald-300">
-                  support@salestaxjar.com
+                <a href="mailto:support@sails.tax" className="text-emerald-400 hover:text-emerald-300">
+                  support@sails.tax
                 </a>
               </p>
             </section>
@@ -226,7 +226,7 @@ export default function TermsPage() {
               <h2 className="text-xl font-semibold text-white mb-4">13. Entire Agreement</h2>
               <p>
                 These Terms, together with the Privacy Policy and any other legal notices published on the Service, 
-                constitute the entire agreement between you and SalesTaxJar regarding the use of the Service.
+                constitute the entire agreement between you and Sails regarding the use of the Service.
               </p>
             </section>
 
@@ -234,8 +234,8 @@ export default function TermsPage() {
               <h2 className="text-xl font-semibold text-white mb-4">14. Contact Information</h2>
               <p>For questions about these Terms, please contact us:</p>
               <div className="mt-4 p-4 bg-white/5 rounded-lg">
-                <p><strong>SalesTaxJar Legal Department</strong></p>
-                <p>Email: <a href="mailto:legal@salestaxjar.com" className="text-emerald-400 hover:text-emerald-300">legal@salestaxjar.com</a></p>
+                <p><strong>Sails Legal Department</strong></p>
+                <p>Email: <a href="mailto:legal@sails.tax" className="text-emerald-400 hover:text-emerald-300">legal@sails.tax</a></p>
                 <p>Address: 123 Tax Lane, Suite 100, Austin, TX 78701</p>
               </div>
             </section>

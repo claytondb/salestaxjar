@@ -1,5 +1,5 @@
 /**
- * Etsy Integration for SalesTaxJar
+ * Etsy Integration for Sails
  * 
  * Uses Etsy Open API v3 for accessing shop data
  */
@@ -10,7 +10,7 @@ import { prisma } from '../prisma';
 const ETSY_API_KEY = process.env.ETSY_API_KEY;
 const ETSY_API_SECRET = process.env.ETSY_API_SECRET;
 const ETSY_API_BASE = 'https://openapi.etsy.com/v3';
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://salestaxjar.vercel.app';
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://sails.tax';
 
 // OAuth scopes needed for tax calculations
 const ETSY_SCOPES = [

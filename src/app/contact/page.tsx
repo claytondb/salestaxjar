@@ -19,8 +19,8 @@ const faqs: FAQItem[] = [
     answer: "We strive for high accuracy by sourcing rates from state departments of revenue and tax foundation data. However, our rates are estimates and should be verified with official sources before filing. Tax rates change frequently, and local taxes (city/county) may vary from our averages. Always consult official state tax authority websites for the most current rates."
   },
   {
-    question: "Is SalesTaxJar tax advice?",
-    answer: "No. SalesTaxJar is a tax calculation and compliance TOOL, not a tax advisory service. We are not CPAs, enrolled agents, or tax attorneys. Our tools help estimate sales tax, but you should consult qualified tax professionals for advice specific to your business situation."
+    question: "Is Sails tax advice?",
+    answer: "No. Sails is a tax calculation and compliance TOOL, not a tax advisory service. We are not CPAs, enrolled agents, or tax attorneys. Our tools help estimate sales tax, but you should consult qualified tax professionals for advice specific to your business situation."
   },
   {
     question: "How do I know if I need to collect sales tax?",
@@ -169,8 +169,8 @@ export default function ContactPage() {
                   <span className="text-xl">📧</span>
                   <div>
                     <p className="font-medium">General Support</p>
-                    <a href="mailto:support@salestaxjar.com" className="text-emerald-400 hover:text-emerald-300">
-                      support@salestaxjar.com
+                    <a href="mailto:support@sails.tax" className="text-emerald-400 hover:text-emerald-300">
+                      support@sails.tax
                     </a>
                   </div>
                 </div>
@@ -178,8 +178,8 @@ export default function ContactPage() {
                   <span className="text-xl">💼</span>
                   <div>
                     <p className="font-medium">Enterprise Sales</p>
-                    <a href="mailto:sales@salestaxjar.com" className="text-emerald-400 hover:text-emerald-300">
-                      sales@salestaxjar.com
+                    <a href="mailto:sales@sails.tax" className="text-emerald-400 hover:text-emerald-300">
+                      sales@sails.tax
                     </a>
                   </div>
                 </div>
@@ -187,8 +187,8 @@ export default function ContactPage() {
                   <span className="text-xl">🔒</span>
                   <div>
                     <p className="font-medium">Privacy Requests</p>
-                    <a href="mailto:privacy@salestaxjar.com" className="text-emerald-400 hover:text-emerald-300">
-                      privacy@salestaxjar.com
+                    <a href="mailto:privacy@sails.tax" className="text-emerald-400 hover:text-emerald-300">
+                      privacy@sails.tax
                     </a>
                   </div>
                 </div>

@@ -36,7 +36,7 @@ export default function LoginPage() {
           <div className="w-12 h-12 bg-gradient-to-br from-green-400 to-emerald-600 rounded-xl flex items-center justify-center">
             <span className="text-white font-bold text-2xl">$</span>
           </div>
-          <span className="text-3xl font-bold text-white">SalesTaxJar</span>
+          <span className="text-3xl font-bold text-white">Sails</span>
         </Link>
 
         {/* Login Form */}
@@ -117,7 +117,7 @@ export default function LoginPage() {
           <p className="text-gray-400 text-sm mb-2">Try with a demo account:</p>
           <button
             onClick={() => {
-              setEmail('demo@salestaxjar.com');
+              setEmail('demo@sails.tax');
               setPassword('demo123');
             }}
             className="text-emerald-400 hover:text-emerald-300 text-sm font-medium"

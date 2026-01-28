@@ -74,7 +74,7 @@ export default function TaxDisclaimer({ variant = 'inline', className = '' }: Ta
             <p className="text-yellow-200/80 text-sm">
               The tax rates shown are <strong>estimates only</strong> based on publicly available data. 
               Actual rates may vary based on local jurisdictions (city, county, special districts) and product-specific exemptions. 
-              SalesTaxJar is not a CPA firm or tax advisory service. Always verify rates with your 
+              Sails is not a CPA firm or tax advisory service. Always verify rates with your 
               state&apos;s official tax authority and consult a qualified tax professional for advice specific to your business.
             </p>
             <div className="mt-2 flex flex-wrap gap-2 text-xs items-center">

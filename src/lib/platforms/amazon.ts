@@ -1,5 +1,5 @@
 /**
- * Amazon Seller Central Integration for SalesTaxJar
+ * Amazon Seller Central Integration for Sails
  * 
  * Uses Amazon SP-API (Selling Partner API) for accessing seller data
  * Requires Amazon Seller Central account and app registration

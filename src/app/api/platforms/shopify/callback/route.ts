@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { exchangeCodeForToken, saveShopifyConnection } from '@/lib/platforms/shopify';
 import { cookies } from 'next/headers';
 
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://salestaxjar.vercel.app';
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://sails.tax';
 
 /**
  * GET /api/platforms/shopify/callback

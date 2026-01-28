@@ -363,7 +363,7 @@ export default function PlatformsManager() {
             View Integration Docs →
           </a>
           <a 
-            href="mailto:support@salestaxjar.com"
+            href="mailto:support@sails.tax"
             className="text-emerald-400 hover:text-emerald-300 text-sm font-medium"
           >
             Contact Support →

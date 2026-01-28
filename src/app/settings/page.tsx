@@ -981,15 +981,15 @@ export default function SettingsPage() {
                     <p className="text-gray-300 flex items-center gap-2">
                       <Mail className="w-4 h-4 text-emerald-400" />
                       Email:{' '}
-                      <a href="mailto:privacy@salestaxjar.com" className="text-emerald-400 hover:text-emerald-300">
-                        privacy@salestaxjar.com
+                      <a href="mailto:privacy@sails.tax" className="text-emerald-400 hover:text-emerald-300">
+                        privacy@sails.tax
                       </a>
                     </p>
                     <p className="text-gray-300 flex items-center gap-2">
                       <Lock className="w-4 h-4 text-emerald-400" />
                       GDPR DPO:{' '}
-                      <a href="mailto:dpo@salestaxjar.com" className="text-emerald-400 hover:text-emerald-300">
-                        dpo@salestaxjar.com
+                      <a href="mailto:dpo@sails.tax" className="text-emerald-400 hover:text-emerald-300">
+                        dpo@sails.tax
                       </a>
                     </p>
                   </div>

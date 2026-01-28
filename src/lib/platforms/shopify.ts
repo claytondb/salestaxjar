@@ -1,5 +1,5 @@
 /**
- * Shopify Integration for SalesTaxJar
+ * Shopify Integration for Sails
  * 
  * Handles OAuth flow and API interactions with Shopify stores
  */
@@ -10,7 +10,7 @@ import { prisma } from '../prisma';
 const SHOPIFY_API_KEY = process.env.SHOPIFY_API_KEY;
 const SHOPIFY_API_SECRET = process.env.SHOPIFY_API_SECRET;
 const SHOPIFY_SCOPES = 'read_orders,read_products,read_customers,read_locations';
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://salestaxjar.vercel.app';
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://sails.tax';
 
 export function isShopifyConfigured(): boolean {
   return !!(SHOPIFY_API_KEY && SHOPIFY_API_SECRET);

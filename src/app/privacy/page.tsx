@@ -18,12 +18,12 @@ export default function PrivacyPage() {
             <section>
               <h2 className="text-xl font-semibold text-white mb-4">1. Introduction</h2>
               <p>
-                SalesTaxJar (&quot;we,&quot; &quot;our,&quot; or &quot;us&quot;) respects your privacy and is committed to protecting your personal data. 
+                Sails (&quot;we,&quot; &quot;our,&quot; or &quot;us&quot;) respects your privacy and is committed to protecting your personal data. 
                 This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our 
                 sales tax calculation and compliance service.
               </p>
               <p className="mt-4">
-                Please read this Privacy Policy carefully. By using SalesTaxJar, you agree to the collection and use of 
+                Please read this Privacy Policy carefully. By using Sails, you agree to the collection and use of 
                 information in accordance with this policy.
               </p>
             </section>
@@ -146,7 +146,7 @@ export default function PrivacyPage() {
               <p>
                 To exercise any of these rights, please visit your{' '}
                 <Link href="/settings" className="text-emerald-400 hover:text-emerald-300">Account Settings</Link>{' '}
-                or contact us at <a href="mailto:privacy@salestaxjar.com" className="text-emerald-400 hover:text-emerald-300">privacy@salestaxjar.com</a>.
+                or contact us at <a href="mailto:privacy@sails.tax" className="text-emerald-400 hover:text-emerald-300">privacy@sails.tax</a>.
               </p>
             </section>
 
@@ -195,11 +195,11 @@ export default function PrivacyPage() {
               <h2 className="text-xl font-semibold text-white mb-4">12. Contact Us</h2>
               <p>If you have questions about this Privacy Policy or our data practices, please contact us:</p>
               <div className="mt-4 p-4 bg-white/5 rounded-lg">
-                <p><strong>SalesTaxJar Privacy Team</strong></p>
-                <p>Email: <a href="mailto:privacy@salestaxjar.com" className="text-emerald-400 hover:text-emerald-300">privacy@salestaxjar.com</a></p>
+                <p><strong>Sails Privacy Team</strong></p>
+                <p>Email: <a href="mailto:privacy@sails.tax" className="text-emerald-400 hover:text-emerald-300">privacy@sails.tax</a></p>
                 <p>Address: 123 Tax Lane, Suite 100, Austin, TX 78701</p>
                 <p className="mt-2">
-                  For GDPR inquiries: <a href="mailto:dpo@salestaxjar.com" className="text-emerald-400 hover:text-emerald-300">dpo@salestaxjar.com</a>
+                  For GDPR inquiries: <a href="mailto:dpo@sails.tax" className="text-emerald-400 hover:text-emerald-300">dpo@sails.tax</a>
                 </p>
               </div>
             </section>

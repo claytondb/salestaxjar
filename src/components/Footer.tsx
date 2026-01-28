@@ -17,7 +17,7 @@ export default function Footer() {
               <div className="w-9 h-9 bg-gradient-to-br from-green-400 to-emerald-600 rounded-lg flex items-center justify-center">
                 <span className="text-white font-bold text-lg">$</span>
               </div>
-              <span className="text-xl font-bold text-white">SalesTaxJar</span>
+              <span className="text-xl font-bold text-white">Sails</span>
             </Link>
             <p className="text-gray-400 text-sm">
               Simplifying sales tax compliance for e-commerce businesses across the United States.
@@ -53,7 +53,7 @@ export default function Footer() {
             <ul className="space-y-2 text-gray-400 text-sm">
               <li><Link href="/contact" className="hover:text-white transition">Contact Us</Link></li>
               <li><Link href="/contact#faq" className="hover:text-white transition">FAQ</Link></li>
-              <li><a href="mailto:support@salestaxjar.com" className="hover:text-white transition">support@salestaxjar.com</a></li>
+              <li><a href="mailto:support@sails.tax" className="hover:text-white transition">support@sails.tax</a></li>
             </ul>
           </div>
         </div>
@@ -62,7 +62,7 @@ export default function Footer() {
         <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-4 mb-8">
           <p className="text-yellow-400 text-xs text-center flex items-start justify-center gap-2">
             <AlertTriangle className="w-4 h-4 flex-shrink-0 mt-0.5" />
-            <span><strong>IMPORTANT:</strong> SalesTaxJar provides tax estimation tools only. We are not a CPA firm or tax advisory service. 
+            <span><strong>IMPORTANT:</strong> Sails provides tax estimation tools only. We are not a CPA firm or tax advisory service. 
             Tax calculations are estimates based on publicly available data and may not reflect current rates or local variations. 
             You are responsible for verifying accuracy and consulting qualified tax professionals. 
             <Link href="/terms" className="underline ml-1 hover:text-yellow-300">See full Terms of Service</Link>.</span>
@@ -72,7 +72,7 @@ export default function Footer() {
         {/* Bottom Bar */}
         <div className="flex flex-col md:flex-row justify-between items-center gap-4 pt-8 border-t border-white/10">
           <div className="text-gray-400 text-sm">
-            © {currentYear} SalesTaxJar. All rights reserved.
+            © {currentYear} Sails. All rights reserved.
           </div>
           <div className="flex gap-6 text-gray-400 text-sm">
             <Link href="/privacy" className="hover:text-white transition">Privacy</Link>
