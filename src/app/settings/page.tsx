@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import PlatformsManager from '@/components/PlatformsManager';
 import { BusinessProfile, BillingInfo } from '@/types';
 import { stateTaxRates } from '@/data/taxRates';
 import { exportUserData, deleteAllUserData } from '@/lib/security';
@@ -638,59 +639,7 @@ export default function SettingsPage() {
 
             {/* Platforms Tab */}
             {activeTab === 'platforms' && (
-              <div className="bg-white/10 backdrop-blur rounded-xl border border-white/10 p-6">
-                <h2 className="text-xl font-semibold text-white mb-2">Connected Platforms</h2>
-                <p className="text-gray-400 mb-6">Connect your sales channels to automatically import transactions</p>
-                
-                <div className="space-y-4">
-                  {connectedPlatforms.map((platform) => (
-                    <div 
-                      key={platform.id}
-                      className={`p-4 rounded-xl border transition ${
-                        platform.connected 
-                          ? 'bg-emerald-500/10 border-emerald-500/30' 
-                          : 'bg-white/5 border-white/10'
-                      }`}
-                    >
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-4">
-                          <div className="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center">
-                            {platformIcons[platform.type] || <Package className="w-6 h-6 text-emerald-400" />}
-                          </div>
-                          <div>
-                            <h3 className="font-medium text-white">{platform.name}</h3>
-                            {platform.connected ? (
-                              <div className="text-sm text-gray-400">
-                                {platform.ordersImported?.toLocaleString()} orders imported • 
-                                Last sync: {platform.lastSync ? new Date(platform.lastSync).toLocaleDateString() : 'Never'}
-                              </div>
-                            ) : (
-                              <div className="text-sm text-gray-500">Not connected</div>
-                            )}
-                          </div>
-                        </div>
-                        <button
-                          onClick={() => togglePlatformConnection(platform.id)}
-                          className={`px-4 py-2 rounded-lg font-medium transition ${
-                            platform.connected 
-                              ? 'bg-white/10 hover:bg-white/20 text-white' 
-                              : 'bg-emerald-500 hover:bg-emerald-600 text-white'
-                          }`}
-                        >
-                          {platform.connected ? 'Disconnect' : 'Connect'}
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-
-                <div className="mt-6 p-4 bg-white/5 rounded-xl border border-white/10">
-                  <h4 className="font-medium text-white mb-2">Need a different platform?</h4>
-                  <p className="text-gray-400 text-sm">
-                    Contact us to request an integration for your sales platform.
-                  </p>
-                </div>
-              </div>
+              <PlatformsManager />
             )}
 
             {/* Billing Tab */}
