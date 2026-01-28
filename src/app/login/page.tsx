@@ -117,7 +117,7 @@ export default function LoginPage() {
           <button
             onClick={() => {
               setEmail('demo@sails.tax');
-              setPassword('demo123');
+              setPassword('Demo1234');
             }}
             className="text-emerald-400 hover:text-emerald-300 text-sm font-medium"
           >
