@@ -152,7 +152,7 @@ export async function saveAmazonConnection(
     return { success: true };
   } catch (error) {
     console.error('Failed to save Amazon connection:', error);
-    return { error: error instanceof Error ? error.message : 'Failed to save connection' };
+    return { success: false, error: error instanceof Error ? error.message : 'Failed to save connection' };
   }
 }
 
@@ -176,7 +176,7 @@ export async function removeAmazonConnection(
 
     return { success: true };
   } catch (error) {
-    return { error: error instanceof Error ? error.message : 'Failed to remove connection' };
+    return { success: false, error: error instanceof Error ? error.message : 'Failed to remove connection' };
   }
 }
 

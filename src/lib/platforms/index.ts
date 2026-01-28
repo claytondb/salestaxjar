@@ -172,7 +172,7 @@ export async function deleteConnection(
     });
     return { success: true };
   } catch (error) {
-    return { error: error instanceof Error ? error.message : 'Failed to delete connection' };
+    return { success: false, error: error instanceof Error ? error.message : 'Failed to delete connection' };
   }
 }
 

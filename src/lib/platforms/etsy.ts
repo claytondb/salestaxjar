@@ -162,7 +162,7 @@ export async function saveEtsyConnection(
     const shop = shops?.[0]; // Use first shop
     
     if (!shop) {
-      return { error: 'No Etsy shop found for this account' };
+      return { success: false, error: 'No Etsy shop found for this account' };
     }
 
     await prisma.platformConnection.upsert({
@@ -204,7 +204,7 @@ export async function saveEtsyConnection(
     return { success: true, shopId: shop.shop_id };
   } catch (error) {
     console.error('Failed to save Etsy connection:', error);
-    return { error: error instanceof Error ? error.message : 'Failed to save connection' };
+    return { success: false, error: error instanceof Error ? error.message : 'Failed to save connection' };
   }
 }
 

@@ -134,7 +134,7 @@ export async function saveShopifyConnection(
     return { success: true };
   } catch (error) {
     console.error('Failed to save Shopify connection:', error);
-    return { error: error instanceof Error ? error.message : 'Failed to save connection' };
+    return { success: false, error: error instanceof Error ? error.message : 'Failed to save connection' };
   }
 }
 
@@ -160,7 +160,7 @@ export async function removeShopifyConnection(
 
     return { success: true };
   } catch (error) {
-    return { error: error instanceof Error ? error.message : 'Failed to remove connection' };
+    return { success: false, error: error instanceof Error ? error.message : 'Failed to remove connection' };
   }
 }
 
