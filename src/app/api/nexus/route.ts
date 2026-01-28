@@ -246,6 +246,44 @@ export async function PUT(request: NextRequest) {
       orderBy: { stateName: 'asc' },
     });
 
+    // Auto-generate filings for states with nexus
+    const activeStates = allStates.filter(ns => ns.hasNexus);
+    const now = new Date();
+    const currentQuarter = Math.floor(now.getMonth() / 3);
+    const quarterEndMonths = [2, 5, 8, 11]; // March, June, September, December
+    const nextQuarterEnd = quarterEndMonths[(currentQuarter + 1) % 4];
+    const year = currentQuarter === 3 ? now.getFullYear() + 1 : now.getFullYear();
+    
+    const periodStart = new Date(year, nextQuarterEnd - 2, 1);
+    const periodEnd = new Date(year, nextQuarterEnd + 1, 0);
+    const dueDate = new Date(year, nextQuarterEnd + 1, 20);
+
+    // Create filings for active nexus states that don't have one for this period
+    for (const nexus of activeStates) {
+      const existing = await prisma.filing.findFirst({
+        where: {
+          businessId: business.id,
+          stateCode: nexus.stateCode,
+          periodStart,
+        },
+      });
+
+      if (!existing) {
+        await prisma.filing.create({
+          data: {
+            businessId: business.id,
+            stateCode: nexus.stateCode,
+            stateName: nexus.stateName,
+            period: 'quarterly',
+            periodStart,
+            periodEnd,
+            dueDate,
+            status: 'pending',
+          },
+        });
+      }
+    }
+
     return NextResponse.json({
       nexusStates: allStates.map(ns => ({
         id: ns.id,
