@@ -6,7 +6,9 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DATABASE_URL_UNPOOLED")
 }
 
 // ============================================================================
@@ -244,4 +246,91 @@ model NotificationPreference {
   updatedAt              DateTime @updatedAt
 
   @@index([userId])
+}
+
+// ============================================================================
+// Platform Connections (Shopify, Amazon, Etsy, etc.)
+// ============================================================================
+
+model PlatformConnection {
+  id           String   @id @default(cuid())
+  userId       String
+  platform     String   // shopify, amazon, etsy, woocommerce, bigcommerce, ebay, square
+  platformId   String   // Store identifier (e.g., shop domain for Shopify)
+  platformName String?  // Human-readable store name
+  accessToken  String   // Encrypted access token
+  refreshToken String?  // For platforms that use refresh tokens
+  tokenExpires DateTime?
+  metadata     String?  // JSON string for additional platform-specific data
+  lastSyncAt   DateTime?
+  syncStatus   String   @default("never") // never, syncing, success, error
+  syncError    String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@unique([userId, platform, platformId])
+  @@index([userId])
+  @@index([platform])
+  @@index([lastSyncAt])
+}
+
+// ============================================================================
+// Imported Orders (from connected platforms)
+// ============================================================================
+
+model ImportedOrder {
+  id                   String   @id @default(cuid())
+  userId               String
+  platformConnectionId String
+  platform             String
+  platformOrderId      String   // Original order ID from platform
+  orderNumber          String?  // Human-readable order number
+  orderDate            DateTime
+  subtotal             Decimal  @db.Decimal(12, 2)
+  shippingAmount       Decimal  @db.Decimal(12, 2) @default(0)
+  taxAmount            Decimal  @db.Decimal(12, 2)
+  totalAmount          Decimal  @db.Decimal(12, 2)
+  currency             String   @default("USD")
+  status               String   // pending, paid, fulfilled, cancelled, refunded
+  customerEmail        String?
+  shippingState        String?
+  shippingCity         String?
+  shippingZip          String?
+  shippingCountry      String   @default("US")
+  billingState         String?
+  lineItems            String?  // JSON string of line items
+  taxBreakdown         String?  // JSON string of tax breakdown
+  rawData              String?  // Full raw order data from platform (JSON)
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  @@unique([platform, platformOrderId])
+  @@index([userId])
+  @@index([platformConnectionId])
+  @@index([orderDate])
+  @@index([shippingState])
+  @@index([status])
+}
+
+// ============================================================================
+// Sales Summary (aggregated data per state per period)
+// ============================================================================
+
+model SalesSummary {
+  id           String   @id @default(cuid())
+  userId       String
+  stateCode    String
+  period       String   // YYYY-MM for monthly, YYYY-Q1 for quarterly
+  totalSales   Decimal  @db.Decimal(14, 2) @default(0)
+  taxableSales Decimal  @db.Decimal(14, 2) @default(0)
+  taxCollected Decimal  @db.Decimal(14, 2) @default(0)
+  orderCount   Int      @default(0)
+  platforms    String?  // JSON array of platforms contributing to this summary
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@unique([userId, stateCode, period])
+  @@index([userId])
+  @@index([stateCode])
+  @@index([period])
 }

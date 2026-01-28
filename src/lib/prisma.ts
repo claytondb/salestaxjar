@@ -1,31 +1,14 @@
 import { PrismaClient } from '@prisma/client';
-import { PrismaPg } from '@prisma/adapter-pg';
-import { Pool } from 'pg';
 
-// Create Prisma client with PostgreSQL adapter (required for Prisma 7+)
+// Create Prisma client
+// Neon provides a pooled connection via DATABASE_URL which works with standard Prisma
 const createPrismaClient = () => {
-  const connectionString = process.env.DATABASE_URL;
-  
-  // If no database URL is configured, log warning
-  if (!connectionString || connectionString.includes('placeholder')) {
-    console.warn('⚠️ DATABASE_URL not configured - database operations will fail');
-  }
-  
-  // Create pg pool
-  const pool = new Pool({
-    connectionString: connectionString || 'postgresql://localhost:5432/salestaxjar',
-  });
-  
-  // Create Prisma adapter
-  const adapter = new PrismaPg(pool);
-  
-  // Create Prisma client with adapter
   return new PrismaClient({
-    adapter,
     log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
   });
 };
 
+// Global singleton pattern for development hot-reloading
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined;
 };
