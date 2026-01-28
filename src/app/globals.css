@@ -1,55 +1,8 @@
 @import "tailwindcss";
 
-/* Light theme (default) */
 :root {
-  --background: #f8fafc;
-  --background-secondary: #f1f5f9;
-  --foreground: #1e293b;
-  --foreground-muted: #64748b;
-  
-  /* Brand colors - emerald/purple */
-  --primary: #10b981;
-  --primary-hover: #059669;
-  --primary-light: #d1fae5;
-  --secondary: #7c3aed;
-  --secondary-light: #ede9fe;
-  
-  /* UI colors */
-  --card-bg: #ffffff;
-  --card-border: #e2e8f0;
-  --input-bg: #ffffff;
-  --input-border: #cbd5e1;
-  
-  /* Gradient for hero */
-  --hero-from: #f1f5f9;
-  --hero-via: #ede9fe;
-  --hero-to: #f1f5f9;
-}
-
-/* Dark theme */
-.dark {
-  --background: #0f172a;
-  --background-secondary: #1e293b;
-  --foreground: #f1f5f9;
-  --foreground-muted: #94a3b8;
-  
-  /* Brand colors - emerald/purple (same, they work in dark) */
-  --primary: #10b981;
-  --primary-hover: #34d399;
-  --primary-light: #064e3b;
-  --secondary: #8b5cf6;
-  --secondary-light: #4c1d95;
-  
-  /* UI colors */
-  --card-bg: rgba(255, 255, 255, 0.1);
-  --card-border: rgba(255, 255, 255, 0.1);
-  --input-bg: rgba(255, 255, 255, 0.1);
-  --input-border: rgba(255, 255, 255, 0.2);
-  
-  /* Gradient for hero */
-  --hero-from: #0f172a;
-  --hero-via: #4c1d95;
-  --hero-to: #0f172a;
+  --background: #ffffff;
+  --foreground: #171717;
 }
 
 @theme inline {
@@ -59,9 +12,15 @@
   --font-mono: var(--font-geist-mono);
 }
 
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
-  transition: background-color 0.3s ease, color 0.3s ease;
 }

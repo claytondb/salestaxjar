@@ -68,31 +68,31 @@ export default function Home() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-100 via-purple-50 to-slate-100 dark:from-slate-900 dark:via-purple-900 dark:to-slate-900 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-emerald-500"></div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-100 via-purple-50 to-slate-100 dark:from-slate-900 dark:via-purple-900 dark:to-slate-900">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
       {/* Header */}
-      <header className="border-b border-slate-200 dark:border-white/10 bg-white/80 dark:bg-transparent backdrop-blur-sm">
+      <header className="border-b border-white/10 bg-transparent backdrop-blur-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex justify-between items-center">
             <div className="flex items-center gap-2">
               <div className="w-10 h-10 bg-gradient-to-br from-green-400 to-emerald-600 rounded-lg flex items-center justify-center">
                 <span className="text-white font-bold text-xl">$</span>
               </div>
-              <span className="text-2xl font-bold text-slate-900 dark:text-white">SalesTaxJar</span>
+              <span className="text-2xl font-bold text-white">SalesTaxJar</span>
             </div>
             <nav className="hidden md:flex gap-6">
-              <a href="#features" className="text-slate-600 dark:text-gray-300 hover:text-slate-900 dark:hover:text-white transition">Features</a>
-              <Link href="/pricing" className="text-slate-600 dark:text-gray-300 hover:text-slate-900 dark:hover:text-white transition">Pricing</Link>
-              <a href="#calculator" className="text-slate-600 dark:text-gray-300 hover:text-slate-900 dark:hover:text-white transition">Calculator</a>
+              <a href="#features" className="text-gray-300 hover:text-white transition">Features</a>
+              <Link href="/pricing" className="text-gray-300 hover:text-white transition">Pricing</Link>
+              <a href="#calculator" className="text-gray-300 hover:text-white transition">Calculator</a>
             </nav>
             <div className="flex gap-3">
-              <Link href="/login" className="text-slate-600 dark:text-gray-300 hover:text-slate-900 dark:hover:text-white px-4 py-2 transition hidden sm:inline-block">
+              <Link href="/login" className="text-gray-300 hover:text-white px-4 py-2 transition hidden sm:inline-block">
                 Log in
               </Link>
               <Link href="/signup" className="bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-lg font-medium transition">
@@ -173,12 +173,12 @@ export default function Home() {
       </section>
 
       {/* How It Works Section */}
-      <section className="py-16 px-4 border-b border-slate-200 dark:border-white/10">
+      <section className="py-16 px-4 border-b border-white/10">
         <div className="max-w-5xl mx-auto">
-          <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white text-center mb-4">
+          <h2 className="text-2xl sm:text-3xl font-bold text-white text-center mb-4">
             How It Works
           </h2>
-          <p className="text-slate-500 dark:text-gray-400 text-center mb-12 max-w-2xl mx-auto">
+          <p className="text-gray-400 text-center mb-12 max-w-2xl mx-auto">
             Get set up in minutes. No tax expertise required.
           </p>
           
@@ -186,10 +186,10 @@ export default function Home() {
             {/* Step 1 */}
             <div className="text-center">
               <div className="w-16 h-16 bg-emerald-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-3xl font-bold text-emerald-500 dark:text-emerald-400">1</span>
+                <span className="text-3xl font-bold text-emerald-400">1</span>
               </div>
-              <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-2">Connect Your Store</h3>
-              <p className="text-slate-500 dark:text-gray-400">
+              <h3 className="text-xl font-semibold text-white mb-2">Connect Your Store</h3>
+              <p className="text-gray-400">
                 Link your Shopify, Amazon, WooCommerce, or other sales channels. We import your sales data automatically.
               </p>
             </div>
@@ -197,10 +197,10 @@ export default function Home() {
             {/* Step 2 */}
             <div className="text-center">
               <div className="w-16 h-16 bg-emerald-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-3xl font-bold text-emerald-500 dark:text-emerald-400">2</span>
+                <span className="text-3xl font-bold text-emerald-400">2</span>
               </div>
-              <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-2">See What You Owe</h3>
-              <p className="text-slate-500 dark:text-gray-400">
+              <h3 className="text-xl font-semibold text-white mb-2">See What You Owe</h3>
+              <p className="text-gray-400">
                 We calculate your tax obligations for every state. See exactly how much you owe and when it&apos;s due.
               </p>
             </div>
@@ -208,30 +208,30 @@ export default function Home() {
             {/* Step 3 */}
             <div className="text-center">
               <div className="w-16 h-16 bg-emerald-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-3xl font-bold text-emerald-500 dark:text-emerald-400">3</span>
+                <span className="text-3xl font-bold text-emerald-400">3</span>
               </div>
-              <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-2">File With Confidence</h3>
-              <p className="text-slate-500 dark:text-gray-400">
+              <h3 className="text-xl font-semibold text-white mb-2">File With Confidence</h3>
+              <p className="text-gray-400">
                 Get pre-filled forms and deadline reminders. File your returns in minutes, not hours.
               </p>
             </div>
           </div>
           
           {/* Simple flow diagram */}
-          <div className="mt-12 flex justify-center items-center gap-4 text-slate-400 dark:text-gray-500 text-sm">
-            <span className="bg-slate-100 dark:bg-white/10 px-4 py-2 rounded-lg text-slate-700 dark:text-white">Your Store</span>
+          <div className="mt-12 flex justify-center items-center gap-4 text-gray-500 text-sm">
+            <span className="bg-white/10 px-4 py-2 rounded-lg text-white">Your Store</span>
             <span>→</span>
-            <span className="bg-slate-100 dark:bg-white/10 px-4 py-2 rounded-lg text-slate-700 dark:text-white">SalesTaxJar</span>
+            <span className="bg-white/10 px-4 py-2 rounded-lg text-white">SalesTaxJar</span>
             <span>→</span>
-            <span className="bg-slate-100 dark:bg-white/10 px-4 py-2 rounded-lg text-slate-700 dark:text-white flex items-center gap-1">Tax Filed <Check className="w-4 h-4 text-emerald-400" /></span>
+            <span className="bg-white/10 px-4 py-2 rounded-lg text-white flex items-center gap-1">Tax Filed <Check className="w-4 h-4 text-emerald-400" /></span>
           </div>
         </div>
       </section>
 
       {/* "Why Do I Need This?" Section */}
-      <section className="py-12 px-4 bg-slate-50 dark:bg-white/5">
+      <section className="py-12 px-4 bg-white/5">
         <div className="max-w-4xl mx-auto">
-          <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white text-center mb-8">
+          <h2 className="text-2xl sm:text-3xl font-bold text-white text-center mb-8">
             Sound familiar?
           </h2>
           <div className="grid sm:grid-cols-2 gap-6">
@@ -253,9 +253,9 @@ export default function Home() {
                 solution: "We do the research. You just see what you owe."
               }
             ].map((item, i) => (
-              <div key={i} className="bg-white dark:bg-white/10 backdrop-blur rounded-xl p-6 border border-slate-200 dark:border-white/10 shadow-sm">
-                <p className="text-slate-600 dark:text-gray-300 italic mb-4">{item.pain}</p>
-                <p className="text-emerald-600 dark:text-emerald-400 font-medium">→ {item.solution}</p>
+              <div key={i} className="bg-white/10 backdrop-blur rounded-xl p-6 border border-white/10 ">
+                <p className="text-gray-300 italic mb-4">{item.pain}</p>
+                <p className="text-emerald-400 font-medium">→ {item.solution}</p>
               </div>
             ))}
           </div>
@@ -265,14 +265,14 @@ export default function Home() {
       {/* Calculator Section */}
       <section id="calculator" className="py-12 sm:py-20 px-4">
         <div className="max-w-4xl mx-auto">
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-900 dark:text-white text-center mb-4">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white text-center mb-4">
             Free Tax Calculator
           </h2>
-          <p className="text-slate-500 dark:text-gray-400 text-center mb-8 sm:mb-12">
+          <p className="text-gray-400 text-center mb-8 sm:mb-12">
             Try our instant sales tax calculator for any US state
           </p>
           
-          <div className="bg-white dark:bg-white/10 backdrop-blur-lg rounded-2xl p-6 sm:p-8 border border-slate-200 dark:border-white/20 shadow-lg dark:shadow-none">
+          <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 sm:p-8 border border-slate-200 dark:border-white/20 shadow-none">
             <div className="grid md:grid-cols-2 gap-4 sm:gap-6">
               <div>
                 <label className="block text-gray-300 mb-2 font-medium">Sale Amount ($)</label>
