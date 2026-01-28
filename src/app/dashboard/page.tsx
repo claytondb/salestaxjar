@@ -20,7 +20,6 @@ export default function DashboardPage() {
   const router = useRouter();
   
   // Use state for current time to avoid calling Date.now() during render
-  // Initialize with a function to avoid the impure call during render
   const [currentTime] = useState<number>(() => Date.now());
 
   useEffect(() => {
@@ -31,8 +30,8 @@ export default function DashboardPage() {
 
   if (isLoading || !user) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-emerald-500"></div>
+      <div className="min-h-screen bg-[var(--color-bg)] flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[var(--color-primary)]"></div>
       </div>
     );
   }
@@ -49,61 +48,61 @@ export default function DashboardPage() {
   const recentCalculations = calculations.slice(0, 5);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+    <div className="min-h-screen bg-[var(--color-bg)]">
       <Header />
       
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Welcome Banner */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-white mb-2">
+          <h1 className="text-3xl font-bold text-[var(--color-text)] mb-2">
             Welcome back, {user.name.split(' ')[0]}! 👋
           </h1>
-          <p className="text-gray-400">
+          <p className="text-[var(--color-text-muted)]">
             Here&apos;s an overview of your sales tax compliance status.
           </p>
         </div>
 
         {/* Setup Checklist (if not complete) */}
         {(!businessProfile || activeNexusCount === 0 || connectedCount === 0) && (
-          <div className="bg-amber-500/10 border border-amber-500/30 rounded-xl p-6 mb-8">
-            <h2 className="text-lg font-semibold text-amber-400 mb-4">Complete your setup</h2>
+          <div className="bg-[var(--color-warning-bg)] border border-[var(--color-warning-border)] rounded-xl p-6 mb-8">
+            <h2 className="text-lg font-semibold text-[var(--color-warning)] mb-4">Complete your setup</h2>
             <div className="space-y-3">
               {!businessProfile && (
-                <Link href="/settings" className="flex items-center gap-3 text-gray-300 hover:text-white transition">
-                  <div className="w-6 h-6 rounded-full border-2 border-gray-500 flex items-center justify-center text-sm">1</div>
+                <Link href="/settings" className="flex items-center gap-3 text-[var(--color-text-secondary)] hover:text-[var(--color-text)] transition">
+                  <div className="w-6 h-6 rounded-full border-2 border-[var(--color-text-light)] flex items-center justify-center text-sm">1</div>
                   <span>Set up your business profile</span>
-                  <span className="ml-auto text-emerald-400">→</span>
+                  <span className="ml-auto text-[var(--color-primary)]">→</span>
                 </Link>
               )}
               {businessProfile && (
-                <div className="flex items-center gap-3 text-emerald-400">
-                  <div className="w-6 h-6 rounded-full bg-emerald-500/20 flex items-center justify-center text-sm">✓</div>
+                <div className="flex items-center gap-3 text-[var(--color-success)]">
+                  <div className="w-6 h-6 rounded-full bg-[var(--color-success-bg)] flex items-center justify-center text-sm">✓</div>
                   <span>Business profile complete</span>
                 </div>
               )}
               {activeNexusCount === 0 && (
-                <Link href="/nexus" className="flex items-center gap-3 text-gray-300 hover:text-white transition">
-                  <div className="w-6 h-6 rounded-full border-2 border-gray-500 flex items-center justify-center text-sm">2</div>
+                <Link href="/nexus" className="flex items-center gap-3 text-[var(--color-text-secondary)] hover:text-[var(--color-text)] transition">
+                  <div className="w-6 h-6 rounded-full border-2 border-[var(--color-text-light)] flex items-center justify-center text-sm">2</div>
                   <span>Configure your nexus states</span>
-                  <span className="ml-auto text-emerald-400">→</span>
+                  <span className="ml-auto text-[var(--color-primary)]">→</span>
                 </Link>
               )}
               {activeNexusCount > 0 && (
-                <div className="flex items-center gap-3 text-emerald-400">
-                  <div className="w-6 h-6 rounded-full bg-emerald-500/20 flex items-center justify-center text-sm">✓</div>
+                <div className="flex items-center gap-3 text-[var(--color-success)]">
+                  <div className="w-6 h-6 rounded-full bg-[var(--color-success-bg)] flex items-center justify-center text-sm">✓</div>
                   <span>Nexus states configured ({activeNexusCount} states)</span>
                 </div>
               )}
               {connectedCount === 0 && (
-                <Link href="/settings#platforms" className="flex items-center gap-3 text-gray-300 hover:text-white transition">
-                  <div className="w-6 h-6 rounded-full border-2 border-gray-500 flex items-center justify-center text-sm">3</div>
+                <Link href="/settings#platforms" className="flex items-center gap-3 text-[var(--color-text-secondary)] hover:text-[var(--color-text)] transition">
+                  <div className="w-6 h-6 rounded-full border-2 border-[var(--color-text-light)] flex items-center justify-center text-sm">3</div>
                   <span>Connect your sales platforms</span>
-                  <span className="ml-auto text-emerald-400">→</span>
+                  <span className="ml-auto text-[var(--color-primary)]">→</span>
                 </Link>
               )}
               {connectedCount > 0 && (
-                <div className="flex items-center gap-3 text-emerald-400">
-                  <div className="w-6 h-6 rounded-full bg-emerald-500/20 flex items-center justify-center text-sm">✓</div>
+                <div className="flex items-center gap-3 text-[var(--color-success)]">
+                  <div className="w-6 h-6 rounded-full bg-[var(--color-success-bg)] flex items-center justify-center text-sm">✓</div>
                   <span>Platforms connected ({connectedCount} platforms)</span>
                 </div>
               )}
@@ -113,46 +112,46 @@ export default function DashboardPage() {
 
         {/* Stats Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white/10 backdrop-blur rounded-xl p-6 border border-white/10">
+          <div className="bg-[var(--color-bg-card)] rounded-xl p-6 border border-[var(--color-border)] shadow-sm hover:shadow-md transition">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-gray-400 text-sm">Active Nexus States</span>
+              <span className="text-[var(--color-text-muted)] text-sm">Active Nexus States</span>
               <span className="text-2xl">🗺️</span>
             </div>
-            <div className="text-3xl font-bold text-white">{activeNexusCount}</div>
-            <Link href="/nexus" className="text-emerald-400 text-sm hover:text-emerald-300 mt-2 inline-block">
+            <div className="text-3xl font-bold text-[var(--color-text)]">{activeNexusCount}</div>
+            <Link href="/nexus" className="text-[var(--color-primary)] text-sm hover:underline mt-2 inline-block">
               Manage states →
             </Link>
           </div>
 
-          <div className="bg-white/10 backdrop-blur rounded-xl p-6 border border-white/10">
+          <div className="bg-[var(--color-bg-card)] rounded-xl p-6 border border-[var(--color-border)] shadow-sm hover:shadow-md transition">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-gray-400 text-sm">Pending Filings</span>
+              <span className="text-[var(--color-text-muted)] text-sm">Pending Filings</span>
               <span className="text-2xl">📋</span>
             </div>
-            <div className="text-3xl font-bold text-white">{pendingFilings}</div>
-            <Link href="/filings" className="text-emerald-400 text-sm hover:text-emerald-300 mt-2 inline-block">
+            <div className="text-3xl font-bold text-[var(--color-text)]">{pendingFilings}</div>
+            <Link href="/filings" className="text-[var(--color-primary)] text-sm hover:underline mt-2 inline-block">
               View calendar →
             </Link>
           </div>
 
-          <div className="bg-white/10 backdrop-blur rounded-xl p-6 border border-white/10">
+          <div className="bg-[var(--color-bg-card)] rounded-xl p-6 border border-[var(--color-border)] shadow-sm hover:shadow-md transition">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-gray-400 text-sm">Tax Calculated</span>
+              <span className="text-[var(--color-text-muted)] text-sm">Tax Calculated</span>
               <span className="text-2xl">💰</span>
             </div>
-            <div className="text-3xl font-bold text-white">${totalTaxCollected.toFixed(2)}</div>
-            <Link href="/calculator" className="text-emerald-400 text-sm hover:text-emerald-300 mt-2 inline-block">
+            <div className="text-3xl font-bold text-[var(--color-text)]">${totalTaxCollected.toFixed(2)}</div>
+            <Link href="/calculator" className="text-[var(--color-primary)] text-sm hover:underline mt-2 inline-block">
               New calculation →
             </Link>
           </div>
 
-          <div className="bg-white/10 backdrop-blur rounded-xl p-6 border border-white/10">
+          <div className="bg-[var(--color-bg-card)] rounded-xl p-6 border border-[var(--color-border)] shadow-sm hover:shadow-md transition">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-gray-400 text-sm">Connected Platforms</span>
+              <span className="text-[var(--color-text-muted)] text-sm">Connected Platforms</span>
               <span className="text-2xl">🔗</span>
             </div>
-            <div className="text-3xl font-bold text-white">{connectedCount}</div>
-            <Link href="/settings#platforms" className="text-emerald-400 text-sm hover:text-emerald-300 mt-2 inline-block">
+            <div className="text-3xl font-bold text-[var(--color-text)]">{connectedCount}</div>
+            <Link href="/settings#platforms" className="text-[var(--color-primary)] text-sm hover:underline mt-2 inline-block">
               Connect more →
             </Link>
           </div>
@@ -160,11 +159,11 @@ export default function DashboardPage() {
 
         <div className="grid lg:grid-cols-2 gap-8">
           {/* Upcoming Deadlines */}
-          <div className="bg-white/10 backdrop-blur rounded-xl border border-white/10 overflow-hidden">
-            <div className="p-6 border-b border-white/10">
+          <div className="bg-[var(--color-bg-card)] rounded-xl border border-[var(--color-border)] overflow-hidden shadow-sm">
+            <div className="p-6 border-b border-[var(--color-border)]">
               <div className="flex items-center justify-between">
-                <h2 className="text-lg font-semibold text-white">Upcoming Deadlines</h2>
-                <Link href="/filings" className="text-emerald-400 text-sm hover:text-emerald-300">
+                <h2 className="text-lg font-semibold text-[var(--color-text)]">Upcoming Deadlines</h2>
+                <Link href="/filings" className="text-[var(--color-primary)] text-sm hover:underline">
                   View all
                 </Link>
               </div>
@@ -173,8 +172,8 @@ export default function DashboardPage() {
               {upcomingDeadlines.length === 0 ? (
                 <div className="text-center py-8">
                   <span className="text-4xl mb-4 block">📅</span>
-                  <p className="text-gray-400">No upcoming deadlines</p>
-                  <p className="text-gray-500 text-sm mt-1">Configure your nexus states to see filing deadlines</p>
+                  <p className="text-[var(--color-text-muted)]">No upcoming deadlines</p>
+                  <p className="text-[var(--color-text-light)] text-sm mt-1">Configure your nexus states to see filing deadlines</p>
                 </div>
               ) : (
                 <div className="space-y-4">
@@ -184,18 +183,18 @@ export default function DashboardPage() {
                     const isUrgent = daysUntil <= 7;
                     
                     return (
-                      <div key={deadline.id} className="flex items-center justify-between p-4 bg-white/5 rounded-lg">
+                      <div key={deadline.id} className="flex items-center justify-between p-4 bg-[var(--color-bg-muted)] rounded-lg">
                         <div>
-                          <div className="font-medium text-white">{deadline.state}</div>
-                          <div className="text-sm text-gray-400">
+                          <div className="font-medium text-[var(--color-text)]">{deadline.state}</div>
+                          <div className="text-sm text-[var(--color-text-muted)]">
                             {deadline.period.charAt(0).toUpperCase() + deadline.period.slice(1)} filing
                           </div>
                         </div>
                         <div className="text-right">
-                          <div className={`font-medium ${isUrgent ? 'text-amber-400' : 'text-gray-300'}`}>
+                          <div className={`font-medium ${isUrgent ? 'text-[var(--color-warning)]' : 'text-[var(--color-text-secondary)]'}`}>
                             {dueDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                           </div>
-                          <div className={`text-sm ${isUrgent ? 'text-amber-400' : 'text-gray-500'}`}>
+                          <div className={`text-sm ${isUrgent ? 'text-[var(--color-warning)]' : 'text-[var(--color-text-light)]'}`}>
                             {daysUntil} days left
                           </div>
                         </div>
@@ -208,11 +207,11 @@ export default function DashboardPage() {
           </div>
 
           {/* Recent Calculations */}
-          <div className="bg-white/10 backdrop-blur rounded-xl border border-white/10 overflow-hidden">
-            <div className="p-6 border-b border-white/10">
+          <div className="bg-[var(--color-bg-card)] rounded-xl border border-[var(--color-border)] overflow-hidden shadow-sm">
+            <div className="p-6 border-b border-[var(--color-border)]">
               <div className="flex items-center justify-between">
-                <h2 className="text-lg font-semibold text-white">Recent Calculations</h2>
-                <Link href="/calculator" className="text-emerald-400 text-sm hover:text-emerald-300">
+                <h2 className="text-lg font-semibold text-[var(--color-text)]">Recent Calculations</h2>
+                <Link href="/calculator" className="text-[var(--color-primary)] text-sm hover:underline">
                   New calculation
                 </Link>
               </div>
@@ -221,22 +220,22 @@ export default function DashboardPage() {
               {recentCalculations.length === 0 ? (
                 <div className="text-center py-8">
                   <span className="text-4xl mb-4 block">🧮</span>
-                  <p className="text-gray-400">No calculations yet</p>
-                  <Link href="/calculator" className="text-emerald-400 text-sm hover:text-emerald-300 mt-2 inline-block">
+                  <p className="text-[var(--color-text-muted)]">No calculations yet</p>
+                  <Link href="/calculator" className="text-[var(--color-primary)] text-sm hover:underline mt-2 inline-block">
                     Try the calculator →
                   </Link>
                 </div>
               ) : (
                 <div className="space-y-3">
                   {recentCalculations.map((calc) => (
-                    <div key={calc.id} className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
+                    <div key={calc.id} className="flex items-center justify-between p-3 bg-[var(--color-bg-muted)] rounded-lg">
                       <div>
-                        <div className="font-medium text-white">${calc.amount.toFixed(2)}</div>
-                        <div className="text-sm text-gray-400">{calc.state}</div>
+                        <div className="font-medium text-[var(--color-text)]">${calc.amount.toFixed(2)}</div>
+                        <div className="text-sm text-[var(--color-text-muted)]">{calc.state}</div>
                       </div>
                       <div className="text-right">
-                        <div className="font-medium text-emerald-400">+${calc.taxAmount.toFixed(2)}</div>
-                        <div className="text-sm text-gray-500">{calc.rate}%</div>
+                        <div className="font-medium text-[var(--color-success)]">+${calc.taxAmount.toFixed(2)}</div>
+                        <div className="text-sm text-[var(--color-text-light)]">{calc.rate}%</div>
                       </div>
                     </div>
                   ))}
@@ -247,11 +246,11 @@ export default function DashboardPage() {
         </div>
 
         {/* Connected Platforms Section */}
-        <div className="mt-8 bg-white/10 backdrop-blur rounded-xl border border-white/10 overflow-hidden">
-          <div className="p-6 border-b border-white/10">
+        <div className="mt-8 bg-[var(--color-bg-card)] rounded-xl border border-[var(--color-border)] overflow-hidden shadow-sm">
+          <div className="p-6 border-b border-[var(--color-border)]">
             <div className="flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-white">Connected Platforms</h2>
-              <Link href="/settings#platforms" className="text-emerald-400 text-sm hover:text-emerald-300">
+              <h2 className="text-lg font-semibold text-[var(--color-text)]">Connected Platforms</h2>
+              <Link href="/settings#platforms" className="text-[var(--color-primary)] text-sm hover:underline">
                 Manage
               </Link>
             </div>
@@ -263,8 +262,8 @@ export default function DashboardPage() {
                   key={platform.id}
                   className={`p-4 rounded-lg border text-center transition ${
                     platform.connected 
-                      ? 'bg-emerald-500/10 border-emerald-500/30' 
-                      : 'bg-white/5 border-white/10 opacity-50'
+                      ? 'bg-[var(--color-success-bg)] border-[var(--color-success-border)]' 
+                      : 'bg-[var(--color-bg-muted)] border-[var(--color-border)] opacity-50'
                   }`}
                 >
                   <div className="text-2xl mb-2">
@@ -276,8 +275,8 @@ export default function DashboardPage() {
                     {platform.type === 'ebay' && '🏷️'}
                     {platform.type === 'square' && '⬛'}
                   </div>
-                  <div className="text-sm font-medium text-white">{platform.name}</div>
-                  <div className={`text-xs mt-1 ${platform.connected ? 'text-emerald-400' : 'text-gray-500'}`}>
+                  <div className="text-sm font-medium text-[var(--color-text)]">{platform.name}</div>
+                  <div className={`text-xs mt-1 ${platform.connected ? 'text-[var(--color-success)]' : 'text-[var(--color-text-light)]'}`}>
                     {platform.connected ? 'Connected' : 'Not connected'}
                   </div>
                 </div>
@@ -287,18 +286,18 @@ export default function DashboardPage() {
         </div>
 
         {/* Plan Banner */}
-        <div className="mt-8 bg-gradient-to-r from-emerald-500/20 to-cyan-500/20 rounded-xl p-6 border border-emerald-500/30">
+        <div className="mt-8 bg-[var(--color-primary-bg)] rounded-xl p-6 border border-[var(--color-primary-border)]">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div>
               <div className="flex items-center gap-2 mb-1">
-                <h3 className="text-lg font-semibold text-white">
+                <h3 className="text-lg font-semibold text-[var(--color-text)]">
                   {billing.plan.charAt(0).toUpperCase() + billing.plan.slice(1)} Plan
                 </h3>
-                <span className="px-2 py-0.5 bg-emerald-500/20 text-emerald-400 text-xs rounded-full">
+                <span className="px-2 py-0.5 bg-[var(--color-primary-bg)] text-[var(--color-primary)] text-xs rounded-full border border-[var(--color-primary-border)]">
                   ${billing.monthlyPrice}/mo
                 </span>
               </div>
-              <p className="text-gray-400 text-sm">
+              <p className="text-[var(--color-text-muted)] text-sm">
                 {billing.plan === 'starter' && 'Upgrade to Growth for unlimited state filings and advanced features.'}
                 {billing.plan === 'growth' && 'You have access to all growth features including nexus tracking.'}
                 {billing.plan === 'enterprise' && 'You have unlimited access to all features and dedicated support.'}
@@ -307,7 +306,7 @@ export default function DashboardPage() {
             {billing.plan !== 'enterprise' && (
               <Link 
                 href="/settings#billing" 
-                className="bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-lg font-medium transition whitespace-nowrap"
+                className="bg-[var(--color-cta)] hover:bg-[var(--color-cta-hover)] text-white px-4 py-2 rounded-lg font-medium transition whitespace-nowrap shadow-md"
               >
                 Upgrade Plan
               </Link>

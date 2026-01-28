@@ -1,26 +1,290 @@
 @import "tailwindcss";
 
+/* ===== SalesTaxJar Theme System ===== */
+/* Light & Dark mode with CSS variables */
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* === Light Theme (Default) === */
+  
+  /* Primary - Soft Indigo/Teal (trustworthy, modern) */
+  --color-primary: #0891b2;           /* Teal-600 */
+  --color-primary-light: #22d3ee;     /* Cyan-400 */
+  --color-primary-dark: #0e7490;      /* Cyan-700 */
+  --color-primary-bg: rgba(8, 145, 178, 0.1);
+  --color-primary-border: rgba(8, 145, 178, 0.3);
+  
+  /* CTA - Vibrant Blue (action buttons) */
+  --color-cta: #2563eb;               /* Blue-600 */
+  --color-cta-hover: #1d4ed8;         /* Blue-700 */
+  --color-cta-light: #3b82f6;         /* Blue-500 */
+  
+  /* Success - Warm Green */
+  --color-success: #059669;           /* Emerald-600 */
+  --color-success-light: #10b981;     /* Emerald-500 */
+  --color-success-bg: rgba(5, 150, 105, 0.1);
+  --color-success-border: rgba(5, 150, 105, 0.3);
+  
+  /* Warning - Soft Orange */
+  --color-warning: #f59e0b;           /* Amber-500 */
+  --color-warning-light: #fbbf24;     /* Amber-400 */
+  --color-warning-bg: rgba(245, 158, 11, 0.1);
+  --color-warning-border: rgba(245, 158, 11, 0.3);
+  
+  /* Error */
+  --color-error: #dc2626;             /* Red-600 */
+  --color-error-light: #ef4444;       /* Red-500 */
+  --color-error-bg: rgba(220, 38, 38, 0.1);
+  --color-error-border: rgba(220, 38, 38, 0.3);
+  
+  /* Jar Accent - Light Terracotta/Mustard */
+  --color-jar: #d97706;               /* Amber-600 (mustard) */
+  --color-jar-light: #fbbf24;         /* Amber-400 */
+  --color-jar-bg: rgba(217, 119, 6, 0.1);
+  
+  /* Neutrals - Warm Cream/Light Grey */
+  --color-bg: #fef7ed;                /* Warm cream */
+  --color-bg-alt: #fff7ed;            /* Slightly warmer */
+  --color-bg-card: #ffffff;
+  --color-bg-card-hover: #fefcf9;
+  --color-bg-input: #ffffff;
+  --color-bg-muted: #f5f0e8;
+  
+  /* Text */
+  --color-text: #1f2937;              /* Gray-800 */
+  --color-text-secondary: #4b5563;    /* Gray-600 */
+  --color-text-muted: #6b7280;        /* Gray-500 */
+  --color-text-light: #9ca3af;        /* Gray-400 */
+  
+  /* Borders */
+  --color-border: #e5e0d8;
+  --color-border-light: #f0ebe3;
+  --color-border-focus: var(--color-primary);
+  
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  
+  /* Header */
+  --color-header-bg: #ffffff;
+  --color-header-border: #e5e0d8;
+  
+  /* Logo gradient */
+  --color-logo-from: #0891b2;
+  --color-logo-to: #0e7490;
 }
 
+/* === Dark Theme === */
+.dark {
+  /* Primary - Soft Indigo/Teal */
+  --color-primary: #22d3ee;           /* Cyan-400 */
+  --color-primary-light: #67e8f9;     /* Cyan-300 */
+  --color-primary-dark: #0891b2;      /* Cyan-600 */
+  --color-primary-bg: rgba(34, 211, 238, 0.15);
+  --color-primary-border: rgba(34, 211, 238, 0.3);
+  
+  /* CTA - Vibrant Blue */
+  --color-cta: #3b82f6;               /* Blue-500 */
+  --color-cta-hover: #60a5fa;         /* Blue-400 */
+  --color-cta-light: #60a5fa;
+  
+  /* Success - Warm Green */
+  --color-success: #10b981;           /* Emerald-500 */
+  --color-success-light: #34d399;     /* Emerald-400 */
+  --color-success-bg: rgba(16, 185, 129, 0.15);
+  --color-success-border: rgba(16, 185, 129, 0.3);
+  
+  /* Warning */
+  --color-warning: #fbbf24;           /* Amber-400 */
+  --color-warning-light: #fcd34d;     /* Amber-300 */
+  --color-warning-bg: rgba(251, 191, 36, 0.15);
+  --color-warning-border: rgba(251, 191, 36, 0.3);
+  
+  /* Error */
+  --color-error: #f87171;             /* Red-400 */
+  --color-error-light: #fca5a5;       /* Red-300 */
+  --color-error-bg: rgba(248, 113, 113, 0.15);
+  --color-error-border: rgba(248, 113, 113, 0.3);
+  
+  /* Jar Accent */
+  --color-jar: #fbbf24;               /* Amber-400 */
+  --color-jar-light: #fcd34d;
+  --color-jar-bg: rgba(251, 191, 36, 0.15);
+  
+  /* Neutrals - Dark with warmth */
+  --color-bg: #18181b;                /* Zinc-900 */
+  --color-bg-alt: #1f1f23;
+  --color-bg-card: rgba(255, 255, 255, 0.05);
+  --color-bg-card-hover: rgba(255, 255, 255, 0.08);
+  --color-bg-input: rgba(255, 255, 255, 0.05);
+  --color-bg-muted: rgba(255, 255, 255, 0.03);
+  
+  /* Text */
+  --color-text: #f4f4f5;              /* Zinc-100 */
+  --color-text-secondary: #d4d4d8;    /* Zinc-300 */
+  --color-text-muted: #a1a1aa;        /* Zinc-400 */
+  --color-text-light: #71717a;        /* Zinc-500 */
+  
+  /* Borders */
+  --color-border: rgba(255, 255, 255, 0.1);
+  --color-border-light: rgba(255, 255, 255, 0.05);
+  --color-border-focus: var(--color-primary);
+  
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.3);
+  
+  /* Header */
+  --color-header-bg: #18181b;
+  --color-header-border: rgba(255, 255, 255, 0.1);
+  
+  /* Logo gradient */
+  --color-logo-from: #22d3ee;
+  --color-logo-to: #0891b2;
+}
+
+/* === Tailwind Theme Integration === */
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --color-background: var(--color-bg);
+  --color-foreground: var(--color-text);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* === Base Styles === */
+body {
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* === Utility Classes === */
+
+/* Primary colors */
+.text-primary { color: var(--color-primary); }
+.bg-primary { background-color: var(--color-primary); }
+.bg-primary-subtle { background-color: var(--color-primary-bg); }
+.border-primary { border-color: var(--color-primary-border); }
+
+/* CTA/Action colors */
+.text-cta { color: var(--color-cta); }
+.bg-cta { background-color: var(--color-cta); }
+.bg-cta:hover { background-color: var(--color-cta-hover); }
+
+/* Success colors */
+.text-success { color: var(--color-success); }
+.bg-success { background-color: var(--color-success); }
+.bg-success-subtle { background-color: var(--color-success-bg); }
+.border-success { border-color: var(--color-success-border); }
+
+/* Warning colors */
+.text-warning { color: var(--color-warning); }
+.bg-warning-subtle { background-color: var(--color-warning-bg); }
+.border-warning { border-color: var(--color-warning-border); }
+
+/* Error colors */
+.text-error { color: var(--color-error); }
+.bg-error-subtle { background-color: var(--color-error-bg); }
+.border-error { border-color: var(--color-error-border); }
+
+/* Jar accent */
+.text-jar { color: var(--color-jar); }
+.bg-jar-subtle { background-color: var(--color-jar-bg); }
+
+/* Cards */
+.card {
+  background-color: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: 0.75rem;
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.card:hover {
+  box-shadow: var(--shadow-md);
+}
+
+/* Inputs */
+.input {
+  background-color: var(--color-bg-input);
+  border: 1px solid var(--color-border);
+  border-radius: 0.5rem;
+  color: var(--color-text);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--color-border-focus);
+  box-shadow: 0 0 0 3px var(--color-primary-bg);
+}
+
+/* Buttons */
+.btn-primary {
+  background-color: var(--color-cta);
+  color: white;
+  font-weight: 500;
+  border-radius: 0.5rem;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.btn-primary:hover {
+  background-color: var(--color-cta-hover);
+}
+
+.btn-secondary {
+  background-color: var(--color-bg-card);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+  border-radius: 0.5rem;
+  transition: background-color 0.2s ease;
+}
+
+.btn-secondary:hover {
+  background-color: var(--color-bg-card-hover);
+}
+
+/* Smooth theme transition */
+* {
+  transition-property: background-color, border-color, color;
+  transition-duration: 0.15s;
+  transition-timing-function: ease-out;
+}
+
+/* Disable transition on page load */
+.no-transitions * {
+  transition: none !important;
+}
+
+/* Select dropdown fix for dark mode */
+.dark select option {
+  background-color: #27272a;
+  color: #f4f4f5;
+}
+
+select option {
+  background-color: #ffffff;
+  color: #1f2937;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-bg-muted);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text-light);
 }
