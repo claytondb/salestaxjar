@@ -91,8 +91,20 @@ export default function Home() {
       </header>
 
       {/* Hero Section - REWRITTEN for clarity */}
-      <section className="py-12 sm:py-20 px-4">
-        <div className="max-w-4xl mx-auto text-center">
+      <section className="relative py-12 sm:py-20 px-4 overflow-hidden">
+        {/* Background Image */}
+        <div 
+          className="absolute inset-0 z-0"
+          style={{
+            backgroundImage: `url('https://images.unsplash.com/photo-1493106641515-6b5631de4bb9?auto=format&fit=crop&w=1920&q=80')`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+          }}
+        />
+        {/* Gradient Overlay - keeps text readable while showing image warmth */}
+        <div className="absolute inset-0 z-0 bg-gradient-to-br from-slate-900/95 via-purple-900/90 to-slate-900/95" />
+        
+        <div className="relative z-10 max-w-4xl mx-auto text-center">
           {/* The Problem (relatable pain point) */}
           <p className="text-emerald-400 font-medium mb-4 text-lg">
             Sell online? You probably owe sales tax in more states than you think.
@@ -121,15 +133,15 @@ export default function Home() {
 
           {/* Social Proof / Trust Signal */}
           <div className="flex flex-wrap justify-center gap-4 mb-8">
-            <div className="bg-white/10 px-4 py-2 rounded-lg">
+            <div className="bg-white/10 backdrop-blur-sm px-4 py-2 rounded-lg border border-white/10">
               <span className="text-emerald-400 font-bold">✓</span>
               <span className="text-gray-300 ml-2">Know where you owe</span>
             </div>
-            <div className="bg-white/10 px-4 py-2 rounded-lg">
+            <div className="bg-white/10 backdrop-blur-sm px-4 py-2 rounded-lg border border-white/10">
               <span className="text-emerald-400 font-bold">✓</span>
               <span className="text-gray-300 ml-2">Never miss a deadline</span>
             </div>
-            <div className="bg-white/10 px-4 py-2 rounded-lg">
+            <div className="bg-white/10 backdrop-blur-sm px-4 py-2 rounded-lg border border-white/10">
               <span className="text-emerald-400 font-bold">✓</span>
               <span className="text-gray-300 ml-2">Stop worrying about audits</span>
             </div>
