@@ -205,12 +205,37 @@ NEXT_PUBLIC_APP_URL=https://salestaxjar.vercel.app
 | Reports | 10% |
 | Testing | 0% |
 
-**Overall Estimate:** ~65% complete
+**Overall Estimate:** ~70% complete
+
+---
+
+## Recent Session Progress (2026-01-28 12:58-13:xx)
+
+1. ✅ **Created Database API Routes**
+   - `/api/business` - CRUD
+   - `/api/nexus` - with bulk update
+   - `/api/filings` - with status management
+   - `/api/calculations` - with bulk save
+   - `/api/calculations/summary` - stats/analytics
+   - `/api/notifications` - preferences
+
+2. ✅ **Migrated AuthContext to APIs**
+   - Removed localStorage dependency
+   - All data now fetched/saved via API
+   - Added `refreshData()` function
+
+3. ✅ **Auto-generate Filings**
+   - When nexus states are updated, quarterly filings are auto-created
+   - Prevents duplicate filings for same period
+
+4. ✅ **Type Updates**
+   - Added `id` to BusinessProfile
+   - Renamed `reason` → `nexusType` in NexusState
 
 ---
 
 ## Next Session Priorities
-1. Connect AuthContext to database APIs (remove localStorage)
-2. Set up Stripe with real credentials
-3. Set up Resend for emails
-4. Test full user flow: signup → verify → add business → configure nexus → connect Shopify
+1. Set up Stripe with real credentials
+2. Set up Resend for emails
+3. Test full user flow: signup → verify → add business → configure nexus → connect Shopify
+4. Add dashboard analytics using `/api/calculations/summary`
