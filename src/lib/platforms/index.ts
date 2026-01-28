@@ -6,10 +6,15 @@
 
 import { prisma } from '../prisma';
 
-// Re-export platform modules
-export * from './shopify';
-export * from './amazon';
-export * from './etsy';
+// Re-export platform modules with namespaces to avoid conflicts
+export * as shopify from './shopify';
+export * as amazon from './amazon';
+export * as etsy from './etsy';
+
+// Export commonly used functions with platform prefix
+export { isShopifyConfigured, saveShopifyConnection, removeShopifyConnection, fetchOrders as fetchShopifyOrders } from './shopify';
+export { isAmazonConfigured, saveAmazonConnection, removeAmazonConnection, fetchOrders as fetchAmazonOrders } from './amazon';
+export { isEtsyConfigured, saveEtsyConnection, fetchReceipts as fetchEtsyReceipts } from './etsy';
 
 // Platform configuration status
 export interface PlatformConfig {
