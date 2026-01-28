@@ -166,7 +166,7 @@ export default function SettingsPage() {
     setTimeout(() => setSaveMessage(''), 3000);
   };
 
-  // Handle plan selection
+  // Handle plan selection (just selects, doesn't purchase)
   const handleSelectPlan = async (planId: string) => {
     if (planId === billing.plan) {
       setSelectedPlan(null);
@@ -176,6 +176,7 @@ export default function SettingsPage() {
     
     setSelectedPlan(planId);
     
+    // If user has an active subscription, preview the proration
     if (billing.cardLast4) {
       const currentPlan = plans.find(p => p.id === billing.plan);
       const newPlan = plans.find(p => p.id === planId);
@@ -184,8 +185,10 @@ export default function SettingsPage() {
         const isUpgrade = newPlan.tier > currentPlan.tier;
         
         if (isUpgrade) {
+          // For upgrades, we could fetch proration preview from API
+          // For now, show estimated difference
           const daysInMonth = 30;
-          const daysRemaining = 15;
+          const daysRemaining = 15; // Approximate
           const currentDaily = currentPlan.price / daysInMonth;
           const newDaily = newPlan.price / daysInMonth;
           const prorationAmount = (newDaily - currentDaily) * daysRemaining;
@@ -202,6 +205,7 @@ export default function SettingsPage() {
         }
       }
     } else {
+      // No card on file - still need to determine if it's an upgrade for display
       const currentPlan = plans.find(p => p.id === billing.plan);
       const newPlan = plans.find(p => p.id === planId);
       if (currentPlan && newPlan) {
@@ -222,6 +226,7 @@ export default function SettingsPage() {
       const hasActiveSubscription = !!billing.cardLast4;
       
       if (hasActiveSubscription) {
+        // Update existing subscription
         const response = await fetch('/api/stripe/update-subscription', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -237,6 +242,7 @@ export default function SettingsPage() {
           throw new Error(data.error || 'Failed to update subscription');
         }
         
+        // Update local state
         const plan = plans.find(p => p.id === selectedPlan);
         if (plan) {
           updateBilling({
@@ -250,6 +256,7 @@ export default function SettingsPage() {
         setSelectedPlan(null);
         setProrationPreview(null);
       } else {
+        // New subscription - go to Stripe Checkout
         const response = await fetch('/api/stripe/create-checkout-session', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -260,6 +267,7 @@ export default function SettingsPage() {
         
         if (!response.ok) {
           if (data.demo) {
+            // Demo mode - simulate success
             const plan = plans.find(p => p.id === selectedPlan);
             if (plan) {
               updateBilling({
@@ -278,6 +286,7 @@ export default function SettingsPage() {
             throw new Error(data.error || 'Failed to create checkout session');
           }
         } else if (data.url) {
+          // Redirect to Stripe Checkout
           window.location.href = data.url;
           return;
         }
@@ -290,6 +299,7 @@ export default function SettingsPage() {
     }
   };
 
+  // Cancel pending plan selection
   const handleCancelSelection = () => {
     setSelectedPlan(null);
     setProrationPreview(null);
@@ -297,25 +307,25 @@ export default function SettingsPage() {
 
   if (isLoading || !user) {
     return (
-      <div className="min-h-screen bg-[var(--color-bg)] flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[var(--color-primary)]"></div>
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-emerald-500"></div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[var(--color-bg)]">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
       <Header />
       
       <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-[var(--color-text)] mb-2">Settings</h1>
-          <p className="text-[var(--color-text-muted)]">Manage your account and preferences</p>
+          <h1 className="text-3xl font-bold text-white mb-2">Settings</h1>
+          <p className="text-gray-400">Manage your account and preferences</p>
         </div>
 
         {/* Success Message */}
         {saveMessage && (
-          <div className="mb-6 bg-[var(--color-success-bg)] border border-[var(--color-success-border)] text-[var(--color-success)] px-4 py-3 rounded-lg">
+          <div className="mb-6 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 px-4 py-3 rounded-lg">
             ✓ {saveMessage}
           </div>
         )}
@@ -323,7 +333,7 @@ export default function SettingsPage() {
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Sidebar */}
           <div className="lg:w-64 flex-shrink-0">
-            <nav className="bg-[var(--color-bg-card)] rounded-xl border border-[var(--color-border)] overflow-hidden shadow-sm">
+            <nav className="bg-white/10 backdrop-blur rounded-xl border border-white/10 overflow-hidden">
               {[
                 { id: 'profile', label: 'Business Profile', icon: '🏢' },
                 { id: 'account', label: 'Account', icon: '👤' },
@@ -337,8 +347,8 @@ export default function SettingsPage() {
                   onClick={() => setActiveTab(tab.id)}
                   className={`w-full flex items-center gap-3 px-4 py-3 text-left transition ${
                     activeTab === tab.id 
-                      ? 'bg-[var(--color-primary-bg)] text-[var(--color-primary)] border-l-2 border-[var(--color-primary)]' 
-                      : 'text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-muted)] border-l-2 border-transparent'
+                      ? 'bg-emerald-500/20 text-emerald-400 border-l-2 border-emerald-500' 
+                      : 'text-gray-300 hover:bg-white/5 border-l-2 border-transparent'
                   }`}
                 >
                   <span>{tab.icon}</span>
@@ -352,30 +362,30 @@ export default function SettingsPage() {
           <div className="flex-1">
             {/* Business Profile Tab */}
             {activeTab === 'profile' && (
-              <div className="bg-[var(--color-bg-card)] rounded-xl border border-[var(--color-border)] p-6 shadow-sm">
-                <h2 className="text-xl font-semibold text-[var(--color-text)] mb-6">Business Profile</h2>
+              <div className="bg-white/10 backdrop-blur rounded-xl border border-white/10 p-6">
+                <h2 className="text-xl font-semibold text-white mb-6">Business Profile</h2>
                 
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-[var(--color-text-secondary)] mb-2 font-medium">Business Name</label>
+                    <label className="block text-gray-300 mb-2 font-medium">Business Name</label>
                     <input
                       type="text"
                       value={profileForm.name}
                       onChange={(e) => setProfileForm({ ...profileForm, name: e.target.value })}
-                      className="w-full px-4 py-3 bg-[var(--color-bg-input)] border border-[var(--color-border)] rounded-lg text-[var(--color-text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] focus:border-transparent"
+                      className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
                       placeholder="Acme Inc."
                     />
                   </div>
 
                   <div>
-                    <label className="block text-[var(--color-text-secondary)] mb-2 font-medium">Business Type</label>
+                    <label className="block text-gray-300 mb-2 font-medium">Business Type</label>
                     <select
                       value={profileForm.businessType}
                       onChange={(e) => setProfileForm({ ...profileForm, businessType: e.target.value as BusinessProfile['businessType'] })}
-                      className="w-full px-4 py-3 bg-[var(--color-bg-input)] border border-[var(--color-border)] rounded-lg text-[var(--color-text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] focus:border-transparent"
+                      className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
                     >
                       {businessTypes.map(type => (
-                        <option key={type.value} value={type.value}>
+                        <option key={type.value} value={type.value} className="bg-slate-800">
                           {type.label}
                         </option>
                       ))}
@@ -383,61 +393,61 @@ export default function SettingsPage() {
                   </div>
 
                   <div>
-                    <label className="block text-[var(--color-text-secondary)] mb-2 font-medium">Street Address</label>
+                    <label className="block text-gray-300 mb-2 font-medium">Street Address</label>
                     <input
                       type="text"
                       value={profileForm.address}
                       onChange={(e) => setProfileForm({ ...profileForm, address: e.target.value })}
-                      className="w-full px-4 py-3 bg-[var(--color-bg-input)] border border-[var(--color-border)] rounded-lg text-[var(--color-text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] focus:border-transparent"
+                      className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
                       placeholder="123 Main St"
                     />
                   </div>
 
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                     <div>
-                      <label className="block text-[var(--color-text-secondary)] mb-2 font-medium">City</label>
+                      <label className="block text-gray-300 mb-2 font-medium">City</label>
                       <input
                         type="text"
                         value={profileForm.city}
                         onChange={(e) => setProfileForm({ ...profileForm, city: e.target.value })}
-                        className="w-full px-4 py-3 bg-[var(--color-bg-input)] border border-[var(--color-border)] rounded-lg text-[var(--color-text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] focus:border-transparent"
+                        className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
                         placeholder="San Francisco"
                       />
                     </div>
                     <div>
-                      <label className="block text-[var(--color-text-secondary)] mb-2 font-medium">State</label>
+                      <label className="block text-gray-300 mb-2 font-medium">State</label>
                       <select
                         value={profileForm.state}
                         onChange={(e) => setProfileForm({ ...profileForm, state: e.target.value })}
-                        className="w-full px-4 py-3 bg-[var(--color-bg-input)] border border-[var(--color-border)] rounded-lg text-[var(--color-text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] focus:border-transparent"
+                        className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
                       >
-                        <option value="">Select...</option>
+                        <option value="" className="bg-slate-800">Select...</option>
                         {stateTaxRates.map(state => (
-                          <option key={state.stateCode} value={state.stateCode}>
+                          <option key={state.stateCode} value={state.stateCode} className="bg-slate-800">
                             {state.stateCode}
                           </option>
                         ))}
                       </select>
                     </div>
                     <div>
-                      <label className="block text-[var(--color-text-secondary)] mb-2 font-medium">ZIP Code</label>
+                      <label className="block text-gray-300 mb-2 font-medium">ZIP Code</label>
                       <input
                         type="text"
                         value={profileForm.zip}
                         onChange={(e) => setProfileForm({ ...profileForm, zip: e.target.value })}
-                        className="w-full px-4 py-3 bg-[var(--color-bg-input)] border border-[var(--color-border)] rounded-lg text-[var(--color-text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] focus:border-transparent"
+                        className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
                         placeholder="94102"
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-[var(--color-text-secondary)] mb-2 font-medium">EIN (Optional)</label>
+                    <label className="block text-gray-300 mb-2 font-medium">EIN (Optional)</label>
                     <input
                       type="text"
                       value={profileForm.ein || ''}
                       onChange={(e) => setProfileForm({ ...profileForm, ein: e.target.value })}
-                      className="w-full px-4 py-3 bg-[var(--color-bg-input)] border border-[var(--color-border)] rounded-lg text-[var(--color-text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] focus:border-transparent"
+                      className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
                       placeholder="XX-XXXXXXX"
                     />
                   </div>
@@ -445,7 +455,7 @@ export default function SettingsPage() {
                   <button
                     onClick={handleSaveProfile}
                     disabled={isSaving}
-                    className="bg-[var(--color-cta)] hover:bg-[var(--color-cta-hover)] text-white px-6 py-3 rounded-lg font-medium transition disabled:opacity-50 shadow-md"
+                    className="bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-3 rounded-lg font-medium transition disabled:opacity-50"
                   >
                     {isSaving ? 'Saving...' : 'Save Profile'}
                   </button>
@@ -455,34 +465,34 @@ export default function SettingsPage() {
 
             {/* Account Tab */}
             {activeTab === 'account' && (
-              <div className="bg-[var(--color-bg-card)] rounded-xl border border-[var(--color-border)] p-6 shadow-sm">
-                <h2 className="text-xl font-semibold text-[var(--color-text)] mb-6">Account Settings</h2>
+              <div className="bg-white/10 backdrop-blur rounded-xl border border-white/10 p-6">
+                <h2 className="text-xl font-semibold text-white mb-6">Account Settings</h2>
                 
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-[var(--color-text-secondary)] mb-2 font-medium">Full Name</label>
+                    <label className="block text-gray-300 mb-2 font-medium">Full Name</label>
                     <input
                       type="text"
                       value={accountForm.name}
                       onChange={(e) => setAccountForm({ ...accountForm, name: e.target.value })}
-                      className="w-full px-4 py-3 bg-[var(--color-bg-input)] border border-[var(--color-border)] rounded-lg text-[var(--color-text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] focus:border-transparent"
+                      className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-[var(--color-text-secondary)] mb-2 font-medium">Email</label>
+                    <label className="block text-gray-300 mb-2 font-medium">Email</label>
                     <input
                       type="email"
                       value={accountForm.email}
                       disabled
-                      className="w-full px-4 py-3 bg-[var(--color-bg-muted)] border border-[var(--color-border-light)] rounded-lg text-[var(--color-text-muted)] cursor-not-allowed"
+                      className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-gray-400 cursor-not-allowed"
                     />
-                    <p className="text-[var(--color-text-light)] text-sm mt-1">Email cannot be changed</p>
+                    <p className="text-gray-500 text-sm mt-1">Email cannot be changed</p>
                   </div>
 
                   <div>
-                    <label className="block text-[var(--color-text-secondary)] mb-2 font-medium">Member Since</label>
-                    <div className="text-[var(--color-text-muted)]">
+                    <label className="block text-gray-300 mb-2 font-medium">Member Since</label>
+                    <div className="text-gray-400">
                       {new Date(user.createdAt).toLocaleDateString('en-US', {
                         year: 'numeric',
                         month: 'long',
@@ -494,21 +504,21 @@ export default function SettingsPage() {
                   <button
                     onClick={handleSaveAccount}
                     disabled={isSaving}
-                    className="bg-[var(--color-cta)] hover:bg-[var(--color-cta-hover)] text-white px-6 py-3 rounded-lg font-medium transition disabled:opacity-50 shadow-md"
+                    className="bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-3 rounded-lg font-medium transition disabled:opacity-50"
                   >
                     {isSaving ? 'Saving...' : 'Save Changes'}
                   </button>
                 </div>
 
-                <hr className="border-[var(--color-border)] my-8" />
+                <hr className="border-white/10 my-8" />
 
-                <h3 className="text-lg font-semibold text-[var(--color-text)] mb-4">Password</h3>
-                <p className="text-[var(--color-text-muted)] text-sm mb-4">
+                <h3 className="text-lg font-semibold text-white mb-4">Password</h3>
+                <p className="text-gray-400 text-sm mb-4">
                   Password management is available in the Data &amp; Privacy section.
                 </p>
                 <button 
                   onClick={() => setActiveTab('privacy')}
-                  className="text-[var(--color-primary)] hover:underline text-sm font-medium"
+                  className="text-emerald-400 hover:text-emerald-300 text-sm font-medium"
                 >
                   Go to Data &amp; Privacy →
                 </button>
@@ -517,27 +527,27 @@ export default function SettingsPage() {
 
             {/* Notifications Tab */}
             {activeTab === 'notifications' && (
-              <div className="bg-[var(--color-bg-card)] rounded-xl border border-[var(--color-border)] p-6 shadow-sm">
-                <h2 className="text-xl font-semibold text-[var(--color-text)] mb-6">Notification Preferences</h2>
+              <div className="bg-white/10 backdrop-blur rounded-xl border border-white/10 p-6">
+                <h2 className="text-xl font-semibold text-white mb-6">Notification Preferences</h2>
                 
                 <div className="space-y-6">
                   <div>
-                    <h3 className="font-medium text-[var(--color-text)] mb-4">Email Notifications</h3>
+                    <h3 className="font-medium text-white mb-4">Email Notifications</h3>
                     <div className="space-y-3">
                       {[
                         { key: 'emailDeadlineReminders', label: 'Filing deadline reminders' },
                         { key: 'emailWeeklyDigest', label: 'Weekly tax summary digest' },
                         { key: 'emailNewRates', label: 'Tax rate change alerts' },
                       ].map((item) => (
-                        <label key={item.key} className="flex items-center justify-between p-3 bg-[var(--color-bg-muted)] rounded-lg cursor-pointer hover:bg-[var(--color-bg-card-hover)] transition">
-                          <span className="text-[var(--color-text-secondary)]">{item.label}</span>
+                        <label key={item.key} className="flex items-center justify-between p-3 bg-white/5 rounded-lg cursor-pointer">
+                          <span className="text-gray-300">{item.label}</span>
                           <button
                             onClick={() => updateNotifications({ 
                               ...notifications, 
                               [item.key]: !notifications[item.key as keyof typeof notifications] 
                             })}
                             className={`relative w-12 h-6 rounded-full transition-colors ${
-                              notifications[item.key as keyof typeof notifications] ? 'bg-[var(--color-primary)]' : 'bg-[var(--color-text-light)]'
+                              notifications[item.key as keyof typeof notifications] ? 'bg-emerald-500' : 'bg-gray-600'
                             }`}
                           >
                             <span className={`absolute top-1 left-1 w-4 h-4 rounded-full bg-white transition-transform ${
@@ -550,13 +560,13 @@ export default function SettingsPage() {
                   </div>
 
                   <div>
-                    <h3 className="font-medium text-[var(--color-text)] mb-4">Push Notifications</h3>
-                    <label className="flex items-center justify-between p-3 bg-[var(--color-bg-muted)] rounded-lg cursor-pointer hover:bg-[var(--color-bg-card-hover)] transition">
-                      <span className="text-[var(--color-text-secondary)]">Deadline reminders</span>
+                    <h3 className="font-medium text-white mb-4">Push Notifications</h3>
+                    <label className="flex items-center justify-between p-3 bg-white/5 rounded-lg cursor-pointer">
+                      <span className="text-gray-300">Deadline reminders</span>
                       <button
                         onClick={() => updateNotifications({ ...notifications, pushDeadlines: !notifications.pushDeadlines })}
                         className={`relative w-12 h-6 rounded-full transition-colors ${
-                          notifications.pushDeadlines ? 'bg-[var(--color-primary)]' : 'bg-[var(--color-text-light)]'
+                          notifications.pushDeadlines ? 'bg-emerald-500' : 'bg-gray-600'
                         }`}
                       >
                         <span className={`absolute top-1 left-1 w-4 h-4 rounded-full bg-white transition-transform ${
@@ -567,23 +577,23 @@ export default function SettingsPage() {
                   </div>
 
                   <div>
-                    <label className="block text-[var(--color-text-secondary)] mb-2 font-medium">Remind me before deadlines</label>
+                    <label className="block text-gray-300 mb-2 font-medium">Remind me before deadlines</label>
                     <select
                       value={notifications.reminderDaysBefore}
                       onChange={(e) => updateNotifications({ ...notifications, reminderDaysBefore: parseInt(e.target.value) })}
-                      className="w-full px-4 py-3 bg-[var(--color-bg-input)] border border-[var(--color-border)] rounded-lg text-[var(--color-text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] focus:border-transparent"
+                      className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
                     >
-                      <option value={3}>3 days before</option>
-                      <option value={7}>7 days before</option>
-                      <option value={14}>14 days before</option>
-                      <option value={30}>30 days before</option>
+                      <option value={3} className="bg-slate-800">3 days before</option>
+                      <option value={7} className="bg-slate-800">7 days before</option>
+                      <option value={14} className="bg-slate-800">14 days before</option>
+                      <option value={30} className="bg-slate-800">30 days before</option>
                     </select>
                   </div>
 
                   <button
                     onClick={handleSaveNotifications}
                     disabled={isSaving}
-                    className="bg-[var(--color-cta)] hover:bg-[var(--color-cta-hover)] text-white px-6 py-3 rounded-lg font-medium transition disabled:opacity-50 shadow-md"
+                    className="bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-3 rounded-lg font-medium transition disabled:opacity-50"
                   >
                     {isSaving ? 'Saving...' : 'Save Preferences'}
                   </button>
@@ -593,9 +603,9 @@ export default function SettingsPage() {
 
             {/* Platforms Tab */}
             {activeTab === 'platforms' && (
-              <div className="bg-[var(--color-bg-card)] rounded-xl border border-[var(--color-border)] p-6 shadow-sm">
-                <h2 className="text-xl font-semibold text-[var(--color-text)] mb-2">Connected Platforms</h2>
-                <p className="text-[var(--color-text-muted)] mb-6">Connect your sales channels to automatically import transactions</p>
+              <div className="bg-white/10 backdrop-blur rounded-xl border border-white/10 p-6">
+                <h2 className="text-xl font-semibold text-white mb-2">Connected Platforms</h2>
+                <p className="text-gray-400 mb-6">Connect your sales channels to automatically import transactions</p>
                 
                 <div className="space-y-4">
                   {connectedPlatforms.map((platform) => (
@@ -603,13 +613,13 @@ export default function SettingsPage() {
                       key={platform.id}
                       className={`p-4 rounded-xl border transition ${
                         platform.connected 
-                          ? 'bg-[var(--color-success-bg)] border-[var(--color-success-border)]' 
-                          : 'bg-[var(--color-bg-muted)] border-[var(--color-border)]'
+                          ? 'bg-emerald-500/10 border-emerald-500/30' 
+                          : 'bg-white/5 border-white/10'
                       }`}
                     >
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-4">
-                          <div className="w-12 h-12 bg-[var(--color-bg-card)] rounded-xl flex items-center justify-center text-2xl border border-[var(--color-border)]">
+                          <div className="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center text-2xl">
                             {platform.type === 'shopify' && '🛒'}
                             {platform.type === 'amazon' && '📦'}
                             {platform.type === 'etsy' && '🎨'}
@@ -619,14 +629,14 @@ export default function SettingsPage() {
                             {platform.type === 'square' && '⬛'}
                           </div>
                           <div>
-                            <h3 className="font-medium text-[var(--color-text)]">{platform.name}</h3>
+                            <h3 className="font-medium text-white">{platform.name}</h3>
                             {platform.connected ? (
-                              <div className="text-sm text-[var(--color-text-muted)]">
+                              <div className="text-sm text-gray-400">
                                 {platform.ordersImported?.toLocaleString()} orders imported • 
                                 Last sync: {platform.lastSync ? new Date(platform.lastSync).toLocaleDateString() : 'Never'}
                               </div>
                             ) : (
-                              <div className="text-sm text-[var(--color-text-light)]">Not connected</div>
+                              <div className="text-sm text-gray-500">Not connected</div>
                             )}
                           </div>
                         </div>
@@ -634,8 +644,8 @@ export default function SettingsPage() {
                           onClick={() => togglePlatformConnection(platform.id)}
                           className={`px-4 py-2 rounded-lg font-medium transition ${
                             platform.connected 
-                              ? 'bg-[var(--color-bg-card)] hover:bg-[var(--color-bg-card-hover)] text-[var(--color-text)] border border-[var(--color-border)]' 
-                              : 'bg-[var(--color-cta)] hover:bg-[var(--color-cta-hover)] text-white'
+                              ? 'bg-white/10 hover:bg-white/20 text-white' 
+                              : 'bg-emerald-500 hover:bg-emerald-600 text-white'
                           }`}
                         >
                           {platform.connected ? 'Disconnect' : 'Connect'}
@@ -645,9 +655,9 @@ export default function SettingsPage() {
                   ))}
                 </div>
 
-                <div className="mt-6 p-4 bg-[var(--color-bg-muted)] rounded-xl border border-[var(--color-border)]">
-                  <h4 className="font-medium text-[var(--color-text)] mb-2">Need a different platform?</h4>
-                  <p className="text-[var(--color-text-muted)] text-sm">
+                <div className="mt-6 p-4 bg-white/5 rounded-xl border border-white/10">
+                  <h4 className="font-medium text-white mb-2">Need a different platform?</h4>
+                  <p className="text-gray-400 text-sm">
                     Contact us to request an integration for your sales platform.
                   </p>
                 </div>
@@ -658,25 +668,25 @@ export default function SettingsPage() {
             {activeTab === 'billing' && (
               <div className="space-y-6">
                 {/* Current Plan */}
-                <div className="bg-[var(--color-bg-card)] rounded-xl border border-[var(--color-border)] p-6 shadow-sm">
-                  <h2 className="text-xl font-semibold text-[var(--color-text)] mb-4">Current Plan</h2>
+                <div className="bg-white/10 backdrop-blur rounded-xl border border-white/10 p-6">
+                  <h2 className="text-xl font-semibold text-white mb-4">Current Plan</h2>
                   <div className="flex items-center justify-between">
                     <div>
-                      <div className="text-2xl font-bold text-[var(--color-text)]">
+                      <div className="text-2xl font-bold text-white">
                         {billing.plan.charAt(0).toUpperCase() + billing.plan.slice(1)}
                       </div>
-                      <div className="text-[var(--color-text-muted)]">${billing.monthlyPrice}/month</div>
+                      <div className="text-gray-400">${billing.monthlyPrice}/month</div>
                     </div>
-                    <span className="px-3 py-1 bg-[var(--color-success-bg)] text-[var(--color-success)] rounded-full text-sm border border-[var(--color-success-border)]">
+                    <span className="px-3 py-1 bg-emerald-500/20 text-emerald-400 rounded-full text-sm">
                       Active
                     </span>
                   </div>
                 </div>
 
                 {/* Plan Selection */}
-                <div className="bg-[var(--color-bg-card)] rounded-xl border border-[var(--color-border)] p-6 shadow-sm">
-                  <h2 className="text-xl font-semibold text-[var(--color-text)] mb-2">Available Plans</h2>
-                  <p className="text-[var(--color-text-muted)] text-sm mb-6">Select a plan to see pricing details</p>
+                <div className="bg-white/10 backdrop-blur rounded-xl border border-white/10 p-6">
+                  <h2 className="text-xl font-semibold text-white mb-2">Available Plans</h2>
+                  <p className="text-gray-400 text-sm mb-6">Select a plan to see pricing details</p>
                   <div className="grid md:grid-cols-3 gap-4">
                     {plans.map((plan) => {
                       const isCurrentPlan = billing.plan === plan.id;
@@ -688,46 +698,46 @@ export default function SettingsPage() {
                           onClick={() => !isCurrentPlan && handleSelectPlan(plan.id)}
                           className={`p-6 rounded-xl border transition cursor-pointer ${
                             isSelected
-                              ? 'bg-[var(--color-primary-bg)] border-[var(--color-primary)] ring-2 ring-[var(--color-primary)]'
+                              ? 'bg-purple-500/20 border-purple-500 ring-2 ring-purple-500'
                               : isCurrentPlan 
-                                ? 'bg-[var(--color-success-bg)] border-[var(--color-success)]' 
+                                ? 'bg-emerald-500/20 border-emerald-500' 
                                 : plan.popular 
-                                  ? 'bg-[var(--color-bg-muted)] border-[var(--color-primary-border)] hover:bg-[var(--color-bg-card-hover)]' 
-                                  : 'bg-[var(--color-bg-muted)] border-[var(--color-border)] hover:bg-[var(--color-bg-card-hover)]'
+                                  ? 'bg-white/5 border-emerald-500/50 hover:bg-white/10' 
+                                  : 'bg-white/5 border-white/10 hover:bg-white/10'
                           }`}
                         >
                           <div className="flex items-center justify-between mb-2">
                             {plan.popular && !isCurrentPlan && (
-                              <span className="px-2 py-0.5 bg-[var(--color-cta)] text-white text-xs rounded-full">
+                              <span className="px-2 py-0.5 bg-emerald-500 text-white text-xs rounded-full">
                                 Most Popular
                               </span>
                             )}
                             {isCurrentPlan && (
-                              <span className="px-2 py-0.5 bg-[var(--color-success-bg)] text-[var(--color-success)] text-xs rounded-full border border-[var(--color-success-border)]">
+                              <span className="px-2 py-0.5 bg-emerald-500/30 text-emerald-400 text-xs rounded-full">
                                 Current
                               </span>
                             )}
                             {isSelected && (
-                              <span className="px-2 py-0.5 bg-[var(--color-primary)] text-white text-xs rounded-full">
+                              <span className="px-2 py-0.5 bg-purple-500 text-white text-xs rounded-full">
                                 Selected
                               </span>
                             )}
                           </div>
-                          <h3 className="text-lg font-semibold text-[var(--color-text)]">{plan.name}</h3>
+                          <h3 className="text-lg font-semibold text-white">{plan.name}</h3>
                           <div className="mt-2 mb-4">
-                            <span className="text-3xl font-bold text-[var(--color-text)]">${plan.price}</span>
-                            <span className="text-[var(--color-text-muted)]">/mo</span>
+                            <span className="text-3xl font-bold text-white">${plan.price}</span>
+                            <span className="text-gray-400">/mo</span>
                           </div>
                           <ul className="space-y-2 mb-4">
                             {plan.features.map((feature, i) => (
-                              <li key={i} className="flex items-center gap-2 text-sm text-[var(--color-text-secondary)]">
-                                <span className="text-[var(--color-success)]">✓</span>
+                              <li key={i} className="flex items-center gap-2 text-sm text-gray-300">
+                                <span className="text-emerald-400">✓</span>
                                 {feature}
                               </li>
                             ))}
                           </ul>
                           {isCurrentPlan && (
-                            <div className="text-center py-2 text-[var(--color-text-muted)] text-sm">
+                            <div className="text-center py-2 text-gray-400 text-sm">
                               Your current plan
                             </div>
                           )}
@@ -739,45 +749,45 @@ export default function SettingsPage() {
 
                 {/* Plan Change Summary & Checkout */}
                 {selectedPlan && (
-                  <div className="bg-[var(--color-primary-bg)] rounded-xl border border-[var(--color-primary-border)] p-6">
-                    <h2 className="text-xl font-semibold text-[var(--color-text)] mb-4">
+                  <div className="bg-purple-500/10 backdrop-blur rounded-xl border border-purple-500/30 p-6">
+                    <h2 className="text-xl font-semibold text-white mb-4">
                       {prorationPreview?.isUpgrade ? '⬆️ Upgrade Summary' : '⬇️ Downgrade Summary'}
                     </h2>
                     
                     {prorationPreview?.isUpgrade ? (
                       <div className="space-y-3 mb-6">
-                        <p className="text-[var(--color-text-secondary)]">
+                        <p className="text-gray-300">
                           You&apos;re upgrading from <strong>{billing.plan.charAt(0).toUpperCase() + billing.plan.slice(1)}</strong> to{' '}
                           <strong>{plans.find(p => p.id === selectedPlan)?.name}</strong>.
                         </p>
                         {prorationPreview.immediateCharge !== undefined && prorationPreview.immediateCharge > 0 && (
-                          <div className="bg-[var(--color-bg-muted)] rounded-lg p-4 border border-[var(--color-border)]">
+                          <div className="bg-white/5 rounded-lg p-4">
                             <div className="flex justify-between text-sm">
-                              <span className="text-[var(--color-text-muted)]">Prorated charge (remaining days)</span>
-                              <span className="text-[var(--color-text)] font-medium">~${prorationPreview.immediateCharge.toFixed(2)}</span>
+                              <span className="text-gray-400">Prorated charge (remaining days)</span>
+                              <span className="text-white font-medium">~${prorationPreview.immediateCharge.toFixed(2)}</span>
                             </div>
-                            <p className="text-[var(--color-text-light)] text-xs mt-2">
+                            <p className="text-gray-500 text-xs mt-2">
                               You&apos;ll be charged the difference for the remainder of your billing cycle.
                             </p>
                           </div>
                         )}
-                        <p className="text-[var(--color-success)] text-sm">
+                        <p className="text-emerald-400 text-sm">
                           ✓ Your upgrade will take effect immediately
                         </p>
                       </div>
                     ) : (
                       <div className="space-y-3 mb-6">
-                        <p className="text-[var(--color-text-secondary)]">
+                        <p className="text-gray-300">
                           You&apos;re downgrading from <strong>{billing.plan.charAt(0).toUpperCase() + billing.plan.slice(1)}</strong> to{' '}
                           <strong>{plans.find(p => p.id === selectedPlan)?.name}</strong>.
                         </p>
-                        <div className="bg-[var(--color-warning-bg)] border border-[var(--color-warning-border)] rounded-lg p-4">
-                          <p className="text-[var(--color-warning)] text-sm">
+                        <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-4">
+                          <p className="text-yellow-400 text-sm">
                             ⚠️ Your current plan will remain active until the end of your billing period.
                             The new plan will take effect on your next billing date.
                           </p>
                         </div>
-                        <p className="text-[var(--color-text-muted)] text-sm">
+                        <p className="text-gray-400 text-sm">
                           Next billing date: {billing.nextBillingDate || 'N/A'}
                         </p>
                       </div>
@@ -786,14 +796,14 @@ export default function SettingsPage() {
                     <div className="flex gap-3">
                       <button
                         onClick={handleCancelSelection}
-                        className="px-4 py-2 bg-[var(--color-bg-card)] hover:bg-[var(--color-bg-card-hover)] text-[var(--color-text)] rounded-lg transition border border-[var(--color-border)]"
+                        className="px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg transition"
                       >
                         Cancel
                       </button>
                       <button
                         onClick={handleCheckout}
                         disabled={isCheckingOut}
-                        className="flex-1 bg-[var(--color-cta)] hover:bg-[var(--color-cta-hover)] text-white px-6 py-2 rounded-lg font-medium transition disabled:opacity-50 flex items-center justify-center gap-2 shadow-md"
+                        className="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-2 rounded-lg font-medium transition disabled:opacity-50 flex items-center justify-center gap-2"
                       >
                         {isCheckingOut ? (
                           <>
@@ -811,31 +821,31 @@ export default function SettingsPage() {
                 )}
 
                 {/* Payment Method */}
-                <div className="bg-[var(--color-bg-card)] rounded-xl border border-[var(--color-border)] p-6 shadow-sm">
-                  <h2 className="text-xl font-semibold text-[var(--color-text)] mb-4">Payment Method</h2>
+                <div className="bg-white/10 backdrop-blur rounded-xl border border-white/10 p-6">
+                  <h2 className="text-xl font-semibold text-white mb-4">Payment Method</h2>
                   {billing.cardLast4 ? (
-                    <div className="flex items-center justify-between p-4 bg-[var(--color-bg-muted)] rounded-lg border border-[var(--color-border)]">
+                    <div className="flex items-center justify-between p-4 bg-white/5 rounded-lg">
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-[var(--color-bg-card)] rounded flex items-center justify-center border border-[var(--color-border)]">
+                        <div className="w-10 h-10 bg-white/10 rounded flex items-center justify-center">
                           💳
                         </div>
                         <div>
-                          <div className="font-medium text-[var(--color-text)]">
+                          <div className="font-medium text-white">
                             {billing.cardBrand} •••• {billing.cardLast4}
                           </div>
-                          <div className="text-sm text-[var(--color-text-muted)]">
+                          <div className="text-sm text-gray-400">
                             Next billing: {billing.nextBillingDate}
                           </div>
                         </div>
                       </div>
-                      <button className="text-[var(--color-primary)] hover:underline text-sm font-medium">
+                      <button className="text-emerald-400 hover:text-emerald-300 text-sm font-medium">
                         Update
                       </button>
                     </div>
                   ) : (
                     <div className="text-center py-8">
-                      <p className="text-[var(--color-text-muted)] mb-4">No payment method on file</p>
-                      <p className="text-[var(--color-text-light)] text-sm">Select a plan above to add a payment method</p>
+                      <p className="text-gray-400 mb-4">No payment method on file</p>
+                      <p className="text-gray-500 text-sm">Select a plan above to add a payment method</p>
                     </div>
                   )}
                 </div>
@@ -846,16 +856,16 @@ export default function SettingsPage() {
             {activeTab === 'privacy' && (
               <div className="space-y-6">
                 {/* Privacy Overview */}
-                <div className="bg-[var(--color-bg-card)] rounded-xl border border-[var(--color-border)] p-6 shadow-sm">
-                  <h2 className="text-xl font-semibold text-[var(--color-text)] mb-4">Data & Privacy</h2>
-                  <p className="text-[var(--color-text-muted)] mb-4">
+                <div className="bg-white/10 backdrop-blur rounded-xl border border-white/10 p-6">
+                  <h2 className="text-xl font-semibold text-white mb-4">Data & Privacy</h2>
+                  <p className="text-gray-400 mb-4">
                     We take your privacy seriously. Below you can manage your data and privacy settings.
                     For more information, see our{' '}
-                    <Link href="/privacy" className="text-[var(--color-primary)] hover:underline">Privacy Policy</Link>.
+                    <Link href="/privacy" className="text-emerald-400 hover:text-emerald-300">Privacy Policy</Link>.
                   </p>
                   
-                  <div className="bg-[var(--color-warning-bg)] border border-[var(--color-warning-border)] rounded-lg p-4">
-                    <p className="text-[var(--color-warning)] text-sm">
+                  <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-4">
+                    <p className="text-yellow-400 text-sm">
                       <strong>⚠️ Demo Mode:</strong> This application uses browser localStorage for data storage. 
                       In production, all data would be securely encrypted and stored on protected servers.
                     </p>
@@ -863,41 +873,41 @@ export default function SettingsPage() {
                 </div>
 
                 {/* Your Rights */}
-                <div className="bg-[var(--color-bg-card)] rounded-xl border border-[var(--color-border)] p-6 shadow-sm">
-                  <h2 className="text-xl font-semibold text-[var(--color-text)] mb-4">Your Data Rights</h2>
-                  <p className="text-[var(--color-text-muted)] mb-4">
+                <div className="bg-white/10 backdrop-blur rounded-xl border border-white/10 p-6">
+                  <h2 className="text-xl font-semibold text-white mb-4">Your Data Rights</h2>
+                  <p className="text-gray-400 mb-4">
                     Under GDPR and CCPA, you have the following rights regarding your personal data:
                   </p>
-                  <ul className="space-y-2 text-[var(--color-text-secondary)] text-sm">
+                  <ul className="space-y-2 text-gray-300 text-sm">
                     <li className="flex items-center gap-2">
-                      <span className="text-[var(--color-success)]">✓</span>
+                      <span className="text-emerald-400">✓</span>
                       <strong>Right to Access:</strong> You can request a copy of your data
                     </li>
                     <li className="flex items-center gap-2">
-                      <span className="text-[var(--color-success)]">✓</span>
+                      <span className="text-emerald-400">✓</span>
                       <strong>Right to Portability:</strong> Export your data in a machine-readable format
                     </li>
                     <li className="flex items-center gap-2">
-                      <span className="text-[var(--color-success)]">✓</span>
+                      <span className="text-emerald-400">✓</span>
                       <strong>Right to Erasure:</strong> Delete your account and all associated data
                     </li>
                     <li className="flex items-center gap-2">
-                      <span className="text-[var(--color-success)]">✓</span>
+                      <span className="text-emerald-400">✓</span>
                       <strong>Right to Rectification:</strong> Update or correct your information
                     </li>
                   </ul>
                 </div>
 
                 {/* Export Data */}
-                <div className="bg-[var(--color-bg-card)] rounded-xl border border-[var(--color-border)] p-6 shadow-sm">
-                  <h2 className="text-xl font-semibold text-[var(--color-text)] mb-2">Export Your Data</h2>
-                  <p className="text-[var(--color-text-muted)] mb-4">
+                <div className="bg-white/10 backdrop-blur rounded-xl border border-white/10 p-6">
+                  <h2 className="text-xl font-semibold text-white mb-2">Export Your Data</h2>
+                  <p className="text-gray-400 mb-4">
                     Download all your data in JSON format. This includes your profile, calculations, 
                     settings, and preferences.
                   </p>
                   <button
                     onClick={handleExportData}
-                    className="bg-[var(--color-cta)] hover:bg-[var(--color-cta-hover)] text-white px-6 py-3 rounded-lg font-medium transition flex items-center gap-2 shadow-md"
+                    className="bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-3 rounded-lg font-medium transition flex items-center gap-2"
                   >
                     <span>📥</span>
                     Export All Data
@@ -905,32 +915,32 @@ export default function SettingsPage() {
                 </div>
 
                 {/* Data Retention */}
-                <div className="bg-[var(--color-bg-card)] rounded-xl border border-[var(--color-border)] p-6 shadow-sm">
-                  <h2 className="text-xl font-semibold text-[var(--color-text)] mb-4">Data Retention</h2>
+                <div className="bg-white/10 backdrop-blur rounded-xl border border-white/10 p-6">
+                  <h2 className="text-xl font-semibold text-white mb-4">Data Retention</h2>
                   <div className="space-y-3 text-sm">
-                    <div className="flex justify-between p-3 bg-[var(--color-bg-muted)] rounded-lg">
-                      <span className="text-[var(--color-text-secondary)]">Account Data</span>
-                      <span className="text-[var(--color-text-muted)]">While account is active + 30 days</span>
+                    <div className="flex justify-between p-3 bg-white/5 rounded-lg">
+                      <span className="text-gray-300">Account Data</span>
+                      <span className="text-gray-400">While account is active + 30 days</span>
                     </div>
-                    <div className="flex justify-between p-3 bg-[var(--color-bg-muted)] rounded-lg">
-                      <span className="text-[var(--color-text-secondary)]">Tax Calculations</span>
-                      <span className="text-[var(--color-text-muted)]">7 years (legal requirement)</span>
+                    <div className="flex justify-between p-3 bg-white/5 rounded-lg">
+                      <span className="text-gray-300">Tax Calculations</span>
+                      <span className="text-gray-400">7 years (legal requirement)</span>
                     </div>
-                    <div className="flex justify-between p-3 bg-[var(--color-bg-muted)] rounded-lg">
-                      <span className="text-[var(--color-text-secondary)]">Usage Logs</span>
-                      <span className="text-[var(--color-text-muted)]">90 days</span>
+                    <div className="flex justify-between p-3 bg-white/5 rounded-lg">
+                      <span className="text-gray-300">Usage Logs</span>
+                      <span className="text-gray-400">90 days</span>
                     </div>
-                    <div className="flex justify-between p-3 bg-[var(--color-bg-muted)] rounded-lg">
-                      <span className="text-[var(--color-text-secondary)]">Cookie Preferences</span>
-                      <span className="text-[var(--color-text-muted)]">1 year</span>
+                    <div className="flex justify-between p-3 bg-white/5 rounded-lg">
+                      <span className="text-gray-300">Cookie Preferences</span>
+                      <span className="text-gray-400">1 year</span>
                     </div>
                   </div>
                 </div>
 
                 {/* Delete Account */}
-                <div className="bg-[var(--color-error-bg)] rounded-xl border border-[var(--color-error-border)] p-6">
-                  <h2 className="text-xl font-semibold text-[var(--color-error)] mb-2">⚠️ Delete Account</h2>
-                  <p className="text-[var(--color-text-muted)] mb-4">
+                <div className="bg-red-500/10 backdrop-blur rounded-xl border border-red-500/30 p-6">
+                  <h2 className="text-xl font-semibold text-red-400 mb-2">⚠️ Delete Account</h2>
+                  <p className="text-gray-400 mb-4">
                     Permanently delete your account and all associated data. This action cannot be undone.
                     Some data may be retained for legal compliance purposes.
                   </p>
@@ -938,21 +948,21 @@ export default function SettingsPage() {
                   {!showDeleteConfirm ? (
                     <button
                       onClick={() => setShowDeleteConfirm(true)}
-                      className="bg-[var(--color-error-bg)] hover:bg-[var(--color-error)] hover:text-white text-[var(--color-error)] px-6 py-3 rounded-lg font-medium transition border border-[var(--color-error-border)]"
+                      className="bg-red-500/20 hover:bg-red-500/30 text-red-400 px-6 py-3 rounded-lg font-medium transition border border-red-500/30"
                     >
                       Delete My Account
                     </button>
                   ) : (
                     <div className="space-y-4">
-                      <div className="bg-[var(--color-error-bg)] border border-[var(--color-error-border)] rounded-lg p-4">
-                        <p className="text-[var(--color-error)] text-sm mb-3">
+                      <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-4">
+                        <p className="text-red-300 text-sm mb-3">
                           To confirm deletion, please type <strong>&quot;delete my account&quot;</strong> below:
                         </p>
                         <input
                           type="text"
                           value={deleteConfirmText}
                           onChange={(e) => setDeleteConfirmText(e.target.value)}
-                          className="w-full px-4 py-2 bg-[var(--color-bg-input)] border border-[var(--color-error-border)] rounded-lg text-[var(--color-text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-error)]"
+                          className="w-full px-4 py-2 bg-white/10 border border-red-500/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-red-500"
                           placeholder="delete my account"
                         />
                       </div>
@@ -962,14 +972,14 @@ export default function SettingsPage() {
                             setShowDeleteConfirm(false);
                             setDeleteConfirmText('');
                           }}
-                          className="px-4 py-2 bg-[var(--color-bg-card)] hover:bg-[var(--color-bg-card-hover)] text-[var(--color-text)] rounded-lg transition border border-[var(--color-border)]"
+                          className="px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg transition"
                         >
                           Cancel
                         </button>
                         <button
                           onClick={handleDeleteAccount}
                           disabled={deleteConfirmText.toLowerCase() !== 'delete my account'}
-                          className="px-6 py-2 bg-[var(--color-error)] hover:opacity-90 text-white rounded-lg font-medium transition disabled:opacity-50 disabled:cursor-not-allowed"
+                          className="px-6 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg font-medium transition disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                           Permanently Delete Account
                         </button>
@@ -979,21 +989,21 @@ export default function SettingsPage() {
                 </div>
 
                 {/* Contact for Privacy */}
-                <div className="bg-[var(--color-bg-card)] rounded-xl border border-[var(--color-border)] p-6 shadow-sm">
-                  <h2 className="text-xl font-semibold text-[var(--color-text)] mb-4">Privacy Contact</h2>
-                  <p className="text-[var(--color-text-muted)] mb-4">
+                <div className="bg-white/10 backdrop-blur rounded-xl border border-white/10 p-6">
+                  <h2 className="text-xl font-semibold text-white mb-4">Privacy Contact</h2>
+                  <p className="text-gray-400 mb-4">
                     For any privacy-related inquiries or to exercise your data rights, contact us:
                   </p>
                   <div className="space-y-2 text-sm">
-                    <p className="text-[var(--color-text-secondary)]">
+                    <p className="text-gray-300">
                       📧 Email:{' '}
-                      <a href="mailto:privacy@salestaxjar.com" className="text-[var(--color-primary)] hover:underline">
+                      <a href="mailto:privacy@salestaxjar.com" className="text-emerald-400 hover:text-emerald-300">
                         privacy@salestaxjar.com
                       </a>
                     </p>
-                    <p className="text-[var(--color-text-secondary)]">
+                    <p className="text-gray-300">
                       🇪🇺 GDPR DPO:{' '}
-                      <a href="mailto:dpo@salestaxjar.com" className="text-[var(--color-primary)] hover:underline">
+                      <a href="mailto:dpo@salestaxjar.com" className="text-emerald-400 hover:text-emerald-300">
                         dpo@salestaxjar.com
                       </a>
                     </p>

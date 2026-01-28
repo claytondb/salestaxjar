@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
-import ThemeToggle from '@/components/ThemeToggle';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -30,71 +29,66 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[var(--color-bg)] flex items-center justify-center px-4">
-      {/* Theme toggle in corner */}
-      <div className="absolute top-4 right-4">
-        <ThemeToggle />
-      </div>
-
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center px-4">
       <div className="w-full max-w-md">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2 justify-center mb-8">
-          <div className="w-12 h-12 bg-gradient-to-br from-[var(--color-logo-from)] to-[var(--color-logo-to)] rounded-xl flex items-center justify-center shadow-lg">
+          <div className="w-12 h-12 bg-gradient-to-br from-green-400 to-emerald-600 rounded-xl flex items-center justify-center">
             <span className="text-white font-bold text-2xl">$</span>
           </div>
-          <span className="text-3xl font-bold text-[var(--color-text)]">SalesTaxJar</span>
+          <span className="text-3xl font-bold text-white">SalesTaxJar</span>
         </Link>
 
         {/* Login Form */}
-        <div className="bg-[var(--color-bg-card)] rounded-2xl p-8 border border-[var(--color-border)] shadow-lg">
-          <h1 className="text-2xl font-bold text-[var(--color-text)] text-center mb-2">Welcome back</h1>
-          <p className="text-[var(--color-text-muted)] text-center mb-6">Log in to your account</p>
+        <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 border border-white/20">
+          <h1 className="text-2xl font-bold text-white text-center mb-2">Welcome back</h1>
+          <p className="text-gray-400 text-center mb-6">Log in to your account</p>
 
           {error && (
-            <div className="bg-[var(--color-error-bg)] border border-[var(--color-error-border)] text-[var(--color-error)] px-4 py-3 rounded-lg mb-6 text-sm">
+            <div className="bg-red-500/10 border border-red-500/30 text-red-400 px-4 py-3 rounded-lg mb-6 text-sm">
               {error}
             </div>
           )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label htmlFor="email" className="block text-[var(--color-text-secondary)] mb-2 font-medium">Email</label>
+              <label htmlFor="email" className="block text-gray-300 mb-2 font-medium">Email</label>
               <input
                 id="email"
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-4 py-3 bg-[var(--color-bg-input)] border border-[var(--color-border)] rounded-lg text-[var(--color-text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] focus:border-transparent transition"
+                className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
                 placeholder="you@example.com"
                 required
               />
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-[var(--color-text-secondary)] mb-2 font-medium">Password</label>
+              <label htmlFor="password" className="block text-gray-300 mb-2 font-medium">Password</label>
               <input
                 id="password"
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-3 bg-[var(--color-bg-input)] border border-[var(--color-border)] rounded-lg text-[var(--color-text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] focus:border-transparent transition"
+                className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
                 placeholder="••••••••"
                 required
               />
             </div>
 
             <div className="flex items-center justify-between text-sm">
-              <label className="flex items-center gap-2 text-[var(--color-text-muted)]">
-                <input type="checkbox" className="rounded border-[var(--color-border)] text-[var(--color-primary)] focus:ring-[var(--color-primary)]" />
+              <label className="flex items-center gap-2 text-gray-400">
+                <input type="checkbox" className="rounded border-gray-600 text-emerald-500 focus:ring-emerald-500" />
                 Remember me
               </label>
-              <Link href="/forgot-password" className="text-[var(--color-primary)] hover:underline">Forgot password?</Link>
+              <Link href="/forgot-password" className="text-emerald-400 hover:text-emerald-300">Forgot password?</Link>
             </div>
 
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-[var(--color-cta)] hover:bg-[var(--color-cta-hover)] text-white py-3 rounded-lg font-semibold transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-md"
+              className="w-full bg-emerald-500 hover:bg-emerald-600 text-white py-3 rounded-lg font-semibold transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               {isLoading ? (
                 <>
@@ -111,22 +105,22 @@ export default function LoginPage() {
           </form>
 
           <div className="mt-6 text-center">
-            <span className="text-[var(--color-text-muted)]">Don&apos;t have an account? </span>
-            <Link href="/signup" className="text-[var(--color-primary)] hover:underline font-medium">
+            <span className="text-gray-400">Don&apos;t have an account? </span>
+            <Link href="/signup" className="text-emerald-400 hover:text-emerald-300 font-medium">
               Sign up free
             </Link>
           </div>
         </div>
 
         {/* Demo Account */}
-        <div className="mt-6 bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-xl p-4 text-center shadow-sm">
-          <p className="text-[var(--color-text-muted)] text-sm mb-2">Try with a demo account:</p>
+        <div className="mt-6 bg-white/5 border border-white/10 rounded-xl p-4 text-center">
+          <p className="text-gray-400 text-sm mb-2">Try with a demo account:</p>
           <button
             onClick={() => {
               setEmail('demo@salestaxjar.com');
               setPassword('demo123');
             }}
-            className="text-[var(--color-primary)] hover:underline text-sm font-medium"
+            className="text-emerald-400 hover:text-emerald-300 text-sm font-medium"
           >
             Fill demo credentials
           </button>
