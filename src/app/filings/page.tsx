@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import Header from '@/components/Header';
+import { Calendar, ClipboardList, CheckCircle2, AlertTriangle, Check, List } from 'lucide-react';
 
 export default function FilingsPage() {
   const { user, filingDeadlines, nexusStates, updateFilingDeadline, isLoading } = useAuth();
@@ -62,7 +63,7 @@ export default function FilingsPage() {
 
         {!hasNexus ? (
           <div className="bg-white/10 backdrop-blur rounded-xl p-12 border border-white/20 text-center">
-            <span className="text-5xl mb-4 block">📅</span>
+            <Calendar className="w-12 h-12 text-emerald-400 mx-auto mb-4" />
             <h2 className="text-xl font-semibold text-white mb-2">No Filing Deadlines Yet</h2>
             <p className="text-gray-400 mb-6">
               Configure your nexus states to see upcoming filing deadlines
@@ -144,23 +145,23 @@ export default function FilingsPage() {
               <div className="flex gap-2">
                 <button
                   onClick={() => setViewMode('list')}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium transition ${
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition flex items-center gap-1.5 ${
                     viewMode === 'list' 
                       ? 'bg-white/20 text-white' 
                       : 'bg-white/10 text-gray-300 hover:bg-white/20'
                   }`}
                 >
-                  📋 List
+                  <List className="w-4 h-4" /> List
                 </button>
                 <button
                   onClick={() => setViewMode('calendar')}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium transition ${
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition flex items-center gap-1.5 ${
                     viewMode === 'calendar' 
                       ? 'bg-white/20 text-white' 
                       : 'bg-white/10 text-gray-300 hover:bg-white/20'
                   }`}
                 >
-                  📅 Calendar
+                  <Calendar className="w-4 h-4" /> Calendar
                 </button>
               </div>
             </div>
@@ -182,13 +183,14 @@ export default function FilingsPage() {
                       return (
                         <div key={deadline.id} className="p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                           <div className="flex items-start gap-4">
-                            <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-2xl ${
+                            <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${
                               deadline.status === 'filed' ? 'bg-emerald-500/20' :
                               deadline.status === 'overdue' ? 'bg-red-500/20' :
                               isUrgent ? 'bg-amber-500/20' : 'bg-white/10'
                             }`}>
-                              {deadline.status === 'filed' ? '✅' :
-                               deadline.status === 'overdue' ? '⚠️' : '📋'}
+                              {deadline.status === 'filed' ? <CheckCircle2 className="w-6 h-6 text-emerald-400" /> :
+                               deadline.status === 'overdue' ? <AlertTriangle className="w-6 h-6 text-red-400" /> : 
+                               <ClipboardList className="w-6 h-6 text-emerald-400" />}
                             </div>
                             <div>
                               <h3 className="font-medium text-white">{deadline.state}</h3>
@@ -298,7 +300,9 @@ export default function FilingsPage() {
                                   Mark Filed
                                 </button>
                               ) : (
-                                <div className="text-center text-emerald-400 text-sm">✓ Filed</div>
+                                <div className="text-center text-emerald-400 text-sm flex items-center justify-center gap-1">
+                                  <Check className="w-4 h-4" /> Filed
+                                </div>
                               )}
                             </div>
                           );

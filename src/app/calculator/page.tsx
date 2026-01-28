@@ -8,6 +8,7 @@ import Footer from '@/components/Footer';
 import TaxDisclaimer, { StateAuthorityLink } from '@/components/TaxDisclaimer';
 import { stateTaxRates, getStateByCode, taxRateMetadata } from '@/data/taxRates';
 import { TaxCalculation, ProductCategory, productCategories, categoryModifiers } from '@/types';
+import { Calculator, Calendar, Lightbulb, Briefcase } from 'lucide-react';
 
 interface BulkResult {
   row: number;
@@ -234,8 +235,8 @@ export default function CalculatorPage() {
         <div className="mb-6">
           <h1 className="text-3xl font-bold text-white mb-2">Tax Calculator</h1>
           <p className="text-gray-400">Calculate sales tax with product category support</p>
-          <p className="text-xs text-gray-500 mt-1">
-            📅 Tax rates last updated: {taxRateMetadata.lastUpdated} | Effective: {taxRateMetadata.effectiveDate}
+          <p className="text-xs text-gray-500 mt-1 flex items-center gap-1">
+            <Calendar className="w-3 h-3" /> Tax rates last updated: {taxRateMetadata.lastUpdated} | Effective: {taxRateMetadata.effectiveDate}
           </p>
         </div>
 
@@ -342,8 +343,9 @@ export default function CalculatorPage() {
                     </div>
                     {result.rate !== result.effectiveRate && (
                       <div className="mt-4 p-3 bg-blue-500/10 rounded-lg border border-blue-500/30">
-                        <p className="text-blue-400 text-sm">
-                          💡 Standard rate is {result.rate}%, but {productCategories.find(c => c.value === category)?.label} has a reduced rate of {result.effectiveRate}% in this state.
+                        <p className="text-blue-400 text-sm flex items-start gap-2">
+                          <Lightbulb className="w-4 h-4 flex-shrink-0 mt-0.5" />
+                          <span>Standard rate is {result.rate}%, but {productCategories.find(c => c.value === category)?.label} has a reduced rate of {result.effectiveRate}% in this state.</span>
                         </p>
                       </div>
                     )}
@@ -382,7 +384,7 @@ export default function CalculatorPage() {
 
               {calculations.length === 0 ? (
                 <div className="text-center py-12">
-                  <span className="text-4xl mb-4 block">🧮</span>
+                  <Calculator className="w-10 h-10 text-emerald-400 mx-auto mb-4" />
                   <p className="text-gray-400">No calculations yet</p>
                   <p className="text-gray-500 text-sm">Results will appear here</p>
                 </div>
@@ -508,9 +510,10 @@ export default function CalculatorPage() {
 
         {/* Professional advice recommendation */}
         <div className="mt-8 p-4 bg-blue-500/10 border border-blue-500/30 rounded-lg">
-          <p className="text-blue-400 text-sm text-center">
-            💼 <strong>Need professional tax advice?</strong> We recommend consulting with a CPA or tax attorney 
-            for complex tax situations, multi-state filing requirements, or product-specific exemptions.
+          <p className="text-blue-400 text-sm text-center flex items-center justify-center gap-2 flex-wrap">
+            <Briefcase className="w-4 h-4" />
+            <span><strong>Need professional tax advice?</strong> We recommend consulting with a CPA or tax attorney 
+            for complex tax situations, multi-state filing requirements, or product-specific exemptions.</span>
           </p>
         </div>
       </main>

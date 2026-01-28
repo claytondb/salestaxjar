@@ -6,6 +6,19 @@ import { useRouter } from 'next/navigation';
 import { stateTaxRates, calculateTax, getNoTaxStates, taxRateMetadata } from '@/data/taxRates';
 import { useAuth } from '@/context/AuthContext';
 import Footer from '@/components/Footer';
+import { 
+  Calculator, 
+  MapPin, 
+  Bell, 
+  LayoutDashboard, 
+  Link2, 
+  ClipboardList,
+  Check,
+  Calendar,
+  AlertTriangle
+} from 'lucide-react';
+
+const ICON_CLASS = "w-8 h-8 text-emerald-400";
 
 export default function Home() {
   const { user, isLoading } = useAuth();
@@ -133,16 +146,16 @@ export default function Home() {
 
           {/* Social Proof / Trust Signal */}
           <div className="flex flex-wrap justify-center gap-4 mb-8">
-            <div className="bg-white/10 backdrop-blur-sm px-4 py-2 rounded-lg border border-white/10">
-              <span className="text-emerald-400 font-bold">✓</span>
+            <div className="bg-white/10 backdrop-blur-sm px-4 py-2 rounded-lg border border-white/10 flex items-center">
+              <Check className="w-4 h-4 text-emerald-400" />
               <span className="text-gray-300 ml-2">Know where you owe</span>
             </div>
-            <div className="bg-white/10 backdrop-blur-sm px-4 py-2 rounded-lg border border-white/10">
-              <span className="text-emerald-400 font-bold">✓</span>
+            <div className="bg-white/10 backdrop-blur-sm px-4 py-2 rounded-lg border border-white/10 flex items-center">
+              <Check className="w-4 h-4 text-emerald-400" />
               <span className="text-gray-300 ml-2">Never miss a deadline</span>
             </div>
-            <div className="bg-white/10 backdrop-blur-sm px-4 py-2 rounded-lg border border-white/10">
-              <span className="text-emerald-400 font-bold">✓</span>
+            <div className="bg-white/10 backdrop-blur-sm px-4 py-2 rounded-lg border border-white/10 flex items-center">
+              <Check className="w-4 h-4 text-emerald-400" />
               <span className="text-gray-300 ml-2">Stop worrying about audits</span>
             </div>
           </div>
@@ -210,7 +223,7 @@ export default function Home() {
             <span>→</span>
             <span className="bg-slate-100 dark:bg-white/10 px-4 py-2 rounded-lg text-slate-700 dark:text-white">SalesTaxJar</span>
             <span>→</span>
-            <span className="bg-slate-100 dark:bg-white/10 px-4 py-2 rounded-lg text-slate-700 dark:text-white">Tax Filed ✓</span>
+            <span className="bg-slate-100 dark:bg-white/10 px-4 py-2 rounded-lg text-slate-700 dark:text-white flex items-center gap-1">Tax Filed <Check className="w-4 h-4 text-emerald-400" /></span>
           </div>
         </div>
       </section>
@@ -319,9 +332,16 @@ export default function Home() {
 
             {/* Disclaimer */}
             <div className="mt-6 text-center">
-              <p className="text-xs text-gray-500">
-                📅 Rates updated: {taxRateMetadata.lastUpdated} |{' '}
-                <span className="text-yellow-500">⚠️</span> Estimates only - verify with official state sources.{' '}
+              <p className="text-xs text-gray-500 flex items-center justify-center gap-2 flex-wrap">
+                <span className="flex items-center gap-1">
+                  <Calendar className="w-3 h-3" />
+                  Rates updated: {taxRateMetadata.lastUpdated}
+                </span>
+                <span>|</span>
+                <span className="flex items-center gap-1">
+                  <AlertTriangle className="w-3 h-3 text-yellow-500" />
+                  Estimates only - verify with official state sources.
+                </span>
                 <Link href="/terms" className="text-emerald-400 hover:text-emerald-300">See disclaimer</Link>
               </p>
             </div>
@@ -342,37 +362,37 @@ export default function Home() {
           <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8">
             {[
               {
-                icon: "🧮",
+                icon: <Calculator className={ICON_CLASS} />,
                 title: "Tax Calculator",
                 desc: "Know exactly how much tax to collect, instantly",
                 comingSoon: false
               },
               {
-                icon: "📍",
+                icon: <MapPin className={ICON_CLASS} />,
                 title: "Nexus Tracking",
                 desc: "See which states you owe tax in (and which you don't)",
                 comingSoon: false
               },
               {
-                icon: "🔔",
+                icon: <Bell className={ICON_CLASS} />,
                 title: "Deadline Alerts",
                 desc: "Get reminded before every filing deadline",
                 comingSoon: false
               },
               {
-                icon: "📊",
+                icon: <LayoutDashboard className={ICON_CLASS} />,
                 title: "Simple Dashboard",
                 desc: "Everything you need on one screen",
                 comingSoon: false
               },
               {
-                icon: "🔗",
+                icon: <Link2 className={ICON_CLASS} />,
                 title: "Integrations",
                 desc: "Connect Shopify, Amazon, Etsy, WooCommerce & more",
                 comingSoon: true
               },
               {
-                icon: "📋",
+                icon: <ClipboardList className={ICON_CLASS} />,
                 title: "Auto-Filing",
                 desc: "We file your returns automatically",
                 comingSoon: true
@@ -384,7 +404,7 @@ export default function Home() {
                     Coming Soon
                   </span>
                 )}
-                <div className="text-3xl sm:text-4xl mb-4">{feature.icon}</div>
+                <div className="mb-4">{feature.icon}</div>
                 <h3 className="text-lg sm:text-xl font-semibold text-white mb-2">{feature.title}</h3>
                 <p className="text-gray-400 text-sm sm:text-base">{feature.desc}</p>
               </div>

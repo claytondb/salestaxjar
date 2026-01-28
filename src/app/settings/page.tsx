@@ -9,6 +9,40 @@ import Footer from '@/components/Footer';
 import { BusinessProfile, BillingInfo } from '@/types';
 import { stateTaxRates } from '@/data/taxRates';
 import { exportUserData, deleteAllUserData } from '@/lib/security';
+import { 
+  Building2, 
+  User, 
+  Bell, 
+  Link2, 
+  CreditCard, 
+  Lock,
+  Check,
+  Download,
+  ShoppingCart,
+  Package,
+  Palette,
+  Plug,
+  Store,
+  Tag,
+  Square,
+  Mail,
+  AlertTriangle,
+  ArrowUp,
+  ArrowDown,
+  Loader2
+} from 'lucide-react';
+
+const ICON_CLASS = "w-5 h-5";
+
+const platformIcons: Record<string, React.ReactNode> = {
+  shopify: <ShoppingCart className="w-6 h-6 text-emerald-400" />,
+  amazon: <Package className="w-6 h-6 text-emerald-400" />,
+  etsy: <Palette className="w-6 h-6 text-emerald-400" />,
+  woocommerce: <Plug className="w-6 h-6 text-emerald-400" />,
+  bigcommerce: <Store className="w-6 h-6 text-emerald-400" />,
+  ebay: <Tag className="w-6 h-6 text-emerald-400" />,
+  square: <Square className="w-6 h-6 text-emerald-400" />,
+};
 
 const businessTypes = [
   { value: 'retail', label: 'Retail Store' },
@@ -325,8 +359,9 @@ export default function SettingsPage() {
 
         {/* Success Message */}
         {saveMessage && (
-          <div className="mb-6 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 px-4 py-3 rounded-lg">
-            ✓ {saveMessage}
+          <div className="mb-6 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 px-4 py-3 rounded-lg flex items-center gap-2">
+            <Check className="w-4 h-4" />
+            {saveMessage}
           </div>
         )}
 
@@ -335,12 +370,12 @@ export default function SettingsPage() {
           <div className="lg:w-64 flex-shrink-0">
             <nav className="bg-white/10 backdrop-blur rounded-xl border border-white/10 overflow-hidden">
               {[
-                { id: 'profile', label: 'Business Profile', icon: '🏢' },
-                { id: 'account', label: 'Account', icon: '👤' },
-                { id: 'notifications', label: 'Notifications', icon: '🔔' },
-                { id: 'platforms', label: 'Platforms', icon: '🔗' },
-                { id: 'billing', label: 'Billing', icon: '💳' },
-                { id: 'privacy', label: 'Data & Privacy', icon: '🔒' },
+                { id: 'profile', label: 'Business Profile', icon: <Building2 className={ICON_CLASS} /> },
+                { id: 'account', label: 'Account', icon: <User className={ICON_CLASS} /> },
+                { id: 'notifications', label: 'Notifications', icon: <Bell className={ICON_CLASS} /> },
+                { id: 'platforms', label: 'Platforms', icon: <Link2 className={ICON_CLASS} /> },
+                { id: 'billing', label: 'Billing', icon: <CreditCard className={ICON_CLASS} /> },
+                { id: 'privacy', label: 'Data & Privacy', icon: <Lock className={ICON_CLASS} /> },
               ].map((tab) => (
                 <button
                   key={tab.id}
@@ -351,7 +386,7 @@ export default function SettingsPage() {
                       : 'text-gray-300 hover:bg-white/5 border-l-2 border-transparent'
                   }`}
                 >
-                  <span>{tab.icon}</span>
+                  <span className={activeTab === tab.id ? 'text-emerald-400' : 'text-gray-400'}>{tab.icon}</span>
                   <span>{tab.label}</span>
                 </button>
               ))}
@@ -619,14 +654,8 @@ export default function SettingsPage() {
                     >
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-4">
-                          <div className="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center text-2xl">
-                            {platform.type === 'shopify' && '🛒'}
-                            {platform.type === 'amazon' && '📦'}
-                            {platform.type === 'etsy' && '🎨'}
-                            {platform.type === 'woocommerce' && '🔌'}
-                            {platform.type === 'bigcommerce' && '🏪'}
-                            {platform.type === 'ebay' && '🏷️'}
-                            {platform.type === 'square' && '⬛'}
+                          <div className="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center">
+                            {platformIcons[platform.type] || <Package className="w-6 h-6 text-emerald-400" />}
                           </div>
                           <div>
                             <h3 className="font-medium text-white">{platform.name}</h3>
@@ -731,7 +760,7 @@ export default function SettingsPage() {
                           <ul className="space-y-2 mb-4">
                             {plan.features.map((feature, i) => (
                               <li key={i} className="flex items-center gap-2 text-sm text-gray-300">
-                                <span className="text-emerald-400">✓</span>
+                                <Check className="w-4 h-4 text-emerald-400 flex-shrink-0" />
                                 {feature}
                               </li>
                             ))}
@@ -750,8 +779,9 @@ export default function SettingsPage() {
                 {/* Plan Change Summary & Checkout */}
                 {selectedPlan && (
                   <div className="bg-purple-500/10 backdrop-blur rounded-xl border border-purple-500/30 p-6">
-                    <h2 className="text-xl font-semibold text-white mb-4">
-                      {prorationPreview?.isUpgrade ? '⬆️ Upgrade Summary' : '⬇️ Downgrade Summary'}
+                    <h2 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
+                      {prorationPreview?.isUpgrade ? <ArrowUp className="w-5 h-5" /> : <ArrowDown className="w-5 h-5" />}
+                      {prorationPreview?.isUpgrade ? 'Upgrade Summary' : 'Downgrade Summary'}
                     </h2>
                     
                     {prorationPreview?.isUpgrade ? (
@@ -771,8 +801,8 @@ export default function SettingsPage() {
                             </p>
                           </div>
                         )}
-                        <p className="text-emerald-400 text-sm">
-                          ✓ Your upgrade will take effect immediately
+                        <p className="text-emerald-400 text-sm flex items-center gap-1">
+                          <Check className="w-4 h-4" /> Your upgrade will take effect immediately
                         </p>
                       </div>
                     ) : (
@@ -782,9 +812,10 @@ export default function SettingsPage() {
                           <strong>{plans.find(p => p.id === selectedPlan)?.name}</strong>.
                         </p>
                         <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-4">
-                          <p className="text-yellow-400 text-sm">
-                            ⚠️ Your current plan will remain active until the end of your billing period.
-                            The new plan will take effect on your next billing date.
+                          <p className="text-yellow-400 text-sm flex items-start gap-2">
+                            <AlertTriangle className="w-4 h-4 flex-shrink-0 mt-0.5" />
+                            <span>Your current plan will remain active until the end of your billing period.
+                            The new plan will take effect on your next billing date.</span>
                           </p>
                         </div>
                         <p className="text-gray-400 text-sm">
@@ -807,7 +838,7 @@ export default function SettingsPage() {
                       >
                         {isCheckingOut ? (
                           <>
-                            <span className="animate-spin">⏳</span>
+                            <Loader2 className="w-4 h-4 animate-spin" />
                             Processing...
                           </>
                         ) : billing.cardLast4 ? (
@@ -827,7 +858,7 @@ export default function SettingsPage() {
                     <div className="flex items-center justify-between p-4 bg-white/5 rounded-lg">
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 bg-white/10 rounded flex items-center justify-center">
-                          💳
+                          <CreditCard className="w-5 h-5 text-emerald-400" />
                         </div>
                         <div>
                           <div className="font-medium text-white">
@@ -865,9 +896,10 @@ export default function SettingsPage() {
                   </p>
                   
                   <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-4">
-                    <p className="text-yellow-400 text-sm">
-                      <strong>⚠️ Demo Mode:</strong> This application uses browser localStorage for data storage. 
-                      In production, all data would be securely encrypted and stored on protected servers.
+                    <p className="text-yellow-400 text-sm flex items-start gap-2">
+                      <AlertTriangle className="w-4 h-4 flex-shrink-0 mt-0.5" />
+                      <span><strong>Demo Mode:</strong> This application uses browser localStorage for data storage. 
+                      In production, all data would be securely encrypted and stored on protected servers.</span>
                     </p>
                   </div>
                 </div>
@@ -880,20 +912,20 @@ export default function SettingsPage() {
                   </p>
                   <ul className="space-y-2 text-gray-300 text-sm">
                     <li className="flex items-center gap-2">
-                      <span className="text-emerald-400">✓</span>
-                      <strong>Right to Access:</strong> You can request a copy of your data
+                      <Check className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+                      <span><strong>Right to Access:</strong> You can request a copy of your data</span>
                     </li>
                     <li className="flex items-center gap-2">
-                      <span className="text-emerald-400">✓</span>
-                      <strong>Right to Portability:</strong> Export your data in a machine-readable format
+                      <Check className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+                      <span><strong>Right to Portability:</strong> Export your data in a machine-readable format</span>
                     </li>
                     <li className="flex items-center gap-2">
-                      <span className="text-emerald-400">✓</span>
-                      <strong>Right to Erasure:</strong> Delete your account and all associated data
+                      <Check className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+                      <span><strong>Right to Erasure:</strong> Delete your account and all associated data</span>
                     </li>
                     <li className="flex items-center gap-2">
-                      <span className="text-emerald-400">✓</span>
-                      <strong>Right to Rectification:</strong> Update or correct your information
+                      <Check className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+                      <span><strong>Right to Rectification:</strong> Update or correct your information</span>
                     </li>
                   </ul>
                 </div>
@@ -909,7 +941,7 @@ export default function SettingsPage() {
                     onClick={handleExportData}
                     className="bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-3 rounded-lg font-medium transition flex items-center gap-2"
                   >
-                    <span>📥</span>
+                    <Download className="w-4 h-4" />
                     Export All Data
                   </button>
                 </div>
@@ -939,7 +971,9 @@ export default function SettingsPage() {
 
                 {/* Delete Account */}
                 <div className="bg-red-500/10 backdrop-blur rounded-xl border border-red-500/30 p-6">
-                  <h2 className="text-xl font-semibold text-red-400 mb-2">⚠️ Delete Account</h2>
+                  <h2 className="text-xl font-semibold text-red-400 mb-2 flex items-center gap-2">
+                    <AlertTriangle className="w-5 h-5" /> Delete Account
+                  </h2>
                   <p className="text-gray-400 mb-4">
                     Permanently delete your account and all associated data. This action cannot be undone.
                     Some data may be retained for legal compliance purposes.
@@ -995,14 +1029,16 @@ export default function SettingsPage() {
                     For any privacy-related inquiries or to exercise your data rights, contact us:
                   </p>
                   <div className="space-y-2 text-sm">
-                    <p className="text-gray-300">
-                      📧 Email:{' '}
+                    <p className="text-gray-300 flex items-center gap-2">
+                      <Mail className="w-4 h-4 text-emerald-400" />
+                      Email:{' '}
                       <a href="mailto:privacy@salestaxjar.com" className="text-emerald-400 hover:text-emerald-300">
                         privacy@salestaxjar.com
                       </a>
                     </p>
-                    <p className="text-gray-300">
-                      🇪🇺 GDPR DPO:{' '}
+                    <p className="text-gray-300 flex items-center gap-2">
+                      <Lock className="w-4 h-4 text-emerald-400" />
+                      GDPR DPO:{' '}
                       <a href="mailto:dpo@salestaxjar.com" className="text-emerald-400 hover:text-emerald-300">
                         dpo@salestaxjar.com
                       </a>

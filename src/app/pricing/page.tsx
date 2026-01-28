@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import Footer from '@/components/Footer';
+import { Check, Clock, X, DollarSign } from 'lucide-react';
 
 const plans = [
   {
@@ -179,11 +180,11 @@ export default function PricingPage() {
                   {plan.features.map((feature, i) => (
                     <li key={i} className="flex items-start gap-2">
                       {feature.included ? (
-                        <span className="text-emerald-400 mt-0.5">✓</span>
+                        <Check className="w-4 h-4 text-emerald-400 mt-0.5 flex-shrink-0" />
                       ) : feature.comingSoon ? (
-                        <span className="text-yellow-400 mt-0.5">◷</span>
+                        <Clock className="w-4 h-4 text-yellow-400 mt-0.5 flex-shrink-0" />
                       ) : (
-                        <span className="text-gray-500 mt-0.5">✗</span>
+                        <X className="w-4 h-4 text-gray-500 mt-0.5 flex-shrink-0" />
                       )}
                       <span className={feature.included ? 'text-gray-300' : 'text-gray-500'}>
                         {feature.text}
@@ -215,8 +216,8 @@ export default function PricingPage() {
       <section className="py-8 px-4">
         <div className="max-w-3xl mx-auto text-center">
           <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-xl p-6">
-            <p className="text-emerald-400 font-medium mb-2">
-              💰 Save thousands compared to competitors
+            <p className="text-emerald-400 font-medium mb-2 flex items-center justify-center gap-2">
+              <DollarSign className="w-5 h-5" /> Save thousands compared to competitors
             </p>
             <p className="text-gray-300 text-sm">
               Similar services charge $100-$500/month or more. SalesTaxJar gives you the essentials at a price that makes sense for small businesses.

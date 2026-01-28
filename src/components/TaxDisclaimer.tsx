@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { AlertTriangle, Calendar, Landmark } from 'lucide-react';
 
 interface TaxDisclaimerProps {
   variant?: 'inline' | 'banner' | 'compact';
@@ -67,7 +68,7 @@ export default function TaxDisclaimer({ variant = 'inline', className = '' }: Ta
     return (
       <div className={`bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-4 ${className}`}>
         <div className="flex items-start gap-3">
-          <span className="text-xl flex-shrink-0">⚠️</span>
+          <AlertTriangle className="w-5 h-5 text-yellow-400 flex-shrink-0 mt-0.5" />
           <div>
             <h4 className="font-semibold text-yellow-400 mb-1">Tax Estimation Disclaimer</h4>
             <p className="text-yellow-200/80 text-sm">
@@ -76,8 +77,10 @@ export default function TaxDisclaimer({ variant = 'inline', className = '' }: Ta
               SalesTaxJar is not a CPA firm or tax advisory service. Always verify rates with your 
               state&apos;s official tax authority and consult a qualified tax professional for advice specific to your business.
             </p>
-            <div className="mt-2 flex flex-wrap gap-2 text-xs">
-              <span className="text-yellow-400">📅 Rates last updated: January 2025</span>
+            <div className="mt-2 flex flex-wrap gap-2 text-xs items-center">
+              <span className="text-yellow-400 flex items-center gap-1">
+                <Calendar className="w-3 h-3" /> Rates last updated: January 2025
+              </span>
               <span className="text-gray-400">|</span>
               <Link href="/terms" className="text-emerald-400 hover:text-emerald-300">Full Terms of Service →</Link>
             </div>
@@ -89,8 +92,8 @@ export default function TaxDisclaimer({ variant = 'inline', className = '' }: Ta
 
   if (variant === 'compact') {
     return (
-      <div className={`text-xs text-gray-500 ${className}`}>
-        <span className="text-yellow-500">⚠️</span> Rates are estimates. 
+      <div className={`text-xs text-gray-500 flex items-center gap-1 ${className}`}>
+        <AlertTriangle className="w-3 h-3 text-yellow-500" /> Rates are estimates. 
         <Link href="/terms" className="text-emerald-400 hover:text-emerald-300 ml-1">See disclaimer</Link>.
       </div>
     );
@@ -99,10 +102,11 @@ export default function TaxDisclaimer({ variant = 'inline', className = '' }: Ta
   // Default inline variant
   return (
     <div className={`bg-white/5 border border-white/10 rounded-lg p-3 text-sm text-gray-400 ${className}`}>
-      <p>
-        <span className="text-yellow-500 font-medium">⚠️ Disclaimer:</span> Tax calculations are estimates based on 
+      <p className="flex items-start gap-2">
+        <AlertTriangle className="w-4 h-4 text-yellow-500 flex-shrink-0 mt-0.5" />
+        <span><span className="text-yellow-500 font-medium">Disclaimer:</span> Tax calculations are estimates based on 
         average combined state and local rates. Actual rates may vary. This is not tax advice. 
-        <Link href="/terms" className="text-emerald-400 hover:text-emerald-300 ml-1">Learn more</Link>
+        <Link href="/terms" className="text-emerald-400 hover:text-emerald-300 ml-1">Learn more</Link></span>
       </p>
     </div>
   );
@@ -121,7 +125,7 @@ export function StateAuthorityLink({ stateCode, className = '' }: { stateCode: s
       rel="noopener noreferrer"
       className={`text-emerald-400 hover:text-emerald-300 text-sm inline-flex items-center gap-1 ${className}`}
     >
-      <span>🏛️</span>
+      <Landmark className="w-4 h-4" />
       <span>Verify with {authority.name}</span>
       <span className="text-xs">↗</span>
     </a>

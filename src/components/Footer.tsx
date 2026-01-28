@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { AlertTriangle, Lock, Shield } from 'lucide-react';
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
@@ -59,11 +60,12 @@ export default function Footer() {
 
         {/* Tax Disclaimer Banner */}
         <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-4 mb-8">
-          <p className="text-yellow-400 text-xs text-center">
-            <strong>⚠️ IMPORTANT:</strong> SalesTaxJar provides tax estimation tools only. We are not a CPA firm or tax advisory service. 
+          <p className="text-yellow-400 text-xs text-center flex items-start justify-center gap-2">
+            <AlertTriangle className="w-4 h-4 flex-shrink-0 mt-0.5" />
+            <span><strong>IMPORTANT:</strong> SalesTaxJar provides tax estimation tools only. We are not a CPA firm or tax advisory service. 
             Tax calculations are estimates based on publicly available data and may not reflect current rates or local variations. 
             You are responsible for verifying accuracy and consulting qualified tax professionals. 
-            <Link href="/terms" className="underline ml-1 hover:text-yellow-300">See full Terms of Service</Link>.
+            <Link href="/terms" className="underline ml-1 hover:text-yellow-300">See full Terms of Service</Link>.</span>
           </p>
         </div>
 
@@ -82,9 +84,15 @@ export default function Footer() {
 
         {/* Compliance Badges */}
         <div className="flex justify-center gap-4 mt-8 text-gray-500 text-xs">
-          <span className="px-2 py-1 border border-gray-600 rounded">🔒 SSL Secured</span>
-          <span className="px-2 py-1 border border-gray-600 rounded">🇪🇺 GDPR Compliant</span>
-          <span className="px-2 py-1 border border-gray-600 rounded">🇺🇸 CCPA Compliant</span>
+          <span className="px-2 py-1 border border-gray-600 rounded flex items-center gap-1">
+            <Lock className="w-3 h-3" /> SSL Secured
+          </span>
+          <span className="px-2 py-1 border border-gray-600 rounded flex items-center gap-1">
+            <Shield className="w-3 h-3" /> GDPR Compliant
+          </span>
+          <span className="px-2 py-1 border border-gray-600 rounded flex items-center gap-1">
+            <Shield className="w-3 h-3" /> CCPA Compliant
+          </span>
         </div>
       </div>
     </footer>

@@ -5,6 +5,33 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import Header from '@/components/Header';
+import { 
+  MapPin, 
+  ClipboardList, 
+  DollarSign, 
+  Link2, 
+  Calendar, 
+  Calculator,
+  ShoppingCart,
+  Package,
+  Palette,
+  Plug,
+  Store,
+  Tag,
+  Square
+} from 'lucide-react';
+
+const ICON_CLASS = "w-6 h-6 text-emerald-400";
+
+const platformIcons: Record<string, React.ReactNode> = {
+  shopify: <ShoppingCart className="w-6 h-6 text-emerald-400" />,
+  amazon: <Package className="w-6 h-6 text-emerald-400" />,
+  etsy: <Palette className="w-6 h-6 text-emerald-400" />,
+  woocommerce: <Plug className="w-6 h-6 text-emerald-400" />,
+  bigcommerce: <Store className="w-6 h-6 text-emerald-400" />,
+  ebay: <Tag className="w-6 h-6 text-emerald-400" />,
+  square: <Square className="w-6 h-6 text-emerald-400" />,
+};
 
 export default function DashboardPage() {
   const { 
@@ -56,7 +83,7 @@ export default function DashboardPage() {
         {/* Welcome Banner */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-white mb-2">
-            Welcome back, {user.name.split(' ')[0]}! 👋
+            Welcome back, {user.name.split(' ')[0]}!
           </h1>
           <p className="text-gray-400">
             Here&apos;s an overview of your sales tax compliance status.
@@ -116,7 +143,7 @@ export default function DashboardPage() {
           <div className="bg-white/10 backdrop-blur rounded-xl p-6 border border-white/10">
             <div className="flex items-center justify-between mb-2">
               <span className="text-gray-400 text-sm">Active Nexus States</span>
-              <span className="text-2xl">🗺️</span>
+              <MapPin className={ICON_CLASS} />
             </div>
             <div className="text-3xl font-bold text-white">{activeNexusCount}</div>
             <Link href="/nexus" className="text-emerald-400 text-sm hover:text-emerald-300 mt-2 inline-block">
@@ -127,7 +154,7 @@ export default function DashboardPage() {
           <div className="bg-white/10 backdrop-blur rounded-xl p-6 border border-white/10">
             <div className="flex items-center justify-between mb-2">
               <span className="text-gray-400 text-sm">Pending Filings</span>
-              <span className="text-2xl">📋</span>
+              <ClipboardList className={ICON_CLASS} />
             </div>
             <div className="text-3xl font-bold text-white">{pendingFilings}</div>
             <Link href="/filings" className="text-emerald-400 text-sm hover:text-emerald-300 mt-2 inline-block">
@@ -138,7 +165,7 @@ export default function DashboardPage() {
           <div className="bg-white/10 backdrop-blur rounded-xl p-6 border border-white/10">
             <div className="flex items-center justify-between mb-2">
               <span className="text-gray-400 text-sm">Tax Calculated</span>
-              <span className="text-2xl">💰</span>
+              <DollarSign className={ICON_CLASS} />
             </div>
             <div className="text-3xl font-bold text-white">${totalTaxCollected.toFixed(2)}</div>
             <Link href="/calculator" className="text-emerald-400 text-sm hover:text-emerald-300 mt-2 inline-block">
@@ -149,7 +176,7 @@ export default function DashboardPage() {
           <div className="bg-white/10 backdrop-blur rounded-xl p-6 border border-white/10">
             <div className="flex items-center justify-between mb-2">
               <span className="text-gray-400 text-sm">Connected Platforms</span>
-              <span className="text-2xl">🔗</span>
+              <Link2 className={ICON_CLASS} />
             </div>
             <div className="text-3xl font-bold text-white">{connectedCount}</div>
             <Link href="/settings#platforms" className="text-emerald-400 text-sm hover:text-emerald-300 mt-2 inline-block">
@@ -172,7 +199,7 @@ export default function DashboardPage() {
             <div className="p-6">
               {upcomingDeadlines.length === 0 ? (
                 <div className="text-center py-8">
-                  <span className="text-4xl mb-4 block">📅</span>
+                  <Calendar className="w-10 h-10 text-emerald-400 mx-auto mb-4" />
                   <p className="text-gray-400">No upcoming deadlines</p>
                   <p className="text-gray-500 text-sm mt-1">Configure your nexus states to see filing deadlines</p>
                 </div>
@@ -220,7 +247,7 @@ export default function DashboardPage() {
             <div className="p-6">
               {recentCalculations.length === 0 ? (
                 <div className="text-center py-8">
-                  <span className="text-4xl mb-4 block">🧮</span>
+                  <Calculator className="w-10 h-10 text-emerald-400 mx-auto mb-4" />
                   <p className="text-gray-400">No calculations yet</p>
                   <Link href="/calculator" className="text-emerald-400 text-sm hover:text-emerald-300 mt-2 inline-block">
                     Try the calculator →
@@ -267,14 +294,8 @@ export default function DashboardPage() {
                       : 'bg-white/5 border-white/10 opacity-50'
                   }`}
                 >
-                  <div className="text-2xl mb-2">
-                    {platform.type === 'shopify' && '🛒'}
-                    {platform.type === 'amazon' && '📦'}
-                    {platform.type === 'etsy' && '🎨'}
-                    {platform.type === 'woocommerce' && '🔌'}
-                    {platform.type === 'bigcommerce' && '🏪'}
-                    {platform.type === 'ebay' && '🏷️'}
-                    {platform.type === 'square' && '⬛'}
+                  <div className="flex justify-center mb-2">
+                    {platformIcons[platform.type] || <Package className="w-6 h-6 text-emerald-400" />}
                   </div>
                   <div className="text-sm font-medium text-white">{platform.name}</div>
                   <div className={`text-xs mt-1 ${platform.connected ? 'text-emerald-400' : 'text-gray-500'}`}>
