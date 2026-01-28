@@ -13,7 +13,7 @@ const AMAZON_CLIENT_ID = process.env.AMAZON_CLIENT_ID; // LWA Client ID for toke
 const AMAZON_CLIENT_SECRET = process.env.AMAZON_CLIENT_SECRET; // LWA Client Secret
 const AMAZON_REFRESH_TOKEN_URL = 'https://api.amazon.com/auth/o2/token';
 const AMAZON_SP_API_BASE = 'https://sellingpartnerapi-na.amazon.com';
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://sails.tax';
 
 export function isAmazonConfigured(): boolean {
   return !!(AMAZON_APP_ID && AMAZON_CLIENT_ID && AMAZON_CLIENT_SECRET);
