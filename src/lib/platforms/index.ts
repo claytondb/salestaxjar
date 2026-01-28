@@ -42,10 +42,9 @@ export function getPlatformConfigurations(): PlatformConfig[] {
     {
       platform: 'amazon',
       name: 'Amazon Seller Central',
-      configured: !!(process.env.AMAZON_CLIENT_ID && process.env.AMAZON_CLIENT_SECRET),
-      description: 'Sync your Amazon seller account to track sales and tax obligations across marketplaces.',
-      features: ['Order history', 'Multi-marketplace', 'FBA support', 'Tax reports'],
-      setupUrl: 'https://sellercentral.amazon.com/apps/manage',
+      configured: true, // Manual import always available
+      description: 'Import your Amazon tax reports to track sales and tax obligations. Direct API integration coming soon!',
+      features: ['CSV import', 'Tax reports', 'Multi-marketplace', 'FBA support'],
     },
     {
       platform: 'etsy',

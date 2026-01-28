@@ -14,8 +14,11 @@ import {
   AlertCircle,
   Check,
   Loader2,
-  Unplug
+  Unplug,
+  Upload,
+  Clock
 } from 'lucide-react';
+import { AmazonManualImport } from './AmazonManualImport';
 
 interface PlatformConnection {
   id: string;
@@ -62,6 +65,7 @@ export default function PlatformsManager() {
   const [syncingConnection, setSyncingConnection] = useState<string | null>(null);
   const [shopifyShop, setShopifyShop] = useState('');
   const [showShopifyModal, setShowShopifyModal] = useState(false);
+  const [showAmazonModal, setShowAmazonModal] = useState(false);
 
   const fetchPlatforms = useCallback(async () => {
     try {
@@ -83,6 +87,11 @@ export default function PlatformsManager() {
   const handleConnect = async (platform: string) => {
     if (platform === 'shopify') {
       setShowShopifyModal(true);
+      return;
+    }
+
+    if (platform === 'amazon') {
+      setShowAmazonModal(true);
       return;
     }
     
@@ -206,6 +215,12 @@ export default function PlatformsManager() {
                 <div>
                   <h3 className="font-medium text-white flex items-center gap-2">
                     {platform.name}
+                    {platform.platform === 'amazon' && (
+                      <span className="px-2 py-0.5 bg-yellow-500/20 text-yellow-400 text-xs rounded-full flex items-center gap-1">
+                        <Clock className="w-3 h-3" />
+                        Direct API Coming Soon
+                      </span>
+                    )}
                     {platform.connectedCount > 0 && (
                       <span className="px-2 py-0.5 bg-emerald-500/20 text-emerald-400 text-xs rounded-full">
                         {platform.connectedCount} connected
@@ -216,7 +231,15 @@ export default function PlatformsManager() {
                 </div>
               </div>
               
-              {platform.configured ? (
+              {platform.platform === 'amazon' ? (
+                <button
+                  onClick={() => setShowAmazonModal(true)}
+                  className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg font-medium transition flex items-center gap-2"
+                >
+                  <Upload className="w-4 h-4" />
+                  Import Data
+                </button>
+              ) : platform.configured ? (
                 <button
                   onClick={() => handleConnect(platform.platform)}
                   disabled={connectingPlatform === platform.platform}
@@ -401,6 +424,40 @@ export default function PlatformsManager() {
                 )}
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Amazon Manual Import Modal */}
+      {showAmazonModal && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-slate-800 rounded-xl border border-white/20 p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h3 className="text-xl font-semibold text-white flex items-center gap-2">
+                  <Package className="w-6 h-6 text-orange-400" />
+                  Amazon Seller Central
+                </h3>
+                <p className="text-gray-400 text-sm mt-1">
+                  Import your Amazon sales tax data manually
+                </p>
+              </div>
+              <button
+                onClick={() => setShowAmazonModal(false)}
+                className="p-2 bg-white/10 hover:bg-white/20 text-white rounded-lg transition"
+              >
+                ✕
+              </button>
+            </div>
+            
+            <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-3 mb-4">
+              <p className="text-yellow-400 text-sm">
+                <strong>Direct API integration coming soon!</strong> For now, you can import your Amazon tax reports manually. 
+                This gives you the same data - just requires a few extra clicks.
+              </p>
+            </div>
+            
+            <AmazonManualImport />
           </div>
         </div>
       )}

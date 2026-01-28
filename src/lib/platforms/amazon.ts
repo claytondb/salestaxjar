@@ -8,14 +8,15 @@
 import { prisma } from '../prisma';
 
 // Amazon SP-API Configuration
-const AMAZON_CLIENT_ID = process.env.AMAZON_CLIENT_ID;
-const AMAZON_CLIENT_SECRET = process.env.AMAZON_CLIENT_SECRET;
+const AMAZON_APP_ID = process.env.AMAZON_APP_ID; // App ID for authorization URL
+const AMAZON_CLIENT_ID = process.env.AMAZON_CLIENT_ID; // LWA Client ID for token exchange
+const AMAZON_CLIENT_SECRET = process.env.AMAZON_CLIENT_SECRET; // LWA Client Secret
 const AMAZON_REFRESH_TOKEN_URL = 'https://api.amazon.com/auth/o2/token';
 const AMAZON_SP_API_BASE = 'https://sellingpartnerapi-na.amazon.com';
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://salestaxjar.vercel.app';
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
 
 export function isAmazonConfigured(): boolean {
-  return !!(AMAZON_CLIENT_ID && AMAZON_CLIENT_SECRET);
+  return !!(AMAZON_APP_ID && AMAZON_CLIENT_ID && AMAZON_CLIENT_SECRET);
 }
 
 // =============================================================================
@@ -24,12 +25,13 @@ export function isAmazonConfigured(): boolean {
 
 /**
  * Generate Amazon OAuth authorization URL
+ * Uses SP-API OAuth flow through Seller Central
  */
 export function getAuthorizationUrl(state: string): string {
   const redirectUri = `${APP_URL}/api/platforms/amazon/callback`;
   
   const params = new URLSearchParams({
-    application_id: AMAZON_CLIENT_ID!,
+    application_id: AMAZON_APP_ID!, // Use App ID (not LWA Client ID)
     state,
     redirect_uri: redirectUri,
     version: 'beta', // SP-API OAuth

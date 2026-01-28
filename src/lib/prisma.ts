@@ -1,8 +1,11 @@
 import { PrismaClient } from '@prisma/client';
-import { PrismaPg } from '@prisma/adapter-pg';
-import { Pool } from 'pg';
+import { PrismaNeon } from '@prisma/adapter-neon';
+import { neonConfig, Pool } from '@neondatabase/serverless';
 
-// Create Prisma client with PostgreSQL adapter (required for Prisma 7+)
+// Enable WebSocket for fetch-based environments (Edge, serverless)
+neonConfig.fetchConnectionCache = true;
+
+// Create Prisma client with Neon serverless adapter
 const createPrismaClient = () => {
   const connectionString = process.env.DATABASE_URL;
   
@@ -14,11 +17,11 @@ const createPrismaClient = () => {
     });
   }
   
-  // Create pg pool for runtime
-  const pool = new Pool({ connectionString });
+  // Create Neon pool with connection string
+  const neonPool = new Pool({ connectionString });
   
-  // Create Prisma adapter
-  const adapter = new PrismaPg(pool);
+  // Create Prisma adapter for Neon - pass the pool config, not the pool instance
+  const adapter = new PrismaNeon({ connectionString });
   
   // Create Prisma client with adapter
   return new PrismaClient({
