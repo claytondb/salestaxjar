@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import { useState } from 'react';
 import { usePathname } from 'next/navigation';
+import SailsLogo from './SailsLogo';
 
 export default function Header() {
   const { user, logout } = useAuth();
@@ -20,9 +21,7 @@ export default function Header() {
           <div className="flex justify-between items-center">
             <div className="flex items-center gap-8">
               <Link href="/dashboard" className="flex items-center gap-2">
-                <div className="w-9 h-9 bg-gradient-to-br from-green-400 to-emerald-600 rounded-lg flex items-center justify-center">
-                  <span className="text-white font-bold text-lg">$</span>
-                </div>
+                <SailsLogo className="w-9 h-9 text-emerald-400" />
                 <span className="text-xl font-bold text-white hidden sm:inline">Sails</span>
               </Link>
               
@@ -142,9 +141,7 @@ export default function Header() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
         <div className="flex justify-between items-center">
           <Link href="/" className="flex items-center gap-2">
-            <div className="w-10 h-10 bg-gradient-to-br from-green-400 to-emerald-600 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-xl">$</span>
-            </div>
+            <SailsLogo className="w-10 h-10 text-emerald-400" />
             <span className="text-2xl font-bold text-white">Sails</span>
           </Link>
           <nav className="hidden md:flex gap-6">

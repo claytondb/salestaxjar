@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
+import SailsLogo from '@/components/SailsLogo';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -33,9 +34,7 @@ export default function LoginPage() {
       <div className="w-full max-w-md">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2 justify-center mb-8">
-          <div className="w-12 h-12 bg-gradient-to-br from-green-400 to-emerald-600 rounded-xl flex items-center justify-center">
-            <span className="text-white font-bold text-2xl">$</span>
-          </div>
+          <SailsLogo className="w-12 h-12 text-emerald-400" />
           <span className="text-3xl font-bold text-white">Sails</span>
         </Link>
 

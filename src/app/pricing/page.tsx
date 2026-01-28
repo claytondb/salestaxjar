@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import Footer from '@/components/Footer';
+import SailsLogo from '@/components/SailsLogo';
 import { Check, Clock, X, DollarSign } from 'lucide-react';
 
 const plans = [
@@ -109,9 +110,7 @@ export default function PricingPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex justify-between items-center">
             <Link href="/" className="flex items-center gap-2">
-              <div className="w-10 h-10 bg-gradient-to-br from-green-400 to-emerald-600 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-xl">$</span>
-              </div>
+              <SailsLogo className="w-10 h-10 text-emerald-400" />
               <span className="text-2xl font-bold text-white">Sails</span>
             </Link>
             <div className="flex gap-3">

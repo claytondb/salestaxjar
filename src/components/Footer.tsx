@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { AlertTriangle, Lock, Shield } from 'lucide-react';
+import SailsLogo from './SailsLogo';
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
@@ -14,9 +15,7 @@ export default function Footer() {
           {/* Brand */}
           <div className="md:col-span-1">
             <Link href="/" className="flex items-center gap-2 mb-4">
-              <div className="w-9 h-9 bg-gradient-to-br from-green-400 to-emerald-600 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-lg">$</span>
-              </div>
+              <SailsLogo className="w-9 h-9 text-emerald-400" />
               <span className="text-xl font-bold text-white">Sails</span>
             </Link>
             <p className="text-gray-400 text-sm">
