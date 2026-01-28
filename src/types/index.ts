@@ -8,20 +8,22 @@ export interface User {
 }
 
 export interface BusinessProfile {
+  id?: string;
   name: string;
   address: string;
   city: string;
   state: string;
   zip: string;
-  businessType: 'retail' | 'ecommerce' | 'services' | 'manufacturing' | 'wholesale' | 'other';
+  businessType: 'retail' | 'ecommerce' | 'services' | 'manufacturing' | 'wholesale' | 'other' | string;
   ein?: string;
 }
 
 export interface NexusState {
+  id?: string;
   stateCode: string;
   state: string;
   hasNexus: boolean;
-  reason: 'physical' | 'economic' | 'affiliate' | 'click-through' | 'marketplace' | null;
+  nexusType?: 'physical' | 'economic' | 'affiliate' | 'click-through' | 'marketplace' | string | null;
   registrationNumber?: string;
   registrationDate?: string;
 }

@@ -85,13 +85,13 @@ export default function SettingsPage() {
     businessProfile, 
     updateBusinessProfile, 
     connectedPlatforms, 
-    togglePlatformConnection,
     notifications,
     updateNotifications,
     billing,
     updateBilling,
     updateUser,
-    isLoading 
+    isLoading,
+    refreshData,
   } = useAuth();
   const router = useRouter();
 

@@ -34,7 +34,7 @@ export default function NexusPage() {
         stateCode: s.stateCode,
         state: s.state,
         hasNexus: false,
-        reason: null,
+        nexusType: null,
       }));
       updateNexusStates(initialStates);
     }
@@ -46,7 +46,7 @@ export default function NexusPage() {
         return {
           ...s,
           hasNexus: !s.hasNexus,
-          reason: !s.hasNexus ? 'economic' as const : null,
+          nexusType: !s.hasNexus ? 'economic' as const : null,
           registrationDate: !s.hasNexus ? new Date().toISOString() : undefined,
         };
       }
@@ -55,10 +55,10 @@ export default function NexusPage() {
     updateNexusStates(updated);
   };
 
-  const updateReason = (stateCode: string, reason: NexusState['reason']) => {
+  const updateNexusType = (stateCode: string, nexusType: NexusState['nexusType']) => {
     const updated = nexusStates.map(s => {
       if (s.stateCode === stateCode) {
-        return { ...s, reason };
+        return { ...s, nexusType };
       }
       return s;
     });
@@ -217,8 +217,8 @@ export default function NexusPage() {
                           <div>
                             <label className="block text-xs text-gray-500 mb-1">Nexus Reason</label>
                             <select
-                              value={state.reason || ''}
-                              onChange={(e) => updateReason(state.stateCode, e.target.value as NexusState['reason'])}
+                              value={state.nexusType || ''}
+                              onChange={(e) => updateNexusType(state.stateCode, e.target.value as NexusState['nexusType'])}
                               className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
                             >
                               {nexusReasons.map(r => (
