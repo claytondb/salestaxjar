@@ -94,8 +94,8 @@ export default function PrivacyPage() {
                 <li>Access controls and authentication measures</li>
                 <li>Secure data centers with physical security controls</li>
               </ul>
-              <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-4 mt-4">
-                <p className="text-yellow-400 text-sm">
+              <div className="rounded-lg p-4 mt-4" style={{ backgroundColor: 'var(--warning-bg)', border: '1px solid var(--warning-border)' }}>
+                <p className="text-sm" style={{ color: 'var(--warning-text)' }}>
                   <strong>Demo Mode Notice:</strong> This demonstration version uses browser localStorage for data storage. 
                   In production, all data would be stored in secure, encrypted databases with enterprise-grade security.
                 </p>

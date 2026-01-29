@@ -222,8 +222,8 @@ export default function ContactPage() {
             </div>
 
             {/* Response Time Info */}
-            <div className="mt-8 p-4 bg-blue-500/10 border border-blue-500/30 rounded-lg">
-              <h3 className="font-medium text-blue-400 mb-2">📞 Response Times</h3>
+            <div className="mt-8 p-4 rounded-lg" style={{ backgroundColor: 'var(--info-bg)', border: '1px solid var(--info-border)' }}>
+              <h3 className="font-medium mb-2" style={{ color: 'var(--info-text)' }}>📞 Response Times</h3>
               <ul className="text-sm text-theme-secondary space-y-1">
                 <li>• <strong>Email:</strong> 1-2 business days</li>
                 <li>• <strong>Priority Support (Growth+):</strong> Within 4 hours</li>
@@ -234,8 +234,8 @@ export default function ContactPage() {
         </div>
 
         {/* Tax Disclaimer */}
-        <div className="mt-8 p-4 bg-yellow-500/10 border border-yellow-500/30 rounded-lg text-center">
-          <p className="text-yellow-400 text-sm">
+        <div className="mt-8 p-4 rounded-lg text-center" style={{ backgroundColor: 'var(--warning-bg)', border: '1px solid var(--warning-border)' }}>
+          <p className="text-sm" style={{ color: 'var(--warning-text)' }}>
             <strong>Note:</strong> Our support team can help with product questions and technical issues. 
             For specific tax advice about your business, please consult a qualified tax professional (CPA or tax attorney).
           </p>

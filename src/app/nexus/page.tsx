@@ -103,8 +103,8 @@ export default function NexusPage() {
         </div>
 
         {/* Info Banner */}
-        <div className="bg-blue-500/10 border border-blue-500/30 rounded-xl p-6 mb-8">
-          <h2 className="text-lg font-semibold text-blue-400 mb-2">What is Nexus?</h2>
+        <div className="rounded-xl p-6 mb-8" style={{ backgroundColor: 'var(--info-bg)', border: '1px solid var(--info-border)' }}>
+          <h2 className="text-lg font-semibold mb-2" style={{ color: 'var(--info-text)' }}>What is Nexus?</h2>
           <p className="text-theme-secondary text-sm mb-4">
             Nexus is a connection between your business and a state that creates a tax obligation. 
             If you have nexus in a state, you must collect and remit sales tax there.

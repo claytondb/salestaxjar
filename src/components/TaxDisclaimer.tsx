@@ -66,23 +66,23 @@ export const stateTaxAuthorities: Record<string, { name: string; url: string }> 
 export default function TaxDisclaimer({ variant = 'inline', className = '' }: TaxDisclaimerProps) {
   if (variant === 'banner') {
     return (
-      <div className={`bg-accent-subtle border border-theme-accent rounded-lg p-4 ${className}`}>
+      <div className={`rounded-lg p-4 ${className}`} style={{ backgroundColor: 'var(--warning-bg)', border: '1px solid var(--warning-border)' }}>
         <div className="flex items-start gap-3">
-          <AlertTriangle className="w-5 h-5 text-theme-accent flex-shrink-0 mt-0.5" />
+          <AlertTriangle className="w-5 h-5 flex-shrink-0 mt-0.5" style={{ color: 'var(--warning-text)' }} />
           <div>
-            <h4 className="font-semibold text-theme-accent mb-1">Tax Estimation Disclaimer</h4>
-            <p className="text-yellow-200/80 text-sm">
+            <h4 className="font-semibold mb-1" style={{ color: 'var(--warning-text)' }}>Tax Estimation Disclaimer</h4>
+            <p className="text-sm" style={{ color: 'var(--warning-text)' }}>
               The tax rates shown are <strong>estimates only</strong> based on publicly available data. 
               Actual rates may vary based on local jurisdictions (city, county, special districts) and product-specific exemptions. 
               Sails is not a CPA firm or tax advisory service. Always verify rates with your 
               state&apos;s official tax authority and consult a qualified tax professional for advice specific to your business.
             </p>
             <div className="mt-2 flex flex-wrap gap-2 text-xs items-center">
-              <span className="text-theme-accent flex items-center gap-1">
+              <span className="flex items-center gap-1" style={{ color: 'var(--warning-text)' }}>
                 <Calendar className="w-3 h-3" /> Rates last updated: January 2025
               </span>
               <span className="text-theme-muted">|</span>
-              <Link href="/terms" className="text-theme-accent hover:text-emerald-300">Full Terms of Service →</Link>
+              <Link href="/terms" className="text-theme-accent hover:opacity-80">Full Terms of Service →</Link>
             </div>
           </div>
         </div>

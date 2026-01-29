@@ -15,11 +15,11 @@ export default function TermsPage() {
           <p className="text-theme-muted mb-8">Last updated: January 27, 2025</p>
 
           {/* Critical Tax Disclaimer Banner */}
-          <div className="bg-red-500/20 border-2 border-red-500/50 rounded-xl p-6 mb-8">
-            <h2 className="text-xl font-bold text-red-400 mb-3 flex items-center gap-2">
+          <div className="rounded-xl p-6 mb-8" style={{ backgroundColor: 'var(--error-bg)', border: '2px solid var(--error-border)' }}>
+            <h2 className="text-xl font-bold mb-3 flex items-center gap-2" style={{ color: 'var(--error-text)' }}>
               <span>⚠️</span> IMPORTANT TAX DISCLAIMER
             </h2>
-            <div className="text-red-200 space-y-3">
+            <div className="space-y-3" style={{ color: 'var(--error-text)' }}>
               <p>
                 <strong>Sails provides TAX ESTIMATION TOOLS and FILING PREPARATION ASSISTANCE ONLY.</strong> We are NOT a certified public accounting 
                 (CPA) firm, tax advisory service, or law firm. Our tools are designed to assist with sales tax calculations 
@@ -92,8 +92,8 @@ export default function TermsPage() {
 
             <section>
               <h2 className="text-xl font-semibold text-theme-primary mb-4">4. Tax Rate Accuracy</h2>
-              <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-4 mb-4">
-                <p className="text-yellow-400">
+              <div className="rounded-lg p-4 mb-4" style={{ backgroundColor: 'var(--warning-bg)', border: '1px solid var(--warning-border)' }}>
+                <p style={{ color: 'var(--warning-text)' }}>
                   <strong>Important:</strong> Tax rates in our system are estimates based on publicly available data.
                 </p>
               </div>

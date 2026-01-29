@@ -100,10 +100,11 @@ export default function FilingsPage() {
               <button
                 onClick={() => setFilter('overdue')}
                 className={`card-theme rounded-xl p-4 border text-left transition ${
-                  filter === 'overdue' ? 'border-red-500/50' : 'border-theme-primary hover:border-white/20'
+                  filter === 'overdue' ? 'border-theme-primary' : 'border-theme-primary hover:border-white/20'
                 }`}
+                style={filter === 'overdue' ? { borderColor: 'var(--error-border)' } : {}}
               >
-                <div className="text-2xl font-bold text-red-400">{overdueCount}</div>
+                <div className="text-2xl font-bold" style={{ color: 'var(--error-text)' }}>{overdueCount}</div>
                 <div className="text-sm text-theme-muted">Overdue</div>
               </button>
             </div>
@@ -183,13 +184,15 @@ export default function FilingsPage() {
                       return (
                         <div key={deadline.id} className="p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                           <div className="flex items-start gap-4">
-                            <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${
-                              deadline.status === 'filed' ? 'btn-theme-primary/20' :
-                              deadline.status === 'overdue' ? 'bg-red-500/20' :
-                              isUrgent ? 'bg-amber-500/20' : 'bg-white/10'
-                            }`}>
+                            <div 
+                              className={`w-12 h-12 rounded-xl flex items-center justify-center ${
+                                deadline.status === 'filed' ? 'btn-theme-primary/20' :
+                                isUrgent && deadline.status !== 'overdue' ? 'bg-amber-500/20' : 'bg-white/10'
+                              }`}
+                              style={deadline.status === 'overdue' ? { backgroundColor: 'var(--error-bg)' } : {}}
+                            >
                               {deadline.status === 'filed' ? <CheckCircle2 className="w-6 h-6 text-theme-accent" /> :
-                               deadline.status === 'overdue' ? <AlertTriangle className="w-6 h-6 text-red-400" /> : 
+                               deadline.status === 'overdue' ? <AlertTriangle className="w-6 h-6" style={{ color: 'var(--error-text)' }} /> : 
                                <ClipboardList className="w-6 h-6 text-theme-accent" />}
                             </div>
                             <div>
@@ -207,11 +210,14 @@ export default function FilingsPage() {
 
                           <div className="flex items-center gap-4">
                             <div className="text-right">
-                              <div className={`font-medium ${
-                                deadline.status === 'filed' ? 'text-theme-accent' :
-                                deadline.status === 'overdue' || isPast ? 'text-red-400' :
-                                isUrgent ? 'text-amber-400' : 'text-theme-primary'
-                              }`}>
+                              <div 
+                                className={`font-medium ${
+                                  deadline.status === 'filed' ? 'text-theme-accent' :
+                                  (!isPast && !deadline.status.includes('overdue') && isUrgent) ? 'text-amber-600' : 
+                                  (!isPast && !deadline.status.includes('overdue')) ? 'text-theme-primary' : ''
+                                }`}
+                                style={(deadline.status === 'overdue' || isPast) ? { color: 'var(--error-text)' } : {}}
+                              >
                                 {dueDate.toLocaleDateString('en-US', { 
                                   weekday: 'short',
                                   month: 'short', 
@@ -219,11 +225,14 @@ export default function FilingsPage() {
                                   year: 'numeric'
                                 })}
                               </div>
-                              <div className={`text-sm ${
-                                deadline.status === 'filed' ? 'text-theme-accent/70' :
-                                isPast ? 'text-red-400' :
-                                isUrgent ? 'text-amber-400/70' : 'text-theme-muted'
-                              }`}>
+                              <div 
+                                className={`text-sm ${
+                                  deadline.status === 'filed' ? 'text-theme-accent/70' :
+                                  (!isPast && isUrgent) ? 'text-amber-600' : 
+                                  !isPast ? 'text-theme-muted' : ''
+                                }`}
+                                style={isPast ? { color: 'var(--error-text)' } : {}}
+                              >
                                 {deadline.status === 'filed' ? 'Filed' :
                                  isPast ? `${Math.abs(daysUntil)} days overdue` :
                                  `${daysUntil} days left`}

@@ -43,7 +43,7 @@ export default function ForgotPasswordPage() {
               </p>
 
               {error && (
-                <div className="bg-red-500/10 border border-red-500/30 text-red-400 px-4 py-3 rounded-lg mb-6">
+                <div className="px-4 py-3 rounded-lg mb-6" style={{ backgroundColor: 'var(--error-bg)', border: '1px solid var(--error-border)', color: 'var(--error-text)' }}>
                   {error}
                 </div>
               )}

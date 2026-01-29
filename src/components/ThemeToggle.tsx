@@ -14,7 +14,7 @@ export default function ThemeToggle() {
   // During SSR/SSG, render a placeholder
   if (!mounted) {
     return (
-      <div className="relative flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 w-[88px] h-[32px]" />
+      <div className="relative flex items-center gap-2 px-3 py-1.5 rounded-full w-[88px] h-[32px]" style={{ backgroundColor: 'var(--bg-card)' }} />
     );
   }
 
@@ -28,8 +28,11 @@ function ThemeToggleInner() {
   return (
     <button
       onClick={toggleTheme}
-      className="relative flex items-center gap-2 px-3 py-1.5 rounded-full transition-all duration-300 group
-        bg-white/10 hover:bg-white/20"
+      className="relative flex items-center gap-2 px-3 py-1.5 rounded-full transition-all duration-300 group border"
+      style={{ 
+        backgroundColor: 'var(--bg-card)', 
+        borderColor: 'var(--border-secondary)' 
+      }}
       aria-label={`Switch to ${isNautical ? 'default' : 'nautical'} theme`}
       title={`Switch to ${isNautical ? 'default' : 'nautical'} theme`}
     >
@@ -41,7 +44,7 @@ function ThemeToggleInner() {
       </span>
 
       {/* Toggle track */}
-      <div className="relative w-8 h-4 rounded-full bg-white/20 transition-colors">
+      <div className="relative w-8 h-4 rounded-full transition-colors" style={{ backgroundColor: 'var(--border-secondary)' }}>
         {/* Toggle knob */}
         <div 
           className="absolute top-0.5 w-3 h-3 rounded-full transition-all duration-300 shadow-sm"

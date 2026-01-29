@@ -92,19 +92,19 @@ export function AmazonManualImport() {
   return (
     <div className="space-y-6">
       {/* Instructions */}
-      <div className="bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
-        <h3 className="font-semibold text-blue-900 dark:text-blue-100 mb-3 flex items-center gap-2">
+      <div className="rounded-lg p-4" style={{ backgroundColor: 'var(--info-bg)', border: '1px solid var(--info-border)' }}>
+        <h3 className="font-semibold mb-3 flex items-center gap-2" style={{ color: 'var(--info-text)' }}>
           <FileText className="w-5 h-5" />
           How to Export Your Amazon Tax Report
         </h3>
-        <ol className="list-decimal list-inside space-y-2 text-sm text-blue-800 dark:text-blue-200">
+        <ol className="list-decimal list-inside space-y-2 text-sm text-theme-secondary">
           <li>
             Go to{' '}
             <a
               href="https://sellercentral.amazon.com/tax/tax-library"
               target="_blank"
               rel="noopener noreferrer"
-              className="underline font-medium inline-flex items-center gap-1"
+              className="underline font-medium inline-flex items-center gap-1 text-theme-accent"
             >
               Amazon Seller Central Tax Library
               <ExternalLink className="w-3 h-3" />
@@ -117,8 +117,8 @@ export function AmazonManualImport() {
           <li>Upload the file below</li>
         </ol>
         
-        <div className="mt-4 pt-3 border-t border-blue-200 dark:border-blue-700">
-          <p className="text-xs text-blue-600 dark:text-blue-400">
+        <div className="mt-4 pt-3" style={{ borderTop: '1px solid var(--info-border)' }}>
+          <p className="text-xs" style={{ color: 'var(--info-text)' }}>
             <strong>Supported formats:</strong> Amazon Sales Tax Report CSV, Transaction Report CSV
           </p>
         </div>
@@ -214,12 +214,12 @@ export function AmazonManualImport() {
             </div>
           ) : (
             <div className="flex items-start gap-3">
-              <AlertCircle className="w-6 h-6 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
+              <AlertCircle className="w-6 h-6 flex-shrink-0 mt-0.5" style={{ color: 'var(--error-text)' }} />
               <div>
-                <h4 className="font-semibold text-red-900 dark:text-red-100">
+                <h4 className="font-semibold" style={{ color: 'var(--error-text)' }}>
                   Import Failed
                 </h4>
-                <ul className="mt-2 text-sm text-red-800 dark:text-red-200 list-disc list-inside">
+                <ul className="mt-2 text-sm list-disc list-inside" style={{ color: 'var(--error-text)' }}>
                   {result.errors?.map((error, i) => (
                     <li key={i}>{error}</li>
                   ))}
@@ -244,7 +244,7 @@ export function AmazonManualImport() {
           href="https://sellercentral.amazon.com/gp/reports/settings.html"
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-1 text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline"
+          className="inline-flex items-center gap-1 text-sm font-medium text-theme-accent hover:underline"
         >
           Configure Scheduled Reports
           <ExternalLink className="w-3 h-3" />

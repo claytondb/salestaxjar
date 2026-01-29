@@ -760,8 +760,8 @@ export default function SettingsPage() {
                           You&apos;re downgrading from <strong>{billing.plan.charAt(0).toUpperCase() + billing.plan.slice(1)}</strong> to{' '}
                           <strong>{plans.find(p => p.id === selectedPlan)?.name}</strong>.
                         </p>
-                        <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-4">
-                          <p className="text-yellow-400 text-sm flex items-start gap-2">
+                        <div className="rounded-lg p-4" style={{ backgroundColor: 'var(--warning-bg)', border: '1px solid var(--warning-border)' }}>
+                          <p className="text-sm flex items-start gap-2" style={{ color: 'var(--warning-text)' }}>
                             <AlertTriangle className="w-4 h-4 flex-shrink-0 mt-0.5" />
                             <span>Your current plan will remain active until the end of your billing period.
                             The new plan will take effect on your next billing date.</span>
@@ -844,8 +844,8 @@ export default function SettingsPage() {
                     <Link href="/privacy" className="text-theme-accent hover:text-emerald-300">Privacy Policy</Link>.
                   </p>
                   
-                  <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-4">
-                    <p className="text-yellow-400 text-sm flex items-start gap-2">
+                  <div className="rounded-lg p-4" style={{ backgroundColor: 'var(--warning-bg)', border: '1px solid var(--warning-border)' }}>
+                    <p className="text-sm flex items-start gap-2" style={{ color: 'var(--warning-text)' }}>
                       <AlertTriangle className="w-4 h-4 flex-shrink-0 mt-0.5" />
                       <span><strong>Demo Mode:</strong> This application uses browser localStorage for data storage. 
                       In production, all data would be securely encrypted and stored on protected servers.</span>
@@ -919,11 +919,11 @@ export default function SettingsPage() {
                 </div>
 
                 {/* Delete Account */}
-                <div className="bg-red-500/10 backdrop-blur rounded-xl border border-red-500/30 p-6">
-                  <h2 className="text-xl font-semibold text-red-400 mb-2 flex items-center gap-2">
+                <div className="backdrop-blur rounded-xl p-6" style={{ backgroundColor: 'var(--error-bg)', border: '1px solid var(--error-border)' }}>
+                  <h2 className="text-xl font-semibold mb-2 flex items-center gap-2" style={{ color: 'var(--error-text)' }}>
                     <AlertTriangle className="w-5 h-5" /> Delete Account
                   </h2>
-                  <p className="text-theme-muted mb-4">
+                  <p className="text-theme-secondary mb-4">
                     Permanently delete your account and all associated data. This action cannot be undone.
                     Some data may be retained for legal compliance purposes.
                   </p>
@@ -931,21 +931,23 @@ export default function SettingsPage() {
                   {!showDeleteConfirm ? (
                     <button
                       onClick={() => setShowDeleteConfirm(true)}
-                      className="bg-red-500/20 hover:bg-red-500/30 text-red-400 px-6 py-3 rounded-lg font-medium transition border border-red-500/30"
+                      className="px-6 py-3 rounded-lg font-medium transition"
+                      style={{ backgroundColor: 'var(--error-bg)', color: 'var(--error-text)', border: '1px solid var(--error-border)' }}
                     >
                       Delete My Account
                     </button>
                   ) : (
                     <div className="space-y-4">
-                      <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-4">
-                        <p className="text-red-300 text-sm mb-3">
+                      <div className="rounded-lg p-4" style={{ backgroundColor: 'var(--error-bg)', border: '1px solid var(--error-border)' }}>
+                        <p className="text-sm mb-3" style={{ color: 'var(--error-text)' }}>
                           To confirm deletion, please type <strong>&quot;delete my account&quot;</strong> below:
                         </p>
                         <input
                           type="text"
                           value={deleteConfirmText}
                           onChange={(e) => setDeleteConfirmText(e.target.value)}
-                          className="w-full px-4 py-2 bg-white/10 border border-red-500/30 rounded-lg text-theme-primary focus:outline-none focus:ring-2 focus:ring-red-500"
+                          className="w-full px-4 py-2 bg-theme-input rounded-lg text-theme-primary focus:outline-none focus:ring-2"
+                          style={{ borderColor: 'var(--error-border)', borderWidth: '1px' }}
                           placeholder="delete my account"
                         />
                       </div>
@@ -955,14 +957,14 @@ export default function SettingsPage() {
                             setShowDeleteConfirm(false);
                             setDeleteConfirmText('');
                           }}
-                          className="px-4 py-2 bg-white/10 hover:bg-white/20 text-theme-primary rounded-lg transition"
+                          className="px-4 py-2 card-theme text-theme-primary rounded-lg transition hover:opacity-80"
                         >
                           Cancel
                         </button>
                         <button
                           onClick={handleDeleteAccount}
                           disabled={deleteConfirmText.toLowerCase() !== 'delete my account'}
-                          className="px-6 py-2 bg-red-500 hover:bg-red-600 text-theme-primary rounded-lg font-medium transition disabled:opacity-50 disabled:cursor-not-allowed"
+                          className="px-6 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium transition disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                           Permanently Delete Account
                         </button>

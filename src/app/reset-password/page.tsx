@@ -104,7 +104,7 @@ function ResetPasswordContent() {
               </p>
 
               {error && (
-                <div className="bg-red-500/10 border border-red-500/30 text-red-400 px-4 py-3 rounded-lg mb-6">
+                <div className="px-4 py-3 rounded-lg mb-6" style={{ backgroundColor: 'var(--error-bg)', border: '1px solid var(--error-border)', color: 'var(--error-text)' }}>
                   {error}
                 </div>
               )}
@@ -172,11 +172,11 @@ function ResetPasswordContent() {
 
           {status === 'error' && (
             <div className="text-center">
-              <div className="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
+              <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6" style={{ backgroundColor: 'var(--error-bg)' }}>
                 <span className="text-4xl">✕</span>
               </div>
               <h2 className="text-2xl font-bold text-theme-primary mb-2">Reset Failed</h2>
-              <p className="text-red-400 mb-6">{error}</p>
+              <p className="mb-6" style={{ color: 'var(--error-text)' }}>{error}</p>
               <button
                 onClick={() => setStatus('form')}
                 className="btn-theme-primary  text-theme-primary px-6 py-3 rounded-lg font-medium transition"

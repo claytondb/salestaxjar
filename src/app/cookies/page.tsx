@@ -186,8 +186,8 @@ export default function CookiePolicyPage() {
                 <li><strong>Authentication data:</strong> Session tokens for logged-in users</li>
                 <li><strong>User data:</strong> Account information (demo mode only)</li>
               </ul>
-              <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-4 mt-4">
-                <p className="text-yellow-400 text-sm">
+              <div className="rounded-lg p-4 mt-4" style={{ backgroundColor: 'var(--warning-bg)', border: '1px solid var(--warning-border)' }}>
+                <p className="text-sm" style={{ color: 'var(--warning-text)' }}>
                   <strong>Demo Mode:</strong> This application uses localStorage for data persistence as a demonstration. 
                   In production, sensitive data would be stored securely on our servers.
                 </p>

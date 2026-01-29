@@ -43,6 +43,17 @@
   --error: #ef4444;
   --info: #3b82f6;
   
+  /* Warning/Alert backgrounds and text - for dark theme */
+  --warning-bg: rgba(234, 179, 8, 0.1);
+  --warning-border: rgba(234, 179, 8, 0.3);
+  --warning-text: #fcd34d;         /* amber-300 - visible on dark */
+  --error-bg: rgba(239, 68, 68, 0.1);
+  --error-border: rgba(239, 68, 68, 0.3);
+  --error-text: #fca5a5;           /* red-300 - visible on dark */
+  --info-bg: rgba(59, 130, 246, 0.1);
+  --info-border: rgba(59, 130, 246, 0.3);
+  --info-text: #93c5fd;            /* blue-300 - visible on dark */
+  
   /* Shadows */
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
   --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.3);
@@ -89,11 +100,22 @@
   --accent-secondary: #2dd4bf;     /* teal-400 */
   --accent-bg: rgba(20, 184, 166, 0.15);
   
-  /* Status colors - slightly warmer */
-  --success: #14b8a6;              /* teal */
-  --warning: #f97316;              /* orange */
-  --error: #e11d48;                /* rose */
-  --info: #0284c7;                 /* sky */
+  /* Status colors - slightly warmer, WCAG AA compliant */
+  --success: #0d7a6e;              /* darker teal for contrast */
+  --warning: #b45309;              /* amber-700 for light bg contrast */
+  --error: #be123c;                /* rose-700 for light bg contrast */
+  --info: #0369a1;                 /* sky-700 for light bg contrast */
+  
+  /* Warning/Alert backgrounds and text - high contrast */
+  --warning-bg: rgba(180, 83, 9, 0.1);
+  --warning-border: rgba(180, 83, 9, 0.3);
+  --warning-text: #92400e;         /* amber-800 - high contrast on light */
+  --error-bg: rgba(190, 18, 60, 0.1);
+  --error-border: rgba(190, 18, 60, 0.3);
+  --error-text: #9f1239;           /* rose-800 - high contrast on light */
+  --info-bg: rgba(3, 105, 161, 0.1);
+  --info-border: rgba(3, 105, 161, 0.3);
+  --info-text: #075985;            /* sky-800 - high contrast on light */
   
   /* Shadows - softer for light theme */
   --shadow-sm: 0 1px 2px rgba(12, 74, 110, 0.05);

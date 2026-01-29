@@ -105,11 +105,11 @@ function VerifyEmailContent() {
 
           {status === 'error' && (
             <>
-              <div className="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
+              <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6" style={{ backgroundColor: 'var(--error-bg)' }}>
                 <span className="text-4xl">✕</span>
               </div>
               <h1 className="text-2xl font-bold text-theme-primary mb-2">Verification Failed</h1>
-              <p className="text-red-400 mb-6">{error}</p>
+              <p className="mb-6" style={{ color: 'var(--error-text)' }}>{error}</p>
               <div className="space-y-3">
                 <Link
                   href="/login"
