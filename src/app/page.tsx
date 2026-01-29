@@ -146,12 +146,8 @@ export default function Home() {
           </p>
           
           {/* What it does */}
-          <p className="text-lg sm:text-xl text-theme-secondary mb-4 max-w-2xl mx-auto">
-            Running your own online store? Sails tells you where you owe sales tax, how much, and when it&apos;s due.
-          </p>
-          <p className="text-lg sm:text-xl text-theme-primary font-medium mb-8 max-w-2xl mx-auto">
-            Half the price of TaxJar. Built for makers, not enterprises.
-            <span className="text-theme-accent"> Free tier available. Paid plans from $9/month.</span>
+          <p className="text-lg sm:text-xl text-theme-secondary mb-8 max-w-2xl mx-auto">
+            Sails tells you where you owe sales tax, when it&apos;s due, and how much you owe. Built for makers like you. <span className="text-theme-primary font-medium">Get started for free.</span>
           </p>
 
           {/* Trust Signals */}
