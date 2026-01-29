@@ -28,7 +28,7 @@ export const PLANS = {
     price: 9,
     features: [
       'Up to 200 orders/mo',
-      'Etsy integration',
+      'Shopify & WooCommerce',
       '3 state tracking',
       'Email reminders',
       'Email support',

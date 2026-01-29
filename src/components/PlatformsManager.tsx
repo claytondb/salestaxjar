@@ -18,7 +18,7 @@ import {
   Upload,
   Clock
 } from 'lucide-react';
-import { AmazonManualImport } from './AmazonManualImport';
+// Platform integrations focused on own-website sellers (not marketplace facilitators)
 
 interface PlatformConnection {
   id: string;
@@ -49,12 +49,10 @@ interface PlatformsResponse {
 
 const platformIcons: Record<string, React.ReactNode> = {
   shopify: <ShoppingCart className="w-6 h-6" />,
-  amazon: <Package className="w-6 h-6" />,
-  etsy: <Palette className="w-6 h-6" />,
   woocommerce: <Plug className="w-6 h-6" />,
+  squarespace: <Square className="w-6 h-6" />,
   bigcommerce: <Store className="w-6 h-6" />,
-  ebay: <Tag className="w-6 h-6" />,
-  square: <Square className="w-6 h-6" />,
+  wix: <Palette className="w-6 h-6" />,
 };
 
 export default function PlatformsManager() {
@@ -65,7 +63,7 @@ export default function PlatformsManager() {
   const [syncingConnection, setSyncingConnection] = useState<string | null>(null);
   const [shopifyShop, setShopifyShop] = useState('');
   const [showShopifyModal, setShowShopifyModal] = useState(false);
-  const [showAmazonModal, setShowAmazonModal] = useState(false);
+  const [showWooCommerceModal, setShowWooCommerceModal] = useState(false);
 
   const fetchPlatforms = useCallback(async () => {
     try {
@@ -90,8 +88,8 @@ export default function PlatformsManager() {
       return;
     }
 
-    if (platform === 'amazon') {
-      setShowAmazonModal(true);
+    if (platform === 'woocommerce') {
+      setShowWooCommerceModal(true);
       return;
     }
     
@@ -215,12 +213,6 @@ export default function PlatformsManager() {
                 <div>
                   <h3 className="font-medium text-theme-primary flex items-center gap-2">
                     {platform.name}
-                    {platform.platform === 'amazon' && (
-                      <span className="px-2 py-0.5 bg-yellow-500/20 text-yellow-400 text-xs rounded-full flex items-center gap-1">
-                        <Clock className="w-3 h-3" />
-                        Direct API Coming Soon
-                      </span>
-                    )}
                     {platform.connectedCount > 0 && (
                       <span className="px-2 py-0.5 btn-theme-primary/20 text-theme-accent text-xs rounded-full">
                         {platform.connectedCount} connected
@@ -231,15 +223,7 @@ export default function PlatformsManager() {
                 </div>
               </div>
               
-              {platform.platform === 'amazon' ? (
-                <button
-                  onClick={() => setShowAmazonModal(true)}
-                  className="bg-orange-500 hover:bg-orange-600 text-theme-primary px-4 py-2 rounded-lg font-medium transition flex items-center gap-2"
-                >
-                  <Upload className="w-4 h-4" />
-                  Import Data
-                </button>
-              ) : platform.configured ? (
+              {platform.configured ? (
                 <button
                   onClick={() => handleConnect(platform.platform)}
                   disabled={connectingPlatform === platform.platform}
@@ -428,36 +412,76 @@ export default function PlatformsManager() {
         </div>
       )}
 
-      {/* Amazon Manual Import Modal */}
-      {showAmazonModal && (
+      {/* WooCommerce API Keys Modal */}
+      {showWooCommerceModal && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-slate-800 rounded-xl border border-theme-secondary p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+          <div className="bg-slate-800 rounded-xl border border-theme-secondary p-6 max-w-md w-full">
             <div className="flex items-center justify-between mb-4">
               <div>
                 <h3 className="text-xl font-semibold text-theme-primary flex items-center gap-2">
-                  <Package className="w-6 h-6 text-orange-400" />
-                  Amazon Seller Central
+                  <Plug className="w-6 h-6 text-theme-accent" />
+                  Connect WooCommerce
                 </h3>
                 <p className="text-theme-muted text-sm mt-1">
-                  Import your Amazon sales tax data manually
+                  Enter your store URL and REST API keys
                 </p>
               </div>
               <button
-                onClick={() => setShowAmazonModal(false)}
+                onClick={() => setShowWooCommerceModal(false)}
                 className="p-2 bg-theme-secondary/30 hover:bg-white/20 text-theme-primary rounded-lg transition"
               >
                 ✕
               </button>
             </div>
             
-            <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-3 mb-4">
-              <p className="text-yellow-400 text-sm">
-                <strong>Direct API integration coming soon!</strong> For now, you can import your Amazon tax reports manually. 
-                This gives you the same data - just requires a few extra clicks.
+            <div className="bg-accent-subtle border border-theme-accent/30 rounded-lg p-3 mb-4">
+              <p className="text-theme-accent text-sm">
+                <strong>How to get API keys:</strong> In WooCommerce, go to Settings → Advanced → REST API → Add Key. 
+                Give it Read access and copy the Consumer Key and Secret.
               </p>
             </div>
             
-            <AmazonManualImport />
+            <div className="space-y-4">
+              <div>
+                <label className="block text-theme-secondary text-sm mb-2">Store URL</label>
+                <input
+                  type="text"
+                  placeholder="https://your-store.com"
+                  className="w-full px-4 py-3 bg-theme-secondary/30 border border-theme-secondary rounded-lg text-theme-primary focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                />
+              </div>
+              <div>
+                <label className="block text-theme-secondary text-sm mb-2">Consumer Key</label>
+                <input
+                  type="text"
+                  placeholder="ck_..."
+                  className="w-full px-4 py-3 bg-theme-secondary/30 border border-theme-secondary rounded-lg text-theme-primary focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                />
+              </div>
+              <div>
+                <label className="block text-theme-secondary text-sm mb-2">Consumer Secret</label>
+                <input
+                  type="password"
+                  placeholder="cs_..."
+                  className="w-full px-4 py-3 bg-theme-secondary/30 border border-theme-secondary rounded-lg text-theme-primary focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                />
+              </div>
+            </div>
+
+            <div className="flex gap-3 mt-6">
+              <button
+                onClick={() => setShowWooCommerceModal(false)}
+                className="px-4 py-2 bg-theme-secondary/30 hover:bg-white/20 text-theme-primary rounded-lg transition"
+              >
+                Cancel
+              </button>
+              <button
+                className="flex-1 btn-theme-primary text-theme-primary px-4 py-2 rounded-lg font-medium transition disabled:opacity-50"
+                disabled
+              >
+                Coming Soon
+              </button>
+            </div>
           </div>
         </div>
       )}

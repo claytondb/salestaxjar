@@ -127,9 +127,9 @@ export default function Home() {
         <div className="absolute inset-0 z-0 bg-theme-gradient opacity-95" />
         
         <div className="relative z-10 max-w-4xl mx-auto text-center">
-          {/* Etsy-focused badge */}
+          {/* Target audience badge */}
           <div className="inline-flex items-center gap-2 bg-accent-subtle text-theme-accent px-4 py-2 rounded-full text-sm font-medium mb-6">
-            ❤️ Built for Etsy sellers & makers
+            ❤️ Built for small online store owners
           </div>
           
           {/* The Solution */}
@@ -145,7 +145,7 @@ export default function Home() {
           
           {/* What it does */}
           <p className="text-lg sm:text-xl text-theme-secondary mb-4 max-w-2xl mx-auto">
-            Etsy says you need to collect sales tax. Now what? Sails tells you where you owe, how much, and when it&apos;s due.
+            Running your own online store? Sails tells you where you owe sales tax, how much, and when it&apos;s due.
           </p>
           <p className="text-lg sm:text-xl text-theme-primary font-medium mb-8 max-w-2xl mx-auto">
             Half the price of TaxJar. Built for makers, not enterprises.
@@ -154,7 +154,7 @@ export default function Home() {
 
           {/* Trust Signals */}
           <div className="flex flex-wrap justify-center gap-4 mb-8">
-            {["5-minute Etsy setup", "No accounting degree needed", "Free tier forever"].map((text, i) => (
+            {["5-minute setup", "No accounting degree needed", "Free tier forever"].map((text, i) => (
               <div key={i} className="card-theme px-4 py-2 rounded-lg flex items-center">
                 <Check className="w-4 h-4 text-theme-accent" />
                 <span className="text-theme-secondary ml-2">{text}</span>
@@ -186,9 +186,9 @@ export default function Home() {
           
           <div className="grid md:grid-cols-3 gap-8">
             {[
-              { num: "1", title: "Connect Etsy", desc: "Link your Etsy shop in one click. We automatically import your sales data. Shopify & Square too." },
+              { num: "1", title: "Connect Your Store", desc: "Link your Shopify, WooCommerce, Squarespace, or other store. We automatically import your sales data." },
               { num: "2", title: "See What You Owe", desc: "We show you which states you owe tax in, how much, and when it's due. No more guessing." },
-              { num: "3", title: "File With Confidence", desc: "Get deadline reminders and know exactly what to file. Filing assistance coming soon!" }
+              { num: "3", title: "File With Confidence", desc: "Get deadline reminders and filing-ready reports. Review and submit on your own schedule." }
             ].map((step, i) => (
               <div key={i} className="text-center">
                 <div className="w-16 h-16 bg-accent-subtle rounded-full flex items-center justify-center mx-auto mb-4">
@@ -337,7 +337,7 @@ export default function Home() {
               { icon: <Calculator className={ICON_CLASS} />, title: "Tax Calculator", desc: "Know exactly how much tax to collect, instantly", comingSoon: false },
               { icon: <MapPin className={ICON_CLASS} />, title: "Nexus Tracking", desc: "See which states you owe tax in (and which you don't)", comingSoon: false },
               { icon: <Bell className={ICON_CLASS} />, title: "Deadline Alerts", desc: "Get reminded before every filing deadline", comingSoon: false },
-              { icon: <Link2 className={ICON_CLASS} />, title: "Etsy Integration", desc: "Connect your Etsy shop in one click. Shopify & more too.", comingSoon: false },
+              { icon: <Link2 className={ICON_CLASS} />, title: "Store Integrations", desc: "Connect Shopify, WooCommerce, Squarespace, BigCommerce, and Wix.", comingSoon: false },
               { icon: <LayoutDashboard className={ICON_CLASS} />, title: "Simple Dashboard", desc: "Built for makers, not accountants", comingSoon: false },
               { icon: <ClipboardList className={ICON_CLASS} />, title: "Filing Assistance", desc: "Know exactly what to file and when", comingSoon: true }
             ].map((feature, i) => (
@@ -419,7 +419,7 @@ export default function Home() {
             Start Free — No Credit Card
           </Link>
           <p className="text-theme-muted text-sm mt-4">
-            Join Etsy sellers who finally understand their tax obligations
+            Join small business owners who finally understand their tax obligations
           </p>
         </div>
       </section>

@@ -40,11 +40,11 @@ const faqs: FAQItem[] = [
   },
   {
     question: "What integrations do you support?",
-    answer: "We currently support Shopify, Amazon, Etsy, WooCommerce, BigCommerce, eBay, and Square. Integration allows automatic import of transactions for tax calculation. We're constantly adding new integrations - contact us if you need a specific platform."
+    answer: "We support Shopify, WooCommerce, Squarespace, BigCommerce, and Wix. These platforms require you to handle your own sales tax — unlike marketplaces (Etsy, Amazon, eBay) which collect and remit tax for you. Integration allows automatic import of transactions for tax calculation."
   },
   {
     question: "Do you file tax returns for me?",
-    answer: "Our Growth and Enterprise plans include automated filing assistance. We prepare your returns based on your transaction data and can file directly with state tax authorities on your behalf. You always review and approve before submission."
+    answer: "We prepare filing-ready reports and pre-fill the data you need, but you review and submit the returns yourself. This keeps you in control and ensures accuracy. We send deadline reminders so you never miss a filing date. Note: Sails provides tax calculation tools, not tax advice — consult a tax professional for specific guidance."
   },
   {
     question: "What if I get audited?",

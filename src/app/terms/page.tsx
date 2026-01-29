@@ -21,9 +21,14 @@ export default function TermsPage() {
             </h2>
             <div className="text-red-200 space-y-3">
               <p>
-                <strong>Sails provides TAX ESTIMATION TOOLS ONLY.</strong> We are NOT a certified public accounting 
+                <strong>Sails provides TAX ESTIMATION TOOLS and FILING PREPARATION ASSISTANCE ONLY.</strong> We are NOT a certified public accounting 
                 (CPA) firm, tax advisory service, or law firm. Our tools are designed to assist with sales tax calculations 
-                but should not be relied upon as the sole basis for tax compliance decisions.
+                and generate filing-ready reports, but should not be relied upon as the sole basis for tax compliance decisions.
+              </p>
+              <p>
+                <strong>Filing Assistance:</strong> We prepare reports and pre-fill data to help you file, but YOU are responsible for 
+                reviewing all information and submitting your own tax returns. We do NOT file returns on your behalf, and we do NOT 
+                hold or remit any tax funds.
               </p>
               <p>
                 <strong>You are solely responsible for:</strong>

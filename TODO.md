@@ -1,241 +1,212 @@
-# SalesTaxJar - Remaining Tasks
+# Sails - Task List
 
-Last updated: 2026-01-28
+Last updated: 2026-01-29
+
+## 🎯 Strategic Focus
+
+**Target:** Very small e-commerce sellers with their own websites
+**Platforms:** Shopify, WooCommerce, Squarespace, BigCommerce, Wix
+**NOT pursuing:** Etsy, eBay, Amazon, Gumroad (marketplace facilitators)
+
+**Pricing:**
+- Free: $0 (50 orders/mo, 1 platform)
+- Starter: $9/mo (500 orders/mo, 3 platforms)
+- Growth: $29/mo (5,000 orders/mo, unlimited)
+- Pro: $79/mo (future, with filing prep)
+
+---
 
 ## ✅ Completed
-- [x] Basic Next.js app with Tailwind
-- [x] Prisma schema with all models
-- [x] Neon database connected via Vercel Storage
-- [x] Authentication system (signup, login, logout, sessions)
-- [x] Email verification flow with Resend
-- [x] Password reset flow
+
+- [x] Next.js app with Tailwind
+- [x] Prisma schema + Neon database
+- [x] Authentication (signup, login, sessions)
+- [x] Email verification + password reset
 - [x] Shopify OAuth integration
 - [x] Amazon manual CSV import
-- [x] API routes for business, nexus, filings, calculations, notifications
-- [x] Basic dashboard layout
-- [x] Tax calculator page
-- [x] Nexus management page
-- [x] Settings page structure
-- [x] Pricing page
+- [x] API routes (business, nexus, filings, calculations, notifications)
+- [x] Dashboard layout
+- [x] Tax calculator
+- [x] Nexus management
+- [x] Settings page
+- [x] Pricing page structure
 
 ---
 
-## 🔄 In Progress / High Priority
+## 🔥 Phase 1: Launch-Ready (Current Sprint)
 
-### 1. Connect Frontend to Database APIs
-**Status:** AuthContext still uses localStorage for most data
-**Files:** `src/context/AuthContext.tsx`
+### 1. Usage Tracking & Limits
+**Priority:** HIGH - Enables free tier
 
-**Steps:**
-1. Update `refreshUser()` to fetch business profile from `/api/business`
-2. Fetch nexus states from `/api/nexus` on login
-3. Fetch filings from `/api/filings`
-4. Fetch calculations from `/api/calculations`
-5. Fetch notification prefs from `/api/notifications`
-6. Fetch platform connections from `/api/platforms`
-7. Update all `update*` methods to call corresponding API endpoints
-8. Remove localStorage fallback for authenticated users
+- [ ] Add `orderCount` tracking per user per month
+- [ ] Add `platformCount` per user
+- [ ] Create usage check middleware
+- [ ] Show usage in dashboard ("42 of 50 orders used")
+- [ ] Soft limit warnings at 80%
+- [ ] Hard limit enforcement at 100%
 
-### 2. Stripe Billing Integration
-**Status:** API routes exist but not connected to real Stripe
-**Files:** `src/app/api/stripe/*.ts`, `.env.local`
+### 2. Stripe Billing - New Tiers
+**Priority:** HIGH
 
-**Steps:**
-1. Create Stripe account & get API keys
-2. Create products/prices in Stripe for Starter ($29), Growth ($79), Enterprise ($199)
-3. Set environment variables:
-   - `STRIPE_SECRET_KEY`
-   - `STRIPE_PUBLISHABLE_KEY`
-   - `STRIPE_WEBHOOK_SECRET`
-4. Set up webhook endpoint in Stripe dashboard → `https://salestaxjar.vercel.app/api/stripe/webhook`
-5. Test checkout flow
-6. Test portal session (manage subscription)
-7. Test webhook events (subscription.created, updated, deleted, payment_failed)
+- [ ] Create Stripe products:
+  - Free: $0 (no Stripe needed)
+  - Starter: $9/mo
+  - Growth: $29/mo
+  - Pro: $79/mo (placeholder)
+- [ ] Update checkout flow
+- [ ] Tier-based feature gating
+- [ ] Upgrade prompts when hitting limits
 
-### 3. Email System Setup
-**Status:** Code ready, needs Resend configuration
-**Files:** `.env.local`, `src/lib/email.ts`
+### 3. WooCommerce Integration
+**Priority:** HIGH - Biggest pain point market
 
-**Steps:**
-1. Create Resend account at resend.com
-2. Verify domain `salestaxjar.com` (or use test email for now)
-3. Get API key
-4. Set `RESEND_API_KEY` in Vercel environment variables
-5. Set `FROM_EMAIL=SalesTaxJar <noreply@salestaxjar.com>`
-6. Test welcome email on signup
-7. Test password reset email
-8. Test verification email
+WooCommerce uses per-store REST API keys (no central OAuth):
+- [ ] UI for entering store URL + API keys
+- [ ] Key validation endpoint
+- [ ] Order fetch via WooCommerce REST API
+- [ ] Map orders to ImportedOrder model
+- [ ] Sync status tracking
 
----
+### 4. Squarespace Integration  
+**Priority:** HIGH - No good tax tools exist
 
-## 📋 Medium Priority
+Squarespace has Commerce API:
+- [ ] OAuth flow (or API key entry)
+- [ ] Order/transaction fetch
+- [ ] Map to ImportedOrder model
 
-### 4. Tax Rate API Integration
-**Status:** Calculator uses hardcoded rates
-**Files:** `src/lib/tax-rates.ts`, `src/app/api/tax/*.ts`
+### 5. Rebrand to Sails
+**Priority:** MEDIUM
 
-**Options:**
-- TaxJar API (requires subscription, most accurate)
-- Avalara API (enterprise)
-- Free tax rate lookup (less accurate)
-
-**Steps:**
-1. Decide on tax rate provider
-2. Sign up and get API credentials
-3. Implement rate lookup in `src/lib/tax-rates.ts`
-4. Add `TAXJAR_API_KEY` or equivalent to env
-5. Update `/api/tax/rates` to use real API
-6. Cache rates in `TaxRateCache` table to reduce API calls
-
-### 5. Orders Import from Platforms
-**Status:** Shopify OAuth works, need order sync
-**Files:** `src/app/api/integrations/shopify/*.ts`, `src/lib/platforms/shopify.ts`
-
-**Steps:**
-1. Implement `GET /api/integrations/shopify/orders` to fetch orders
-2. Create sync job that runs periodically
-3. Map Shopify orders to `ImportedOrder` model
-4. Calculate tax from orders and populate `SalesSummary`
-5. Add manual sync button in UI
-6. Add last sync timestamp display
-
-### 6. Filing Calendar & Reminders
-**Status:** Filing model exists, auto-generation needed
-**Files:** `src/app/api/filings/route.ts`, `src/app/filings/page.tsx`
-
-**Steps:**
-1. Auto-generate filings when nexus state added
-2. Mark overdue filings automatically
-3. Send reminder emails X days before due
-4. Add cron job or Vercel cron for reminders
-5. Improve filings UI with calendar view
-6. Add "Mark as Filed" flow with confirmation number
-
-### 7. Reports & Analytics
-**Status:** Basic stats in dashboard, need detailed reports
-
-**Steps:**
-1. Create `/api/reports/summary` endpoint
-2. Add sales by state report
-3. Add tax liability by period report
-4. Add platform comparison chart
-5. Export to CSV functionality
-6. Add date range picker to reports
+- [ ] Update app name throughout
+- [ ] New logo/branding
+- [ ] Domain: sailstax.com? usesails.com?
+- [ ] Update Vercel project name
+- [ ] Update meta tags, OG images
 
 ---
 
-## 📝 Lower Priority / Nice to Have
+## 📋 Phase 2: Expand & Polish
 
-### 8. Additional Platform Integrations
-- [ ] Etsy OAuth integration
-- [ ] WooCommerce integration
-- [ ] BigCommerce integration
-- [ ] eBay integration
-- [ ] Square integration
+### 6. BigCommerce Integration
+- [ ] OAuth flow
+- [ ] Order sync
 
-### 9. Advanced Features
-- [ ] Economic nexus threshold tracking
-- [ ] Multi-business support
-- [ ] Team/user management
-- [ ] Audit log
-- [ ] API keys for developers
-- [ ] Custom tax rules per product category
+### 7. Wix Integration
+- [ ] Wix Stores API integration
+- [ ] Order sync
 
-### 10. UI/UX Improvements
-- [ ] Onboarding wizard for new users
-- [ ] Interactive nexus map
-- [ ] Dashboard data visualization improvements
-- [ ] Mobile-responsive fixes
-- [ ] Loading skeletons throughout app
-- [ ] Better error messages and empty states
+### 8. Improved Onboarding
+- [ ] Welcome wizard for new signups
+- [ ] Platform connection prompts
+- [ ] "What do you sell?" product type selection
+- [ ] State selection with nexus explanation
 
-### 11. Testing & Documentation
+### 9. Nexus Threshold Tracking
+- [ ] Track sales per state from imported orders
+- [ ] Alert when approaching $100K or 200 transactions
+- [ ] "You may have nexus in California" notifications
+- [ ] Registration guidance per state
+
+### 10. Reports & Exports
+- [ ] Sales by state report
+- [ ] Tax liability report
+- [ ] CSV export
+- [ ] Filing-ready summaries
+
+---
+
+## 📝 Phase 3: Filing Preparation (Future)
+
+### 11. Filing Calendar
+- [ ] Auto-generate filing deadlines per nexus state
+- [ ] Reminder emails (7 days, 1 day before)
+- [ ] "Mark as filed" with confirmation tracking
+
+### 12. Filing Prep Reports
+- [ ] State-specific report formats
+- [ ] Pre-calculated totals matching state forms
+- [ ] PDF generation with form field mapping
+- [ ] Clear disclaimers ("review before submitting")
+
+### 13. Filing Partnership (Optional)
+- [ ] Partner with licensed filing service
+- [ ] "One-click file" sends data to partner
+- [ ] Revenue share model
+
+---
+
+## 🔧 Technical Debt / Ongoing
+
+- [ ] Connect frontend to all database APIs (AuthContext cleanup)
+- [ ] Email system setup (Resend)
+- [ ] Tax rate API integration (or build own rate database)
 - [ ] Unit tests for API routes
-- [ ] E2E tests with Playwright
-- [ ] API documentation
-- [ ] User documentation/help center
+- [ ] Error handling improvements
+- [ ] Mobile responsive fixes
 
 ---
 
-## 🔧 Configuration Needed
+## 🌐 Environment Variables Needed
 
-### Environment Variables (Production)
-```
+```env
 # Auth
-AUTH_SECRET=<generate with openssl rand -base64 32>
+AUTH_SECRET=<generate>
 
-# Database (auto-set by Vercel/Neon)
-DATABASE_URL=<pooled connection>
-DIRECT_URL=<direct connection>
+# Database (Vercel/Neon auto-sets)
+DATABASE_URL=
+DIRECT_URL=
 
 # Email
-RESEND_API_KEY=<from resend.com>
-FROM_EMAIL=SalesTaxJar <noreply@salestaxjar.com>
+RESEND_API_KEY=
+FROM_EMAIL=Sails <hello@usesails.com>
 
-# Stripe
-STRIPE_SECRET_KEY=sk_live_...
-STRIPE_PUBLISHABLE_KEY=pk_live_...
-STRIPE_WEBHOOK_SECRET=whsec_...
+# Stripe (new tiers)
+STRIPE_SECRET_KEY=
+STRIPE_PUBLISHABLE_KEY=
+STRIPE_WEBHOOK_SECRET=
+STRIPE_PRICE_STARTER=price_xxx
+STRIPE_PRICE_GROWTH=price_xxx
+STRIPE_PRICE_PRO=price_xxx
 
-# Shopify (already configured)
-SHOPIFY_API_KEY=0b6b5deabdea044617a93ee6589cfda2
-SHOPIFY_API_SECRET=shpss_...
+# Shopify (done)
+SHOPIFY_API_KEY=
+SHOPIFY_API_SECRET=
 
-# Tax API (choose one)
-TAXJAR_API_KEY=<optional>
+# WooCommerce - per-store keys stored in DB
+
+# Squarespace
+SQUARESPACE_CLIENT_ID=
+SQUARESPACE_CLIENT_SECRET=
+
+# BigCommerce
+BIGCOMMERCE_CLIENT_ID=
+BIGCOMMERCE_CLIENT_SECRET=
+
+# Wix
+WIX_CLIENT_ID=
+WIX_CLIENT_SECRET=
 
 # App
-NEXT_PUBLIC_APP_URL=https://salestaxjar.vercel.app
+NEXT_PUBLIC_APP_URL=https://usesails.com
 ```
 
 ---
 
-## 📊 Progress Summary
+## 📊 Progress
 
-| Category | Progress |
-|----------|----------|
+| Area | Status |
+|------|--------|
 | Core Infrastructure | 90% |
-| Authentication | 100% |
-| Database & APIs | 95% |
-| Frontend Integration | 40% |
-| Billing (Stripe) | 20% |
-| Email | 80% |
-| Platform Integrations | 50% |
-| Tax Calculations | 30% |
-| Reports | 10% |
-| Testing | 0% |
+| Auth | 100% |
+| Database | 95% |
+| Shopify | 80% |
+| WooCommerce | 0% |
+| Squarespace | 0% |
+| BigCommerce | 0% |
+| Wix | 0% |
+| Billing/Stripe | 20% |
+| Usage Limits | 0% |
+| Filing Prep | 0% |
 
-**Overall Estimate:** ~70% complete
-
----
-
-## Recent Session Progress (2026-01-28 12:58-13:xx)
-
-1. ✅ **Created Database API Routes**
-   - `/api/business` - CRUD
-   - `/api/nexus` - with bulk update
-   - `/api/filings` - with status management
-   - `/api/calculations` - with bulk save
-   - `/api/calculations/summary` - stats/analytics
-   - `/api/notifications` - preferences
-
-2. ✅ **Migrated AuthContext to APIs**
-   - Removed localStorage dependency
-   - All data now fetched/saved via API
-   - Added `refreshData()` function
-
-3. ✅ **Auto-generate Filings**
-   - When nexus states are updated, quarterly filings are auto-created
-   - Prevents duplicate filings for same period
-
-4. ✅ **Type Updates**
-   - Added `id` to BusinessProfile
-   - Renamed `reason` → `nexusType` in NexusState
-
----
-
-## Next Session Priorities
-1. Set up Stripe with real credentials
-2. Set up Resend for emails
-3. Test full user flow: signup → verify → add business → configure nexus → connect Shopify
-4. Add dashboard analytics using `/api/calculations/summary`
+**Overall:** ~50% to MVP launch

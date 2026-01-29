@@ -8,13 +8,12 @@ import { prisma } from '../prisma';
 
 // Re-export platform modules with namespaces to avoid conflicts
 export * as shopify from './shopify';
-export * as amazon from './amazon';
-export * as etsy from './etsy';
 
 // Export commonly used functions with platform prefix
 export { isShopifyConfigured, saveShopifyConnection, removeShopifyConnection, fetchOrders as fetchShopifyOrders } from './shopify';
-export { isAmazonConfigured, saveAmazonConnection, removeAmazonConnection, fetchOrders as fetchAmazonOrders } from './amazon';
-export { isEtsyConfigured, saveEtsyConnection, fetchReceipts as fetchEtsyReceipts } from './etsy';
+
+// Note: WooCommerce, Squarespace, BigCommerce, Wix integrations coming soon
+// These platforms require sellers to handle their own tax (unlike marketplace facilitators)
 
 // Platform configuration status
 export interface PlatformConfig {
@@ -28,6 +27,12 @@ export interface PlatformConfig {
 
 /**
  * Get configuration status for all platforms
+ * 
+ * Priority platforms (own-website sellers who need tax help):
+ * - Shopify, WooCommerce, Squarespace, BigCommerce, Wix
+ * 
+ * Not prioritized (marketplace facilitators handle tax):
+ * - Etsy, Amazon, eBay, Gumroad
  */
 export function getPlatformConfigurations(): PlatformConfig[] {
   return [
@@ -40,26 +45,19 @@ export function getPlatformConfigurations(): PlatformConfig[] {
       setupUrl: 'https://partners.shopify.com',
     },
     {
-      platform: 'amazon',
-      name: 'Amazon Seller Central',
-      configured: true, // Manual import always available
-      description: 'Import your Amazon tax reports to track sales and tax obligations. Direct API integration coming soon!',
-      features: ['CSV import', 'Tax reports', 'Multi-marketplace', 'FBA support'],
-    },
-    {
-      platform: 'etsy',
-      name: 'Etsy',
-      configured: !!(process.env.ETSY_API_KEY && process.env.ETSY_API_SECRET),
-      description: 'Import your Etsy shop sales for comprehensive tax tracking.',
-      features: ['Receipt sync', 'Transaction details', 'Shipping tracking'],
-      setupUrl: 'https://www.etsy.com/developers',
-    },
-    {
       platform: 'woocommerce',
       name: 'WooCommerce',
-      configured: false, // WooCommerce uses REST API keys per store
-      description: 'Connect your WooCommerce store using REST API keys.',
-      features: ['Order sync', 'Product tax classes', 'Webhook support'],
+      configured: true, // WooCommerce uses REST API keys per store (stored in DB)
+      description: 'Connect your WooCommerce store using REST API keys. No more tax headaches!',
+      features: ['Order sync', 'Product tax classes', 'Webhook support', 'Self-hosted friendly'],
+    },
+    {
+      platform: 'squarespace',
+      name: 'Squarespace',
+      configured: !!(process.env.SQUARESPACE_CLIENT_ID && process.env.SQUARESPACE_CLIENT_SECRET),
+      description: 'Finally, proper sales tax tools for your Squarespace store.',
+      features: ['Order import', 'Commerce API', 'Automatic sync'],
+      setupUrl: 'https://developers.squarespace.com',
     },
     {
       platform: 'bigcommerce',
@@ -67,20 +65,15 @@ export function getPlatformConfigurations(): PlatformConfig[] {
       configured: !!(process.env.BIGCOMMERCE_CLIENT_ID && process.env.BIGCOMMERCE_CLIENT_SECRET),
       description: 'Integrate your BigCommerce store for automated tax compliance.',
       features: ['Order import', 'Customer data', 'Tax settings sync'],
+      setupUrl: 'https://developer.bigcommerce.com',
     },
     {
-      platform: 'ebay',
-      name: 'eBay',
-      configured: !!(process.env.EBAY_CLIENT_ID && process.env.EBAY_CLIENT_SECRET),
-      description: 'Track your eBay sales and tax obligations.',
-      features: ['Order sync', 'Managed payments', 'Multi-account support'],
-    },
-    {
-      platform: 'square',
-      name: 'Square',
-      configured: !!(process.env.SQUARE_APPLICATION_ID && process.env.SQUARE_ACCESS_TOKEN),
-      description: 'Connect Square for POS and online sales tracking.',
-      features: ['Transaction sync', 'Location tracking', 'Item categories'],
+      platform: 'wix',
+      name: 'Wix',
+      configured: !!(process.env.WIX_CLIENT_ID && process.env.WIX_CLIENT_SECRET),
+      description: 'Connect your Wix eCommerce store for sales tax tracking.',
+      features: ['Order sync', 'Wix Stores API', 'Automatic import'],
+      setupUrl: 'https://dev.wix.com',
     },
   ];
 }

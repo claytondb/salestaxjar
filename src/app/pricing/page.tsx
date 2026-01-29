@@ -31,7 +31,7 @@ const plans = [
     features: [
       { text: 'Everything in Free, plus:', included: true, bold: true },
       { text: 'Up to 200 orders/month', included: true },
-      { text: 'Etsy integration', included: true },
+      { text: 'Shopify & WooCommerce', included: true },
       { text: 'Track 3 states', included: true },
       { text: 'Email deadline reminders', included: true },
       { text: 'CSV order import', included: true },
@@ -46,7 +46,7 @@ const plans = [
     features: [
       { text: 'Everything in Starter, plus:', included: true, bold: true },
       { text: 'Up to 2,000 orders/month', included: true },
-      { text: 'All integrations (Etsy, Shopify, Square...)', included: true },
+      { text: 'All integrations (Shopify, WooCommerce, Squarespace...)', included: true },
       { text: 'Unlimited state tracking', included: true },
       { text: 'SMS + email reminders', included: true },
       { text: 'Priority support', included: true },
@@ -75,7 +75,7 @@ const plans = [
 const faqs = [
   {
     q: 'Why is Sails so much cheaper than TaxJar?',
-    a: 'We built Sails specifically for Etsy sellers and small makers — not enterprise businesses. We don\'t need a giant sales team or fancy offices. We pass those savings to you.',
+    a: 'We built Sails specifically for small online store owners — not enterprise businesses. We don\'t need a giant sales team or fancy offices. We pass those savings to you.',
   },
   {
     q: 'What happens after my free trial?',
@@ -87,7 +87,7 @@ const faqs = [
   },
   {
     q: 'What counts as an "order"?',
-    a: 'Any transaction you import or sync from Etsy/Shopify counts as one order. Multi-item orders still count as just one order.',
+    a: 'Any transaction you import or sync from your connected store counts as one order. Multi-item orders still count as just one order.',
   },
   {
     q: 'Do you file my sales tax returns for me?',
@@ -99,15 +99,15 @@ const faqs = [
   },
   {
     q: 'Is Sails a CPA or tax advisor?',
-    a: 'No — we\'re software that helps you track and calculate sales tax. For complex situations, we recommend a tax professional. But for most Etsy sellers, you won\'t need one.',
+    a: 'No — we\'re software that helps you track and calculate sales tax. We provide filing-ready reports, but you review and submit them yourself. For complex situations, we recommend consulting a tax professional.',
   },
 ];
 
 const comparisons = [
   { feature: 'Starting price', sails: '$9/mo', taxjar: '$19/mo', taxcloud: '$19/mo' },
   { feature: 'Free tier', sails: '✓ Yes', taxjar: '✗ No', taxcloud: '✗ No' },
-  { feature: 'Etsy integration', sails: '✓', taxjar: '✓', taxcloud: '✓' },
-  { feature: 'Unlimited calculations', sails: '✓ Free', taxjar: 'Paid only', taxcloud: 'Paid only' },
+  { feature: 'Shopify + WooCommerce', sails: '✓', taxjar: '✓', taxcloud: '✓' },
+  { feature: 'Squarespace', sails: '✓', taxjar: '✗ No', taxcloud: '✗ No' },
   { feature: 'Made for small sellers', sails: '✓', taxjar: 'Enterprise focus', taxcloud: 'Mixed' },
 ];
 
@@ -161,7 +161,7 @@ export default function PricingPage() {
         <div className="max-w-4xl mx-auto text-center">
           <div className="inline-flex items-center gap-2 bg-accent-subtle text-theme-accent px-4 py-2 rounded-full text-sm font-medium mb-6">
             <Heart className="w-4 h-4" />
-            Built for Etsy sellers & makers
+            Built for small online store owners
           </div>
           <h1 className="text-4xl sm:text-5xl font-bold text-theme-primary mb-4">
             Half the price of TaxJar.
@@ -285,7 +285,7 @@ export default function PricingPage() {
             <div className="card-theme rounded-xl p-6">
               <Zap className="w-8 h-8 text-theme-accent mx-auto mb-3" />
               <h3 className="font-semibold text-theme-primary mb-1">5-minute setup</h3>
-              <p className="text-theme-muted text-sm">Connect Etsy and start tracking in minutes, not hours.</p>
+              <p className="text-theme-muted text-sm">Connect your store and start tracking in minutes, not hours.</p>
             </div>
             <div className="card-theme rounded-xl p-6">
               <Shield className="w-8 h-8 text-theme-accent mx-auto mb-3" />
@@ -326,7 +326,7 @@ export default function PricingPage() {
             Ready to stop stressing about sales tax?
           </h2>
           <p className="text-theme-muted mb-8">
-            Join thousands of Etsy sellers who finally understand their tax obligations.
+            Join thousands of small business owners who finally understand their tax obligations.
           </p>
           <Link href="/signup" className="inline-block btn-theme-primary text-white px-8 py-4 rounded-xl font-semibold text-lg transition">
             Start Free — No Credit Card
