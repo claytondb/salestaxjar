@@ -1,26 +1,265 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* =============================================================================
+   Theme System - CSS Custom Properties
+   ============================================================================= */
+
+:root,
+.theme-default {
+  /* Backgrounds */
+  --bg-primary: #0f172a;           /* slate-900 */
+  --bg-secondary: #1e1b4b;         /* purple-950 mix */
+  --bg-card: #1e293b;              /* slate-800 */
+  --bg-card-hover: #334155;        /* slate-700 */
+  --bg-input: #1e293b;             /* slate-800 */
+  --bg-accent: rgba(16, 185, 129, 0.1);  /* emerald with opacity */
+  --bg-accent-hover: rgba(16, 185, 129, 0.2);
+  
+  /* Gradient */
+  --gradient-from: #0f172a;        /* slate-900 */
+  --gradient-via: #581c87;         /* purple-900 */
+  --gradient-to: #0f172a;          /* slate-900 */
+  
+  /* Text */
+  --text-primary: #ffffff;
+  --text-secondary: #d1d5db;       /* gray-300 */
+  --text-muted: #9ca3af;           /* gray-400 */
+  --text-accent: #34d399;          /* emerald-400 */
+  
+  /* Borders */
+  --border-primary: rgba(255, 255, 255, 0.1);
+  --border-secondary: rgba(255, 255, 255, 0.2);
+  --border-accent: #10b981;        /* emerald-500 */
+  
+  /* Accent colors */
+  --accent-primary: #10b981;       /* emerald-500 */
+  --accent-primary-hover: #059669; /* emerald-600 */
+  --accent-secondary: #34d399;     /* emerald-400 */
+  --accent-bg: rgba(16, 185, 129, 0.2);
+  
+  /* Status colors */
+  --success: #10b981;
+  --warning: #f59e0b;
+  --error: #ef4444;
+  --info: #3b82f6;
+  
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.4);
+  
+  /* Header specific */
+  --header-bg: #0f172a;
+  --header-border: rgba(255, 255, 255, 0.1);
 }
+
+/* =============================================================================
+   Nautical Theme - Clean, Breezy, Modern
+   ============================================================================= */
+
+.theme-nautical {
+  /* Backgrounds - light, sandy, airy */
+  --bg-primary: #faf8f5;           /* warm cream */
+  --bg-secondary: #f0f7fa;         /* hint of ocean */
+  --bg-card: #ffffff;
+  --bg-card-hover: #f8fafc;
+  --bg-input: #ffffff;
+  --bg-accent: rgba(20, 184, 166, 0.1);  /* teal/seafoam with opacity */
+  --bg-accent-hover: rgba(20, 184, 166, 0.15);
+  
+  /* Gradient - subtle ocean-to-sky */
+  --gradient-from: #f0f7fa;        /* pale ocean */
+  --gradient-via: #e0f2fe;         /* sky blue hint */
+  --gradient-to: #faf8f5;          /* warm cream */
+  
+  /* Text - navy and slate */
+  --text-primary: #0c4a6e;         /* navy/ocean deep */
+  --text-secondary: #334155;       /* slate-700 */
+  --text-muted: #64748b;           /* slate-500 */
+  --text-accent: #0d9488;          /* teal-600 */
+  
+  /* Borders - soft and subtle */
+  --border-primary: rgba(12, 74, 110, 0.1);
+  --border-secondary: rgba(12, 74, 110, 0.2);
+  --border-accent: #14b8a6;        /* teal-500 */
+  
+  /* Accent colors - seafoam/teal */
+  --accent-primary: #14b8a6;       /* teal-500 */
+  --accent-primary-hover: #0d9488; /* teal-600 */
+  --accent-secondary: #2dd4bf;     /* teal-400 */
+  --accent-bg: rgba(20, 184, 166, 0.15);
+  
+  /* Status colors - slightly warmer */
+  --success: #14b8a6;              /* teal */
+  --warning: #f97316;              /* orange */
+  --error: #e11d48;                /* rose */
+  --info: #0284c7;                 /* sky */
+  
+  /* Shadows - softer for light theme */
+  --shadow-sm: 0 1px 2px rgba(12, 74, 110, 0.05);
+  --shadow-md: 0 4px 6px rgba(12, 74, 110, 0.07);
+  --shadow-lg: 0 10px 15px rgba(12, 74, 110, 0.1);
+  
+  /* Header specific - clean white with subtle shadow */
+  --header-bg: #ffffff;
+  --header-border: rgba(12, 74, 110, 0.1);
+}
+
+/* =============================================================================
+   Tailwind Theme Integration
+   ============================================================================= */
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --color-background: var(--bg-primary);
+  --color-foreground: var(--text-primary);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  
+  /* Custom colors for use in Tailwind classes */
+  --color-seafoam-400: #2dd4bf;
+  --color-seafoam-500: #14b8a6;
+  --color-seafoam-600: #0d9488;
+  --color-navy-800: #1e3a5f;
+  --color-navy-900: #0c4a6e;
+  --color-sand-50: #faf8f5;
+  --color-sand-100: #f5f0e8;
+  --color-ocean-50: #f0f7fa;
+  --color-ocean-100: #e0f2fe;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
+/* =============================================================================
+   Base Styles
+   ============================================================================= */
 
 body {
-  background: var(--background);
-  color: var(--foreground);
+  background: var(--bg-primary);
+  color: var(--text-primary);
   font-family: Arial, Helvetica, sans-serif;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* =============================================================================
+   Theme-Aware Utility Classes
+   ============================================================================= */
+
+/* Backgrounds */
+.bg-theme-primary { background-color: var(--bg-primary); }
+.bg-theme-secondary { background-color: var(--bg-secondary); }
+.bg-theme-card { background-color: var(--bg-card); }
+.bg-theme-input { background-color: var(--bg-input); }
+.bg-theme-accent { background-color: var(--bg-accent); }
+.bg-theme-gradient {
+  background: linear-gradient(to bottom right, var(--gradient-from), var(--gradient-via), var(--gradient-to));
+}
+
+/* Text */
+.text-theme-primary { color: var(--text-primary); }
+.text-theme-secondary { color: var(--text-secondary); }
+.text-theme-muted { color: var(--text-muted); }
+.text-theme-accent { color: var(--text-accent); }
+
+/* Borders */
+.border-theme-primary { border-color: var(--border-primary); }
+.border-theme-secondary { border-color: var(--border-secondary); }
+.border-theme-accent { border-color: var(--border-accent); }
+
+/* Buttons */
+.btn-theme-primary {
+  background-color: var(--accent-primary);
+  color: white;
+  transition: background-color 0.2s ease;
+}
+.btn-theme-primary:hover {
+  background-color: var(--accent-primary-hover);
+}
+
+/* Cards */
+.card-theme {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-primary);
+  box-shadow: var(--shadow-sm);
+  transition: all 0.3s ease;
+}
+.card-theme:hover {
+  box-shadow: var(--shadow-md);
+}
+
+/* Header */
+.header-theme {
+  background-color: var(--header-bg);
+  border-bottom: 1px solid var(--header-border);
+}
+
+/* Accent backgrounds with proper opacity */
+.bg-accent-subtle {
+  background-color: var(--accent-bg);
+}
+
+/* Active nav items */
+.nav-active {
+  background-color: var(--accent-bg);
+  color: var(--text-accent);
+}
+.nav-inactive {
+  color: var(--text-secondary);
+}
+.nav-inactive:hover {
+  color: var(--text-primary);
+  background-color: var(--bg-accent);
+}
+
+/* =============================================================================
+   Component Overrides for Theme Compatibility
+   ============================================================================= */
+
+/* Input fields */
+input, select, textarea {
+  background-color: var(--bg-input);
+  border-color: var(--border-primary);
+  color: var(--text-primary);
+}
+
+input:focus, select:focus, textarea:focus {
+  border-color: var(--accent-primary);
+  outline: none;
+  box-shadow: 0 0 0 2px var(--accent-bg);
+}
+
+/* Placeholder text */
+input::placeholder, textarea::placeholder {
+  color: var(--text-muted);
+}
+
+/* =============================================================================
+   Nautical Theme Specific Enhancements
+   ============================================================================= */
+
+.theme-nautical {
+  /* Add subtle wave pattern to certain backgrounds */
+  --wave-pattern: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%230c4a6e' fill-opacity='0.03' d='M0,160L48,176C96,192,192,224,288,213.3C384,203,480,149,576,149.3C672,149,768,203,864,208C960,213,1056,171,1152,149.3C1248,128,1344,128,1392,128L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E");
+}
+
+/* Nautical theme link hover effect - subtle underline wave */
+.theme-nautical a:hover {
+  text-decoration-style: wavy;
+}
+
+/* =============================================================================
+   Smooth Theme Transitions
+   ============================================================================= */
+
+* {
+  transition-property: background-color, border-color, color, box-shadow;
+  transition-duration: 0.2s;
+  transition-timing-function: ease;
+}
+
+/* Exclude animations from transition */
+*:not(.transition-none) {
+  transition-property: background-color, border-color, color, box-shadow;
+}
+
+/* Disable transitions on page load to prevent flash */
+.no-transitions * {
+  transition: none !important;
 }
