@@ -140,7 +140,7 @@ export default function Home() {
           </h1>
           <p className="text-xl sm:text-2xl text-theme-secondary mb-6">
             So you can get back to{' '}
-            <span className="text-theme-accent font-semibold border-b-2 pb-1 inline-block min-w-[200px] transition-all duration-300" style={{ borderColor: 'var(--accent-primary)' }}>
+            <span className="text-theme-accent font-handwritten text-2xl sm:text-3xl border-b-2 pb-1 inline-block min-w-[200px] transition-all duration-300" style={{ borderColor: 'var(--accent-primary)' }}>
               {businesses[businessIndex]}
             </span>
           </p>

@@ -180,6 +180,11 @@ body {
 .text-theme-muted { color: var(--text-muted); }
 .text-theme-accent { color: var(--text-accent); }
 
+/* Handwritten font */
+.font-handwritten {
+  font-family: var(--font-handwritten), cursive;
+}
+
 /* Borders */
 .border-theme-primary { border-color: var(--border-primary); }
 .border-theme-secondary { border-color: var(--border-secondary); }
