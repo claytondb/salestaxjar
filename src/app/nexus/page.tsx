@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import Header from '@/components/Header';
+import Footer from '@/components/Footer';
 import { stateTaxRates } from '@/data/taxRates';
 import { NexusState } from '@/types';
 
@@ -261,6 +262,8 @@ export default function NexusPage() {
           </div>
         </div>
       </main>
+
+      <Footer />
     </div>
   );
 }

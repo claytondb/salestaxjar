@@ -333,7 +333,7 @@ export default function CalculatorPage() {
                       </div>
                       <div>
                         <div className="text-theme-muted text-sm">Tax ({result.effectiveRate}%)</div>
-                        <div className="text-2xl font-bold text-theme-accent">${result.tax.toFixed(2)}</div>
+                        <div className="text-2xl font-bold text-theme-primary">${result.tax.toFixed(2)}</div>
                       </div>
                       <div className="col-span-2">
                         <div className="text-theme-muted text-sm">Total</div>
@@ -398,7 +398,7 @@ export default function CalculatorPage() {
                         </div>
                       </div>
                       <div className="text-right">
-                        <div className="font-medium text-theme-accent">+${calc.taxAmount.toFixed(2)}</div>
+                        <div className="font-medium text-theme-primary">+${calc.taxAmount.toFixed(2)}</div>
                         <div className="text-sm text-theme-muted">{calc.rate}%</div>
                       </div>
                     </div>
@@ -417,7 +417,7 @@ export default function CalculatorPage() {
               <p className="text-theme-muted text-sm mb-3">
                 Upload a CSV file with the following columns:
               </p>
-              <code className="block bg-theme-primary/10 p-3 rounded text-theme-accent text-sm">
+              <code className="block bg-theme-secondary/30 p-3 rounded text-theme-primary text-sm font-mono">
                 amount,state,category<br/>
                 100.00,CA,general<br/>
                 250.50,NY,clothing<br/>
@@ -481,7 +481,7 @@ export default function CalculatorPage() {
                         <td className="py-3 px-4 text-theme-primary">{r.state}</td>
                         <td className="py-3 px-4 text-theme-muted">{r.category}</td>
                         <td className="py-3 px-4 text-theme-primary text-right">{r.rate}%</td>
-                        <td className="py-3 px-4 text-theme-accent text-right">${r.tax.toFixed(2)}</td>
+                        <td className="py-3 px-4 text-theme-primary font-medium text-right">${r.tax.toFixed(2)}</td>
                         <td className="py-3 px-4 text-theme-primary text-right">${r.total.toFixed(2)}</td>
                       </tr>
                     ))}
@@ -490,7 +490,7 @@ export default function CalculatorPage() {
                     <tr className="border-t-2 border-theme-primary">
                       <td colSpan={4} className="py-3 px-4 text-theme-primary font-medium">Totals</td>
                       <td className="py-3 px-4"></td>
-                      <td className="py-3 px-4 text-theme-accent font-medium text-right">
+                      <td className="py-3 px-4 text-theme-primary font-bold text-right">
                         ${bulkResults.reduce((s, r) => s + r.tax, 0).toFixed(2)}
                       </td>
                       <td className="py-3 px-4 text-theme-primary font-medium text-right">

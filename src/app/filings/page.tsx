@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import Header from '@/components/Header';
+import Footer from '@/components/Footer';
 import { Calendar, ClipboardList, CheckCircle2, AlertTriangle, Check, List } from 'lucide-react';
 
 export default function FilingsPage() {
@@ -325,6 +326,8 @@ export default function FilingsPage() {
           </>
         )}
       </main>
+
+      <Footer />
     </div>
   );
 }

@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import Header from '@/components/Header';
+import Footer from '@/components/Footer';
 import { 
   MapPin, 
   ClipboardList, 
@@ -24,13 +25,13 @@ import {
 const ICON_CLASS = "w-6 h-6 text-theme-accent";
 
 const platformIcons: Record<string, React.ReactNode> = {
-  shopify: <ShoppingCart className="w-6 h-6 text-theme-accent" />,
-  amazon: <Package className="w-6 h-6 text-theme-accent" />,
-  etsy: <Palette className="w-6 h-6 text-theme-accent" />,
-  woocommerce: <Plug className="w-6 h-6 text-theme-accent" />,
-  bigcommerce: <Store className="w-6 h-6 text-theme-accent" />,
-  ebay: <Tag className="w-6 h-6 text-theme-accent" />,
-  square: <Square className="w-6 h-6 text-theme-accent" />,
+  shopify: <ShoppingCart className="w-6 h-6 text-theme-secondary" />,
+  amazon: <Package className="w-6 h-6 text-theme-secondary" />,
+  etsy: <Palette className="w-6 h-6 text-theme-secondary" />,
+  woocommerce: <Plug className="w-6 h-6 text-theme-secondary" />,
+  bigcommerce: <Store className="w-6 h-6 text-theme-secondary" />,
+  ebay: <Tag className="w-6 h-6 text-theme-secondary" />,
+  square: <Square className="w-6 h-6 text-theme-secondary" />,
 };
 
 export default function DashboardPage() {
@@ -334,6 +335,8 @@ export default function DashboardPage() {
           </div>
         </div>
       </main>
+
+      <Footer />
     </div>
   );
 }

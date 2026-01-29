@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import SailsLogo from '@/components/SailsLogo';
 import ThemeToggle from '@/components/ThemeToggle';
+import Footer from '@/components/Footer';
 
 export default function SignupPage() {
   const [name, setName] = useState('');
@@ -44,13 +45,14 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="min-h-screen bg-theme-gradient flex items-center justify-center px-4 py-12">
+    <div className="min-h-screen bg-theme-gradient flex flex-col">
       {/* Theme Toggle */}
-      <div className="absolute top-4 right-4">
+      <div className="absolute top-4 right-4 z-10">
         <ThemeToggle />
       </div>
 
-      <div className="w-full max-w-md">
+      <div className="flex-1 flex items-center justify-center px-4 py-12">
+        <div className="w-full max-w-md">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2 justify-center mb-8">
           <SailsLogo className="w-12 h-12 text-theme-accent" />
@@ -170,7 +172,10 @@ export default function SignupPage() {
             </div>
           ))}
         </div>
+        </div>
       </div>
+
+      <Footer />
     </div>
   );
 }

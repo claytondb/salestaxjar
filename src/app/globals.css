@@ -200,10 +200,24 @@ body {
   background-color: var(--bg-card);
   border: 1px solid var(--border-primary);
   box-shadow: var(--shadow-sm);
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
 }
-.card-theme:hover {
+
+/* Interactive cards - add .card-interactive class for hover effects */
+.card-interactive:hover {
   box-shadow: var(--shadow-md);
+  border-color: var(--border-secondary);
+}
+
+/* Clickable elements hover state */
+.hover-lift:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+/* Link hover utility */
+.link-hover:hover {
+  color: var(--text-accent);
 }
 
 /* Header */

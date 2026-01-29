@@ -36,13 +36,13 @@ import {
 const ICON_CLASS = "w-5 h-5";
 
 const platformIcons: Record<string, React.ReactNode> = {
-  shopify: <ShoppingCart className="w-6 h-6 text-theme-accent" />,
-  amazon: <Package className="w-6 h-6 text-theme-accent" />,
-  etsy: <Palette className="w-6 h-6 text-theme-accent" />,
-  woocommerce: <Plug className="w-6 h-6 text-theme-accent" />,
-  bigcommerce: <Store className="w-6 h-6 text-theme-accent" />,
-  ebay: <Tag className="w-6 h-6 text-theme-accent" />,
-  square: <Square className="w-6 h-6 text-theme-accent" />,
+  shopify: <ShoppingCart className="w-6 h-6 text-theme-secondary" />,
+  amazon: <Package className="w-6 h-6 text-theme-secondary" />,
+  etsy: <Palette className="w-6 h-6 text-theme-secondary" />,
+  woocommerce: <Plug className="w-6 h-6 text-theme-secondary" />,
+  bigcommerce: <Store className="w-6 h-6 text-theme-secondary" />,
+  ebay: <Tag className="w-6 h-6 text-theme-secondary" />,
+  square: <Square className="w-6 h-6 text-theme-secondary" />,
 };
 
 const businessTypes = [
@@ -56,26 +56,33 @@ const businessTypes = [
 
 const plans = [
   { 
+    id: 'free', 
+    name: 'Free', 
+    price: 0, 
+    tier: 0,
+    features: ['Nexus monitoring', 'Economic nexus alerts', 'Unlimited calculations', 'Email support']
+  },
+  { 
     id: 'starter', 
     name: 'Starter', 
-    price: 29, 
-    tier: 0,
-    features: ['Up to 500 orders/mo', '3 state filings', 'Shopify integration', 'Email support']
+    price: 9, 
+    tier: 1,
+    features: ['Up to 200 orders/mo', 'Shopify & WooCommerce', 'Track 3 states', 'CSV import']
   },
   { 
     id: 'pro', 
-    name: 'Growth', 
-    price: 79, 
-    tier: 1,
-    features: ['Up to 5,000 orders/mo', 'Unlimited filings', 'All integrations', 'Priority support', 'Nexus tracking'],
+    name: 'Pro', 
+    price: 29, 
+    tier: 2,
+    features: ['Up to 2,000 orders/mo', 'All integrations', 'Unlimited states', 'Priority support'],
     popular: true
   },
   { 
     id: 'business', 
-    name: 'Enterprise', 
-    price: 199, 
-    tier: 2,
-    features: ['Unlimited orders', 'Unlimited filings', 'Custom integrations', 'Dedicated manager', 'Audit protection']
+    name: 'Business', 
+    price: 59, 
+    tier: 3,
+    features: ['Unlimited orders', 'Dedicated support', 'API access', 'Audit support']
   },
 ];
 
