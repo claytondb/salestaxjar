@@ -321,7 +321,7 @@ export default function DashboardPage() {
               <p className="text-theme-muted text-sm">
                 {billing.plan === 'starter' && 'Upgrade to Growth for unlimited state filings and advanced features.'}
                 {billing.plan === 'pro' && 'You have access to all growth features including nexus tracking.'}
-                {billing.plan === 'business' && 'You have unlimited access to all features and dedicated support.'}
+                {billing.plan === 'business' && 'You have unlimited access to all features and priority email support.'}
               </p>
             </div>
             {billing.plan !== 'business' && (

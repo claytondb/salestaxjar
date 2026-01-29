@@ -74,7 +74,7 @@ const plans = [
     name: 'Pro', 
     price: 29, 
     tier: 2,
-    features: ['Up to 2,000 orders/mo', 'All integrations', 'Unlimited states', 'Priority support'],
+    features: ['Up to 2,000 orders/mo', 'All integrations', 'Unlimited states', 'Faster email support'],
     popular: true
   },
   { 
@@ -82,7 +82,7 @@ const plans = [
     name: 'Business', 
     price: 59, 
     tier: 3,
-    features: ['Unlimited orders', 'Dedicated support', 'API access', 'Audit support']
+    features: ['Unlimited orders', 'Priority email support', 'API access', 'Audit support']
   },
 ];
 

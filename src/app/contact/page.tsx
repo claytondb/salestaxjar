@@ -223,11 +223,11 @@ export default function ContactPage() {
 
             {/* Response Time Info */}
             <div className="mt-8 p-4 rounded-lg" style={{ backgroundColor: 'var(--info-bg)', border: '1px solid var(--info-border)' }}>
-              <h3 className="font-medium mb-2" style={{ color: 'var(--info-text)' }}>📞 Response Times</h3>
+              <h3 className="font-medium mb-2" style={{ color: 'var(--info-text)' }}>📧 Email Response Times</h3>
               <ul className="text-sm text-theme-secondary space-y-1">
                 <li>• <strong>Email:</strong> 1-2 business days</li>
-                <li>• <strong>Priority Support (Growth+):</strong> Within 4 hours</li>
-                <li>• <strong>Enterprise:</strong> Dedicated account manager</li>
+                <li>• <strong>Pro:</strong> Within 24 hours</li>
+                <li>• <strong>Business:</strong> Within 4 hours</li>
               </ul>
             </div>
           </div>

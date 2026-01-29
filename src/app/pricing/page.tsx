@@ -49,7 +49,7 @@ const plans = [
       { text: 'All integrations (Shopify, WooCommerce, Squarespace...)', included: true },
       { text: 'Unlimited state tracking', included: true },
       { text: 'SMS + email reminders', included: true },
-      { text: 'Priority support', included: true },
+      { text: 'Faster email support', included: true },
       { text: 'Filing assistance', included: true, comingSoon: true },
     ],
     cta: 'Start Free Trial',
@@ -62,7 +62,7 @@ const plans = [
     features: [
       { text: 'Everything in Pro, plus:', included: true, bold: true },
       { text: 'Unlimited orders', included: true },
-      { text: 'Dedicated support', included: true },
+      { text: 'Priority email support', included: true },
       { text: 'API access', included: true },
       { text: 'Audit support resources', included: true },
       { text: 'Auto-filing', included: true, comingSoon: true },
