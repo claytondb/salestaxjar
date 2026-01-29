@@ -59,8 +59,8 @@ export default function SignupPage() {
 
         {/* Signup Form */}
         <div className="card-theme rounded-2xl p-8">
-          <h1 className="text-2xl font-bold text-theme-primary text-center mb-2">Start your free trial</h1>
-          <p className="text-theme-muted text-center mb-6">14 days free. No credit card required.</p>
+          <h1 className="text-2xl font-bold text-theme-primary text-center mb-2">Create your account</h1>
+          <p className="text-theme-muted text-center mb-6">Free forever plan available. Paid plans include 14-day free trial.</p>
 
           {error && (
             <div className="px-4 py-3 rounded-lg mb-6 text-sm" style={{ backgroundColor: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.3)', color: 'var(--error)' }}>
@@ -148,7 +148,7 @@ export default function SignupPage() {
                   Creating account...
                 </>
               ) : (
-                'Start free trial'
+                'Create account'
               )}
             </button>
           </form>
@@ -163,7 +163,7 @@ export default function SignupPage() {
 
         {/* Benefits */}
         <div className="mt-6 grid grid-cols-2 gap-3">
-          {['No credit card required', 'Cancel anytime', 'Full access for 14 days', '24/7 support'].map((benefit, i) => (
+          {['Free tier forever', 'No credit card required', 'Upgrade anytime', 'Cancel anytime'].map((benefit, i) => (
             <div key={i} className="flex items-center gap-2 text-theme-muted text-sm">
               <span className="text-theme-accent">✓</span>
               {benefit}

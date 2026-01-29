@@ -58,13 +58,13 @@ export default function Footer() {
         </div>
 
         {/* Tax Disclaimer Banner */}
-        <div className="rounded-lg p-4 mb-8" style={{ backgroundColor: 'rgba(234, 179, 8, 0.1)', border: '1px solid rgba(234, 179, 8, 0.3)' }}>
-          <p className="text-xs text-center flex items-start justify-center gap-2" style={{ color: 'var(--warning)' }}>
-            <AlertTriangle className="w-4 h-4 flex-shrink-0 mt-0.5" />
-            <span><strong>IMPORTANT:</strong> Sails provides tax estimation tools only. We are not a CPA firm or tax advisory service. 
+        <div className="card-theme rounded-lg p-4 mb-8">
+          <p className="text-xs text-center flex items-start justify-center gap-2 text-theme-secondary">
+            <AlertTriangle className="w-4 h-4 flex-shrink-0 mt-0.5 text-theme-muted" />
+            <span><strong className="text-theme-primary">IMPORTANT:</strong> Sails provides tax estimation tools only. We are not a CPA firm or tax advisory service. 
             Tax calculations are estimates based on publicly available data and may not reflect current rates or local variations. 
             You are responsible for verifying accuracy and consulting qualified tax professionals. 
-            <Link href="/terms" className="underline ml-1 hover:opacity-80">See full Terms of Service</Link>.</span>
+            <Link href="/terms" className="underline ml-1 text-theme-accent hover:opacity-80">See full Terms of Service</Link>.</span>
           </p>
         </div>
 

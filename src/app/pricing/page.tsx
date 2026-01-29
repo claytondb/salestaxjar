@@ -135,8 +135,16 @@ export default function PricingPage() {
               <SailsLogo className="w-10 h-10 text-theme-accent" />
               <span className="text-2xl font-bold text-theme-primary">Sails</span>
             </Link>
-            <div className="flex gap-3 items-center">
+            <nav className="hidden md:flex gap-6 items-center">
+              <Link href="/#features" className="text-theme-secondary hover:text-theme-primary transition">Features</Link>
+              <Link href="/pricing" className="text-theme-accent font-medium">Pricing</Link>
+              <Link href="/#calculator" className="text-theme-secondary hover:text-theme-primary transition">Calculator</Link>
               <ThemeToggle />
+            </nav>
+            <div className="flex gap-3 items-center">
+              <div className="md:hidden">
+                <ThemeToggle />
+              </div>
               {isLoading ? null : user ? (
                 <Link href="/dashboard" className="btn-theme-primary text-white px-4 py-2 rounded-lg font-medium transition">
                   Dashboard
@@ -188,7 +196,7 @@ export default function PricingPage() {
                 }`}
               >
                 {plan.popular && (
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-theme-accent text-white text-sm font-medium px-3 py-1 rounded-full flex items-center gap-1">
+                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 text-sm font-medium px-3 py-1 rounded-full flex items-center gap-1" style={{ backgroundColor: 'var(--accent-primary)', color: 'white' }}>
                     <Sparkles className="w-3 h-3" /> Most Popular
                   </div>
                 )}
@@ -211,14 +219,14 @@ export default function PricingPage() {
                   {plan.features.map((feature, i) => (
                     <li key={i} className="flex items-start gap-2">
                       {feature.comingSoon ? (
-                        <Clock className="w-4 h-4 text-amber-500 mt-0.5 flex-shrink-0" />
+                        <Clock className="w-4 h-4 text-theme-muted mt-0.5 flex-shrink-0" />
                       ) : (
                         <Check className="w-4 h-4 text-theme-accent mt-0.5 flex-shrink-0" />
                       )}
                       <span className={`text-sm ${feature.bold ? 'font-semibold text-theme-primary' : 'text-theme-secondary'}`}>
                         {feature.text}
                         {feature.comingSoon && (
-                          <span className="text-amber-500 text-xs ml-1">(Soon)</span>
+                          <span className="text-theme-muted text-xs ml-1">(Soon)</span>
                         )}
                       </span>
                     </li>

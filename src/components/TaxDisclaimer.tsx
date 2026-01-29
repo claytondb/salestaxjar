@@ -81,8 +81,8 @@ export default function TaxDisclaimer({ variant = 'inline', className = '' }: Ta
               <span className="flex items-center gap-1" style={{ color: 'var(--warning-text)' }}>
                 <Calendar className="w-3 h-3" /> Rates last updated: January 2025
               </span>
-              <span className="text-theme-muted">|</span>
-              <Link href="/terms" className="text-theme-accent hover:opacity-80">Full Terms of Service →</Link>
+              <span style={{ color: 'var(--warning-text)' }}>|</span>
+              <Link href="/terms" className="underline hover:opacity-80 font-medium" style={{ color: 'var(--warning-text)' }}>Full Terms of Service →</Link>
             </div>
           </div>
         </div>

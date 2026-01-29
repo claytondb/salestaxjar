@@ -553,14 +553,14 @@ export default function PlatformsManager() {
       </div>
 
       {/* Request Platform Section */}
-      <div className="bg-theme-secondary/30 backdrop-blur rounded-xl border border-theme-primary p-6 text-center">
+      <div className="card-theme rounded-xl p-6 text-center">
         <h3 className="font-medium text-theme-primary mb-2">Don&apos;t see the platform you need?</h3>
         <p className="text-theme-muted text-sm mb-4">
           Let us know which platform you&apos;d like us to support next.
         </p>
         <button
           onClick={() => setShowRequestModal(true)}
-          className="btn-theme-primary text-theme-primary px-6 py-2 rounded-lg font-medium transition"
+          className="btn-theme-primary px-6 py-2 rounded-lg font-medium transition"
         >
           Request Platform Integration
         </button>
@@ -569,7 +569,7 @@ export default function PlatformsManager() {
       {/* Shopify Modal */}
       {showShopifyModal && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="bg-slate-800 rounded-xl border border-theme-secondary p-6 max-w-md w-full mx-4">
+          <div className="card-theme rounded-xl p-6 max-w-md w-full mx-4">
             <h3 className="text-xl font-semibold text-theme-primary mb-2">Connect Shopify Store</h3>
             <p className="text-theme-muted text-sm mb-4">
               Enter your Shopify store domain to connect your store.
@@ -626,7 +626,7 @@ export default function PlatformsManager() {
       {/* WooCommerce API Keys Modal */}
       {showWooCommerceModal && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-slate-800 rounded-xl border border-theme-secondary p-6 max-w-md w-full">
+          <div className="card-theme rounded-xl p-6 max-w-md w-full">
             <div className="flex items-center justify-between mb-4">
               <div>
                 <h3 className="text-xl font-semibold text-theme-primary flex items-center gap-2">
@@ -730,7 +730,7 @@ export default function PlatformsManager() {
       {/* Squarespace API Key Modal */}
       {showSquarespaceModal && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-slate-800 rounded-xl border border-theme-secondary p-6 max-w-md w-full">
+          <div className="card-theme rounded-xl p-6 max-w-md w-full">
             <div className="flex items-center justify-between mb-4">
               <div>
                 <h3 className="text-xl font-semibold text-theme-primary flex items-center gap-2">
@@ -826,7 +826,7 @@ export default function PlatformsManager() {
       {/* BigCommerce API Credentials Modal */}
       {showBigCommerceModal && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-slate-800 rounded-xl border border-theme-secondary p-6 max-w-md w-full">
+          <div className="card-theme rounded-xl p-6 max-w-md w-full">
             <div className="flex items-center justify-between mb-4">
               <div>
                 <h3 className="text-xl font-semibold text-theme-primary flex items-center gap-2">
@@ -922,7 +922,7 @@ export default function PlatformsManager() {
       {/* Platform Request Modal */}
       {showRequestModal && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-slate-800 rounded-xl border border-theme-secondary p-6 max-w-md w-full">
+          <div className="card-theme rounded-xl p-6 max-w-md w-full">
             {requestSuccess ? (
               <div className="text-center py-8">
                 <div className="w-16 h-16 bg-emerald-500/20 rounded-full flex items-center justify-center mx-auto mb-4">

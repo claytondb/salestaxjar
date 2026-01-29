@@ -90,8 +90,8 @@ export default function DashboardPage() {
 
         {/* Setup Checklist (if not complete) */}
         {(!businessProfile || activeNexusCount === 0 || connectedCount === 0) && (
-          <div className="rounded-xl p-6 mb-8" style={{ backgroundColor: 'var(--warning-bg)', border: '1px solid var(--warning-border)' }}>
-            <h2 className="text-lg font-semibold mb-4" style={{ color: 'var(--warning-text)' }}>Complete your setup</h2>
+          <div className="rounded-xl p-6 mb-8 card-theme border-2" style={{ borderColor: 'var(--accent-primary)' }}>
+            <h2 className="text-lg font-semibold mb-4 text-theme-accent">Complete your setup</h2>
             <div className="space-y-3">
               {!businessProfile && (
                 <Link href="/settings" className="flex items-center gap-3 text-theme-secondary hover:text-theme-primary transition">

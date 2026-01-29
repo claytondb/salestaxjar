@@ -17,7 +17,8 @@ import {
   ClipboardList,
   Check,
   Calendar,
-  AlertTriangle
+  AlertTriangle,
+  Heart
 } from 'lucide-react';
 
 const ICON_CLASS = "w-8 h-8 text-theme-accent";
@@ -129,7 +130,8 @@ export default function Home() {
         <div className="relative z-10 max-w-4xl mx-auto text-center">
           {/* Target audience badge */}
           <div className="inline-flex items-center gap-2 bg-accent-subtle text-theme-accent px-4 py-2 rounded-full text-sm font-medium mb-6">
-            ❤️ Built for small online store owners
+            <Heart className="w-4 h-4" />
+            Built for small online store owners
           </div>
           
           {/* The Solution */}
