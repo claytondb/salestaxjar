@@ -155,11 +155,11 @@ export default function Home() {
           </p>
 
           {/* Trust Signals */}
-          <div className="flex flex-wrap justify-center gap-4 mb-8">
+          <div className="flex flex-wrap justify-center gap-3 mb-8">
             {["5-minute setup", "No accounting degree needed", "Free tier forever"].map((text, i) => (
-              <div key={i} className="card-theme px-4 py-2 rounded-lg flex items-center">
-                <Check className="w-4 h-4 text-theme-accent" />
-                <span className="text-theme-secondary ml-2">{text}</span>
+              <div key={i} className="px-3 py-1.5 rounded-full flex items-center text-sm" style={{ backgroundColor: 'var(--bg-card)', opacity: 0.8 }}>
+                <Check className="w-3.5 h-3.5 text-theme-muted" />
+                <span className="text-theme-muted ml-1.5">{text}</span>
               </div>
             ))}
           </div>
