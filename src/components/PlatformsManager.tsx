@@ -84,6 +84,12 @@ export default function PlatformsManager() {
   const [bigCommerceStoreHash, setBigCommerceStoreHash] = useState('');
   const [bigCommerceAccessToken, setBigCommerceAccessToken] = useState('');
   const [bigCommerceConnectError, setBigCommerceConnectError] = useState<string | null>(null);
+  
+  // Platform request modal state
+  const [showRequestModal, setShowRequestModal] = useState(false);
+  const [requestedPlatform, setRequestedPlatform] = useState('');
+  const [requestSubmitting, setRequestSubmitting] = useState(false);
+  const [requestSuccess, setRequestSuccess] = useState(false);
 
   const fetchPlatforms = useCallback(async () => {
     try {
@@ -268,6 +274,37 @@ export default function PlatformsManager() {
     } catch (err) {
       setBigCommerceConnectError(err instanceof Error ? err.message : 'Connection failed');
       setConnectingPlatform(null);
+    }
+  };
+
+  const handlePlatformRequest = async () => {
+    if (!requestedPlatform.trim()) return;
+
+    setRequestSubmitting(true);
+
+    try {
+      const response = await fetch('/api/platforms/request', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          platform: requestedPlatform,
+        }),
+      });
+
+      if (response.ok) {
+        setRequestSuccess(true);
+        setTimeout(() => {
+          setShowRequestModal(false);
+          setRequestedPlatform('');
+          setRequestSuccess(false);
+        }, 2000);
+      } else {
+        setError('Failed to submit request. Please try again.');
+      }
+    } catch {
+      setError('Failed to submit request. Please try again.');
+    } finally {
+      setRequestSubmitting(false);
     }
   };
 
@@ -511,6 +548,20 @@ export default function PlatformsManager() {
             Contact Support →
           </a>
         </div>
+      </div>
+
+      {/* Request Platform Section */}
+      <div className="bg-theme-secondary/30 backdrop-blur rounded-xl border border-theme-primary p-6 text-center">
+        <h3 className="font-medium text-theme-primary mb-2">Don&apos;t see the platform you need?</h3>
+        <p className="text-theme-muted text-sm mb-4">
+          Let us know which platform you&apos;d like us to support next.
+        </p>
+        <button
+          onClick={() => setShowRequestModal(true)}
+          className="btn-theme-primary text-theme-primary px-6 py-2 rounded-lg font-medium transition"
+        >
+          Request Platform Integration
+        </button>
       </div>
 
       {/* Shopify Modal */}
@@ -862,6 +913,83 @@ export default function PlatformsManager() {
                 )}
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Platform Request Modal */}
+      {showRequestModal && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-slate-800 rounded-xl border border-theme-secondary p-6 max-w-md w-full">
+            {requestSuccess ? (
+              <div className="text-center py-8">
+                <div className="w-16 h-16 bg-emerald-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Check className="w-8 h-8 text-emerald-400" />
+                </div>
+                <h3 className="text-xl font-semibold text-theme-primary mb-2">Request Submitted!</h3>
+                <p className="text-theme-muted">
+                  Thank you for your feedback. We&apos;ll review your request.
+                </p>
+              </div>
+            ) : (
+              <>
+                <div className="flex items-center justify-between mb-4">
+                  <div>
+                    <h3 className="text-xl font-semibold text-theme-primary">Request Platform Integration</h3>
+                    <p className="text-theme-muted text-sm mt-1">
+                      Tell us which platform you&apos;d like us to support
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => {
+                      setShowRequestModal(false);
+                      setRequestedPlatform('');
+                    }}
+                    className="p-2 bg-theme-secondary/30 hover:bg-white/20 text-theme-primary rounded-lg transition"
+                  >
+                    ✕
+                  </button>
+                </div>
+                
+                <div className="mb-6">
+                  <label className="block text-theme-secondary text-sm mb-2">Platform Name</label>
+                  <input
+                    type="text"
+                    value={requestedPlatform}
+                    onChange={(e) => setRequestedPlatform(e.target.value)}
+                    placeholder="e.g., Wix, Magento, PrestaShop..."
+                    className="w-full px-4 py-3 bg-theme-secondary/30 border border-theme-secondary rounded-lg text-theme-primary focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    autoFocus
+                  />
+                </div>
+
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => {
+                      setShowRequestModal(false);
+                      setRequestedPlatform('');
+                    }}
+                    className="px-4 py-2 bg-theme-secondary/30 hover:bg-white/20 text-theme-primary rounded-lg transition"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handlePlatformRequest}
+                    disabled={!requestedPlatform.trim() || requestSubmitting}
+                    className="flex-1 btn-theme-primary text-theme-primary px-4 py-2 rounded-lg font-medium transition disabled:opacity-50 flex items-center justify-center gap-2"
+                  >
+                    {requestSubmitting ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        Submitting...
+                      </>
+                    ) : (
+                      'Submit Request'
+                    )}
+                  </button>
+                </div>
+              </>
+            )}
           </div>
         </div>
       )}
