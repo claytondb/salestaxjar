@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import { stateTaxRates } from '@/data/taxRates';
+import { stateTaxRates, taxRateMetadata } from '@/data/taxRates';
 import { NexusState } from '@/types';
 
 const nexusReasons = [
@@ -117,6 +117,17 @@ export default function NexusPage() {
                 <div className="text-theme-muted text-xs mt-1">{reason.description}</div>
               </div>
             ))}
+          </div>
+          
+          {/* Tax Rate Update Note */}
+          <div className="mt-4 pt-4 border-t border-theme-primary flex items-center gap-2 text-sm text-theme-muted">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            </svg>
+            <span>
+              Tax rates are regularly updated to reflect changes in state and local tax laws. 
+              Last updated: {new Date(taxRateMetadata.lastUpdated).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+            </span>
           </div>
         </div>
 
