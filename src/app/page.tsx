@@ -99,7 +99,7 @@ export default function Home() {
               ) : (
                 // Logged out - show login and signup
                 <>
-                  <Link href="/login" className="text-theme-secondary hover:text-theme-primary px-3 py-2 transition text-sm sm:text-base">
+                  <Link href="/login" className="border border-theme-secondary hover:border-theme-primary text-theme-secondary hover:text-theme-primary px-4 py-2 rounded-lg transition text-sm sm:text-base whitespace-nowrap">
                     Log in
                   </Link>
                   <Link href="/signup" className="btn-theme-primary px-3 sm:px-4 py-2 rounded-lg font-medium transition text-sm sm:text-base">
