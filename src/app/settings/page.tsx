@@ -23,7 +23,13 @@ import {
   AlertTriangle,
   ArrowUp,
   ArrowDown,
-  Loader2
+  Loader2,
+  Key,
+  Copy,
+  Trash2,
+  Plus,
+  Eye,
+  EyeOff
 } from 'lucide-react';
 
 const ICON_CLASS = "w-5 h-5";
@@ -91,6 +97,23 @@ export default function SettingsPage() {
   const [isSaving, setIsSaving] = useState(false);
   const [saveMessage, setSaveMessage] = useState('');
   
+  // API Keys state
+  const [apiKeys, setApiKeys] = useState<Array<{
+    id: string;
+    name: string;
+    keyPrefix: string;
+    permissions: string;
+    lastUsedAt: string | null;
+    usageCount: number;
+    isActive: boolean;
+    createdAt: string;
+  }>>([]);
+  const [isLoadingKeys, setIsLoadingKeys] = useState(false);
+  const [newKeyName, setNewKeyName] = useState('');
+  const [newKeyResult, setNewKeyResult] = useState<{ key: string; keyPrefix: string } | null>(null);
+  const [showNewKey, setShowNewKey] = useState(false);
+  const [isCreatingKey, setIsCreatingKey] = useState(false);
+  
   // Billing state
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
   const [isCheckingOut, setIsCheckingOut] = useState(false);
@@ -136,10 +159,86 @@ export default function SettingsPage() {
   // Handle hash navigation
   useEffect(() => {
     const hash = window.location.hash.replace('#', '');
-    if (hash && ['profile', 'account', 'notifications', 'platforms', 'billing', 'privacy'].includes(hash)) {
+    if (hash && ['profile', 'account', 'notifications', 'platforms', 'apikeys', 'billing', 'privacy'].includes(hash)) {
       setActiveTab(hash);
     }
   }, []);
+  
+  // Load API keys when tab is active
+  useEffect(() => {
+    if (activeTab === 'apikeys' && apiKeys.length === 0) {
+      loadApiKeys();
+    }
+  }, [activeTab]);
+  
+  const loadApiKeys = async () => {
+    setIsLoadingKeys(true);
+    try {
+      const response = await fetch('/api/keys');
+      if (response.ok) {
+        const data = await response.json();
+        setApiKeys(data.keys || []);
+      }
+    } catch (error) {
+      console.error('Failed to load API keys:', error);
+    } finally {
+      setIsLoadingKeys(false);
+    }
+  };
+  
+  const handleCreateApiKey = async () => {
+    if (!newKeyName.trim()) {
+      setSaveMessage('Please enter a name for the API key');
+      return;
+    }
+    
+    setIsCreatingKey(true);
+    try {
+      const response = await fetch('/api/keys', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: newKeyName.trim() }),
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        setNewKeyResult({ key: data.key, keyPrefix: data.keyPrefix });
+        setShowNewKey(true);
+        setNewKeyName('');
+        loadApiKeys(); // Refresh the list
+      } else {
+        const error = await response.json();
+        setSaveMessage(error.error || 'Failed to create API key');
+      }
+    } catch (error) {
+      setSaveMessage('Failed to create API key');
+    } finally {
+      setIsCreatingKey(false);
+    }
+  };
+  
+  const handleDeleteApiKey = async (keyId: string) => {
+    if (!confirm('Are you sure you want to delete this API key? This cannot be undone.')) {
+      return;
+    }
+    
+    try {
+      const response = await fetch(`/api/keys/${keyId}`, { method: 'DELETE' });
+      if (response.ok) {
+        setApiKeys(apiKeys.filter(k => k.id !== keyId));
+        setSaveMessage('API key deleted');
+        setTimeout(() => setSaveMessage(''), 3000);
+      }
+    } catch (error) {
+      setSaveMessage('Failed to delete API key');
+    }
+  };
+  
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text);
+    setSaveMessage('Copied to clipboard!');
+    setTimeout(() => setSaveMessage(''), 2000);
+  };
 
   // Data export handler
   const handleExportData = () => {
@@ -365,6 +464,7 @@ export default function SettingsPage() {
                 { id: 'account', label: 'Account', icon: <User className={ICON_CLASS} /> },
                 { id: 'notifications', label: 'Notifications', icon: <Bell className={ICON_CLASS} /> },
                 { id: 'platforms', label: 'Platforms', icon: <Link2 className={ICON_CLASS} /> },
+                { id: 'apikeys', label: 'API Keys', icon: <Key className={ICON_CLASS} /> },
                 { id: 'billing', label: 'Billing', icon: <CreditCard className={ICON_CLASS} /> },
                 { id: 'privacy', label: 'Data & Privacy', icon: <Lock className={ICON_CLASS} /> },
               ].map((tab) => (
@@ -630,6 +730,158 @@ export default function SettingsPage() {
             {/* Platforms Tab */}
             {activeTab === 'platforms' && (
               <PlatformsManager />
+            )}
+
+            {/* API Keys Tab */}
+            {activeTab === 'apikeys' && (
+              <div className="card-theme rounded-xl border border-theme-primary p-6">
+                <div className="flex items-center justify-between mb-6">
+                  <div>
+                    <h2 className="text-xl font-semibold text-theme-primary">API Keys</h2>
+                    <p className="text-theme-muted text-sm mt-1">
+                      Manage API keys for WooCommerce, BigCommerce, and other integrations
+                    </p>
+                  </div>
+                </div>
+
+                {/* New Key Result Modal */}
+                {newKeyResult && showNewKey && (
+                  <div className="mb-6 p-4 bg-emerald-500/10 border border-emerald-500/30 rounded-lg">
+                    <div className="flex items-start justify-between mb-3">
+                      <div className="flex items-center gap-2">
+                        <Check className="w-5 h-5 text-emerald-500" />
+                        <span className="font-medium text-emerald-400">API Key Created</span>
+                      </div>
+                      <button
+                        onClick={() => {
+                          setShowNewKey(false);
+                          setNewKeyResult(null);
+                        }}
+                        className="text-theme-muted hover:text-theme-primary"
+                      >
+                        ×
+                      </button>
+                    </div>
+                    <p className="text-theme-muted text-sm mb-3">
+                      Copy this key now. You won&apos;t be able to see it again!
+                    </p>
+                    <div className="flex items-center gap-2 p-3 bg-black/20 rounded-lg font-mono text-sm">
+                      <code className="flex-1 text-theme-primary break-all">{newKeyResult.key}</code>
+                      <button
+                        onClick={() => copyToClipboard(newKeyResult.key)}
+                        className="p-2 hover:bg-white/10 rounded text-theme-muted hover:text-theme-primary"
+                        title="Copy to clipboard"
+                      >
+                        <Copy className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {/* Create New Key */}
+                <div className="mb-6 p-4 bg-white/5 rounded-lg">
+                  <h3 className="font-medium text-theme-primary mb-3">Create New API Key</h3>
+                  <div className="flex gap-3">
+                    <input
+                      type="text"
+                      value={newKeyName}
+                      onChange={(e) => setNewKeyName(e.target.value)}
+                      placeholder="Key name (e.g., My WooCommerce Store)"
+                      className="flex-1 px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-theme-primary placeholder-theme-muted focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    />
+                    <button
+                      onClick={handleCreateApiKey}
+                      disabled={isCreatingKey || !newKeyName.trim()}
+                      className="btn-theme-primary text-theme-primary px-4 py-2 rounded-lg font-medium transition disabled:opacity-50 flex items-center gap-2"
+                    >
+                      {isCreatingKey ? (
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                      ) : (
+                        <Plus className="w-4 h-4" />
+                      )}
+                      Create Key
+                    </button>
+                  </div>
+                </div>
+
+                {/* API Keys List */}
+                <div>
+                  <h3 className="font-medium text-theme-primary mb-3">Your API Keys</h3>
+                  
+                  {isLoadingKeys ? (
+                    <div className="flex items-center justify-center py-8">
+                      <Loader2 className="w-6 h-6 animate-spin text-theme-muted" />
+                    </div>
+                  ) : apiKeys.length === 0 ? (
+                    <div className="text-center py-8 text-theme-muted">
+                      <Key className="w-12 h-12 mx-auto mb-3 opacity-50" />
+                      <p>No API keys yet</p>
+                      <p className="text-sm">Create one to integrate with WooCommerce or other platforms</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      {apiKeys.map((key) => (
+                        <div
+                          key={key.id}
+                          className="flex items-center justify-between p-4 bg-white/5 rounded-lg border border-white/10"
+                        >
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2">
+                              <span className="font-medium text-theme-primary">{key.name}</span>
+                              {!key.isActive && (
+                                <span className="px-2 py-0.5 bg-red-500/20 text-red-400 text-xs rounded">
+                                  Revoked
+                                </span>
+                              )}
+                            </div>
+                            <div className="flex items-center gap-4 mt-1 text-sm text-theme-muted">
+                              <code className="bg-black/20 px-2 py-0.5 rounded">{key.keyPrefix}...</code>
+                              <span>Created {new Date(key.createdAt).toLocaleDateString()}</span>
+                              {key.lastUsedAt && (
+                                <span>Last used {new Date(key.lastUsedAt).toLocaleDateString()}</span>
+                              )}
+                              <span>{key.usageCount} requests</span>
+                            </div>
+                          </div>
+                          <button
+                            onClick={() => handleDeleteApiKey(key.id)}
+                            className="p-2 text-red-400 hover:bg-red-500/10 rounded transition"
+                            title="Delete API key"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* Documentation Link */}
+                <div className="mt-6 p-4 bg-white/5 rounded-lg">
+                  <h3 className="font-medium text-theme-primary mb-2">Integration Documentation</h3>
+                  <p className="text-theme-muted text-sm mb-3">
+                    Learn how to integrate Sails Tax with your e-commerce platform.
+                  </p>
+                  <div className="flex gap-3">
+                    <a
+                      href="https://sails.tax/docs/woocommerce"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-sm text-theme-accent hover:text-emerald-300"
+                    >
+                      WooCommerce Guide →
+                    </a>
+                    <a
+                      href="https://sails.tax/docs/api"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-sm text-theme-accent hover:text-emerald-300"
+                    >
+                      API Reference →
+                    </a>
+                  </div>
+                </div>
+              </div>
             )}
 
             {/* Billing Tab */}

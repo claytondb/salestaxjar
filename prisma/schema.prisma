@@ -311,6 +311,30 @@ model ImportedOrder {
 }
 
 // ============================================================================
+// API Keys (for external integrations - WooCommerce, BigCommerce, etc.)
+// ============================================================================
+
+model ApiKey {
+  id          String    @id @default(cuid())
+  userId      String
+  name        String    // e.g., "My WooCommerce Store"
+  keyHash     String    @unique // SHA-256 hash of the actual key
+  keyPrefix   String    // First 8 chars for display (e.g., "stax_abc1...")
+  permissions String    @default("calculate") // calculate, sync, full
+  lastUsedAt  DateTime?
+  usageCount  Int       @default(0)
+  rateLimit   Int       @default(1000) // requests per hour
+  isActive    Boolean   @default(true)
+  expiresAt   DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([userId])
+  @@index([keyHash])
+  @@index([keyPrefix])
+}
+
+// ============================================================================
 // Sales Summary (aggregated data per state per period)
 // ============================================================================
 
