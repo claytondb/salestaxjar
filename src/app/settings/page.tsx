@@ -19,13 +19,6 @@ import {
   Lock,
   Check,
   Download,
-  ShoppingCart,
-  Package,
-  Palette,
-  Plug,
-  Store,
-  Tag,
-  Square,
   Mail,
   AlertTriangle,
   ArrowUp,
@@ -34,16 +27,6 @@ import {
 } from 'lucide-react';
 
 const ICON_CLASS = "w-5 h-5";
-
-const platformIcons: Record<string, React.ReactNode> = {
-  shopify: <ShoppingCart className="w-6 h-6 text-theme-secondary" />,
-  amazon: <Package className="w-6 h-6 text-theme-secondary" />,
-  etsy: <Palette className="w-6 h-6 text-theme-secondary" />,
-  woocommerce: <Plug className="w-6 h-6 text-theme-secondary" />,
-  bigcommerce: <Store className="w-6 h-6 text-theme-secondary" />,
-  ebay: <Tag className="w-6 h-6 text-theme-secondary" />,
-  square: <Square className="w-6 h-6 text-theme-secondary" />,
-};
 
 const businessTypes = [
   { value: 'retail', label: 'Retail Store' },

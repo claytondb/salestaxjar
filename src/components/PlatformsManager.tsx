@@ -2,13 +2,10 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { 
-  ShoppingCart, 
   Package, 
-  Palette, 
-  Plug, 
-  Store, 
-  Tag, 
+  Plug,
   Square,
+  Store,
   RefreshCw,
   ExternalLink,
   AlertCircle,
@@ -18,6 +15,7 @@ import {
   Upload,
   Clock
 } from 'lucide-react';
+import { platformLogos } from './PlatformLogos';
 // Platform integrations focused on own-website sellers (not marketplace facilitators)
 
 interface PlatformConnection {
@@ -47,12 +45,13 @@ interface PlatformsResponse {
   totalConnections: number;
 }
 
-const platformIcons: Record<string, React.ReactNode> = {
-  shopify: <ShoppingCart className="w-6 h-6" />,
-  woocommerce: <Plug className="w-6 h-6" />,
-  squarespace: <Square className="w-6 h-6" />,
-  bigcommerce: <Store className="w-6 h-6" />,
-  wix: <Palette className="w-6 h-6" />,
+// Platform logos - uses actual brand logos
+const getPlatformLogo = (platform: string) => {
+  const LogoComponent = platformLogos[platform];
+  if (LogoComponent) {
+    return <LogoComponent className="w-6 h-6" />;
+  }
+  return <Package className="w-6 h-6" />;
 };
 
 export default function PlatformsManager() {
@@ -402,9 +401,9 @@ export default function PlatformsManager() {
             <div className="p-4 flex items-center justify-between">
               <div className="flex items-center gap-4">
                 <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${
-                  platform.configured ? 'btn-theme-primary/20 text-theme-accent' : 'bg-theme-secondary/30 text-theme-muted'
+                  platform.configured ? 'bg-theme-secondary/30' : 'bg-theme-secondary/30 text-theme-muted'
                 }`}>
-                  {platformIcons[platform.platform] || <Package className="w-6 h-6" />}
+                  {getPlatformLogo(platform.platform)}
                 </div>
                 <div>
                   <h3 className="font-medium text-theme-primary flex items-center gap-2">

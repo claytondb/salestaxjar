@@ -13,25 +13,19 @@ import {
   Link2, 
   Calendar, 
   Calculator,
-  ShoppingCart,
-  Package,
-  Palette,
-  Plug,
-  Store,
-  Tag,
-  Square
+  Package
 } from 'lucide-react';
+import { platformLogos } from '@/components/PlatformLogos';
 
 const ICON_CLASS = "w-6 h-6 text-theme-accent";
 
-const platformIcons: Record<string, React.ReactNode> = {
-  shopify: <ShoppingCart className="w-6 h-6 text-theme-secondary" />,
-  amazon: <Package className="w-6 h-6 text-theme-secondary" />,
-  etsy: <Palette className="w-6 h-6 text-theme-secondary" />,
-  woocommerce: <Plug className="w-6 h-6 text-theme-secondary" />,
-  bigcommerce: <Store className="w-6 h-6 text-theme-secondary" />,
-  ebay: <Tag className="w-6 h-6 text-theme-secondary" />,
-  square: <Square className="w-6 h-6 text-theme-secondary" />,
+// Get platform logo or fallback to Package icon
+const getPlatformLogo = (platform: string) => {
+  const LogoComponent = platformLogos[platform];
+  if (LogoComponent) {
+    return <LogoComponent className="w-6 h-6" />;
+  }
+  return <Package className="w-6 h-6" />;
 };
 
 export default function DashboardPage() {
@@ -294,7 +288,7 @@ export default function DashboardPage() {
                   }`}
                 >
                   <div className="flex justify-center mb-2">
-                    {platformIcons[platform.type] || <Package className="w-6 h-6 text-theme-accent" />}
+                    {getPlatformLogo(platform.type)}
                   </div>
                   <div className="text-sm font-medium text-theme-primary">{platform.name}</div>
                   <div className={`text-xs mt-1 ${platform.connected ? 'text-theme-accent' : 'text-theme-muted'}`}>
