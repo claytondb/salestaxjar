@@ -64,7 +64,7 @@ const plans = [
       { text: 'Unlimited orders', included: true },
       { text: 'Priority email support', included: true },
       { text: 'API access', included: true },
-      { text: 'Audit support resources', included: true },
+      { text: 'Advanced reporting', included: true },
       { text: 'Auto-filing', included: true, comingSoon: true },
     ],
     cta: 'Start Free Trial',

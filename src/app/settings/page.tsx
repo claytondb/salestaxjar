@@ -82,7 +82,7 @@ const plans = [
     name: 'Business', 
     price: 59, 
     tier: 3,
-    features: ['Unlimited orders', 'Priority email support', 'API access', 'Audit support']
+    features: ['Unlimited orders', 'Priority email support', 'API access', 'Advanced reporting']
   },
 ];
 

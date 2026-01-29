@@ -48,7 +48,7 @@ const faqs: FAQItem[] = [
   },
   {
     question: "What if I get audited?",
-    answer: "Enterprise plan subscribers receive audit support, including preparation assistance and representation coordination. For all users, we maintain detailed calculation logs that can help document your compliance efforts. Keep your own records as well - our data should supplement, not replace, your business records."
+    answer: "Sails maintains detailed calculation logs that can help document your compliance efforts. You can export your calculation history and reports at any time. Keep your own records as well — our data should supplement, not replace, your business records. For audit-specific guidance, we recommend consulting with a qualified tax professional."
   }
 ];
 
