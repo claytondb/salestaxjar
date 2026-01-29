@@ -61,9 +61,17 @@ export default function PlatformsManager() {
   const [error, setError] = useState<string | null>(null);
   const [connectingPlatform, setConnectingPlatform] = useState<string | null>(null);
   const [syncingConnection, setSyncingConnection] = useState<string | null>(null);
+  
+  // Shopify modal state
   const [shopifyShop, setShopifyShop] = useState('');
   const [showShopifyModal, setShowShopifyModal] = useState(false);
+  
+  // WooCommerce modal state
   const [showWooCommerceModal, setShowWooCommerceModal] = useState(false);
+  const [wooStoreUrl, setWooStoreUrl] = useState('');
+  const [wooConsumerKey, setWooConsumerKey] = useState('');
+  const [wooConsumerSecret, setWooConsumerSecret] = useState('');
+  const [wooConnectError, setWooConnectError] = useState<string | null>(null);
 
   const fetchPlatforms = useCallback(async () => {
     try {
@@ -111,6 +119,50 @@ export default function PlatformsManager() {
       ? shopifyShop 
       : `${shopifyShop}.myshopify.com`;
     window.location.href = `/api/platforms/shopify/auth?shop=${encodeURIComponent(shop)}`;
+  };
+
+  const handleWooCommerceConnect = async () => {
+    if (!wooStoreUrl.trim() || !wooConsumerKey.trim() || !wooConsumerSecret.trim()) {
+      setWooConnectError('Please fill in all fields');
+      return;
+    }
+
+    setConnectingPlatform('woocommerce');
+    setWooConnectError(null);
+
+    try {
+      const response = await fetch('/api/platforms/woocommerce/connect', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          storeUrl: wooStoreUrl,
+          consumerKey: wooConsumerKey,
+          consumerSecret: wooConsumerSecret,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setWooConnectError(data.error || 'Failed to connect');
+        setConnectingPlatform(null);
+        return;
+      }
+
+      // Success - close modal and refresh
+      setShowWooCommerceModal(false);
+      setWooStoreUrl('');
+      setWooConsumerKey('');
+      setWooConsumerSecret('');
+      setConnectingPlatform(null);
+      await fetchPlatforms();
+      
+      // Show success message
+      alert(`Successfully connected to ${data.store?.name || 'WooCommerce store'}!`);
+    } catch (err) {
+      setWooConnectError(err instanceof Error ? err.message : 'Connection failed');
+      setConnectingPlatform(null);
+    }
   };
 
   const handleDisconnect = async (platform: string, platformId: string, platformName: string) => {
@@ -427,7 +479,10 @@ export default function PlatformsManager() {
                 </p>
               </div>
               <button
-                onClick={() => setShowWooCommerceModal(false)}
+                onClick={() => {
+                  setShowWooCommerceModal(false);
+                  setWooConnectError(null);
+                }}
                 className="p-2 bg-theme-secondary/30 hover:bg-white/20 text-theme-primary rounded-lg transition"
               >
                 ✕
@@ -437,15 +492,24 @@ export default function PlatformsManager() {
             <div className="bg-accent-subtle border border-theme-accent/30 rounded-lg p-3 mb-4">
               <p className="text-theme-accent text-sm">
                 <strong>How to get API keys:</strong> In WooCommerce, go to Settings → Advanced → REST API → Add Key. 
-                Give it Read access and copy the Consumer Key and Secret.
+                Give it <strong>Read</strong> access and copy the Consumer Key and Secret.
               </p>
             </div>
+
+            {wooConnectError && (
+              <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-3 mb-4 flex items-start gap-2">
+                <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
+                <p className="text-red-400 text-sm">{wooConnectError}</p>
+              </div>
+            )}
             
             <div className="space-y-4">
               <div>
                 <label className="block text-theme-secondary text-sm mb-2">Store URL</label>
                 <input
                   type="text"
+                  value={wooStoreUrl}
+                  onChange={(e) => setWooStoreUrl(e.target.value)}
                   placeholder="https://your-store.com"
                   className="w-full px-4 py-3 bg-theme-secondary/30 border border-theme-secondary rounded-lg text-theme-primary focus:outline-none focus:ring-2 focus:ring-emerald-500"
                 />
@@ -454,32 +518,50 @@ export default function PlatformsManager() {
                 <label className="block text-theme-secondary text-sm mb-2">Consumer Key</label>
                 <input
                   type="text"
+                  value={wooConsumerKey}
+                  onChange={(e) => setWooConsumerKey(e.target.value)}
                   placeholder="ck_..."
-                  className="w-full px-4 py-3 bg-theme-secondary/30 border border-theme-secondary rounded-lg text-theme-primary focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  className="w-full px-4 py-3 bg-theme-secondary/30 border border-theme-secondary rounded-lg text-theme-primary focus:outline-none focus:ring-2 focus:ring-emerald-500 font-mono text-sm"
                 />
               </div>
               <div>
                 <label className="block text-theme-secondary text-sm mb-2">Consumer Secret</label>
                 <input
                   type="password"
+                  value={wooConsumerSecret}
+                  onChange={(e) => setWooConsumerSecret(e.target.value)}
                   placeholder="cs_..."
-                  className="w-full px-4 py-3 bg-theme-secondary/30 border border-theme-secondary rounded-lg text-theme-primary focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  className="w-full px-4 py-3 bg-theme-secondary/30 border border-theme-secondary rounded-lg text-theme-primary focus:outline-none focus:ring-2 focus:ring-emerald-500 font-mono text-sm"
                 />
               </div>
             </div>
 
             <div className="flex gap-3 mt-6">
               <button
-                onClick={() => setShowWooCommerceModal(false)}
+                onClick={() => {
+                  setShowWooCommerceModal(false);
+                  setWooStoreUrl('');
+                  setWooConsumerKey('');
+                  setWooConsumerSecret('');
+                  setWooConnectError(null);
+                }}
                 className="px-4 py-2 bg-theme-secondary/30 hover:bg-white/20 text-theme-primary rounded-lg transition"
               >
                 Cancel
               </button>
               <button
-                className="flex-1 btn-theme-primary text-theme-primary px-4 py-2 rounded-lg font-medium transition disabled:opacity-50"
-                disabled
+                onClick={handleWooCommerceConnect}
+                disabled={!wooStoreUrl.trim() || !wooConsumerKey.trim() || !wooConsumerSecret.trim() || connectingPlatform === 'woocommerce'}
+                className="flex-1 btn-theme-primary text-theme-primary px-4 py-2 rounded-lg font-medium transition disabled:opacity-50 flex items-center justify-center gap-2"
               >
-                Coming Soon
+                {connectingPlatform === 'woocommerce' ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Connecting...
+                  </>
+                ) : (
+                  'Connect Store'
+                )}
               </button>
             </div>
           </div>

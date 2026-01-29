@@ -8,8 +8,11 @@ import {
   ImportedOrderData,
 } from '@/lib/platforms';
 import { fetchOrders as fetchShopifyOrders, ShopifyOrder } from '@/lib/platforms/shopify';
-import { fetchOrders as fetchAmazonOrders, refreshAccessToken as refreshAmazonToken, AmazonOrder } from '@/lib/platforms/amazon';
-import { fetchReceipts as fetchEtsyReceipts, refreshAccessToken as refreshEtsyToken, EtsyReceipt } from '@/lib/platforms/etsy';
+import { 
+  getCredentials as getWooCredentials,
+  fetchAllOrders as fetchWooOrders, 
+  mapOrderToImport as mapWooOrder,
+} from '@/lib/platforms/woocommerce';
 
 /**
  * POST /api/platforms/sync
@@ -54,12 +57,10 @@ export async function POST(request: NextRequest) {
         case 'shopify':
           orders = await syncShopifyOrders(connection, dateRange);
           break;
-        case 'amazon':
-          orders = await syncAmazonOrders(connection, dateRange);
+        case 'woocommerce':
+          orders = await syncWooCommerceOrders(user.id, connection, dateRange);
           break;
-        case 'etsy':
-          orders = await syncEtsyOrders(connection, dateRange);
-          break;
+        // Future: squarespace, bigcommerce, wix
         default:
           throw new Error(`Unsupported platform: ${platform}`);
       }
@@ -179,110 +180,34 @@ async function syncShopifyOrders(
   }));
 }
 
-async function syncAmazonOrders(
+async function syncWooCommerceOrders(
+  userId: string,
   connection: PlatformConnection,
   dateRange?: DateRange
 ): Promise<ImportedOrderData[]> {
-  // Refresh token if needed
-  let accessToken = connection.accessToken;
-  if (connection.refreshToken) {
-    const { accessToken: newToken, error } = await refreshAmazonToken(connection.refreshToken);
-    if (newToken) {
-      accessToken = newToken;
-      // TODO: Update token in database
-    } else if (error) {
-      console.warn('Failed to refresh Amazon token:', error);
-    }
+  // Get credentials from database
+  const credentials = await getWooCredentials(userId, connection.platformId);
+  if (!credentials) {
+    throw new Error('WooCommerce credentials not found');
   }
 
-  const params: {
-    createdAfter?: string;
-    createdBefore?: string;
-  } = {};
-  
-  if (dateRange?.start) params.createdAfter = dateRange.start;
-  if (dateRange?.end) params.createdBefore = dateRange.end;
-
-  const { orders, error } = await fetchAmazonOrders(accessToken, params);
-
-  if (error || !orders) {
-    throw new Error(error || 'Failed to fetch Amazon orders');
-  }
-
-  return orders.map((order: AmazonOrder) => ({
-    platform: 'amazon',
-    platformOrderId: order.AmazonOrderId,
-    orderNumber: order.AmazonOrderId,
-    orderDate: new Date(order.PurchaseDate),
-    subtotal: order.OrderTotal ? parseFloat(order.OrderTotal.Amount) : 0,
-    shippingAmount: 0,
-    taxAmount: 0, // Would need to fetch order items for tax details
-    totalAmount: order.OrderTotal ? parseFloat(order.OrderTotal.Amount) : 0,
-    currency: order.OrderTotal?.CurrencyCode || 'USD',
-    status: mapAmazonStatus(order.OrderStatus),
-    shippingState: order.ShippingAddress?.StateOrRegion,
-    shippingCity: order.ShippingAddress?.City,
-    shippingZip: order.ShippingAddress?.PostalCode,
-    shippingCountry: order.ShippingAddress?.CountryCode || 'US',
-    rawData: order,
-  }));
-}
-
-async function syncEtsyOrders(
-  connection: PlatformConnection,
-  dateRange?: DateRange
-): Promise<ImportedOrderData[]> {
-  // Refresh token if needed
-  let accessToken = connection.accessToken;
-  if (connection.refreshToken) {
-    const { accessToken: newToken, error } = await refreshEtsyToken(connection.refreshToken);
-    if (newToken) {
-      accessToken = newToken;
-      // TODO: Update token in database
-    } else if (error) {
-      console.warn('Failed to refresh Etsy token:', error);
-    }
-  }
-
-  // Parse metadata to get shop ID
-  const metadata = connection.platformId; // Shop ID is stored as platformId
-  const shopId = parseInt(metadata, 10);
-
-  const params: {
-    minCreated?: number;
-    maxCreated?: number;
-    limit?: number;
+  // Build fetch options
+  const options: {
+    after?: string;
+    before?: string;
+    status?: string[];
   } = {
-    limit: 100,
+    status: ['processing', 'completed', 'on-hold'],
   };
-  
-  if (dateRange?.start) params.minCreated = Math.floor(new Date(dateRange.start).getTime() / 1000);
-  if (dateRange?.end) params.maxCreated = Math.floor(new Date(dateRange.end).getTime() / 1000);
 
-  const { receipts, error } = await fetchEtsyReceipts(accessToken, shopId, params);
+  if (dateRange?.start) options.after = dateRange.start;
+  if (dateRange?.end) options.before = dateRange.end;
 
-  if (error || !receipts) {
-    throw new Error(error || 'Failed to fetch Etsy receipts');
-  }
+  // Fetch orders
+  const orders = await fetchWooOrders(credentials, options);
 
-  return receipts.map((receipt: EtsyReceipt) => ({
-    platform: 'etsy',
-    platformOrderId: String(receipt.receipt_id),
-    orderNumber: String(receipt.receipt_id),
-    orderDate: new Date(receipt.create_timestamp * 1000),
-    subtotal: receipt.subtotal.amount / receipt.subtotal.divisor,
-    shippingAmount: receipt.total_shipping_cost.amount / receipt.total_shipping_cost.divisor,
-    taxAmount: receipt.total_tax_cost.amount / receipt.total_tax_cost.divisor,
-    totalAmount: receipt.grandtotal.amount / receipt.grandtotal.divisor,
-    currency: receipt.grandtotal.currency_code,
-    status: mapEtsyStatus(receipt.status),
-    shippingState: receipt.state,
-    shippingCity: receipt.city,
-    shippingZip: receipt.zip,
-    shippingCountry: receipt.country_iso || 'US',
-    lineItems: receipt.transactions,
-    rawData: receipt,
-  }));
+  // Map to our format
+  return orders.map(order => mapWooOrder(order, connection.platformId));
 }
 
 // =============================================================================
@@ -295,26 +220,4 @@ function mapShopifyStatus(financial: string, fulfillment: string | null): string
   if (fulfillment === 'fulfilled') return 'fulfilled';
   if (financial === 'paid') return 'paid';
   return 'pending';
-}
-
-function mapAmazonStatus(status: string): string {
-  const statusMap: Record<string, string> = {
-    'Pending': 'pending',
-    'Unshipped': 'paid',
-    'PartiallyShipped': 'paid',
-    'Shipped': 'fulfilled',
-    'Canceled': 'cancelled',
-    'Unfulfillable': 'cancelled',
-  };
-  return statusMap[status] || 'pending';
-}
-
-function mapEtsyStatus(status: string): string {
-  const statusMap: Record<string, string> = {
-    'open': 'pending',
-    'paid': 'paid',
-    'completed': 'fulfilled',
-    'refunded': 'refunded',
-  };
-  return statusMap[status.toLowerCase()] || 'pending';
 }
