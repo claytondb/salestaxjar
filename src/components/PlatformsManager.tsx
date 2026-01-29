@@ -78,6 +78,12 @@ export default function PlatformsManager() {
   const [squarespaceApiKey, setSquarespaceApiKey] = useState('');
   const [squarespaceStoreName, setSquarespaceStoreName] = useState('');
   const [squarespaceConnectError, setSquarespaceConnectError] = useState<string | null>(null);
+  
+  // BigCommerce modal state
+  const [showBigCommerceModal, setShowBigCommerceModal] = useState(false);
+  const [bigCommerceStoreHash, setBigCommerceStoreHash] = useState('');
+  const [bigCommerceAccessToken, setBigCommerceAccessToken] = useState('');
+  const [bigCommerceConnectError, setBigCommerceConnectError] = useState<string | null>(null);
 
   const fetchPlatforms = useCallback(async () => {
     try {
@@ -109,6 +115,11 @@ export default function PlatformsManager() {
 
     if (platform === 'squarespace') {
       setShowSquarespaceModal(true);
+      return;
+    }
+
+    if (platform === 'bigcommerce') {
+      setShowBigCommerceModal(true);
       return;
     }
     
@@ -214,6 +225,48 @@ export default function PlatformsManager() {
       alert(`Successfully connected to ${data.store?.name || 'Squarespace store'}!`);
     } catch (err) {
       setSquarespaceConnectError(err instanceof Error ? err.message : 'Connection failed');
+      setConnectingPlatform(null);
+    }
+  };
+
+  const handleBigCommerceConnect = async () => {
+    if (!bigCommerceStoreHash.trim() || !bigCommerceAccessToken.trim()) {
+      setBigCommerceConnectError('Please fill in all fields');
+      return;
+    }
+
+    setConnectingPlatform('bigcommerce');
+    setBigCommerceConnectError(null);
+
+    try {
+      const response = await fetch('/api/platforms/bigcommerce/connect', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          storeHash: bigCommerceStoreHash,
+          accessToken: bigCommerceAccessToken,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setBigCommerceConnectError(data.error || 'Failed to connect');
+        setConnectingPlatform(null);
+        return;
+      }
+
+      // Success - close modal and refresh
+      setShowBigCommerceModal(false);
+      setBigCommerceStoreHash('');
+      setBigCommerceAccessToken('');
+      setConnectingPlatform(null);
+      await fetchPlatforms();
+      
+      // Show success message
+      alert(`Successfully connected to ${data.store?.name || 'BigCommerce store'}!`);
+    } catch (err) {
+      setBigCommerceConnectError(err instanceof Error ? err.message : 'Connection failed');
       setConnectingPlatform(null);
     }
   };
@@ -704,6 +757,102 @@ export default function PlatformsManager() {
                 className="flex-1 btn-theme-primary text-theme-primary px-4 py-2 rounded-lg font-medium transition disabled:opacity-50 flex items-center justify-center gap-2"
               >
                 {connectingPlatform === 'squarespace' ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Connecting...
+                  </>
+                ) : (
+                  'Connect Store'
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* BigCommerce API Credentials Modal */}
+      {showBigCommerceModal && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-slate-800 rounded-xl border border-theme-secondary p-6 max-w-md w-full">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h3 className="text-xl font-semibold text-theme-primary flex items-center gap-2">
+                  <Store className="w-6 h-6 text-theme-accent" />
+                  Connect BigCommerce
+                </h3>
+                <p className="text-theme-muted text-sm mt-1">
+                  Enter your Store Hash and Access Token
+                </p>
+              </div>
+              <button
+                onClick={() => {
+                  setShowBigCommerceModal(false);
+                  setBigCommerceConnectError(null);
+                }}
+                className="p-2 bg-theme-secondary/30 hover:bg-white/20 text-theme-primary rounded-lg transition"
+              >
+                ✕
+              </button>
+            </div>
+            
+            <div className="bg-accent-subtle border border-theme-accent/30 rounded-lg p-3 mb-4">
+              <p className="text-theme-accent text-sm">
+                <strong>How to get credentials:</strong> In BigCommerce, go to Settings → API → Store-level API accounts → Create API Account. 
+                Select <strong>Orders (Read-Only)</strong> scope.
+              </p>
+              <p className="text-theme-accent/70 text-xs mt-2">
+                Your Store Hash is in the API Path (e.g., stores/<strong>abc123</strong>/v3).
+              </p>
+            </div>
+
+            {bigCommerceConnectError && (
+              <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-3 mb-4 flex items-start gap-2">
+                <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
+                <p className="text-red-400 text-sm">{bigCommerceConnectError}</p>
+              </div>
+            )}
+            
+            <div className="space-y-4">
+              <div>
+                <label className="block text-theme-secondary text-sm mb-2">Store Hash</label>
+                <input
+                  type="text"
+                  value={bigCommerceStoreHash}
+                  onChange={(e) => setBigCommerceStoreHash(e.target.value)}
+                  placeholder="abc123"
+                  className="w-full px-4 py-3 bg-theme-secondary/30 border border-theme-secondary rounded-lg text-theme-primary focus:outline-none focus:ring-2 focus:ring-emerald-500 font-mono"
+                />
+              </div>
+              <div>
+                <label className="block text-theme-secondary text-sm mb-2">Access Token</label>
+                <input
+                  type="password"
+                  value={bigCommerceAccessToken}
+                  onChange={(e) => setBigCommerceAccessToken(e.target.value)}
+                  placeholder="Enter your access token"
+                  className="w-full px-4 py-3 bg-theme-secondary/30 border border-theme-secondary rounded-lg text-theme-primary focus:outline-none focus:ring-2 focus:ring-emerald-500 font-mono text-sm"
+                />
+              </div>
+            </div>
+
+            <div className="flex gap-3 mt-6">
+              <button
+                onClick={() => {
+                  setShowBigCommerceModal(false);
+                  setBigCommerceStoreHash('');
+                  setBigCommerceAccessToken('');
+                  setBigCommerceConnectError(null);
+                }}
+                className="px-4 py-2 bg-theme-secondary/30 hover:bg-white/20 text-theme-primary rounded-lg transition"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleBigCommerceConnect}
+                disabled={!bigCommerceStoreHash.trim() || !bigCommerceAccessToken.trim() || connectingPlatform === 'bigcommerce'}
+                className="flex-1 btn-theme-primary text-theme-primary px-4 py-2 rounded-lg font-medium transition disabled:opacity-50 flex items-center justify-center gap-2"
+              >
+                {connectingPlatform === 'bigcommerce' ? (
                   <>
                     <Loader2 className="w-4 h-4 animate-spin" />
                     Connecting...

@@ -18,6 +18,12 @@ import {
   fetchAllOrders as fetchSquarespaceOrders, 
   mapOrderToImport as mapSquarespaceOrder,
 } from '@/lib/platforms/squarespace';
+import { 
+  getCredentials as getBigCommerceCredentials,
+  fetchAllOrders as fetchBigCommerceOrders, 
+  fetchOrderShippingAddresses as fetchBigCommerceShippingAddresses,
+  mapOrderToImport as mapBigCommerceOrder,
+} from '@/lib/platforms/bigcommerce';
 
 /**
  * POST /api/platforms/sync
@@ -68,7 +74,10 @@ export async function POST(request: NextRequest) {
         case 'squarespace':
           orders = await syncSquarespaceOrders(user.id, connection, dateRange);
           break;
-        // Future: bigcommerce, wix
+        case 'bigcommerce':
+          orders = await syncBigCommerceOrders(user.id, connection, dateRange);
+          break;
+        // Future: wix
         default:
           throw new Error(`Unsupported platform: ${platform}`);
       }
@@ -249,6 +258,50 @@ async function syncSquarespaceOrders(
 
   // Map to our format
   return validOrders.map(order => mapSquarespaceOrder(order));
+}
+
+async function syncBigCommerceOrders(
+  userId: string,
+  connection: PlatformConnection,
+  dateRange?: DateRange
+): Promise<ImportedOrderData[]> {
+  // Get credentials from database
+  const credentials = await getBigCommerceCredentials(userId, connection.platformId);
+  if (!credentials) {
+    throw new Error('BigCommerce credentials not found');
+  }
+
+  // Build fetch options
+  const now = new Date();
+  const defaultStart = new Date();
+  defaultStart.setDate(defaultStart.getDate() - 30);
+
+  const options = {
+    minDateCreated: dateRange?.start || defaultStart.toISOString(),
+    maxDateCreated: dateRange?.end || now.toISOString(),
+  };
+
+  // Fetch orders
+  const orders = await fetchBigCommerceOrders(credentials, options);
+
+  // Filter out cancelled and refunded orders
+  const validOrders = orders.filter(
+    order => ![4, 5, 6].includes(order.status_id)
+  );
+
+  // Map to our format (fetch shipping addresses for accuracy)
+  const mappedOrders = await Promise.all(
+    validOrders.map(async (order) => {
+      try {
+        const shippingAddresses = await fetchBigCommerceShippingAddresses(credentials, order.id);
+        return mapBigCommerceOrder(order, shippingAddresses[0]);
+      } catch {
+        return mapBigCommerceOrder(order);
+      }
+    })
+  );
+
+  return mappedOrders;
 }
 
 // =============================================================================
