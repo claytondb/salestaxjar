@@ -65,6 +65,15 @@ export default function Header() {
               {/* Theme Toggle */}
               <ThemeToggle />
               
+              {/* Home link - back to marketing page */}
+              <Link 
+                href="/" 
+                className="hidden sm:inline text-theme-muted hover:text-theme-primary transition text-sm"
+                title="View marketing site"
+              >
+                Home
+              </Link>
+              
               <div className="hidden sm:flex items-center gap-2 text-sm text-theme-muted">
                 <div className="w-8 h-8 bg-accent-subtle rounded-full flex items-center justify-center">
                   <span className="text-theme-accent font-medium">{user.name.charAt(0).toUpperCase()}</span>
@@ -132,6 +141,15 @@ export default function Header() {
               >
                 Settings
               </Link>
+              <div className="border-t border-theme-primary mt-2 pt-2">
+                <Link 
+                  href="/" 
+                  className="block px-4 py-2 rounded-lg transition nav-inactive"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  ← Back to Home
+                </Link>
+              </div>
             </nav>
           )}
         </div>

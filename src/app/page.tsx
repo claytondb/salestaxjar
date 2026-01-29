@@ -54,12 +54,7 @@ export default function Home() {
     return () => clearInterval(interval);
   }, [businesses.length]);
 
-  // Redirect logged-in users to dashboard
-  useEffect(() => {
-    if (!isLoading && user) {
-      router.push('/dashboard');
-    }
-  }, [user, isLoading, router]);
+  // No auto-redirect - let users browse marketing page even if logged in
 
   const handleCalculate = () => {
     const calc = calculateTax(parseFloat(amount) || 0, selectedState);
@@ -96,12 +91,22 @@ export default function Home() {
               <div className="md:hidden">
                 <ThemeToggle />
               </div>
-              <Link href="/login" className="text-theme-secondary hover:text-theme-primary px-4 py-2 transition hidden sm:inline-block">
-                Log in
-              </Link>
-              <Link href="/signup" className="btn-theme-primary px-4 py-2 rounded-lg font-medium transition">
-                Start Free Trial
-              </Link>
+              {user ? (
+                // Logged in - show dashboard link
+                <Link href="/dashboard" className="btn-theme-primary px-4 py-2 rounded-lg font-medium transition">
+                  Go to Dashboard
+                </Link>
+              ) : (
+                // Logged out - show login and signup
+                <>
+                  <Link href="/login" className="text-theme-secondary hover:text-theme-primary px-3 py-2 transition text-sm sm:text-base">
+                    Log in
+                  </Link>
+                  <Link href="/signup" className="btn-theme-primary px-3 sm:px-4 py-2 rounded-lg font-medium transition text-sm sm:text-base">
+                    Start Free Trial
+                  </Link>
+                </>
+              )}
             </div>
           </div>
         </div>
