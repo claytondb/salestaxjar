@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { AlertTriangle, Calendar, Landmark } from 'lucide-react';
+import { AlertTriangle, Calendar, Landmark, Info } from 'lucide-react';
 
 interface TaxDisclaimerProps {
   variant?: 'inline' | 'banner' | 'compact';
@@ -66,23 +66,23 @@ export const stateTaxAuthorities: Record<string, { name: string; url: string }> 
 export default function TaxDisclaimer({ variant = 'inline', className = '' }: TaxDisclaimerProps) {
   if (variant === 'banner') {
     return (
-      <div className={`rounded-lg p-4 ${className}`} style={{ backgroundColor: 'var(--warning-bg)', border: '1px solid var(--warning-border)' }}>
+      <div className={`card-theme rounded-lg p-4 ${className}`}>
         <div className="flex items-start gap-3">
-          <AlertTriangle className="w-5 h-5 flex-shrink-0 mt-0.5" style={{ color: 'var(--warning-text)' }} />
+          <Info className="w-5 h-5 flex-shrink-0 mt-0.5 text-theme-muted" />
           <div>
-            <h4 className="font-semibold mb-1" style={{ color: 'var(--warning-text)' }}>Tax Estimation Disclaimer</h4>
-            <p className="text-sm" style={{ color: 'var(--warning-text)' }}>
+            <h4 className="font-semibold mb-1 text-theme-primary">Tax Estimation Disclaimer</h4>
+            <p className="text-sm text-theme-secondary">
               The tax rates shown are <strong>estimates only</strong> based on publicly available data. 
               Actual rates may vary based on local jurisdictions (city, county, special districts) and product-specific exemptions. 
               Sails is not a CPA firm or tax advisory service. Always verify rates with your 
               state&apos;s official tax authority and consult a qualified tax professional for advice specific to your business.
             </p>
-            <div className="mt-2 flex flex-wrap gap-2 text-xs items-center">
-              <span className="flex items-center gap-1" style={{ color: 'var(--warning-text)' }}>
+            <div className="mt-2 flex flex-wrap gap-2 text-xs items-center text-theme-muted">
+              <span className="flex items-center gap-1">
                 <Calendar className="w-3 h-3" /> Rates last updated: January 2025
               </span>
-              <span style={{ color: 'var(--warning-text)' }}>|</span>
-              <Link href="/terms" className="underline hover:opacity-80 font-medium" style={{ color: 'var(--warning-text)' }}>Full Terms of Service →</Link>
+              <span>|</span>
+              <Link href="/terms" className="underline hover:opacity-80 text-theme-accent">Full Terms of Service →</Link>
             </div>
           </div>
         </div>
