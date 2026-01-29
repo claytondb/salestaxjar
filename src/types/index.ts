@@ -109,7 +109,7 @@ export interface NotificationPreferences {
 }
 
 export interface BillingInfo {
-  plan: 'starter' | 'growth' | 'enterprise';
+  plan: 'starter' | 'pro' | 'business';
   cardLast4?: string;
   cardBrand?: string;
   nextBillingDate?: string;

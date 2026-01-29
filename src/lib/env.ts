@@ -40,13 +40,13 @@ const envConfig = {
     required: false,
     default: 'price_starter',
   },
-  STRIPE_GROWTH_PRICE_ID: {
+  STRIPE_PRO_PRICE_ID: {
     required: false,
-    default: 'price_growth',
+    default: 'price_pro',
   },
-  STRIPE_ENTERPRISE_PRICE_ID: {
+  STRIPE_BUSINESS_PRICE_ID: {
     required: false,
-    default: 'price_enterprise',
+    default: 'price_business',
   },
   
   // TaxJar

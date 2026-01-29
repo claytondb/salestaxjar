@@ -319,11 +319,11 @@ export default function DashboardPage() {
               </div>
               <p className="text-theme-muted text-sm">
                 {billing.plan === 'starter' && 'Upgrade to Growth for unlimited state filings and advanced features.'}
-                {billing.plan === 'growth' && 'You have access to all growth features including nexus tracking.'}
-                {billing.plan === 'enterprise' && 'You have unlimited access to all features and dedicated support.'}
+                {billing.plan === 'pro' && 'You have access to all growth features including nexus tracking.'}
+                {billing.plan === 'business' && 'You have unlimited access to all features and dedicated support.'}
               </p>
             </div>
-            {billing.plan !== 'enterprise' && (
+            {billing.plan !== 'business' && (
               <Link 
                 href="/settings#billing" 
                 className="btn-theme-primary px-4 py-2 rounded-lg font-medium transition whitespace-nowrap"

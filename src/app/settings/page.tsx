@@ -63,7 +63,7 @@ const plans = [
     features: ['Up to 500 orders/mo', '3 state filings', 'Shopify integration', 'Email support']
   },
   { 
-    id: 'growth', 
+    id: 'pro', 
     name: 'Growth', 
     price: 79, 
     tier: 1,
@@ -71,7 +71,7 @@ const plans = [
     popular: true
   },
   { 
-    id: 'enterprise', 
+    id: 'business', 
     name: 'Enterprise', 
     price: 199, 
     tier: 2,

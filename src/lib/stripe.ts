@@ -17,41 +17,46 @@ export function isStripeConfigured(): boolean {
 }
 
 // Plan configuration
+// NOTE: Create these products/prices in Stripe Dashboard and update env vars:
+// - STRIPE_STARTER_PRICE_ID ($9/mo)
+// - STRIPE_PRO_PRICE_ID ($29/mo)
+// - STRIPE_BUSINESS_PRICE_ID ($59/mo)
 export const PLANS = {
   starter: {
     name: 'Starter',
     priceId: process.env.STRIPE_STARTER_PRICE_ID || 'price_starter',
-    price: 29,
+    price: 9,
     features: [
-      'Up to 500 orders/mo',
-      '3 state filings',
-      'Shopify integration',
+      'Up to 200 orders/mo',
+      'Etsy integration',
+      '3 state tracking',
+      'Email reminders',
       'Email support',
     ],
   },
-  growth: {
-    name: 'Growth',
-    priceId: process.env.STRIPE_GROWTH_PRICE_ID || 'price_growth',
-    price: 79,
+  pro: {
+    name: 'Pro',
+    priceId: process.env.STRIPE_PRO_PRICE_ID || 'price_pro',
+    price: 29,
     popular: true,
     features: [
-      'Up to 5,000 orders/mo',
-      'Unlimited filings',
+      'Up to 2,000 orders/mo',
       'All integrations',
+      'Unlimited states',
+      'SMS + email reminders',
       'Priority support',
-      'Nexus tracking',
     ],
   },
-  enterprise: {
-    name: 'Enterprise',
-    priceId: process.env.STRIPE_ENTERPRISE_PRICE_ID || 'price_enterprise',
-    price: 199,
+  business: {
+    name: 'Business',
+    priceId: process.env.STRIPE_BUSINESS_PRICE_ID || 'price_business',
+    price: 59,
     features: [
       'Unlimited orders',
-      'Unlimited filings',
-      'Custom integrations',
-      'Dedicated manager',
-      'Audit protection',
+      'Dedicated support',
+      'API access',
+      'Audit resources',
+      'Auto-filing (coming soon)',
     ],
   },
 } as const;
@@ -237,7 +242,7 @@ export function getPlanByPriceId(priceId: string): { id: PlanId; plan: typeof PL
 }
 
 // Plan tier order for determining upgrades vs downgrades
-const PLAN_TIER_ORDER: PlanId[] = ['starter', 'growth', 'enterprise'];
+const PLAN_TIER_ORDER: PlanId[] = ['starter', 'pro', 'business'];
 
 export function getPlanTier(planId: PlanId): number {
   return PLAN_TIER_ORDER.indexOf(planId);

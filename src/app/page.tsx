@@ -127,14 +127,14 @@ export default function Home() {
         <div className="absolute inset-0 z-0 bg-theme-gradient opacity-95" />
         
         <div className="relative z-10 max-w-4xl mx-auto text-center">
-          {/* The Problem */}
-          <p className="text-theme-accent font-medium mb-4 text-lg">
-            Sell online? You probably owe sales tax in more states than you think.
-          </p>
+          {/* Etsy-focused badge */}
+          <div className="inline-flex items-center gap-2 bg-accent-subtle text-theme-accent px-4 py-2 rounded-full text-sm font-medium mb-6">
+            ❤️ Built for Etsy sellers & makers
+          </div>
           
           {/* The Solution */}
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-theme-primary mb-4 leading-tight">
-            We Handle Your Sales Tax
+            Sales Tax Made Simple
           </h1>
           <p className="text-xl sm:text-2xl text-theme-secondary mb-6">
             So you can get back to{' '}
@@ -145,17 +145,16 @@ export default function Home() {
           
           {/* What it does */}
           <p className="text-lg sm:text-xl text-theme-secondary mb-4 max-w-2xl mx-auto">
-            Sales tax is confusing. 45 states, different rules, changing deadlines. 
-            Miss a filing and you could face penalties.
+            Etsy says you need to collect sales tax. Now what? Sails tells you where you owe, how much, and when it&apos;s due.
           </p>
           <p className="text-lg sm:text-xl text-theme-primary font-medium mb-8 max-w-2xl mx-auto">
-            Sails tells you exactly what you owe, where you owe it, and when it&apos;s due.
-            <span className="text-theme-accent"> Starting at $29/month.</span>
+            Half the price of TaxJar. Built for makers, not enterprises.
+            <span className="text-theme-accent"> Free tier available. Paid plans from $9/month.</span>
           </p>
 
           {/* Trust Signals */}
           <div className="flex flex-wrap justify-center gap-4 mb-8">
-            {["Know where you owe", "Never miss a deadline", "Stop worrying about audits"].map((text, i) => (
+            {["5-minute Etsy setup", "No accounting degree needed", "Free tier forever"].map((text, i) => (
               <div key={i} className="card-theme px-4 py-2 rounded-lg flex items-center">
                 <Check className="w-4 h-4 text-theme-accent" />
                 <span className="text-theme-secondary ml-2">{text}</span>
@@ -165,13 +164,13 @@ export default function Home() {
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link href="/signup" className="btn-theme-primary px-8 py-4 rounded-xl font-semibold text-lg transition transform hover:scale-105">
-              Start 14-Day Free Trial
+              Start Free — No Credit Card
             </Link>
             <Link href="/pricing" className="card-theme px-8 py-4 rounded-xl font-semibold text-lg text-theme-primary hover:bg-theme-accent/10 transition">
               See Pricing
             </Link>
           </div>
-          <p className="text-theme-muted text-sm mt-4">No credit card required • Cancel anytime</p>
+          <p className="text-theme-muted text-sm mt-4">Free forever tier • Paid plans from $9/mo</p>
         </div>
       </section>
 
@@ -187,9 +186,9 @@ export default function Home() {
           
           <div className="grid md:grid-cols-3 gap-8">
             {[
-              { num: "1", title: "Connect Your Store", desc: "Link your Shopify, Amazon, WooCommerce, or other sales channels. We import your sales data automatically." },
-              { num: "2", title: "See What You Owe", desc: "We calculate your tax obligations for every state. See exactly how much you owe and when it's due." },
-              { num: "3", title: "File With Confidence", desc: "Get pre-filled forms and deadline reminders. File your returns in minutes, not hours." }
+              { num: "1", title: "Connect Etsy", desc: "Link your Etsy shop in one click. We automatically import your sales data. Shopify & Square too." },
+              { num: "2", title: "See What You Owe", desc: "We show you which states you owe tax in, how much, and when it's due. No more guessing." },
+              { num: "3", title: "File With Confidence", desc: "Get deadline reminders and know exactly what to file. Filing assistance coming soon!" }
             ].map((step, i) => (
               <div key={i} className="text-center">
                 <div className="w-16 h-16 bg-accent-subtle rounded-full flex items-center justify-center mx-auto mb-4">
@@ -338,9 +337,9 @@ export default function Home() {
               { icon: <Calculator className={ICON_CLASS} />, title: "Tax Calculator", desc: "Know exactly how much tax to collect, instantly", comingSoon: false },
               { icon: <MapPin className={ICON_CLASS} />, title: "Nexus Tracking", desc: "See which states you owe tax in (and which you don't)", comingSoon: false },
               { icon: <Bell className={ICON_CLASS} />, title: "Deadline Alerts", desc: "Get reminded before every filing deadline", comingSoon: false },
-              { icon: <LayoutDashboard className={ICON_CLASS} />, title: "Simple Dashboard", desc: "Everything you need on one screen", comingSoon: false },
-              { icon: <Link2 className={ICON_CLASS} />, title: "Integrations", desc: "Connect Shopify, Amazon, Etsy, WooCommerce & more", comingSoon: true },
-              { icon: <ClipboardList className={ICON_CLASS} />, title: "Auto-Filing", desc: "We file your returns automatically", comingSoon: true }
+              { icon: <Link2 className={ICON_CLASS} />, title: "Etsy Integration", desc: "Connect your Etsy shop in one click. Shopify & more too.", comingSoon: false },
+              { icon: <LayoutDashboard className={ICON_CLASS} />, title: "Simple Dashboard", desc: "Built for makers, not accountants", comingSoon: false },
+              { icon: <ClipboardList className={ICON_CLASS} />, title: "Filing Assistance", desc: "Know exactly what to file and when", comingSoon: true }
             ].map((feature, i) => (
               <div key={i} className="card-theme rounded-xl p-6 hover:border-theme-accent transition relative">
                 {feature.comingSoon && (
@@ -361,20 +360,30 @@ export default function Home() {
       <section id="pricing" className="py-12 sm:py-20 px-4">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-theme-primary mb-4">
-            Simple, Honest Pricing
+            Half the Price of TaxJar
           </h2>
           <p className="text-theme-muted mb-8">
-            No hidden fees. No surprises. Cancel anytime.
+            Because you shouldn&apos;t need an enterprise budget to stay compliant.
           </p>
           
-          <div className="card-theme rounded-2xl p-8 inline-block">
-            <div className="text-theme-muted mb-2">Starting at</div>
-            <div className="text-5xl font-bold text-theme-primary mb-2">$29<span className="text-xl text-theme-muted">/month</span></div>
-            <p className="text-theme-muted mb-6">for small sellers up to 500 orders/month</p>
-            <Link href="/pricing" className="inline-block btn-theme-primary px-8 py-3 rounded-lg font-semibold transition">
-              See All Plans
-            </Link>
+          <div className="grid sm:grid-cols-3 gap-4 max-w-2xl mx-auto mb-8">
+            <div className="card-theme rounded-xl p-6">
+              <div className="text-theme-accent font-bold text-2xl mb-1">Free</div>
+              <div className="text-theme-muted text-sm">Nexus monitoring</div>
+            </div>
+            <div className="card-theme rounded-xl p-6 border-2 border-theme-accent">
+              <div className="text-theme-accent font-bold text-2xl mb-1">$9/mo</div>
+              <div className="text-theme-muted text-sm">For side hustlers</div>
+            </div>
+            <div className="card-theme rounded-xl p-6">
+              <div className="text-theme-accent font-bold text-2xl mb-1">$29/mo</div>
+              <div className="text-theme-muted text-sm">Full-time sellers</div>
+            </div>
           </div>
+          
+          <Link href="/pricing" className="inline-block btn-theme-primary px-8 py-3 rounded-lg font-semibold transition">
+            See All Plans
+          </Link>
         </div>
       </section>
 
@@ -401,14 +410,17 @@ export default function Home() {
       <section className="py-12 sm:py-20 px-4">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-theme-primary mb-4">
-            Stop Stressing About Sales Tax
+            Get Back to Making Things
           </h2>
           <p className="text-theme-muted mb-8 text-lg">
-            Try Sails free for 14 days. No credit card required.
+            Let us handle the sales tax headache. Free forever tier available.
           </p>
           <Link href="/signup" className="inline-block btn-theme-primary px-8 py-4 rounded-xl font-semibold text-lg transition transform hover:scale-105">
-            Start Your Free Trial
+            Start Free — No Credit Card
           </Link>
+          <p className="text-theme-muted text-sm mt-4">
+            Join Etsy sellers who finally understand their tax obligations
+          </p>
         </div>
       </section>
 
