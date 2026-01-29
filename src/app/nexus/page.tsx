@@ -86,34 +86,34 @@ export default function NexusPage() {
 
   if (isLoading || !user) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-emerald-500"></div>
+      <div className="min-h-screen bg-theme-gradient flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-theme-accent"></div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+    <div className="min-h-screen bg-theme-gradient">
       <Header />
       
       <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-white mb-2">Nexus Tracker</h1>
-          <p className="text-gray-400">Manage which states you have sales tax obligations in</p>
+          <h1 className="text-3xl font-bold text-theme-primary mb-2">Nexus Tracker</h1>
+          <p className="text-theme-muted">Manage which states you have sales tax obligations in</p>
         </div>
 
         {/* Info Banner */}
         <div className="bg-blue-500/10 border border-blue-500/30 rounded-xl p-6 mb-8">
           <h2 className="text-lg font-semibold text-blue-400 mb-2">What is Nexus?</h2>
-          <p className="text-gray-300 text-sm mb-4">
+          <p className="text-theme-secondary text-sm mb-4">
             Nexus is a connection between your business and a state that creates a tax obligation. 
             If you have nexus in a state, you must collect and remit sales tax there.
           </p>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
             {nexusReasons.map(reason => (
               <div key={reason.value} className="bg-white/5 rounded-lg p-3">
-                <div className="font-medium text-white text-sm">{reason.label}</div>
-                <div className="text-gray-500 text-xs mt-1">{reason.description}</div>
+                <div className="font-medium text-theme-primary text-sm">{reason.label}</div>
+                <div className="text-theme-muted text-xs mt-1">{reason.description}</div>
               </div>
             ))}
           </div>
@@ -121,25 +121,25 @@ export default function NexusPage() {
 
         {/* Stats */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
-          <div className="bg-white/10 backdrop-blur rounded-xl p-4 border border-white/10">
-            <div className="text-2xl font-bold text-white">{activeCount}</div>
-            <div className="text-sm text-gray-400">Active Nexus States</div>
+          <div className="card-theme rounded-xl p-4 border border-theme-primary">
+            <div className="text-2xl font-bold text-theme-primary">{activeCount}</div>
+            <div className="text-sm text-theme-muted">Active Nexus States</div>
           </div>
-          <div className="bg-white/10 backdrop-blur rounded-xl p-4 border border-white/10">
-            <div className="text-2xl font-bold text-white">{51 - activeCount}</div>
-            <div className="text-sm text-gray-400">States Without Nexus</div>
+          <div className="card-theme rounded-xl p-4 border border-theme-primary">
+            <div className="text-2xl font-bold text-theme-primary">{51 - activeCount}</div>
+            <div className="text-sm text-theme-muted">States Without Nexus</div>
           </div>
-          <div className="bg-white/10 backdrop-blur rounded-xl p-4 border border-white/10">
-            <div className="text-2xl font-bold text-white">
+          <div className="card-theme rounded-xl p-4 border border-theme-primary">
+            <div className="text-2xl font-bold text-theme-primary">
               {nexusStates.filter(s => s.hasNexus && s.registrationNumber).length}
             </div>
-            <div className="text-sm text-gray-400">Registered</div>
+            <div className="text-sm text-theme-muted">Registered</div>
           </div>
-          <div className="bg-white/10 backdrop-blur rounded-xl p-4 border border-white/10">
-            <div className="text-2xl font-bold text-white">
+          <div className="card-theme rounded-xl p-4 border border-theme-primary">
+            <div className="text-2xl font-bold text-theme-primary">
               {nexusStates.filter(s => s.hasNexus && !s.registrationNumber).length}
             </div>
-            <div className="text-sm text-gray-400">Pending Registration</div>
+            <div className="text-sm text-theme-muted">Pending Registration</div>
           </div>
         </div>
 
@@ -151,7 +151,7 @@ export default function NexusPage() {
               placeholder="Search states..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-theme-primary focus:outline-none focus:ring-2 focus:ring-emerald-500"
             />
           </div>
           <label className="flex items-center gap-2 px-4 py-3 bg-white/10 border border-white/20 rounded-lg cursor-pointer">
@@ -159,14 +159,14 @@ export default function NexusPage() {
               type="checkbox"
               checked={showOnlyNexus}
               onChange={(e) => setShowOnlyNexus(e.target.checked)}
-              className="rounded border-gray-600 text-emerald-500 focus:ring-emerald-500"
+              className="rounded border-gray-600 text-theme-accent focus:ring-emerald-500"
             />
-            <span className="text-gray-300">Show only nexus states</span>
+            <span className="text-theme-secondary">Show only nexus states</span>
           </label>
         </div>
 
         {/* State List */}
-        <div className="bg-white/10 backdrop-blur rounded-xl border border-white/10 overflow-hidden">
+        <div className="card-theme rounded-xl border border-theme-primary overflow-hidden">
           <div className="grid gap-1 p-4">
             {filteredStates.map((state) => {
               const taxInfo = stateTaxRates.find(s => s.stateCode === state.stateCode);
@@ -176,7 +176,7 @@ export default function NexusPage() {
                   key={state.stateCode}
                   className={`p-4 rounded-lg transition ${
                     state.hasNexus 
-                      ? 'bg-emerald-500/10 border border-emerald-500/30' 
+                      ? 'btn-theme-primary/10 border border-theme-accent/30' 
                       : 'bg-white/5 border border-transparent hover:border-white/20'
                   }`}
                 >
@@ -185,7 +185,7 @@ export default function NexusPage() {
                     <button
                       onClick={() => toggleNexus(state.stateCode)}
                       className={`relative w-12 h-6 rounded-full transition-colors ${
-                        state.hasNexus ? 'bg-emerald-500' : 'bg-gray-600'
+                        state.hasNexus ? 'btn-theme-primary' : 'bg-gray-600'
                       }`}
                     >
                       <span className={`absolute top-1 left-1 w-4 h-4 rounded-full bg-white transition-transform ${
@@ -196,8 +196,8 @@ export default function NexusPage() {
                     {/* State Info */}
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-3">
-                        <h3 className="font-medium text-white">{state.state}</h3>
-                        <span className="text-gray-500 text-sm">{state.stateCode}</span>
+                        <h3 className="font-medium text-theme-primary">{state.state}</h3>
+                        <span className="text-theme-muted text-sm">{state.stateCode}</span>
                         {taxInfo && taxInfo.combinedRate === 0 && (
                           <span className="px-2 py-0.5 bg-green-500/20 text-green-400 text-xs rounded-full">
                             No Sales Tax
@@ -206,7 +206,7 @@ export default function NexusPage() {
                       </div>
                       
                       {taxInfo && (
-                        <div className="text-sm text-gray-400 mt-1">
+                        <div className="text-sm text-theme-muted mt-1">
                           State rate: {taxInfo.stateRate}% | Combined avg: {taxInfo.combinedRate}%
                         </div>
                       )}
@@ -215,11 +215,11 @@ export default function NexusPage() {
                       {state.hasNexus && (
                         <div className="mt-3 grid sm:grid-cols-2 gap-3">
                           <div>
-                            <label className="block text-xs text-gray-500 mb-1">Nexus Reason</label>
+                            <label className="block text-xs text-theme-muted mb-1">Nexus Reason</label>
                             <select
                               value={state.nexusType || ''}
                               onChange={(e) => updateNexusType(state.stateCode, e.target.value as NexusState['nexusType'])}
-                              className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                              className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-theme-primary text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
                             >
                               {nexusReasons.map(r => (
                                 <option key={r.value} value={r.value} className="bg-slate-800">
@@ -229,13 +229,13 @@ export default function NexusPage() {
                             </select>
                           </div>
                           <div>
-                            <label className="block text-xs text-gray-500 mb-1">Registration Number</label>
+                            <label className="block text-xs text-theme-muted mb-1">Registration Number</label>
                             <input
                               type="text"
                               value={state.registrationNumber || ''}
                               onChange={(e) => updateRegistration(state.stateCode, e.target.value)}
                               placeholder="Enter if registered"
-                              className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                              className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-theme-primary text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
                             />
                           </div>
                         </div>
@@ -245,11 +245,11 @@ export default function NexusPage() {
                     {/* Status Badge */}
                     <div className="hidden sm:block">
                       {state.hasNexus ? (
-                        <span className="px-3 py-1 bg-emerald-500/20 text-emerald-400 text-sm rounded-full">
+                        <span className="px-3 py-1 btn-theme-primary/20 text-theme-accent text-sm rounded-full">
                           Active
                         </span>
                       ) : (
-                        <span className="px-3 py-1 bg-gray-500/20 text-gray-400 text-sm rounded-full">
+                        <span className="px-3 py-1 bg-gray-500/20 text-theme-muted text-sm rounded-full">
                           Inactive
                         </span>
                       )}

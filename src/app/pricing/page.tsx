@@ -104,26 +104,26 @@ export default function PricingPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+    <div className="min-h-screen bg-theme-gradient">
       {/* Header */}
-      <header className="border-b border-white/10">
+      <header className="border-b border-theme-primary">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex justify-between items-center">
             <Link href="/" className="flex items-center gap-2">
-              <SailsLogo className="w-10 h-10 text-emerald-400" />
-              <span className="text-2xl font-bold text-white">Sails</span>
+              <SailsLogo className="w-10 h-10 text-theme-accent" />
+              <span className="text-2xl font-bold text-theme-primary">Sails</span>
             </Link>
             <div className="flex gap-3">
               {isLoading ? null : user ? (
-                <Link href="/dashboard" className="bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-lg font-medium transition">
+                <Link href="/dashboard" className="btn-theme-primary  text-theme-primary px-4 py-2 rounded-lg font-medium transition">
                   Dashboard
                 </Link>
               ) : (
                 <>
-                  <Link href="/login" className="text-gray-300 hover:text-white px-4 py-2 transition hidden sm:inline-block">
+                  <Link href="/login" className="text-theme-secondary hover:text-theme-primary px-4 py-2 transition hidden sm:inline-block">
                     Log in
                   </Link>
-                  <Link href="/signup" className="bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-lg font-medium transition">
+                  <Link href="/signup" className="btn-theme-primary  text-theme-primary px-4 py-2 rounded-lg font-medium transition">
                     Start Free Trial
                   </Link>
                 </>
@@ -136,13 +136,13 @@ export default function PricingPage() {
       {/* Hero */}
       <section className="py-12 sm:py-16 px-4">
         <div className="max-w-4xl mx-auto text-center">
-          <h1 className="text-4xl sm:text-5xl font-bold text-white mb-4">
+          <h1 className="text-4xl sm:text-5xl font-bold text-theme-primary mb-4">
             Simple, Transparent Pricing
           </h1>
-          <p className="text-xl text-gray-300 mb-2">
+          <p className="text-xl text-theme-secondary mb-2">
             Pick a plan that fits your business. No hidden fees.
           </p>
-          <p className="text-emerald-400 font-medium">
+          <p className="text-theme-accent font-medium">
             Every plan includes a 14-day free trial.
           </p>
         </div>
@@ -157,35 +157,35 @@ export default function PricingPage() {
                 key={plan.name}
                 className={`rounded-2xl p-6 lg:p-8 ${
                   plan.popular
-                    ? 'bg-gradient-to-b from-emerald-500/20 to-emerald-600/20 border-2 border-emerald-500 relative'
+                    ? 'bg-gradient-to-b from-emerald-500/20 to-emerald-600/20 border-2 border-theme-accent relative'
                     : 'bg-white/10 border border-white/20'
                 }`}
               >
                 {plan.popular && (
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-emerald-500 text-white text-sm font-medium px-3 py-1 rounded-full">
+                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 btn-theme-primary text-theme-primary text-sm font-medium px-3 py-1 rounded-full">
                     Most Popular
                   </div>
                 )}
 
-                <h2 className="text-2xl font-bold text-white mb-1">{plan.name}</h2>
-                <p className="text-gray-400 text-sm mb-4">{plan.description}</p>
+                <h2 className="text-2xl font-bold text-theme-primary mb-1">{plan.name}</h2>
+                <p className="text-theme-muted text-sm mb-4">{plan.description}</p>
 
                 <div className="mb-6">
-                  <span className="text-4xl lg:text-5xl font-bold text-white">${plan.price}</span>
-                  <span className="text-gray-400">/month</span>
+                  <span className="text-4xl lg:text-5xl font-bold text-theme-primary">${plan.price}</span>
+                  <span className="text-theme-muted">/month</span>
                 </div>
 
                 <ul className="space-y-3 mb-8">
                   {plan.features.map((feature, i) => (
                     <li key={i} className="flex items-start gap-2">
                       {feature.included ? (
-                        <Check className="w-4 h-4 text-emerald-400 mt-0.5 flex-shrink-0" />
+                        <Check className="w-4 h-4 text-theme-accent mt-0.5 flex-shrink-0" />
                       ) : feature.comingSoon ? (
                         <Clock className="w-4 h-4 text-yellow-400 mt-0.5 flex-shrink-0" />
                       ) : (
-                        <X className="w-4 h-4 text-gray-500 mt-0.5 flex-shrink-0" />
+                        <X className="w-4 h-4 text-theme-muted mt-0.5 flex-shrink-0" />
                       )}
-                      <span className={feature.included ? 'text-gray-300' : 'text-gray-500'}>
+                      <span className={feature.included ? 'text-theme-secondary' : 'text-theme-muted'}>
                         {feature.text}
                         {feature.comingSoon && (
                           <span className="text-yellow-400 text-xs ml-1">(Coming Soon)</span>
@@ -199,8 +199,8 @@ export default function PricingPage() {
                   onClick={() => handleCTA(plan.name)}
                   className={`w-full py-3 rounded-lg font-semibold transition ${
                     plan.popular
-                      ? 'bg-emerald-500 hover:bg-emerald-600 text-white'
-                      : 'border border-emerald-500 text-emerald-400 hover:bg-emerald-500/10'
+                      ? 'btn-theme-primary  text-theme-primary'
+                      : 'border border-theme-accent text-theme-accent hover:btn-theme-primary/10'
                   }`}
                 >
                   {plan.cta}
@@ -214,11 +214,11 @@ export default function PricingPage() {
       {/* Comparison Note */}
       <section className="py-8 px-4">
         <div className="max-w-3xl mx-auto text-center">
-          <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-xl p-6">
-            <p className="text-emerald-400 font-medium mb-2 flex items-center justify-center gap-2">
+          <div className="btn-theme-primary/10 border border-theme-accent/30 rounded-xl p-6">
+            <p className="text-theme-accent font-medium mb-2 flex items-center justify-center gap-2">
               <DollarSign className="w-5 h-5" /> Save thousands compared to competitors
             </p>
-            <p className="text-gray-300 text-sm">
+            <p className="text-theme-secondary text-sm">
               Similar services charge $100-$500/month or more. Sails gives you the essentials at a price that makes sense for small businesses.
             </p>
           </div>
@@ -228,15 +228,15 @@ export default function PricingPage() {
       {/* FAQs */}
       <section className="py-12 sm:py-16 px-4 bg-white/5">
         <div className="max-w-3xl mx-auto">
-          <h2 className="text-2xl sm:text-3xl font-bold text-white text-center mb-8">
+          <h2 className="text-2xl sm:text-3xl font-bold text-theme-primary text-center mb-8">
             Questions? We&apos;ve got answers.
           </h2>
 
           <div className="space-y-4">
             {faqs.map((faq, i) => (
-              <div key={i} className="bg-white/10 rounded-xl p-6 border border-white/10">
-                <h3 className="text-white font-semibold mb-2">{faq.q}</h3>
-                <p className="text-gray-400 text-sm">{faq.a}</p>
+              <div key={i} className="bg-white/10 rounded-xl p-6 border border-theme-primary">
+                <h3 className="text-theme-primary font-semibold mb-2">{faq.q}</h3>
+                <p className="text-theme-muted text-sm">{faq.a}</p>
               </div>
             ))}
           </div>
@@ -246,13 +246,13 @@ export default function PricingPage() {
       {/* CTA */}
       <section className="py-12 sm:py-16 px-4">
         <div className="max-w-3xl mx-auto text-center">
-          <h2 className="text-2xl sm:text-3xl font-bold text-white mb-4">
+          <h2 className="text-2xl sm:text-3xl font-bold text-theme-primary mb-4">
             Ready to stop stressing about sales tax?
           </h2>
-          <p className="text-gray-400 mb-8">
+          <p className="text-theme-muted mb-8">
             Start your free trial today. No credit card required.
           </p>
-          <Link href="/signup" className="inline-block bg-emerald-500 hover:bg-emerald-600 text-white px-8 py-4 rounded-xl font-semibold text-lg transition">
+          <Link href="/signup" className="inline-block btn-theme-primary  text-theme-primary px-8 py-4 rounded-xl font-semibold text-lg transition">
             Start 14-Day Free Trial
           </Link>
         </div>

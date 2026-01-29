@@ -72,31 +72,31 @@ function VerifyEmailContent() {
   }, [token, router]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+    <div className="min-h-screen bg-theme-gradient">
       <Header />
       
       <main className="max-w-md mx-auto px-4 py-20">
-        <div className="bg-white/10 backdrop-blur rounded-xl border border-white/10 p-8 text-center">
+        <div className="card-theme rounded-xl border border-theme-primary p-8 text-center">
           {(status === 'loading' || status === 'init') && (
             <>
-              <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-emerald-500 mx-auto mb-6"></div>
-              <h1 className="text-2xl font-bold text-white mb-2">Verifying Email</h1>
-              <p className="text-gray-400">Please wait while we verify your email address...</p>
+              <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-theme-accent mx-auto mb-6"></div>
+              <h1 className="text-2xl font-bold text-theme-primary mb-2">Verifying Email</h1>
+              <p className="text-theme-muted">Please wait while we verify your email address...</p>
             </>
           )}
 
           {status === 'success' && (
             <>
-              <div className="w-16 h-16 bg-emerald-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
+              <div className="w-16 h-16 btn-theme-primary/20 rounded-full flex items-center justify-center mx-auto mb-6">
                 <span className="text-4xl">✓</span>
               </div>
-              <h1 className="text-2xl font-bold text-white mb-2">Email Verified!</h1>
-              <p className="text-gray-400 mb-6">
+              <h1 className="text-2xl font-bold text-theme-primary mb-2">Email Verified!</h1>
+              <p className="text-theme-muted mb-6">
                 Your email has been successfully verified. Redirecting to dashboard...
               </p>
               <Link
                 href="/dashboard"
-                className="inline-block bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-3 rounded-lg font-medium transition"
+                className="inline-block btn-theme-primary  text-theme-primary px-6 py-3 rounded-lg font-medium transition"
               >
                 Go to Dashboard
               </Link>
@@ -108,18 +108,18 @@ function VerifyEmailContent() {
               <div className="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
                 <span className="text-4xl">✕</span>
               </div>
-              <h1 className="text-2xl font-bold text-white mb-2">Verification Failed</h1>
+              <h1 className="text-2xl font-bold text-theme-primary mb-2">Verification Failed</h1>
               <p className="text-red-400 mb-6">{error}</p>
               <div className="space-y-3">
                 <Link
                   href="/login"
-                  className="inline-block bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-3 rounded-lg font-medium transition"
+                  className="inline-block btn-theme-primary  text-theme-primary px-6 py-3 rounded-lg font-medium transition"
                 >
                   Go to Login
                 </Link>
-                <p className="text-gray-500 text-sm">
+                <p className="text-theme-muted text-sm">
                   Need help?{' '}
-                  <Link href="/contact" className="text-emerald-400 hover:text-emerald-300">
+                  <Link href="/contact" className="text-theme-accent hover:text-emerald-300">
                     Contact Support
                   </Link>
                 </p>
@@ -137,8 +137,8 @@ function VerifyEmailContent() {
 export default function VerifyEmailPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-emerald-500"></div>
+      <div className="min-h-screen bg-theme-gradient flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-theme-accent"></div>
       </div>
     }>
       <VerifyEmailContent />

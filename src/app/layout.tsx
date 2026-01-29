@@ -28,7 +28,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="theme-default">
+    <html lang="en" className="theme-nautical">
       <body className={inter.className}>
         <ThemeProvider>
           <AuthProvider>

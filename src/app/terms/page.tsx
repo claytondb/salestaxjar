@@ -6,13 +6,13 @@ import Footer from '@/components/Footer';
 
 export default function TermsPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+    <div className="min-h-screen bg-theme-gradient">
       <Header />
       
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 border border-white/20">
-          <h1 className="text-3xl font-bold text-white mb-2">Terms of Service</h1>
-          <p className="text-gray-400 mb-8">Last updated: January 27, 2025</p>
+        <div className="card-theme rounded-2xl p-8">
+          <h1 className="text-3xl font-bold text-theme-primary mb-2">Terms of Service</h1>
+          <p className="text-theme-muted mb-8">Last updated: January 27, 2025</p>
 
           {/* Critical Tax Disclaimer Banner */}
           <div className="bg-red-500/20 border-2 border-red-500/50 rounded-xl p-6 mb-8">
@@ -42,9 +42,9 @@ export default function TermsPage() {
             </div>
           </div>
 
-          <div className="prose prose-invert max-w-none space-y-8 text-gray-300">
+          <div className="prose prose-invert max-w-none space-y-8 text-theme-secondary">
             <section>
-              <h2 className="text-xl font-semibold text-white mb-4">1. Acceptance of Terms</h2>
+              <h2 className="text-xl font-semibold text-theme-primary mb-4">1. Acceptance of Terms</h2>
               <p>
                 By accessing or using Sails (&quot;the Service&quot;), you agree to be bound by these Terms of Service 
                 (&quot;Terms&quot;). If you do not agree to these Terms, do not use the Service. We may modify these Terms at 
@@ -54,7 +54,7 @@ export default function TermsPage() {
             </section>
 
             <section>
-              <h2 className="text-xl font-semibold text-white mb-4">2. Description of Service</h2>
+              <h2 className="text-xl font-semibold text-theme-primary mb-4">2. Description of Service</h2>
               <p>Sails provides:</p>
               <ul className="list-disc pl-6 space-y-2 mt-2">
                 <li>Sales tax calculation tools for US states and territories</li>
@@ -71,7 +71,7 @@ export default function TermsPage() {
             </section>
 
             <section>
-              <h2 className="text-xl font-semibold text-white mb-4">3. User Responsibilities</h2>
+              <h2 className="text-xl font-semibold text-theme-primary mb-4">3. User Responsibilities</h2>
               <p>You agree to:</p>
               <ul className="list-disc pl-6 space-y-2 mt-2">
                 <li>Provide accurate and complete information when registering</li>
@@ -86,7 +86,7 @@ export default function TermsPage() {
             </section>
 
             <section>
-              <h2 className="text-xl font-semibold text-white mb-4">4. Tax Rate Accuracy</h2>
+              <h2 className="text-xl font-semibold text-theme-primary mb-4">4. Tax Rate Accuracy</h2>
               <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-4 mb-4">
                 <p className="text-yellow-400">
                   <strong>Important:</strong> Tax rates in our system are estimates based on publicly available data.
@@ -102,12 +102,12 @@ export default function TermsPage() {
               </ul>
               <p className="mt-4">
                 Links to official state tax authorities can be found on our{' '}
-                <Link href="/calculator" className="text-emerald-400 hover:text-emerald-300">Calculator</Link> page.
+                <Link href="/calculator" className="text-theme-accent hover:text-emerald-300">Calculator</Link> page.
               </p>
             </section>
 
             <section>
-              <h2 className="text-xl font-semibold text-white mb-4">5. Limitation of Liability</h2>
+              <h2 className="text-xl font-semibold text-theme-primary mb-4">5. Limitation of Liability</h2>
               <div className="bg-white/5 border border-white/20 rounded-lg p-4">
                 <p className="uppercase font-semibold mb-2">DISCLAIMER OF WARRANTIES</p>
                 <p>
@@ -137,7 +137,7 @@ export default function TermsPage() {
             </section>
 
             <section>
-              <h2 className="text-xl font-semibold text-white mb-4">6. Indemnification</h2>
+              <h2 className="text-xl font-semibold text-theme-primary mb-4">6. Indemnification</h2>
               <p>
                 You agree to indemnify, defend, and hold harmless Sails, its officers, directors, employees, 
                 and agents from and against any claims, liabilities, damages, losses, and expenses (including reasonable 
@@ -153,7 +153,7 @@ export default function TermsPage() {
             </section>
 
             <section>
-              <h2 className="text-xl font-semibold text-white mb-4">7. Payment Terms</h2>
+              <h2 className="text-xl font-semibold text-theme-primary mb-4">7. Payment Terms</h2>
               <p>For paid subscriptions:</p>
               <ul className="list-disc pl-6 space-y-2 mt-2">
                 <li>Fees are billed monthly or annually in advance</li>
@@ -165,7 +165,7 @@ export default function TermsPage() {
             </section>
 
             <section>
-              <h2 className="text-xl font-semibold text-white mb-4">8. Cancellation and Termination</h2>
+              <h2 className="text-xl font-semibold text-theme-primary mb-4">8. Cancellation and Termination</h2>
               <p>
                 You may cancel your subscription at any time through your account settings. Upon cancellation:
               </p>
@@ -178,7 +178,7 @@ export default function TermsPage() {
             </section>
 
             <section>
-              <h2 className="text-xl font-semibold text-white mb-4">9. Intellectual Property</h2>
+              <h2 className="text-xl font-semibold text-theme-primary mb-4">9. Intellectual Property</h2>
               <p>
                 All content, features, and functionality of the Service (including but not limited to text, graphics, 
                 logos, and software) are owned by Sails and protected by intellectual property laws. You may not 
@@ -187,16 +187,16 @@ export default function TermsPage() {
             </section>
 
             <section>
-              <h2 className="text-xl font-semibold text-white mb-4">10. Privacy</h2>
+              <h2 className="text-xl font-semibold text-theme-primary mb-4">10. Privacy</h2>
               <p>
                 Your use of the Service is also governed by our{' '}
-                <Link href="/privacy" className="text-emerald-400 hover:text-emerald-300">Privacy Policy</Link>, 
+                <Link href="/privacy" className="text-theme-accent hover:text-emerald-300">Privacy Policy</Link>, 
                 which is incorporated into these Terms by reference.
               </p>
             </section>
 
             <section>
-              <h2 className="text-xl font-semibold text-white mb-4">11. Dispute Resolution</h2>
+              <h2 className="text-xl font-semibold text-theme-primary mb-4">11. Dispute Resolution</h2>
               <p>
                 Any disputes arising from these Terms or your use of the Service shall be:
               </p>
@@ -208,14 +208,14 @@ export default function TermsPage() {
               </ul>
               <p className="mt-4">
                 For disputes under $10,000, we encourage using our support team first: {' '}
-                <a href="mailto:support@sails.tax" className="text-emerald-400 hover:text-emerald-300">
+                <a href="mailto:support@sails.tax" className="text-theme-accent hover:text-emerald-300">
                   support@sails.tax
                 </a>
               </p>
             </section>
 
             <section>
-              <h2 className="text-xl font-semibold text-white mb-4">12. Severability</h2>
+              <h2 className="text-xl font-semibold text-theme-primary mb-4">12. Severability</h2>
               <p>
                 If any provision of these Terms is found to be unenforceable, the remaining provisions will continue 
                 in full force and effect.
@@ -223,7 +223,7 @@ export default function TermsPage() {
             </section>
 
             <section>
-              <h2 className="text-xl font-semibold text-white mb-4">13. Entire Agreement</h2>
+              <h2 className="text-xl font-semibold text-theme-primary mb-4">13. Entire Agreement</h2>
               <p>
                 These Terms, together with the Privacy Policy and any other legal notices published on the Service, 
                 constitute the entire agreement between you and Sails regarding the use of the Service.
@@ -231,11 +231,11 @@ export default function TermsPage() {
             </section>
 
             <section>
-              <h2 className="text-xl font-semibold text-white mb-4">14. Contact Information</h2>
+              <h2 className="text-xl font-semibold text-theme-primary mb-4">14. Contact Information</h2>
               <p>For questions about these Terms, please contact us:</p>
               <div className="mt-4 p-4 bg-white/5 rounded-lg">
                 <p><strong>Sails Legal Department</strong></p>
-                <p>Email: <a href="mailto:legal@sails.tax" className="text-emerald-400 hover:text-emerald-300">legal@sails.tax</a></p>
+                <p>Email: <a href="mailto:legal@sails.tax" className="text-theme-accent hover:text-emerald-300">legal@sails.tax</a></p>
                 <p>Address: 123 Tax Lane, Suite 100, Austin, TX 78701</p>
               </div>
             </section>

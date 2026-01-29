@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import SailsLogo from '@/components/SailsLogo';
+import ThemeToggle from '@/components/ThemeToggle';
 
 export default function SignupPage() {
   const [name, setName] = useState('');
@@ -43,60 +44,68 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center px-4 py-12">
+    <div className="min-h-screen bg-theme-gradient flex items-center justify-center px-4 py-12">
+      {/* Theme Toggle */}
+      <div className="absolute top-4 right-4">
+        <ThemeToggle />
+      </div>
+
       <div className="w-full max-w-md">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2 justify-center mb-8">
-          <SailsLogo className="w-12 h-12 text-emerald-400" />
-          <span className="text-3xl font-bold text-white">Sails</span>
+          <SailsLogo className="w-12 h-12 text-theme-accent" />
+          <span className="text-3xl font-bold text-theme-primary">Sails</span>
         </Link>
 
         {/* Signup Form */}
-        <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 border border-white/20">
-          <h1 className="text-2xl font-bold text-white text-center mb-2">Start your free trial</h1>
-          <p className="text-gray-400 text-center mb-6">14 days free. No credit card required.</p>
+        <div className="card-theme rounded-2xl p-8">
+          <h1 className="text-2xl font-bold text-theme-primary text-center mb-2">Start your free trial</h1>
+          <p className="text-theme-muted text-center mb-6">14 days free. No credit card required.</p>
 
           {error && (
-            <div className="bg-red-500/10 border border-red-500/30 text-red-400 px-4 py-3 rounded-lg mb-6 text-sm">
+            <div className="px-4 py-3 rounded-lg mb-6 text-sm" style={{ backgroundColor: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.3)', color: 'var(--error)' }}>
               {error}
             </div>
           )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label htmlFor="name" className="block text-gray-300 mb-2 font-medium">Full name</label>
+              <label htmlFor="name" className="block text-theme-secondary mb-2 font-medium">Full name</label>
               <input
                 id="name"
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                className="w-full px-4 py-3 bg-theme-input border border-theme-secondary rounded-lg text-theme-primary focus:outline-none focus:ring-2"
+                style={{ '--tw-ring-color': 'var(--accent-primary)' } as React.CSSProperties}
                 placeholder="John Smith"
                 required
               />
             </div>
 
             <div>
-              <label htmlFor="email" className="block text-gray-300 mb-2 font-medium">Work email</label>
+              <label htmlFor="email" className="block text-theme-secondary mb-2 font-medium">Work email</label>
               <input
                 id="email"
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                className="w-full px-4 py-3 bg-theme-input border border-theme-secondary rounded-lg text-theme-primary focus:outline-none focus:ring-2"
+                style={{ '--tw-ring-color': 'var(--accent-primary)' } as React.CSSProperties}
                 placeholder="you@company.com"
                 required
               />
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-gray-300 mb-2 font-medium">Password</label>
+              <label htmlFor="password" className="block text-theme-secondary mb-2 font-medium">Password</label>
               <input
                 id="password"
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                className="w-full px-4 py-3 bg-theme-input border border-theme-secondary rounded-lg text-theme-primary focus:outline-none focus:ring-2"
+                style={{ '--tw-ring-color': 'var(--accent-primary)' } as React.CSSProperties}
                 placeholder="••••••••"
                 required
                 minLength={6}
@@ -104,30 +113,31 @@ export default function SignupPage() {
             </div>
 
             <div>
-              <label htmlFor="confirmPassword" className="block text-gray-300 mb-2 font-medium">Confirm password</label>
+              <label htmlFor="confirmPassword" className="block text-theme-secondary mb-2 font-medium">Confirm password</label>
               <input
                 id="confirmPassword"
                 type="password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                className="w-full px-4 py-3 bg-theme-input border border-theme-secondary rounded-lg text-theme-primary focus:outline-none focus:ring-2"
+                style={{ '--tw-ring-color': 'var(--accent-primary)' } as React.CSSProperties}
                 placeholder="••••••••"
                 required
                 minLength={6}
               />
             </div>
 
-            <div className="text-sm text-gray-400">
+            <div className="text-sm text-theme-muted">
               By signing up, you agree to our{' '}
-              <a href="#" className="text-emerald-400 hover:text-emerald-300">Terms of Service</a>
+              <Link href="/terms" className="text-theme-accent hover:opacity-80">Terms of Service</Link>
               {' '}and{' '}
-              <a href="#" className="text-emerald-400 hover:text-emerald-300">Privacy Policy</a>.
+              <Link href="/privacy" className="text-theme-accent hover:opacity-80">Privacy Policy</Link>.
             </div>
 
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-emerald-500 hover:bg-emerald-600 text-white py-3 rounded-lg font-semibold transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="w-full btn-theme-primary py-3 rounded-lg font-semibold transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               {isLoading ? (
                 <>
@@ -144,8 +154,8 @@ export default function SignupPage() {
           </form>
 
           <div className="mt-6 text-center">
-            <span className="text-gray-400">Already have an account? </span>
-            <Link href="/login" className="text-emerald-400 hover:text-emerald-300 font-medium">
+            <span className="text-theme-muted">Already have an account? </span>
+            <Link href="/login" className="text-theme-accent hover:opacity-80 font-medium">
               Log in
             </Link>
           </div>
@@ -154,8 +164,8 @@ export default function SignupPage() {
         {/* Benefits */}
         <div className="mt-6 grid grid-cols-2 gap-3">
           {['No credit card required', 'Cancel anytime', 'Full access for 14 days', '24/7 support'].map((benefit, i) => (
-            <div key={i} className="flex items-center gap-2 text-gray-400 text-sm">
-              <span className="text-emerald-400">✓</span>
+            <div key={i} className="flex items-center gap-2 text-theme-muted text-sm">
+              <span className="text-theme-accent">✓</span>
               {benefit}
             </div>
           ))}

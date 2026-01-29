@@ -70,8 +70,8 @@ export default function IntegrationsPage() {
 
   if (isLoading || !user) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-emerald-500"></div>
+      <div className="min-h-screen bg-theme-gradient flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-theme-accent"></div>
       </div>
     );
   }
@@ -91,42 +91,42 @@ export default function IntegrationsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+    <div className="min-h-screen bg-theme-gradient">
       <Header />
       
       <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Page Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-white mb-2">Platform Integrations</h1>
-          <p className="text-gray-400">
+          <h1 className="text-3xl font-bold text-theme-primary mb-2">Platform Integrations</h1>
+          <p className="text-theme-muted">
             Connect your e-commerce platforms to automatically import orders and track sales tax obligations.
           </p>
         </div>
 
         {/* Quick Stats */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-          <div className="bg-white/10 backdrop-blur rounded-xl border border-white/10 p-4">
-            <div className="flex items-center gap-2 text-gray-400 text-sm mb-1">
+          <div className="bg-theme-secondary/30 backdrop-blur rounded-xl border border-theme-primary p-4">
+            <div className="flex items-center gap-2 text-theme-muted text-sm mb-1">
               <Link2 className="w-4 h-4" />
               Connected Platforms
             </div>
-            <div className="text-2xl font-bold text-emerald-400">{stats.connectedPlatforms}</div>
+            <div className="text-2xl font-bold text-theme-accent">{stats.connectedPlatforms}</div>
           </div>
-          <div className="bg-white/10 backdrop-blur rounded-xl border border-white/10 p-4">
-            <div className="flex items-center gap-2 text-gray-400 text-sm mb-1">
+          <div className="bg-theme-secondary/30 backdrop-blur rounded-xl border border-theme-primary p-4">
+            <div className="flex items-center gap-2 text-theme-muted text-sm mb-1">
               <Package className="w-4 h-4" />
               Orders Synced
             </div>
-            <div className="text-2xl font-bold text-white">
+            <div className="text-2xl font-bold text-theme-primary">
               {stats.totalOrdersSynced > 0 ? stats.totalOrdersSynced.toLocaleString() : '—'}
             </div>
           </div>
-          <div className="bg-white/10 backdrop-blur rounded-xl border border-white/10 p-4">
-            <div className="flex items-center gap-2 text-gray-400 text-sm mb-1">
+          <div className="bg-theme-secondary/30 backdrop-blur rounded-xl border border-theme-primary p-4">
+            <div className="flex items-center gap-2 text-theme-muted text-sm mb-1">
               <Clock className="w-4 h-4" />
               Last Sync
             </div>
-            <div className="text-2xl font-bold text-white">{formatLastSync(stats.lastSyncAt)}</div>
+            <div className="text-2xl font-bold text-theme-primary">{formatLastSync(stats.lastSyncAt)}</div>
           </div>
         </div>
 

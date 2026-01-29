@@ -145,14 +145,14 @@ export function AmazonManualImport() {
           className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
         />
         
-        <Upload className="w-12 h-12 mx-auto mb-4 text-gray-400" />
+        <Upload className="w-12 h-12 mx-auto mb-4 text-theme-muted" />
         
         {file ? (
           <div>
             <p className="text-lg font-medium text-gray-900 dark:text-gray-100">
               {file.name}
             </p>
-            <p className="text-sm text-gray-500 dark:text-gray-400">
+            <p className="text-sm text-theme-muted dark:text-theme-muted">
               {(file.size / 1024).toFixed(1)} KB
             </p>
           </div>
@@ -161,7 +161,7 @@ export function AmazonManualImport() {
             <p className="text-lg font-medium text-gray-900 dark:text-gray-100">
               Drop your Amazon CSV file here
             </p>
-            <p className="text-sm text-gray-500 dark:text-gray-400">
+            <p className="text-sm text-theme-muted dark:text-theme-muted">
               or click to browse
             </p>
           </div>
@@ -173,7 +173,7 @@ export function AmazonManualImport() {
         <button
           onClick={handleUpload}
           disabled={uploading}
-          className="w-full py-3 px-4 bg-green-600 hover:bg-green-700 disabled:bg-green-400 text-white font-medium rounded-lg transition-colors flex items-center justify-center gap-2"
+          className="w-full py-3 px-4 bg-green-600 hover:bg-green-700 disabled:bg-green-400 text-theme-primary font-medium rounded-lg transition-colors flex items-center justify-center gap-2"
         >
           {uploading ? (
             <>
@@ -236,7 +236,7 @@ export function AmazonManualImport() {
           <Download className="w-5 h-5" />
           Pro Tip: Set Up Automatic Reports
         </h3>
-        <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
+        <p className="text-sm text-gray-600 dark:text-theme-muted mb-3">
           Amazon can automatically generate and email you tax reports on a schedule.
           Set this up once and just upload the emailed reports here.
         </p>

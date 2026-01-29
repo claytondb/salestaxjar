@@ -74,62 +74,62 @@ export default function ContactPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+    <div className="min-h-screen bg-theme-gradient">
       <Header />
       
       <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="text-center mb-12">
-          <h1 className="text-3xl sm:text-4xl font-bold text-white mb-4">Contact & Support</h1>
-          <p className="text-gray-400 max-w-2xl mx-auto">
+          <h1 className="text-3xl sm:text-4xl font-bold text-theme-primary mb-4">Contact & Support</h1>
+          <p className="text-theme-muted max-w-2xl mx-auto">
             Have questions? We&apos;re here to help. Check our FAQ below or send us a message.
           </p>
         </div>
 
         <div className="grid lg:grid-cols-2 gap-8">
           {/* Contact Form */}
-          <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 sm:p-8 border border-white/20">
-            <h2 className="text-2xl font-semibold text-white mb-6">Send Us a Message</h2>
+          <div className="card-theme rounded-2xl p-8">
+            <h2 className="text-2xl font-semibold text-theme-primary mb-6">Send Us a Message</h2>
             
             {submitted ? (
-              <div className="bg-emerald-500/20 border border-emerald-500/30 rounded-lg p-6 text-center">
+              <div className="btn-theme-primary/20 border border-theme-accent/30 rounded-lg p-6 text-center">
                 <div className="text-4xl mb-4">✉️</div>
-                <h3 className="text-xl font-semibold text-emerald-400 mb-2">Message Sent!</h3>
-                <p className="text-gray-300">
+                <h3 className="text-xl font-semibold text-theme-accent mb-2">Message Sent!</h3>
+                <p className="text-theme-secondary">
                   Thank you for contacting us. We&apos;ll get back to you within 1-2 business days.
                 </p>
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
-                  <label className="block text-gray-300 mb-2 font-medium">Your Name</label>
+                  <label className="block text-theme-secondary mb-2 font-medium">Your Name</label>
                   <input
                     type="text"
                     required
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-theme-primary focus:outline-none focus:ring-2 focus:ring-emerald-500"
                     placeholder="John Doe"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-gray-300 mb-2 font-medium">Email Address</label>
+                  <label className="block text-theme-secondary mb-2 font-medium">Email Address</label>
                   <input
                     type="email"
                     required
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-theme-primary focus:outline-none focus:ring-2 focus:ring-emerald-500"
                     placeholder="john@example.com"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-gray-300 mb-2 font-medium">Subject</label>
+                  <label className="block text-theme-secondary mb-2 font-medium">Subject</label>
                   <select
                     value={formData.subject}
                     onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-                    className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-theme-primary focus:outline-none focus:ring-2 focus:ring-emerald-500"
                   >
                     <option value="general" className="bg-slate-800">General Inquiry</option>
                     <option value="support" className="bg-slate-800">Technical Support</option>
@@ -141,20 +141,20 @@ export default function ContactPage() {
                 </div>
 
                 <div>
-                  <label className="block text-gray-300 mb-2 font-medium">Message</label>
+                  <label className="block text-theme-secondary mb-2 font-medium">Message</label>
                   <textarea
                     required
                     rows={5}
                     value={formData.message}
                     onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                    className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 resize-none"
+                    className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-theme-primary focus:outline-none focus:ring-2 focus:ring-emerald-500 resize-none"
                     placeholder="How can we help you?"
                   />
                 </div>
 
                 <button
                   type="submit"
-                  className="w-full bg-emerald-500 hover:bg-emerald-600 text-white py-3 rounded-lg font-semibold transition"
+                  className="w-full btn-theme-primary  text-theme-primary py-3 rounded-lg font-semibold transition"
                 >
                   Send Message
                 </button>
@@ -162,14 +162,14 @@ export default function ContactPage() {
             )}
 
             {/* Direct Contact Info */}
-            <div className="mt-8 pt-8 border-t border-white/10">
-              <h3 className="text-lg font-medium text-white mb-4">Or reach us directly:</h3>
-              <div className="space-y-3 text-gray-300">
+            <div className="mt-8 pt-8 border-t border-theme-primary">
+              <h3 className="text-lg font-medium text-theme-primary mb-4">Or reach us directly:</h3>
+              <div className="space-y-3 text-theme-secondary">
                 <div className="flex items-center gap-3">
                   <span className="text-xl">📧</span>
                   <div>
                     <p className="font-medium">General Support</p>
-                    <a href="mailto:support@sails.tax" className="text-emerald-400 hover:text-emerald-300">
+                    <a href="mailto:support@sails.tax" className="text-theme-accent hover:text-emerald-300">
                       support@sails.tax
                     </a>
                   </div>
@@ -178,7 +178,7 @@ export default function ContactPage() {
                   <span className="text-xl">💼</span>
                   <div>
                     <p className="font-medium">Enterprise Sales</p>
-                    <a href="mailto:sales@sails.tax" className="text-emerald-400 hover:text-emerald-300">
+                    <a href="mailto:sales@sails.tax" className="text-theme-accent hover:text-emerald-300">
                       sales@sails.tax
                     </a>
                   </div>
@@ -187,7 +187,7 @@ export default function ContactPage() {
                   <span className="text-xl">🔒</span>
                   <div>
                     <p className="font-medium">Privacy Requests</p>
-                    <a href="mailto:privacy@sails.tax" className="text-emerald-400 hover:text-emerald-300">
+                    <a href="mailto:privacy@sails.tax" className="text-theme-accent hover:text-emerald-300">
                       privacy@sails.tax
                     </a>
                   </div>
@@ -197,23 +197,23 @@ export default function ContactPage() {
           </div>
 
           {/* FAQ Section */}
-          <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 sm:p-8 border border-white/20">
-            <h2 className="text-2xl font-semibold text-white mb-6">Frequently Asked Questions</h2>
+          <div className="card-theme rounded-2xl p-8">
+            <h2 className="text-2xl font-semibold text-theme-primary mb-6">Frequently Asked Questions</h2>
             
             <div className="space-y-3">
               {faqs.map((faq, index) => (
-                <div key={index} className="border border-white/10 rounded-lg overflow-hidden">
+                <div key={index} className="border border-theme-primary rounded-lg overflow-hidden">
                   <button
                     onClick={() => setExpandedFaq(expandedFaq === index ? null : index)}
                     className="w-full px-4 py-3 text-left flex items-center justify-between hover:bg-white/5 transition"
                   >
-                    <span className="font-medium text-white pr-4">{faq.question}</span>
-                    <span className={`text-emerald-400 transition-transform ${expandedFaq === index ? 'rotate-180' : ''}`}>
+                    <span className="font-medium text-theme-primary pr-4">{faq.question}</span>
+                    <span className={`text-theme-accent transition-transform ${expandedFaq === index ? 'rotate-180' : ''}`}>
                       ▼
                     </span>
                   </button>
                   {expandedFaq === index && (
-                    <div className="px-4 pb-4 text-gray-300 text-sm leading-relaxed">
+                    <div className="px-4 pb-4 text-theme-secondary text-sm leading-relaxed">
                       {faq.answer}
                     </div>
                   )}
@@ -224,7 +224,7 @@ export default function ContactPage() {
             {/* Response Time Info */}
             <div className="mt-8 p-4 bg-blue-500/10 border border-blue-500/30 rounded-lg">
               <h3 className="font-medium text-blue-400 mb-2">📞 Response Times</h3>
-              <ul className="text-sm text-gray-300 space-y-1">
+              <ul className="text-sm text-theme-secondary space-y-1">
                 <li>• <strong>Email:</strong> 1-2 business days</li>
                 <li>• <strong>Priority Support (Growth+):</strong> Within 4 hours</li>
                 <li>• <strong>Enterprise:</strong> Dedicated account manager</li>

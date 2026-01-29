@@ -165,9 +165,9 @@ export default function PlatformsManager() {
 
   if (isLoading) {
     return (
-      <div className="bg-white/10 backdrop-blur rounded-xl border border-white/10 p-6">
+      <div className="bg-theme-secondary/30 backdrop-blur rounded-xl border border-theme-primary p-6">
         <div className="flex items-center justify-center py-12">
-          <Loader2 className="w-8 h-8 animate-spin text-emerald-400" />
+          <Loader2 className="w-8 h-8 animate-spin text-theme-accent" />
         </div>
       </div>
     );
@@ -176,9 +176,9 @@ export default function PlatformsManager() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="bg-white/10 backdrop-blur rounded-xl border border-white/10 p-6">
-        <h2 className="text-xl font-semibold text-white mb-2">Connected Platforms</h2>
-        <p className="text-gray-400">
+      <div className="bg-theme-secondary/30 backdrop-blur rounded-xl border border-theme-primary p-6">
+        <h2 className="text-xl font-semibold text-theme-primary mb-2">Connected Platforms</h2>
+        <p className="text-theme-muted">
           Connect your sales channels to automatically import transactions and calculate sales tax obligations.
         </p>
       </div>
@@ -202,18 +202,18 @@ export default function PlatformsManager() {
         {platforms.map((platform) => (
           <div 
             key={platform.platform}
-            className="bg-white/10 backdrop-blur rounded-xl border border-white/10 overflow-hidden"
+            className="bg-theme-secondary/30 backdrop-blur rounded-xl border border-theme-primary overflow-hidden"
           >
             {/* Platform Header */}
             <div className="p-4 flex items-center justify-between">
               <div className="flex items-center gap-4">
                 <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${
-                  platform.configured ? 'bg-emerald-500/20 text-emerald-400' : 'bg-white/10 text-gray-400'
+                  platform.configured ? 'btn-theme-primary/20 text-theme-accent' : 'bg-theme-secondary/30 text-theme-muted'
                 }`}>
                   {platformIcons[platform.platform] || <Package className="w-6 h-6" />}
                 </div>
                 <div>
-                  <h3 className="font-medium text-white flex items-center gap-2">
+                  <h3 className="font-medium text-theme-primary flex items-center gap-2">
                     {platform.name}
                     {platform.platform === 'amazon' && (
                       <span className="px-2 py-0.5 bg-yellow-500/20 text-yellow-400 text-xs rounded-full flex items-center gap-1">
@@ -222,19 +222,19 @@ export default function PlatformsManager() {
                       </span>
                     )}
                     {platform.connectedCount > 0 && (
-                      <span className="px-2 py-0.5 bg-emerald-500/20 text-emerald-400 text-xs rounded-full">
+                      <span className="px-2 py-0.5 btn-theme-primary/20 text-theme-accent text-xs rounded-full">
                         {platform.connectedCount} connected
                       </span>
                     )}
                   </h3>
-                  <p className="text-sm text-gray-400">{platform.description}</p>
+                  <p className="text-sm text-theme-muted">{platform.description}</p>
                 </div>
               </div>
               
               {platform.platform === 'amazon' ? (
                 <button
                   onClick={() => setShowAmazonModal(true)}
-                  className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg font-medium transition flex items-center gap-2"
+                  className="bg-orange-500 hover:bg-orange-600 text-theme-primary px-4 py-2 rounded-lg font-medium transition flex items-center gap-2"
                 >
                   <Upload className="w-4 h-4" />
                   Import Data
@@ -243,7 +243,7 @@ export default function PlatformsManager() {
                 <button
                   onClick={() => handleConnect(platform.platform)}
                   disabled={connectingPlatform === platform.platform}
-                  className="bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-lg font-medium transition disabled:opacity-50 flex items-center gap-2"
+                  className="btn-theme-primary  text-theme-primary px-4 py-2 rounded-lg font-medium transition disabled:opacity-50 flex items-center gap-2"
                 >
                   {connectingPlatform === platform.platform ? (
                     <>
@@ -256,13 +256,13 @@ export default function PlatformsManager() {
                 </button>
               ) : (
                 <div className="text-right">
-                  <span className="text-gray-500 text-sm block mb-1">Not configured</span>
+                  <span className="text-theme-muted text-sm block mb-1">Not configured</span>
                   {platform.setupUrl && (
                     <a 
                       href={platform.setupUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-emerald-400 hover:text-emerald-300 text-sm flex items-center gap-1"
+                      className="text-theme-accent hover:text-emerald-300 text-sm flex items-center gap-1"
                     >
                       Setup Guide <ExternalLink className="w-3 h-3" />
                     </a>
@@ -273,11 +273,11 @@ export default function PlatformsManager() {
 
             {/* Connected Stores */}
             {platform.connections.length > 0 && (
-              <div className="border-t border-white/10">
+              <div className="border-t border-theme-primary">
                 {platform.connections.map((conn) => (
                   <div 
                     key={conn.id}
-                    className="p-4 flex items-center justify-between bg-emerald-500/5 border-b border-white/5 last:border-b-0"
+                    className="p-4 flex items-center justify-between btn-theme-primary/5 border-b border-white/5 last:border-b-0"
                   >
                     <div className="flex items-center gap-3">
                       <div className={`w-2 h-2 rounded-full ${
@@ -287,10 +287,10 @@ export default function PlatformsManager() {
                         'bg-gray-400'
                       }`} />
                       <div>
-                        <p className="text-white font-medium">
+                        <p className="text-theme-primary font-medium">
                           {conn.platformName || conn.platformId}
                         </p>
-                        <p className="text-sm text-gray-400">
+                        <p className="text-sm text-theme-muted">
                           {conn.syncStatus === 'syncing' ? (
                             'Syncing...'
                           ) : conn.syncStatus === 'error' ? (
@@ -308,7 +308,7 @@ export default function PlatformsManager() {
                       <button
                         onClick={() => handleSync(conn.platform, conn.platformId)}
                         disabled={syncingConnection === `${conn.platform}-${conn.platformId}`}
-                        className="p-2 bg-white/10 hover:bg-white/20 text-white rounded-lg transition disabled:opacity-50"
+                        className="p-2 bg-theme-secondary/30 hover:bg-white/20 text-theme-primary rounded-lg transition disabled:opacity-50"
                         title="Sync now"
                       >
                         {syncingConnection === `${conn.platform}-${conn.platformId}` ? (
@@ -332,12 +332,12 @@ export default function PlatformsManager() {
 
             {/* Features */}
             {platform.features.length > 0 && (
-              <div className="px-4 py-3 bg-white/5 border-t border-white/10">
+              <div className="px-4 py-3 bg-theme-secondary/20 border-t border-theme-primary">
                 <div className="flex flex-wrap gap-2">
                   {platform.features.map((feature, i) => (
                     <span 
                       key={i}
-                      className="px-2 py-1 bg-white/10 text-gray-300 text-xs rounded"
+                      className="px-2 py-1 bg-theme-secondary/30 text-theme-secondary text-xs rounded"
                     >
                       {feature}
                     </span>
@@ -350,21 +350,21 @@ export default function PlatformsManager() {
       </div>
 
       {/* Help Section */}
-      <div className="bg-white/10 backdrop-blur rounded-xl border border-white/10 p-6">
-        <h3 className="font-medium text-white mb-2">Need help connecting?</h3>
-        <p className="text-gray-400 text-sm mb-4">
+      <div className="bg-theme-secondary/30 backdrop-blur rounded-xl border border-theme-primary p-6">
+        <h3 className="font-medium text-theme-primary mb-2">Need help connecting?</h3>
+        <p className="text-theme-muted text-sm mb-4">
           Check our integration guides or contact support if you&apos;re having trouble connecting your platforms.
         </p>
         <div className="flex gap-3">
           <a 
             href="/docs/integrations"
-            className="text-emerald-400 hover:text-emerald-300 text-sm font-medium"
+            className="text-theme-accent hover:text-emerald-300 text-sm font-medium"
           >
             View Integration Docs →
           </a>
           <a 
             href="mailto:support@sails.tax"
-            className="text-emerald-400 hover:text-emerald-300 text-sm font-medium"
+            className="text-theme-accent hover:text-emerald-300 text-sm font-medium"
           >
             Contact Support →
           </a>
@@ -374,27 +374,27 @@ export default function PlatformsManager() {
       {/* Shopify Modal */}
       {showShopifyModal && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="bg-slate-800 rounded-xl border border-white/20 p-6 max-w-md w-full mx-4">
-            <h3 className="text-xl font-semibold text-white mb-2">Connect Shopify Store</h3>
-            <p className="text-gray-400 text-sm mb-4">
+          <div className="bg-slate-800 rounded-xl border border-theme-secondary p-6 max-w-md w-full mx-4">
+            <h3 className="text-xl font-semibold text-theme-primary mb-2">Connect Shopify Store</h3>
+            <p className="text-theme-muted text-sm mb-4">
               Enter your Shopify store domain to connect your store.
             </p>
             
             <div className="mb-4">
-              <label className="block text-gray-300 text-sm mb-2">Store Domain</label>
+              <label className="block text-theme-secondary text-sm mb-2">Store Domain</label>
               <div className="flex">
                 <input
                   type="text"
                   value={shopifyShop}
                   onChange={(e) => setShopifyShop(e.target.value)}
                   placeholder="your-store"
-                  className="flex-1 px-4 py-3 bg-white/10 border border-white/20 rounded-l-lg text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  className="flex-1 px-4 py-3 bg-theme-secondary/30 border border-theme-secondary rounded-l-lg text-theme-primary focus:outline-none focus:ring-2 focus:ring-emerald-500"
                 />
-                <span className="px-3 py-3 bg-white/5 border border-l-0 border-white/20 rounded-r-lg text-gray-400">
+                <span className="px-3 py-3 bg-theme-secondary/20 border border-l-0 border-theme-secondary rounded-r-lg text-theme-muted">
                   .myshopify.com
                 </span>
               </div>
-              <p className="text-gray-500 text-xs mt-1">
+              <p className="text-theme-muted text-xs mt-1">
                 Or enter your full store URL (e.g., your-store.myshopify.com)
               </p>
             </div>
@@ -405,14 +405,14 @@ export default function PlatformsManager() {
                   setShowShopifyModal(false);
                   setShopifyShop('');
                 }}
-                className="px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg transition"
+                className="px-4 py-2 bg-theme-secondary/30 hover:bg-white/20 text-theme-primary rounded-lg transition"
               >
                 Cancel
               </button>
               <button
                 onClick={handleShopifyConnect}
                 disabled={!shopifyShop.trim() || connectingPlatform === 'shopify'}
-                className="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-lg font-medium transition disabled:opacity-50 flex items-center justify-center gap-2"
+                className="flex-1 btn-theme-primary  text-theme-primary px-4 py-2 rounded-lg font-medium transition disabled:opacity-50 flex items-center justify-center gap-2"
               >
                 {connectingPlatform === 'shopify' ? (
                   <>
@@ -431,20 +431,20 @@ export default function PlatformsManager() {
       {/* Amazon Manual Import Modal */}
       {showAmazonModal && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-slate-800 rounded-xl border border-white/20 p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+          <div className="bg-slate-800 rounded-xl border border-theme-secondary p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-4">
               <div>
-                <h3 className="text-xl font-semibold text-white flex items-center gap-2">
+                <h3 className="text-xl font-semibold text-theme-primary flex items-center gap-2">
                   <Package className="w-6 h-6 text-orange-400" />
                   Amazon Seller Central
                 </h3>
-                <p className="text-gray-400 text-sm mt-1">
+                <p className="text-theme-muted text-sm mt-1">
                   Import your Amazon sales tax data manually
                 </p>
               </div>
               <button
                 onClick={() => setShowAmazonModal(false)}
-                className="p-2 bg-white/10 hover:bg-white/20 text-white rounded-lg transition"
+                className="p-2 bg-theme-secondary/30 hover:bg-white/20 text-theme-primary rounded-lg transition"
               >
                 ✕
               </button>

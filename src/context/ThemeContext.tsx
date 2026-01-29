@@ -13,7 +13,7 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [theme, setThemeState] = useState<ThemeName>('default');
+  const [theme, setThemeState] = useState<ThemeName>('nautical');
   const [mounted, setMounted] = useState(false);
 
   // Load theme from localStorage on mount
@@ -54,7 +54,7 @@ export function useTheme() {
   if (context === undefined) {
     // Return a safe default for SSR/SSG
     return {
-      theme: 'default' as ThemeName,
+      theme: 'nautical' as ThemeName,
       setTheme: () => {},
       toggleTheme: () => {},
     };

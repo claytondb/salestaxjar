@@ -66,11 +66,11 @@ export const stateTaxAuthorities: Record<string, { name: string; url: string }> 
 export default function TaxDisclaimer({ variant = 'inline', className = '' }: TaxDisclaimerProps) {
   if (variant === 'banner') {
     return (
-      <div className={`bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-4 ${className}`}>
+      <div className={`bg-accent-subtle border border-theme-accent rounded-lg p-4 ${className}`}>
         <div className="flex items-start gap-3">
-          <AlertTriangle className="w-5 h-5 text-yellow-400 flex-shrink-0 mt-0.5" />
+          <AlertTriangle className="w-5 h-5 text-theme-accent flex-shrink-0 mt-0.5" />
           <div>
-            <h4 className="font-semibold text-yellow-400 mb-1">Tax Estimation Disclaimer</h4>
+            <h4 className="font-semibold text-theme-accent mb-1">Tax Estimation Disclaimer</h4>
             <p className="text-yellow-200/80 text-sm">
               The tax rates shown are <strong>estimates only</strong> based on publicly available data. 
               Actual rates may vary based on local jurisdictions (city, county, special districts) and product-specific exemptions. 
@@ -78,11 +78,11 @@ export default function TaxDisclaimer({ variant = 'inline', className = '' }: Ta
               state&apos;s official tax authority and consult a qualified tax professional for advice specific to your business.
             </p>
             <div className="mt-2 flex flex-wrap gap-2 text-xs items-center">
-              <span className="text-yellow-400 flex items-center gap-1">
+              <span className="text-theme-accent flex items-center gap-1">
                 <Calendar className="w-3 h-3" /> Rates last updated: January 2025
               </span>
-              <span className="text-gray-400">|</span>
-              <Link href="/terms" className="text-emerald-400 hover:text-emerald-300">Full Terms of Service →</Link>
+              <span className="text-theme-muted">|</span>
+              <Link href="/terms" className="text-theme-accent hover:text-emerald-300">Full Terms of Service →</Link>
             </div>
           </div>
         </div>
@@ -92,21 +92,21 @@ export default function TaxDisclaimer({ variant = 'inline', className = '' }: Ta
 
   if (variant === 'compact') {
     return (
-      <div className={`text-xs text-gray-500 flex items-center gap-1 ${className}`}>
-        <AlertTriangle className="w-3 h-3 text-yellow-500" /> Rates are estimates. 
-        <Link href="/terms" className="text-emerald-400 hover:text-emerald-300 ml-1">See disclaimer</Link>.
+      <div className={`text-xs text-theme-muted flex items-center gap-1 ${className}`}>
+        <AlertTriangle className="w-3 h-3 text-theme-accent" /> Rates are estimates. 
+        <Link href="/terms" className="text-theme-accent hover:text-emerald-300 ml-1">See disclaimer</Link>.
       </div>
     );
   }
 
   // Default inline variant
   return (
-    <div className={`bg-white/5 border border-white/10 rounded-lg p-3 text-sm text-gray-400 ${className}`}>
+    <div className={`bg-theme-secondary/30 border border-theme-primary rounded-lg p-3 text-sm text-theme-muted ${className}`}>
       <p className="flex items-start gap-2">
-        <AlertTriangle className="w-4 h-4 text-yellow-500 flex-shrink-0 mt-0.5" />
-        <span><span className="text-yellow-500 font-medium">Disclaimer:</span> Tax calculations are estimates based on 
+        <AlertTriangle className="w-4 h-4 text-theme-accent flex-shrink-0 mt-0.5" />
+        <span><span className="text-theme-accent font-medium">Disclaimer:</span> Tax calculations are estimates based on 
         average combined state and local rates. Actual rates may vary. This is not tax advice. 
-        <Link href="/terms" className="text-emerald-400 hover:text-emerald-300 ml-1">Learn more</Link></span>
+        <Link href="/terms" className="text-theme-accent hover:text-emerald-300 ml-1">Learn more</Link></span>
       </p>
     </div>
   );
@@ -123,7 +123,7 @@ export function StateAuthorityLink({ stateCode, className = '' }: { stateCode: s
       href={authority.url} 
       target="_blank" 
       rel="noopener noreferrer"
-      className={`text-emerald-400 hover:text-emerald-300 text-sm inline-flex items-center gap-1 ${className}`}
+      className={`text-theme-accent hover:text-emerald-300 text-sm inline-flex items-center gap-1 ${className}`}
     >
       <Landmark className="w-4 h-4" />
       <span>Verify with {authority.name}</span>

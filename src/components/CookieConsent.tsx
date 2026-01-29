@@ -86,43 +86,43 @@ export default function CookieConsent() {
       <div className="max-w-4xl mx-auto">
         {showPreferences ? (
           // Detailed Preferences Panel
-          <div className="bg-slate-900 border border-white/20 rounded-2xl p-6 shadow-2xl">
-            <h3 className="text-xl font-semibold text-white mb-4">Cookie Preferences</h3>
-            <p className="text-gray-400 text-sm mb-6">
+          <div className="bg-slate-900 border border-theme-secondary rounded-2xl p-6 shadow-2xl">
+            <h3 className="text-xl font-semibold text-theme-primary mb-4">Cookie Preferences</h3>
+            <p className="text-theme-muted text-sm mb-6">
               We use cookies and similar technologies to enhance your experience. You can customize your preferences below.
             </p>
 
             <div className="space-y-4 mb-6">
               {/* Necessary Cookies */}
-              <div className="flex items-start justify-between p-4 bg-white/5 rounded-lg">
+              <div className="flex items-start justify-between p-4 bg-theme-secondary/20 rounded-lg">
                 <div className="flex-1">
                   <div className="flex items-center gap-2">
-                    <span className="font-medium text-white">Necessary Cookies</span>
-                    <span className="text-xs bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded">Always Active</span>
+                    <span className="font-medium text-theme-primary">Necessary Cookies</span>
+                    <span className="text-xs btn-theme-primary/20 text-theme-accent px-2 py-0.5 rounded">Always Active</span>
                   </div>
-                  <p className="text-gray-400 text-sm mt-1">
+                  <p className="text-theme-muted text-sm mt-1">
                     Essential for the website to function. These cannot be disabled.
                   </p>
                 </div>
                 <div className="ml-4">
-                  <div className="w-12 h-6 bg-emerald-500 rounded-full relative">
+                  <div className="w-12 h-6 btn-theme-primary rounded-full relative">
                     <div className="absolute right-1 top-1 w-4 h-4 bg-white rounded-full"></div>
                   </div>
                 </div>
               </div>
 
               {/* Analytics Cookies */}
-              <div className="flex items-start justify-between p-4 bg-white/5 rounded-lg">
+              <div className="flex items-start justify-between p-4 bg-theme-secondary/20 rounded-lg">
                 <div className="flex-1">
-                  <span className="font-medium text-white">Analytics Cookies</span>
-                  <p className="text-gray-400 text-sm mt-1">
+                  <span className="font-medium text-theme-primary">Analytics Cookies</span>
+                  <p className="text-theme-muted text-sm mt-1">
                     Help us understand how visitors interact with our website (anonymized).
                   </p>
                 </div>
                 <button
                   onClick={() => setPreferences({ ...preferences, analytics: !preferences.analytics })}
                   className={`ml-4 w-12 h-6 rounded-full relative transition ${
-                    preferences.analytics ? 'bg-emerald-500' : 'bg-gray-600'
+                    preferences.analytics ? 'btn-theme-primary' : 'bg-gray-600'
                   }`}
                 >
                   <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition ${
@@ -132,17 +132,17 @@ export default function CookieConsent() {
               </div>
 
               {/* Marketing Cookies */}
-              <div className="flex items-start justify-between p-4 bg-white/5 rounded-lg">
+              <div className="flex items-start justify-between p-4 bg-theme-secondary/20 rounded-lg">
                 <div className="flex-1">
-                  <span className="font-medium text-white">Marketing Cookies</span>
-                  <p className="text-gray-400 text-sm mt-1">
+                  <span className="font-medium text-theme-primary">Marketing Cookies</span>
+                  <p className="text-theme-muted text-sm mt-1">
                     Used to deliver relevant advertisements and track campaign effectiveness.
                   </p>
                 </div>
                 <button
                   onClick={() => setPreferences({ ...preferences, marketing: !preferences.marketing })}
                   className={`ml-4 w-12 h-6 rounded-full relative transition ${
-                    preferences.marketing ? 'bg-emerald-500' : 'bg-gray-600'
+                    preferences.marketing ? 'btn-theme-primary' : 'bg-gray-600'
                   }`}
                 >
                   <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition ${
@@ -152,17 +152,17 @@ export default function CookieConsent() {
               </div>
 
               {/* Preference Cookies */}
-              <div className="flex items-start justify-between p-4 bg-white/5 rounded-lg">
+              <div className="flex items-start justify-between p-4 bg-theme-secondary/20 rounded-lg">
                 <div className="flex-1">
-                  <span className="font-medium text-white">Preference Cookies</span>
-                  <p className="text-gray-400 text-sm mt-1">
+                  <span className="font-medium text-theme-primary">Preference Cookies</span>
+                  <p className="text-theme-muted text-sm mt-1">
                     Remember your settings and preferences for a better experience.
                   </p>
                 </div>
                 <button
                   onClick={() => setPreferences({ ...preferences, preferences: !preferences.preferences })}
                   className={`ml-4 w-12 h-6 rounded-full relative transition ${
-                    preferences.preferences ? 'bg-emerald-500' : 'bg-gray-600'
+                    preferences.preferences ? 'btn-theme-primary' : 'bg-gray-600'
                   }`}
                 >
                   <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition ${
@@ -175,20 +175,20 @@ export default function CookieConsent() {
             <div className="flex flex-col sm:flex-row gap-3">
               <button
                 onClick={() => setShowPreferences(false)}
-                className="px-4 py-2 text-gray-400 hover:text-white transition"
+                className="px-4 py-2 text-theme-muted hover:text-theme-primary transition"
               >
                 ← Back
               </button>
               <div className="flex-1"></div>
               <button
                 onClick={acceptNecessary}
-                className="px-6 py-2 border border-white/20 text-white rounded-lg hover:bg-white/10 transition"
+                className="px-6 py-2 border border-theme-secondary text-theme-primary rounded-lg hover:bg-theme-secondary/30 transition"
               >
                 Necessary Only
               </button>
               <button
                 onClick={saveCustom}
-                className="px-6 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg font-medium transition"
+                className="px-6 py-2 btn-theme-primary  text-theme-primary rounded-lg font-medium transition"
               >
                 Save Preferences
               </button>
@@ -196,14 +196,14 @@ export default function CookieConsent() {
           </div>
         ) : (
           // Simple Banner
-          <div className="bg-slate-900 border border-white/20 rounded-2xl p-6 shadow-2xl">
+          <div className="bg-slate-900 border border-theme-secondary rounded-2xl p-6 shadow-2xl">
             <div className="flex flex-col md:flex-row items-start md:items-center gap-4">
               <div className="flex-1">
-                <h3 className="text-lg font-semibold text-white mb-1">🍪 We use cookies</h3>
-                <p className="text-gray-400 text-sm">
+                <h3 className="text-lg font-semibold text-theme-primary mb-1">🍪 We use cookies</h3>
+                <p className="text-theme-muted text-sm">
                   We use cookies to enhance your browsing experience, analyze traffic, and personalize content. 
                   By clicking &quot;Accept All&quot;, you consent to our use of cookies. 
-                  <Link href="/cookies" className="text-emerald-400 hover:text-emerald-300 ml-1">
+                  <Link href="/cookies" className="text-theme-accent hover:text-emerald-300 ml-1">
                     Learn more
                   </Link>
                 </p>
@@ -211,19 +211,19 @@ export default function CookieConsent() {
               <div className="flex flex-col sm:flex-row gap-2 w-full md:w-auto">
                 <button
                   onClick={() => setShowPreferences(true)}
-                  className="px-4 py-2 text-gray-300 hover:text-white transition text-sm"
+                  className="px-4 py-2 text-theme-secondary hover:text-theme-primary transition text-sm"
                 >
                   Customize
                 </button>
                 <button
                   onClick={acceptNecessary}
-                  className="px-6 py-2 border border-white/20 text-white rounded-lg hover:bg-white/10 transition"
+                  className="px-6 py-2 border border-theme-secondary text-theme-primary rounded-lg hover:bg-theme-secondary/30 transition"
                 >
                   Necessary Only
                 </button>
                 <button
                   onClick={acceptAll}
-                  className="px-6 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg font-medium transition"
+                  className="px-6 py-2 btn-theme-primary  text-theme-primary rounded-lg font-medium transition"
                 >
                   Accept All
                 </button>
