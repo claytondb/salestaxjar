@@ -13,6 +13,11 @@ import {
   fetchAllOrders as fetchWooOrders, 
   mapOrderToImport as mapWooOrder,
 } from '@/lib/platforms/woocommerce';
+import { 
+  getCredentials as getSquarespaceCredentials,
+  fetchAllOrders as fetchSquarespaceOrders, 
+  mapOrderToImport as mapSquarespaceOrder,
+} from '@/lib/platforms/squarespace';
 
 /**
  * POST /api/platforms/sync
@@ -60,7 +65,10 @@ export async function POST(request: NextRequest) {
         case 'woocommerce':
           orders = await syncWooCommerceOrders(user.id, connection, dateRange);
           break;
-        // Future: squarespace, bigcommerce, wix
+        case 'squarespace':
+          orders = await syncSquarespaceOrders(user.id, connection, dateRange);
+          break;
+        // Future: bigcommerce, wix
         default:
           throw new Error(`Unsupported platform: ${platform}`);
       }
@@ -208,6 +216,39 @@ async function syncWooCommerceOrders(
 
   // Map to our format
   return orders.map(order => mapWooOrder(order, connection.platformId));
+}
+
+async function syncSquarespaceOrders(
+  userId: string,
+  connection: PlatformConnection,
+  dateRange?: DateRange
+): Promise<ImportedOrderData[]> {
+  // Get API key from database
+  const apiKey = await getSquarespaceCredentials(userId, connection.platformId);
+  if (!apiKey) {
+    throw new Error('Squarespace credentials not found');
+  }
+
+  // Build fetch options
+  const now = new Date();
+  const defaultStart = new Date();
+  defaultStart.setDate(defaultStart.getDate() - 30);
+
+  const options = {
+    modifiedAfter: dateRange?.start || defaultStart.toISOString(),
+    modifiedBefore: dateRange?.end || now.toISOString(),
+  };
+
+  // Fetch orders
+  const orders = await fetchSquarespaceOrders(apiKey, options);
+
+  // Filter out test orders and cancelled
+  const validOrders = orders.filter(
+    order => !order.testmode && order.fulfillmentStatus !== 'CANCELED'
+  );
+
+  // Map to our format
+  return validOrders.map(order => mapSquarespaceOrder(order));
 }
 
 // =============================================================================
