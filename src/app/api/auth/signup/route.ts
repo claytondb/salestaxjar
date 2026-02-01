@@ -10,7 +10,7 @@ import {
   setSessionCookie,
   generateVerificationToken,
 } from '@/lib/auth';
-import { sendWelcomeEmail } from '@/lib/email';
+import { sendWelcomeEmail, sendNewSignupNotification } from '@/lib/email';
 import { checkAuthRateLimit, rateLimitHeaders } from '@/lib/ratelimit';
 
 export async function POST(request: NextRequest) {
@@ -93,6 +93,12 @@ export async function POST(request: NextRequest) {
       name,
       verifyToken,
       userId: user.id,
+    });
+
+    // Notify admin of new signup
+    await sendNewSignupNotification({
+      userName: name,
+      userEmail: email,
     });
 
     // Create default notification preferences

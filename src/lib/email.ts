@@ -8,6 +8,7 @@ const resend = RESEND_API_KEY ? new Resend(RESEND_API_KEY) : null;
 // Email configuration
 const FROM_EMAIL = process.env.FROM_EMAIL || 'Sails <noreply@sails.tax>';
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://sails.tax';
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'david@sails.tax';
 
 // Check if email is configured
 export function isEmailConfigured(): boolean {
@@ -649,4 +650,95 @@ export async function sendMonthlySummaryEmail(params: {
     templateName: 'summary',
     userId: params.userId,
   });
+}
+
+// =============================================================================
+// Admin Notifications
+// =============================================================================
+
+function newSignupNotificationTemplate(params: {
+  userName: string;
+  userEmail: string;
+  signupTime: string;
+}): EmailTemplate {
+  return {
+    subject: `🎉 New Sails Signup: ${params.userName}`,
+    html: `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #f4f4f5;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f4f4f5; padding: 40px 20px;">
+    <tr>
+      <td align="center">
+        <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 500px; background-color: #ffffff; border-radius: 8px; overflow: hidden;">
+          <tr>
+            <td style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); padding: 30px; text-align: center;">
+              <h1 style="margin: 0; color: #ffffff; font-size: 24px;">🎉 New Signup!</h1>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding: 30px;">
+              <p style="margin: 0 0 15px; color: #0f172a; font-size: 16px;"><strong>Name:</strong> ${params.userName}</p>
+              <p style="margin: 0 0 15px; color: #0f172a; font-size: 16px;"><strong>Email:</strong> ${params.userEmail}</p>
+              <p style="margin: 0; color: #64748b; font-size: 14px;"><strong>Time:</strong> ${params.signupTime}</p>
+            </td>
+          </tr>
+          <tr>
+            <td style="background-color: #f8fafc; padding: 20px; text-align: center;">
+              <a href="${APP_URL}/admin" style="color: #10b981; text-decoration: none; font-size: 14px;">View Dashboard →</a>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`,
+    text: `New Sails Signup!
+
+Name: ${params.userName}
+Email: ${params.userEmail}
+Time: ${params.signupTime}`,
+  };
+}
+
+export async function sendNewSignupNotification(params: {
+  userName: string;
+  userEmail: string;
+}): Promise<{ success: boolean; error?: string }> {
+  if (!resend) {
+    console.log('Email not configured, skipping admin notification');
+    return { success: true };
+  }
+
+  const signupTime = new Date().toLocaleString('en-US', {
+    timeZone: 'America/Chicago',
+    dateStyle: 'medium',
+    timeStyle: 'short',
+  });
+
+  const template = newSignupNotificationTemplate({
+    userName: params.userName,
+    userEmail: params.userEmail,
+    signupTime,
+  });
+
+  try {
+    await resend.emails.send({
+      from: FROM_EMAIL,
+      to: ADMIN_EMAIL,
+      subject: template.subject,
+      html: template.html,
+      text: template.text,
+    });
+    console.log('Admin notification sent for new signup:', params.userEmail);
+    return { success: true };
+  } catch (error) {
+    console.error('Failed to send admin notification:', error);
+    return { success: false, error: error instanceof Error ? error.message : 'Unknown error' };
+  }
 }
