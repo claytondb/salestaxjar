@@ -31,7 +31,7 @@ const plans = [
     features: [
       { text: 'Everything in Free, plus:', included: true, bold: true },
       { text: 'Up to 200 orders/month', included: true },
-      { text: 'Shopify & WooCommerce', included: true },
+      { text: 'WooCommerce integration', included: true },
       { text: 'Track 3 states', included: true },
       { text: 'Email deadline reminders', included: true },
       { text: 'CSV order import', included: true },
@@ -46,7 +46,7 @@ const plans = [
     features: [
       { text: 'Everything in Starter, plus:', included: true, bold: true },
       { text: 'Up to 2,000 orders/month', included: true },
-      { text: 'All integrations (Shopify, WooCommerce, Squarespace...)', included: true },
+      { text: 'WooCommerce + API access', included: true },
       { text: 'Unlimited state tracking', included: true },
       { text: 'SMS + email reminders', included: true },
       { text: 'Faster email support', included: true },
@@ -106,8 +106,8 @@ const faqs = [
 const comparisons = [
   { feature: 'Starting price', sails: '$9/mo', taxjar: '$19/mo', taxcloud: '$19/mo' },
   { feature: 'Free tier', sails: '✓ Yes', taxjar: '✗ No', taxcloud: '✗ No' },
-  { feature: 'Shopify + WooCommerce', sails: '✓', taxjar: '✓', taxcloud: '✓' },
-  { feature: 'Squarespace', sails: '✓', taxjar: '✗ No', taxcloud: '✗ No' },
+  { feature: 'WooCommerce', sails: '✓', taxjar: '✓', taxcloud: '✓' },
+  { feature: 'Tax calculation API', sails: '✓', taxjar: '✓', taxcloud: '✓' },
   { feature: 'Made for small sellers', sails: '✓', taxjar: 'Enterprise focus', taxcloud: 'Mixed' },
 ];
 

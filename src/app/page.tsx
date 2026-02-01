@@ -184,7 +184,7 @@ export default function Home() {
           
           <div className="grid md:grid-cols-3 gap-8">
             {[
-              { num: "1", title: "Connect Your Store", desc: "Link your Shopify, WooCommerce, Squarespace, or other store. We automatically import your sales data." },
+              { num: "1", title: "Connect Your Store", desc: "Link your WooCommerce store or use our API. We automatically import your sales data." },
               { num: "2", title: "See What You Owe", desc: "We show you which states you owe tax in, how much, and when it's due. No more guessing." },
               { num: "3", title: "File With Confidence", desc: "Get deadline reminders and filing-ready reports. Review and submit on your own schedule." }
             ].map((step, i) => (
@@ -335,7 +335,7 @@ export default function Home() {
               { icon: <Calculator className={ICON_CLASS} />, title: "Tax Calculator", desc: "Know exactly how much tax to collect, instantly", comingSoon: false },
               { icon: <MapPin className={ICON_CLASS} />, title: "Nexus Tracking", desc: "See which states you owe tax in (and which you don't)", comingSoon: false },
               { icon: <Bell className={ICON_CLASS} />, title: "Deadline Alerts", desc: "Get reminded before every filing deadline", comingSoon: false },
-              { icon: <Link2 className={ICON_CLASS} />, title: "Store Integrations", desc: "Connect Shopify, WooCommerce, Squarespace, BigCommerce, and Wix.", comingSoon: false },
+              { icon: <Link2 className={ICON_CLASS} />, title: "Store Integrations", desc: "WooCommerce plugin available now. More platforms coming soon.", comingSoon: false },
               { icon: <LayoutDashboard className={ICON_CLASS} />, title: "Simple Dashboard", desc: "Built for makers, not accountants", comingSoon: false },
               { icon: <ClipboardList className={ICON_CLASS} />, title: "Filing Assistance", desc: "Know exactly what to file and when", comingSoon: true }
             ].map((feature, i) => (

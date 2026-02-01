@@ -56,7 +56,7 @@ const plans = [
     name: 'Starter', 
     price: 9, 
     tier: 1,
-    features: ['Up to 200 orders/mo', 'Shopify & WooCommerce', 'Track 3 states', 'CSV import']
+    features: ['Up to 200 orders/mo', 'WooCommerce integration', 'Track 3 states', 'CSV import']
   },
   { 
     id: 'pro', 
