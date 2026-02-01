@@ -61,22 +61,40 @@ export async function POST(request: NextRequest) {
     
     // Parse request body
     const body = await request.json();
+    
+    // Support both snake_case (TaxJar style) and camelCase (WooCommerce plugin)
     const {
-      // Required
-      to_state,
+      // Required - support both naming conventions
+      to_state: snakeToState,
+      toState: camelToState,
       amount,
       // Optional
-      to_zip,
-      to_city,
-      to_country,
+      to_zip: snakeToZip,
+      toZip: camelToZip,
+      to_city: snakeToCity,
+      toCity: camelToCity,
+      to_country: snakeToCountry,
+      toCountry: camelToCountry,
       shipping,
       line_items,
       product_tax_code,
       // From address (optional, for origin-based states)
-      from_state,
-      from_zip,
-      from_city,
+      from_state: snakeFromState,
+      fromState: camelFromState,
+      from_zip: snakeFromZip,
+      fromZip: camelFromZip,
+      from_city: snakeFromCity,
+      fromCity: camelFromCity,
     } = body;
+    
+    // Normalize to preferred format (snake_case takes precedence)
+    const to_state = snakeToState || camelToState;
+    const to_zip = snakeToZip || camelToZip;
+    const to_city = snakeToCity || camelToCity;
+    const to_country = snakeToCountry || camelToCountry;
+    const from_state = snakeFromState || camelFromState;
+    const from_zip = snakeFromZip || camelFromZip;
+    const from_city = snakeFromCity || camelFromCity;
     
     // Validate required fields
     if (!to_state || typeof to_state !== 'string') {
@@ -127,43 +145,48 @@ export async function POST(request: NextRequest) {
     const cityAmount = taxableAmount * (result.breakdown?.cityRate || 0);
     const specialAmount = taxableAmount * (result.breakdown?.specialRate || 0);
     
-    // Return response in TaxJar-compatible format
-    return NextResponse.json({
-      tax: {
-        order_total_amount: amount + (shipping || 0),
-        shipping: shipping || 0,
-        taxable_amount: taxableAmount,
-        amount_to_collect: result.taxAmount,
-        rate: result.rate,
-        has_nexus: true,
-        freight_taxable: false,
-        tax_source: result.source,
-        jurisdictions: {
-          state: to_state.toUpperCase(),
-          city: to_city,
-        },
-        breakdown: {
-          state_taxable_amount: taxableAmount,
-          state_tax_rate: result.breakdown?.stateRate || result.rate,
-          state_tax_collectable: stateAmount,
-          county_taxable_amount: countyAmount > 0 ? taxableAmount : 0,
-          county_tax_rate: result.breakdown?.countyRate || 0,
-          county_tax_collectable: countyAmount,
-          city_taxable_amount: cityAmount > 0 ? taxableAmount : 0,
-          city_tax_rate: result.breakdown?.cityRate || 0,
-          city_tax_collectable: cityAmount,
-          special_district_taxable_amount: specialAmount > 0 ? taxableAmount : 0,
-          special_tax_rate: result.breakdown?.specialRate || 0,
-          special_district_tax_collectable: specialAmount,
-          combined_tax_rate: result.rate,
-          line_items: line_items?.map((item: any, index: number) => ({
-            id: item.id || String(index),
-            taxable_amount: item.unit_price * item.quantity,
-            tax_collectable: (item.unit_price * item.quantity) * result.rate,
-            combined_tax_rate: result.rate,
-          })),
-        },
+    // Build response data in TaxJar-compatible format
+    const taxData = {
+      order_total_amount: amount + (shipping || 0),
+      shipping: shipping || 0,
+      taxable_amount: taxableAmount,
+      amount_to_collect: result.taxAmount,
+      rate: result.rate,
+      has_nexus: true,
+      freight_taxable: false,
+      tax_source: result.source,
+      jurisdictions: {
+        state: to_state.toUpperCase(),
+        city: to_city,
       },
+      breakdown: {
+        state_taxable_amount: taxableAmount,
+        state_tax_rate: result.breakdown?.stateRate || result.rate,
+        state_tax_collectable: stateAmount,
+        county_taxable_amount: countyAmount > 0 ? taxableAmount : 0,
+        county_tax_rate: result.breakdown?.countyRate || 0,
+        county_tax_collectable: countyAmount,
+        city_taxable_amount: cityAmount > 0 ? taxableAmount : 0,
+        city_tax_rate: result.breakdown?.cityRate || 0,
+        city_tax_collectable: cityAmount,
+        special_district_taxable_amount: specialAmount > 0 ? taxableAmount : 0,
+        special_tax_rate: result.breakdown?.specialRate || 0,
+        special_district_tax_collectable: specialAmount,
+        combined_tax_rate: result.rate,
+        line_items: line_items?.map((item: any, index: number) => ({
+          id: item.id || String(index),
+          taxable_amount: item.unit_price * item.quantity,
+          tax_collectable: (item.unit_price * item.quantity) * result.rate,
+          combined_tax_rate: result.rate,
+        })),
+      },
+    };
+    
+    // Return response in both WooCommerce plugin format and TaxJar format
+    return NextResponse.json({
+      success: true,
+      data: taxData,  // For WooCommerce plugin
+      tax: taxData,   // For TaxJar-style integrations
     }, { headers: corsHeaders });
     
   } catch (error) {
