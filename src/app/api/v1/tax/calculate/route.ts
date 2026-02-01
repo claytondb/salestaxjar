@@ -182,10 +182,30 @@ export async function POST(request: NextRequest) {
       },
     };
     
+    // Determine confidence level based on data source
+    let confidence = 'state_only';
+    let message = 'Tax rate is an estimate based on state averages.';
+    
+    if (to_zip && result.source === 'taxjar') {
+      confidence = 'exact_zip';
+      message = '';
+    } else if (to_zip) {
+      confidence = 'zip_estimate';
+      message = 'Tax rate estimated for your ZIP code area.';
+    }
+    
+    // Build simplified response for WooCommerce plugin
+    const simpleData = {
+      taxAmount: result.taxAmount,
+      rate: result.rate,
+      confidence,
+      message,
+    };
+    
     // Return response in both WooCommerce plugin format and TaxJar format
     return NextResponse.json({
       success: true,
-      data: taxData,  // For WooCommerce plugin
+      data: { ...simpleData, ...taxData },  // For WooCommerce plugin (simple fields + full breakdown)
       tax: taxData,   // For TaxJar-style integrations
     }, { headers: corsHeaders });
     
