@@ -40,7 +40,7 @@ const faqs: FAQItem[] = [
   },
   {
     question: "What integrations do you support?",
-    answer: "We currently support WooCommerce with a dedicated plugin, plus a REST API you can use with any platform. More integrations are coming soon! These platforms require you to handle your own sales tax — unlike marketplaces (Etsy, Amazon, eBay) which collect and remit tax for you."
+    answer: "We support Shopify and WooCommerce, plus a REST API you can use with any platform. More integrations are coming soon! These platforms require you to handle your own sales tax — unlike marketplaces (Etsy, Amazon, eBay) which collect and remit tax for you."
   },
   {
     question: "Do you file tax returns for me?",

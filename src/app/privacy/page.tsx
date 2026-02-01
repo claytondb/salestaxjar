@@ -172,7 +172,7 @@ export default function PrivacyPage() {
               <h2 className="text-xl font-semibold text-theme-primary mb-4">10. Third-Party Services</h2>
               <p>We may integrate with the following types of third-party services:</p>
               <ul className="list-disc pl-6 space-y-2 mt-2">
-                <li><strong>E-commerce Platforms:</strong> WooCommerce (and others via API)</li>
+                <li><strong>E-commerce Platforms:</strong> Shopify, WooCommerce (and others via API)</li>
                 <li><strong>Payment Processors:</strong> Stripe, PayPal</li>
                 <li><strong>Analytics:</strong> Google Analytics (anonymized)</li>
                 <li><strong>Customer Support:</strong> Help desk software</li>
