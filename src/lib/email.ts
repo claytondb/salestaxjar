@@ -45,7 +45,7 @@ function welcomeEmailTemplate(params: { name: string; verifyUrl: string }): Emai
           <tr>
             <td style="background: linear-gradient(135deg, #0f172a 0%, #581c87 100%); padding: 40px; text-align: center;">
               <h1 style="margin: 0; color: #10b981; font-size: 28px; font-weight: bold;">Sails</h1>
-              <p style="margin: 10px 0 0; color: #94a3b8; font-size: 14px;">Sales Tax Automation Made Simple</p>
+              <p style="margin: 10px 0 0; color: #94a3b8; font-size: 14px;">Sales Tax Made Breezy</p>
             </td>
           </tr>
           

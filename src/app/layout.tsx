@@ -13,11 +13,11 @@ const caveat = Caveat({
 });
 
 export const metadata: Metadata = {
-  title: "Sails - Sales Tax Compliance Made Simple",
+  title: "Sails - Sales Tax Made Breezy",
   description: "Automatically calculate, collect, and file sales tax for all 45+ US states. Stay compliant without the headache. Starting at $29/month.",
   keywords: "sales tax, tax compliance, e-commerce tax, shopify tax, amazon tax, etsy tax, sales tax calculator",
   openGraph: {
-    title: "Sails - Sales Tax Compliance Made Simple",
+    title: "Sails - Sales Tax Made Breezy",
     description: "Automatically calculate, collect, and file sales tax for all 45+ US states.",
     type: "website",
   },

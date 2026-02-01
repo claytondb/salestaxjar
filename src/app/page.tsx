@@ -136,7 +136,7 @@ export default function Home() {
           
           {/* The Solution */}
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-theme-primary mb-4 leading-tight">
-            Sales Tax Made Simple
+            Sales Tax Made Breezy
           </h1>
           <p className="text-xl sm:text-2xl text-theme-secondary mb-6">
             So you can get back to{' '}
