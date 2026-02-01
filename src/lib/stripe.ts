@@ -16,11 +16,11 @@ export function isStripeConfigured(): boolean {
   return !!stripe;
 }
 
-// Plan configuration
-// NOTE: Create these products/prices in Stripe Dashboard and update env vars:
-// - STRIPE_STARTER_PRICE_ID ($9/mo)
-// - STRIPE_PRO_PRICE_ID ($29/mo)
-// - STRIPE_BUSINESS_PRICE_ID ($59/mo)
+// Sails Plan configuration (updated 2026-01-31)
+// Env vars needed:
+// - STRIPE_STARTER_PRICE_ID (Sails Starter $9/mo)
+// - STRIPE_PRO_PRICE_ID (Sails Pro $29/mo)
+// - STRIPE_BUSINESS_PRICE_ID (Sails Business $59/mo)
 export const PLANS = {
   starter: {
     name: 'Starter',
@@ -53,9 +53,9 @@ export const PLANS = {
     price: 59,
     features: [
       'Unlimited orders',
-      'Dedicated support',
+      'Priority support',
       'API access',
-      'Audit resources',
+      'Advanced reporting',
       'Auto-filing (coming soon)',
     ],
   },
