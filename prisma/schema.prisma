@@ -168,7 +168,7 @@ model Subscription {
   stripeSubscriptionId String?   @unique
   stripePriceId        String?
   status               String    @default("inactive") // active, canceled, past_due, trialing, inactive
-  plan                 String    @default("starter") // starter, growth, enterprise
+  plan                 String    @default("starter") // starter, pro, business
   currentPeriodStart   DateTime?
   currentPeriodEnd     DateTime?
   cancelAtPeriodEnd    Boolean   @default(false)
