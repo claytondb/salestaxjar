@@ -131,12 +131,12 @@ export default function ContactPage() {
                     onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
                     className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-theme-primary focus:outline-none focus:ring-2 focus:ring-emerald-500"
                   >
-                    <option value="general" className="bg-slate-800">General Inquiry</option>
-                    <option value="support" className="bg-slate-800">Technical Support</option>
-                    <option value="billing" className="bg-slate-800">Billing Question</option>
-                    <option value="sales" className="bg-slate-800">Sales / Enterprise</option>
-                    <option value="feedback" className="bg-slate-800">Feedback / Feature Request</option>
-                    <option value="privacy" className="bg-slate-800">Privacy / Data Request</option>
+                    <option value="general" className="bg-theme-card">General Inquiry</option>
+                    <option value="support" className="bg-theme-card">Technical Support</option>
+                    <option value="billing" className="bg-theme-card">Billing Question</option>
+                    <option value="sales" className="bg-theme-card">Sales / Enterprise</option>
+                    <option value="feedback" className="bg-theme-card">Feedback / Feature Request</option>
+                    <option value="privacy" className="bg-theme-card">Privacy / Data Request</option>
                   </select>
                 </div>
 
@@ -169,7 +169,7 @@ export default function ContactPage() {
                   <span className="text-xl">📧</span>
                   <div>
                     <p className="font-medium">General Support</p>
-                    <a href="mailto:support@sails.tax" className="text-theme-accent hover:text-emerald-300">
+                    <a href="mailto:support@sails.tax" className="text-theme-accent hover:opacity-80">
                       support@sails.tax
                     </a>
                   </div>
@@ -178,7 +178,7 @@ export default function ContactPage() {
                   <span className="text-xl">💼</span>
                   <div>
                     <p className="font-medium">Enterprise Sales</p>
-                    <a href="mailto:sales@sails.tax" className="text-theme-accent hover:text-emerald-300">
+                    <a href="mailto:sales@sails.tax" className="text-theme-accent hover:opacity-80">
                       sales@sails.tax
                     </a>
                   </div>
@@ -187,7 +187,7 @@ export default function ContactPage() {
                   <span className="text-xl">🔒</span>
                   <div>
                     <p className="font-medium">Privacy Requests</p>
-                    <a href="mailto:privacy@sails.tax" className="text-theme-accent hover:text-emerald-300">
+                    <a href="mailto:privacy@sails.tax" className="text-theme-accent hover:opacity-80">
                       privacy@sails.tax
                     </a>
                   </div>

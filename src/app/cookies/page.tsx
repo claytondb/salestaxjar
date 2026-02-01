@@ -167,10 +167,10 @@ export default function CookiePolicyPage() {
               <div className="mt-4 p-4 bg-white/5 rounded-lg">
                 <p className="font-medium text-theme-primary mb-2">Browser cookie settings:</p>
                 <ul className="text-sm space-y-1">
-                  <li>• <a href="https://support.google.com/chrome/answer/95647" target="_blank" rel="noopener noreferrer" className="text-theme-accent hover:text-emerald-300">Chrome</a></li>
-                  <li>• <a href="https://support.mozilla.org/en-US/kb/cookies-information-websites-store-on-your-computer" target="_blank" rel="noopener noreferrer" className="text-theme-accent hover:text-emerald-300">Firefox</a></li>
-                  <li>• <a href="https://support.apple.com/guide/safari/manage-cookies-sfri11471/mac" target="_blank" rel="noopener noreferrer" className="text-theme-accent hover:text-emerald-300">Safari</a></li>
-                  <li>• <a href="https://support.microsoft.com/en-us/microsoft-edge/delete-cookies-in-microsoft-edge-63947406-40ac-c3b8-57b9-2a946a29ae09" target="_blank" rel="noopener noreferrer" className="text-theme-accent hover:text-emerald-300">Edge</a></li>
+                  <li>• <a href="https://support.google.com/chrome/answer/95647" target="_blank" rel="noopener noreferrer" className="text-theme-accent hover:opacity-80">Chrome</a></li>
+                  <li>• <a href="https://support.mozilla.org/en-US/kb/cookies-information-websites-store-on-your-computer" target="_blank" rel="noopener noreferrer" className="text-theme-accent hover:opacity-80">Firefox</a></li>
+                  <li>• <a href="https://support.apple.com/guide/safari/manage-cookies-sfri11471/mac" target="_blank" rel="noopener noreferrer" className="text-theme-accent hover:opacity-80">Safari</a></li>
+                  <li>• <a href="https://support.microsoft.com/en-us/microsoft-edge/delete-cookies-in-microsoft-edge-63947406-40ac-c3b8-57b9-2a946a29ae09" target="_blank" rel="noopener noreferrer" className="text-theme-accent hover:opacity-80">Edge</a></li>
                 </ul>
               </div>
             </section>
@@ -216,7 +216,7 @@ export default function CookiePolicyPage() {
                 If you have questions about our use of cookies, please contact us:
               </p>
               <div className="mt-4 p-4 bg-white/5 rounded-lg">
-                <p>Email: <a href="mailto:privacy@sails.tax" className="text-theme-accent hover:text-emerald-300">privacy@sails.tax</a></p>
+                <p>Email: <a href="mailto:privacy@sails.tax" className="text-theme-accent hover:opacity-80">privacy@sails.tax</a></p>
               </div>
             </section>
           </div>
@@ -224,13 +224,13 @@ export default function CookiePolicyPage() {
           <div className="mt-8 pt-8 border-t border-theme-primary flex gap-4">
             <Link 
               href="/privacy" 
-              className="text-theme-accent hover:text-emerald-300 transition"
+              className="text-theme-accent hover:opacity-80 transition"
             >
               ← Privacy Policy
             </Link>
             <Link 
               href="/terms" 
-              className="text-theme-accent hover:text-emerald-300 transition"
+              className="text-theme-accent hover:opacity-80 transition"
             >
               Terms of Service →
             </Link>

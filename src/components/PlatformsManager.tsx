@@ -441,7 +441,7 @@ export default function PlatformsManager() {
                       href={platform.setupUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-theme-accent hover:text-emerald-300 text-sm flex items-center gap-1"
+                      className="text-theme-accent hover:opacity-80 text-sm flex items-center gap-1"
                     >
                       Setup Guide <ExternalLink className="w-3 h-3" />
                     </a>
@@ -538,13 +538,13 @@ export default function PlatformsManager() {
         <div className="flex gap-3">
           <a 
             href="/docs/integrations"
-            className="text-theme-accent hover:text-emerald-300 text-sm font-medium"
+            className="text-theme-accent hover:opacity-80 text-sm font-medium"
           >
             View Integration Docs →
           </a>
           <a 
             href="mailto:support@sails.tax"
-            className="text-theme-accent hover:text-emerald-300 text-sm font-medium"
+            className="text-theme-accent hover:opacity-80 text-sm font-medium"
           >
             Contact Support →
           </a>

@@ -94,7 +94,7 @@ export default function TaxDisclaimer({ variant = 'inline', className = '' }: Ta
     return (
       <div className={`text-xs text-theme-muted flex items-center gap-1 ${className}`}>
         <AlertTriangle className="w-3 h-3 text-theme-accent" /> Rates are estimates. 
-        <Link href="/terms" className="text-theme-accent hover:text-emerald-300 ml-1">See disclaimer</Link>.
+        <Link href="/terms" className="text-theme-accent hover:opacity-80 ml-1">See disclaimer</Link>.
       </div>
     );
   }
@@ -106,7 +106,7 @@ export default function TaxDisclaimer({ variant = 'inline', className = '' }: Ta
         <AlertTriangle className="w-4 h-4 text-theme-accent flex-shrink-0 mt-0.5" />
         <span><span className="text-theme-accent font-medium">Disclaimer:</span> Tax calculations are estimates based on 
         average combined state and local rates. Actual rates may vary. This is not tax advice. 
-        <Link href="/terms" className="text-theme-accent hover:text-emerald-300 ml-1">Learn more</Link></span>
+        <Link href="/terms" className="text-theme-accent hover:opacity-80 ml-1">Learn more</Link></span>
       </p>
     </div>
   );
@@ -123,7 +123,7 @@ export function StateAuthorityLink({ stateCode, className = '' }: { stateCode: s
       href={authority.url} 
       target="_blank" 
       rel="noopener noreferrer"
-      className={`text-theme-accent hover:text-emerald-300 text-sm inline-flex items-center gap-1 ${className}`}
+      className={`text-theme-accent hover:opacity-80 text-sm inline-flex items-center gap-1 ${className}`}
     >
       <Landmark className="w-4 h-4" />
       <span>Verify with {authority.name}</span>

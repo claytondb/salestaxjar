@@ -149,7 +149,7 @@ export function AmazonManualImport() {
         
         {file ? (
           <div>
-            <p className="text-lg font-medium text-gray-900 dark:text-gray-100">
+            <p className="text-lg font-medium text-theme-primary">
               {file.name}
             </p>
             <p className="text-sm text-theme-muted dark:text-theme-muted">
@@ -158,7 +158,7 @@ export function AmazonManualImport() {
           </div>
         ) : (
           <div>
-            <p className="text-lg font-medium text-gray-900 dark:text-gray-100">
+            <p className="text-lg font-medium text-theme-primary">
               Drop your Amazon CSV file here
             </p>
             <p className="text-sm text-theme-muted dark:text-theme-muted">
@@ -231,12 +231,12 @@ export function AmazonManualImport() {
       )}
 
       {/* Alternative: Scheduled Reports */}
-      <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
-        <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2 flex items-center gap-2">
+      <div className="card-theme rounded-lg p-4">
+        <h3 className="font-semibold text-theme-primary mb-2 flex items-center gap-2">
           <Download className="w-5 h-5" />
           Pro Tip: Set Up Automatic Reports
         </h3>
-        <p className="text-sm text-gray-600 dark:text-theme-muted mb-3">
+        <p className="text-sm text-theme-muted mb-3">
           Amazon can automatically generate and email you tax reports on a schedule.
           Set this up once and just upload the emailed reports here.
         </p>
