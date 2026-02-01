@@ -8,7 +8,7 @@ const resend = RESEND_API_KEY ? new Resend(RESEND_API_KEY) : null;
 // Email configuration
 const FROM_EMAIL = process.env.FROM_EMAIL || 'Sails <noreply@sails.tax>';
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://sails.tax';
-const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'david@sails.tax';
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'claytondb@gmail.com';
 
 // Check if email is configured
 export function isEmailConfigured(): boolean {

@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { getCurrentUser } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 
-const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'david@sails.tax';
+const ADMIN_EMAILS = (process.env.ADMIN_EMAILS || 'david@sails.tax,claytondb@gmail.com').split(',');
 
 export async function GET() {
   try {
@@ -12,7 +12,7 @@ export async function GET() {
     }
 
     // Check if user is admin
-    if (user.email !== ADMIN_EMAIL) {
+    if (!ADMIN_EMAILS.includes(user.email)) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 

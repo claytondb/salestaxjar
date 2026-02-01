@@ -49,7 +49,7 @@ interface Stats {
   };
 }
 
-const ADMIN_EMAIL = 'david@sails.tax';
+const ADMIN_EMAILS = ['david@sails.tax', 'claytondb@gmail.com'];
 
 export default function AdminPage() {
   const { user, isLoading: authLoading } = useAuth();
@@ -67,12 +67,12 @@ export default function AdminPage() {
       return;
     }
 
-    if (!authLoading && user && user.email !== ADMIN_EMAIL) {
+    if (!authLoading && user && !ADMIN_EMAILS.includes(user.email)) {
       router.push('/dashboard');
       return;
     }
 
-    if (user && user.email === ADMIN_EMAIL) {
+    if (user && ADMIN_EMAILS.includes(user.email)) {
       fetchCustomers();
     }
   }, [user, authLoading, router]);
