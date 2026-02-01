@@ -86,7 +86,7 @@ export default function CookieConsent() {
       <div className="max-w-4xl mx-auto">
         {showPreferences ? (
           // Detailed Preferences Panel
-          <div className="bg-slate-900 border border-theme-secondary rounded-2xl p-6 shadow-2xl">
+          <div className="card-theme border border-theme-secondary rounded-2xl p-6 shadow-2xl">
             <h3 className="text-xl font-semibold text-theme-primary mb-4">Cookie Preferences</h3>
             <p className="text-theme-muted text-sm mb-6">
               We use cookies and similar technologies to enhance your experience. You can customize your preferences below.
@@ -122,7 +122,7 @@ export default function CookieConsent() {
                 <button
                   onClick={() => setPreferences({ ...preferences, analytics: !preferences.analytics })}
                   className={`ml-4 w-12 h-6 rounded-full relative transition ${
-                    preferences.analytics ? 'btn-theme-primary' : 'bg-gray-600'
+                    preferences.analytics ? 'btn-theme-primary' : 'bg-theme-secondary'
                   }`}
                 >
                   <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition ${
@@ -142,7 +142,7 @@ export default function CookieConsent() {
                 <button
                   onClick={() => setPreferences({ ...preferences, marketing: !preferences.marketing })}
                   className={`ml-4 w-12 h-6 rounded-full relative transition ${
-                    preferences.marketing ? 'btn-theme-primary' : 'bg-gray-600'
+                    preferences.marketing ? 'btn-theme-primary' : 'bg-theme-secondary'
                   }`}
                 >
                   <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition ${
@@ -162,7 +162,7 @@ export default function CookieConsent() {
                 <button
                   onClick={() => setPreferences({ ...preferences, preferences: !preferences.preferences })}
                   className={`ml-4 w-12 h-6 rounded-full relative transition ${
-                    preferences.preferences ? 'btn-theme-primary' : 'bg-gray-600'
+                    preferences.preferences ? 'btn-theme-primary' : 'bg-theme-secondary'
                   }`}
                 >
                   <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition ${
@@ -196,14 +196,14 @@ export default function CookieConsent() {
           </div>
         ) : (
           // Simple Banner
-          <div className="bg-slate-900 border border-theme-secondary rounded-2xl p-6 shadow-2xl">
+          <div className="card-theme border border-theme-secondary rounded-2xl p-6 shadow-2xl">
             <div className="flex flex-col md:flex-row items-start md:items-center gap-4">
               <div className="flex-1">
                 <h3 className="text-lg font-semibold text-theme-primary mb-1">🍪 We use cookies</h3>
                 <p className="text-theme-muted text-sm">
                   We use cookies to enhance your browsing experience, analyze traffic, and personalize content. 
                   By clicking &quot;Accept All&quot;, you consent to our use of cookies. 
-                  <Link href="/cookies" className="text-theme-accent hover:text-emerald-300 ml-1">
+                  <Link href="/cookies" className="text-theme-accent hover:opacity-80 ml-1">
                     Learn more
                   </Link>
                 </p>
