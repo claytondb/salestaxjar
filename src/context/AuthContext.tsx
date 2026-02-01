@@ -65,8 +65,8 @@ const defaultNotifications: NotificationPreferences = {
 };
 
 const defaultBilling: BillingInfo = {
-  plan: 'starter',
-  monthlyPrice: 29,
+  plan: 'free',
+  monthlyPrice: 0,
 };
 
 const AuthContext = createContext<AuthContextType | null>(null);
