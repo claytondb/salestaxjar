@@ -508,10 +508,10 @@ export default function SettingsPage() {
                     <select
                       value={profileForm.businessType}
                       onChange={(e) => setProfileForm({ ...profileForm, businessType: e.target.value as BusinessProfile['businessType'] })}
-                      className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-theme-primary focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                      className="w-full px-4 py-3 bg-theme-input border border-theme-primary rounded-lg text-theme-primary focus:outline-none focus:ring-2 focus:ring-emerald-500"
                     >
                       {businessTypes.map(type => (
-                        <option key={type.value} value={type.value} className="bg-slate-800">
+                        <option key={type.value} value={type.value} className="bg-theme-input text-theme-primary">
                           {type.label}
                         </option>
                       ))}
@@ -545,11 +545,11 @@ export default function SettingsPage() {
                       <select
                         value={profileForm.state}
                         onChange={(e) => setProfileForm({ ...profileForm, state: e.target.value })}
-                        className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-theme-primary focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                        className="w-full px-4 py-3 bg-theme-input border border-theme-primary rounded-lg text-theme-primary focus:outline-none focus:ring-2 focus:ring-emerald-500"
                       >
-                        <option value="" className="bg-slate-800">Select...</option>
+                        <option value="" className="bg-theme-input text-theme-primary">Select...</option>
                         {stateTaxRates.map(state => (
-                          <option key={state.stateCode} value={state.stateCode} className="bg-slate-800">
+                          <option key={state.stateCode} value={state.stateCode} className="bg-theme-input text-theme-primary">
                             {state.stateCode}
                           </option>
                         ))}
@@ -707,12 +707,12 @@ export default function SettingsPage() {
                     <select
                       value={notifications.reminderDaysBefore}
                       onChange={(e) => updateNotifications({ ...notifications, reminderDaysBefore: parseInt(e.target.value) })}
-                      className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-theme-primary focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                      className="w-full px-4 py-3 bg-theme-input border border-theme-primary rounded-lg text-theme-primary focus:outline-none focus:ring-2 focus:ring-emerald-500"
                     >
-                      <option value={3} className="bg-slate-800">3 days before</option>
-                      <option value={7} className="bg-slate-800">7 days before</option>
-                      <option value={14} className="bg-slate-800">14 days before</option>
-                      <option value={30} className="bg-slate-800">30 days before</option>
+                      <option value={3} className="bg-theme-input text-theme-primary">3 days before</option>
+                      <option value={7} className="bg-theme-input text-theme-primary">7 days before</option>
+                      <option value={14} className="bg-theme-input text-theme-primary">14 days before</option>
+                      <option value={30} className="bg-theme-input text-theme-primary">30 days before</option>
                     </select>
                   </div>
 
