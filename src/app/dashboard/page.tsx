@@ -89,10 +89,10 @@ export default function DashboardPage() {
             <h2 className="text-lg font-semibold mb-4 text-theme-accent">Complete your setup</h2>
             <div className="space-y-3">
               {!businessProfile && (
-                <Link href="/settings" className="flex items-center gap-3 text-theme-secondary hover:text-theme-primary transition-all duration-150 px-3 py-2 -mx-3 rounded-lg hover:bg-accent-subtle">
+                <Link href="/settings" className="group flex items-center gap-3 text-theme-secondary hover:text-theme-primary transition-all duration-150 px-3 py-2 -mx-3 rounded-lg hover:bg-emerald-500/20">
                   <div className="w-6 h-6 rounded-full border-2 border-theme-secondary flex items-center justify-center text-sm">1</div>
                   <span>Set up your business profile</span>
-                  <span className="ml-auto text-theme-accent">→</span>
+                  <span className="ml-auto text-theme-accent opacity-0 group-hover:opacity-100 transition-opacity duration-150">→</span>
                 </Link>
               )}
               {businessProfile && (
@@ -102,10 +102,10 @@ export default function DashboardPage() {
                 </div>
               )}
               {activeNexusCount === 0 && (
-                <Link href="/nexus" className="flex items-center gap-3 text-theme-secondary hover:text-theme-primary transition-all duration-150 px-3 py-2 -mx-3 rounded-lg hover:bg-accent-subtle">
+                <Link href="/nexus" className="group flex items-center gap-3 text-theme-secondary hover:text-theme-primary transition-all duration-150 px-3 py-2 -mx-3 rounded-lg hover:bg-emerald-500/20">
                   <div className="w-6 h-6 rounded-full border-2 border-theme-secondary flex items-center justify-center text-sm">2</div>
                   <span>Configure your nexus states</span>
-                  <span className="ml-auto text-theme-accent">→</span>
+                  <span className="ml-auto text-theme-accent opacity-0 group-hover:opacity-100 transition-opacity duration-150">→</span>
                 </Link>
               )}
               {activeNexusCount > 0 && (
@@ -115,10 +115,10 @@ export default function DashboardPage() {
                 </div>
               )}
               {connectedCount === 0 && (
-                <Link href="/settings#platforms" className="flex items-center gap-3 text-theme-secondary hover:text-theme-primary transition-all duration-150 px-3 py-2 -mx-3 rounded-lg hover:bg-accent-subtle">
+                <Link href="/settings#platforms" className="group flex items-center gap-3 text-theme-secondary hover:text-theme-primary transition-all duration-150 px-3 py-2 -mx-3 rounded-lg hover:bg-emerald-500/20">
                   <div className="w-6 h-6 rounded-full border-2 border-theme-secondary flex items-center justify-center text-sm">3</div>
                   <span>Connect your sales platforms</span>
-                  <span className="ml-auto text-theme-accent">→</span>
+                  <span className="ml-auto text-theme-accent opacity-0 group-hover:opacity-100 transition-opacity duration-150">→</span>
                 </Link>
               )}
               {connectedCount > 0 && (
