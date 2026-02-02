@@ -9,7 +9,6 @@ async function deleteUser() {
   try {
     const email = 'ghwst.vr@gmail.com';
     
-    // Find the user
     const userResult = await client.query(
       'SELECT id, email FROM "User" WHERE email = $1',
       [email]
@@ -23,15 +22,12 @@ async function deleteUser() {
     const userId = userResult.rows[0].id;
     console.log('Found user:', userId, email);
     
-    // Delete subscription first (foreign key)
     await client.query('DELETE FROM "Subscription" WHERE "userId" = $1', [userId]);
     console.log('Subscription deleted');
     
-    // Delete sessions
     await client.query('DELETE FROM "Session" WHERE "userId" = $1', [userId]);
     console.log('Sessions deleted');
     
-    // Delete user
     await client.query('DELETE FROM "User" WHERE id = $1', [userId]);
     console.log('User deleted!');
     
