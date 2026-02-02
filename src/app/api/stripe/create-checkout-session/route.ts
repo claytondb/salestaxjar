@@ -87,6 +87,15 @@ export async function POST(request: NextRequest) {
     const protocol = process.env.NODE_ENV === 'production' ? 'https' : 'http';
     const baseUrl = `${protocol}://${host}`;
 
+    // Debug logging
+    console.log('Creating checkout session with:', {
+      planId,
+      priceId: plan.priceId,
+      customerId,
+      host,
+      baseUrl,
+    });
+
     // Create checkout session
     const result = await createCheckoutSession({
       userId: user.id,
@@ -98,8 +107,9 @@ export async function POST(request: NextRequest) {
     });
 
     if (result.error) {
+      console.error('Checkout session error:', result.error);
       return NextResponse.json(
-        { error: result.error },
+        { error: result.error, debug: { planId, priceId: plan.priceId, customerId } },
         { status: 500 }
       );
     }
