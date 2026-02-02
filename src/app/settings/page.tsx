@@ -349,6 +349,35 @@ export default function SettingsPage() {
     try {
       const hasActiveSubscription = !!billing.cardLast4;
       
+      // Special handling for downgrade to Free plan (cancel subscription)
+      if (selectedPlan === 'free') {
+        const response = await fetch('/api/stripe/cancel-subscription', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ cancelImmediately: false }),
+        });
+        
+        const data = await response.json();
+        
+        if (!response.ok) {
+          throw new Error(data.error || 'Failed to cancel subscription');
+        }
+        
+        // Update local state - plan changes at end of billing period
+        setSaveMessage(data.message || 'Your subscription will be cancelled at the end of the billing period. You\'ll keep access until then.');
+        setSelectedPlan(null);
+        setProrationPreview(null);
+        
+        // Refresh data to get updated subscription status
+        if (refreshData) {
+          await refreshData();
+        }
+        
+        setIsCheckingOut(false);
+        setTimeout(() => setSaveMessage(''), 5000);
+        return;
+      }
+      
       if (hasActiveSubscription) {
         // Update existing subscription
         const response = await fetch('/api/stripe/update-subscription', {
@@ -1033,6 +1062,8 @@ export default function SettingsPage() {
                             <Loader2 className="w-4 h-4 animate-spin" />
                             Processing...
                           </>
+                        ) : selectedPlan === 'free' ? (
+                          'Cancel Subscription'
                         ) : billing.cardLast4 ? (
                           prorationPreview?.isUpgrade ? 'Confirm Upgrade' : 'Confirm Downgrade'
                         ) : (
