@@ -508,10 +508,11 @@ export default function SettingsPage() {
                     <select
                       value={profileForm.businessType}
                       onChange={(e) => setProfileForm({ ...profileForm, businessType: e.target.value as BusinessProfile['businessType'] })}
-                      className="w-full px-4 py-3 bg-theme-input border border-theme-primary rounded-lg text-theme-primary focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                      className="w-full px-4 py-3 border border-theme-primary rounded-lg text-theme-primary focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                      style={{ backgroundColor: 'var(--bg-input)' }}
                     >
                       {businessTypes.map(type => (
-                        <option key={type.value} value={type.value} className="bg-theme-input text-theme-primary">
+                        <option key={type.value} value={type.value} style={{ backgroundColor: 'var(--bg-input)', color: 'var(--text-primary)' }}>
                           {type.label}
                         </option>
                       ))}
@@ -545,11 +546,12 @@ export default function SettingsPage() {
                       <select
                         value={profileForm.state}
                         onChange={(e) => setProfileForm({ ...profileForm, state: e.target.value })}
-                        className="w-full px-4 py-3 bg-theme-input border border-theme-primary rounded-lg text-theme-primary focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                        className="w-full px-4 py-3 border border-theme-primary rounded-lg text-theme-primary focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                        style={{ backgroundColor: 'var(--bg-input)' }}
                       >
-                        <option value="" className="bg-theme-input text-theme-primary">Select...</option>
+                        <option value="" style={{ backgroundColor: 'var(--bg-input)', color: 'var(--text-primary)' }}>Select...</option>
                         {stateTaxRates.map(state => (
-                          <option key={state.stateCode} value={state.stateCode} className="bg-theme-input text-theme-primary">
+                          <option key={state.stateCode} value={state.stateCode} style={{ backgroundColor: 'var(--bg-input)', color: 'var(--text-primary)' }}>
                             {state.stateCode}
                           </option>
                         ))}
@@ -707,12 +709,13 @@ export default function SettingsPage() {
                     <select
                       value={notifications.reminderDaysBefore}
                       onChange={(e) => updateNotifications({ ...notifications, reminderDaysBefore: parseInt(e.target.value) })}
-                      className="w-full px-4 py-3 bg-theme-input border border-theme-primary rounded-lg text-theme-primary focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                      className="w-full px-4 py-3 border border-theme-primary rounded-lg text-theme-primary focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                      style={{ backgroundColor: 'var(--bg-input)' }}
                     >
-                      <option value={3} className="bg-theme-input text-theme-primary">3 days before</option>
-                      <option value={7} className="bg-theme-input text-theme-primary">7 days before</option>
-                      <option value={14} className="bg-theme-input text-theme-primary">14 days before</option>
-                      <option value={30} className="bg-theme-input text-theme-primary">30 days before</option>
+                      <option value={3} style={{ backgroundColor: 'var(--bg-input)', color: 'var(--text-primary)' }}>3 days before</option>
+                      <option value={7} style={{ backgroundColor: 'var(--bg-input)', color: 'var(--text-primary)' }}>7 days before</option>
+                      <option value={14} style={{ backgroundColor: 'var(--bg-input)', color: 'var(--text-primary)' }}>14 days before</option>
+                      <option value={30} style={{ backgroundColor: 'var(--bg-input)', color: 'var(--text-primary)' }}>30 days before</option>
                     </select>
                   </div>
 

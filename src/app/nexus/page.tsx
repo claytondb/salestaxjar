@@ -231,10 +231,11 @@ export default function NexusPage() {
                             <select
                               value={state.nexusType || ''}
                               onChange={(e) => updateNexusType(state.stateCode, e.target.value as NexusState['nexusType'])}
-                              className="w-full px-3 py-2 bg-theme-input border border-theme-primary rounded-lg text-theme-primary text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                              className="w-full px-3 py-2 border border-theme-primary rounded-lg text-theme-primary text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                              style={{ backgroundColor: 'var(--bg-input)' }}
                             >
                               {nexusReasons.map(r => (
-                                <option key={r.value} value={r.value} className="bg-theme-input text-theme-primary">
+                                <option key={r.value} value={r.value} style={{ backgroundColor: 'var(--bg-input)', color: 'var(--text-primary)' }}>
                                   {r.label}
                                 </option>
                               ))}
