@@ -236,6 +236,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return { success: false, error: data.error || 'Login failed' };
       }
 
+      // Clear any stale state from previous sessions before setting new user
+      setBusinessProfile(null);
+      setNexusStates([]);
+      setCalculations([]);
+      setFilingDeadlines([]);
+      setConnectedPlatforms([]);
+      setNotifications(defaultNotifications);
+      setBilling(defaultBilling);
+
       setUser({
         id: data.user.id,
         email: data.user.email,
@@ -268,6 +277,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return { success: false, error: data.error || 'Signup failed' };
       }
 
+      // Clear any stale state from previous sessions
+      setBusinessProfile(null);
+      setNexusStates([]);
+      setCalculations([]);
+      setFilingDeadlines([]);
+      setConnectedPlatforms([]);
+      setNotifications(defaultNotifications);
+      setBilling(defaultBilling);
+
       setUser({
         id: data.user.id,
         email: data.user.email,
@@ -275,6 +293,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         createdAt: data.user.createdAt,
         emailVerified: data.user.emailVerified,
       });
+
+      // Fetch fresh data for new user (will be empty but ensures clean state)
+      await fetchUserData();
 
       return { success: true };
     } catch (error) {
