@@ -87,42 +87,42 @@ export default function DashboardPage() {
         {(!businessProfile || activeNexusCount === 0 || connectedCount === 0) && (
           <div className="rounded-xl p-6 mb-8 card-theme border-2" style={{ borderColor: 'var(--accent-primary)' }}>
             <h2 className="text-lg font-semibold mb-4 text-theme-accent">Complete your setup</h2>
-            <div className="space-y-3">
+            <div className="-my-1">
               {!businessProfile && (
-                <Link href="/settings" className="group flex items-center gap-3 text-theme-secondary hover:text-theme-primary transition-all duration-150 px-3 py-2 -mx-3 rounded-lg hover:bg-emerald-500/20">
+                <Link href="/settings" className="group flex items-center gap-3 text-theme-secondary hover:text-theme-primary transition-all duration-150 hover:duration-0 px-3 py-2 -mx-3 rounded-lg hover:bg-emerald-500/20">
                   <div className="w-6 h-6 rounded-full border-2 border-theme-secondary flex items-center justify-center text-sm">1</div>
                   <span>Set up your business profile</span>
-                  <span className="ml-auto text-theme-accent opacity-0 group-hover:opacity-100 transition-opacity duration-150">→</span>
+                  <span className="ml-auto text-theme-accent opacity-0 group-hover:opacity-100 transition-opacity duration-150 group-hover:duration-0">→</span>
                 </Link>
               )}
               {businessProfile && (
-                <div className="flex items-center gap-3 text-theme-accent">
+                <div className="flex items-center gap-3 text-theme-accent px-3 py-2 -mx-3">
                   <div className="w-6 h-6 rounded-full bg-accent-subtle flex items-center justify-center text-sm">✓</div>
                   <span>Business profile complete</span>
                 </div>
               )}
               {activeNexusCount === 0 && (
-                <Link href="/nexus" className="group flex items-center gap-3 text-theme-secondary hover:text-theme-primary transition-all duration-150 px-3 py-2 -mx-3 rounded-lg hover:bg-emerald-500/20">
+                <Link href="/nexus" className="group flex items-center gap-3 text-theme-secondary hover:text-theme-primary transition-all duration-150 hover:duration-0 px-3 py-2 -mx-3 rounded-lg hover:bg-emerald-500/20">
                   <div className="w-6 h-6 rounded-full border-2 border-theme-secondary flex items-center justify-center text-sm">2</div>
                   <span>Configure your nexus states</span>
-                  <span className="ml-auto text-theme-accent opacity-0 group-hover:opacity-100 transition-opacity duration-150">→</span>
+                  <span className="ml-auto text-theme-accent opacity-0 group-hover:opacity-100 transition-opacity duration-150 group-hover:duration-0">→</span>
                 </Link>
               )}
               {activeNexusCount > 0 && (
-                <div className="flex items-center gap-3 text-theme-accent">
+                <div className="flex items-center gap-3 text-theme-accent px-3 py-2 -mx-3">
                   <div className="w-6 h-6 rounded-full bg-accent-subtle flex items-center justify-center text-sm">✓</div>
                   <span>Nexus states configured ({activeNexusCount} states)</span>
                 </div>
               )}
               {connectedCount === 0 && (
-                <Link href="/settings#platforms" className="group flex items-center gap-3 text-theme-secondary hover:text-theme-primary transition-all duration-150 px-3 py-2 -mx-3 rounded-lg hover:bg-emerald-500/20">
+                <Link href="/settings#platforms" className="group flex items-center gap-3 text-theme-secondary hover:text-theme-primary transition-all duration-150 hover:duration-0 px-3 py-2 -mx-3 rounded-lg hover:bg-emerald-500/20">
                   <div className="w-6 h-6 rounded-full border-2 border-theme-secondary flex items-center justify-center text-sm">3</div>
                   <span>Connect your sales platforms</span>
-                  <span className="ml-auto text-theme-accent opacity-0 group-hover:opacity-100 transition-opacity duration-150">→</span>
+                  <span className="ml-auto text-theme-accent opacity-0 group-hover:opacity-100 transition-opacity duration-150 group-hover:duration-0">→</span>
                 </Link>
               )}
               {connectedCount > 0 && (
-                <div className="flex items-center gap-3 text-theme-accent">
+                <div className="flex items-center gap-3 text-theme-accent px-3 py-2 -mx-3">
                   <div className="w-6 h-6 rounded-full bg-accent-subtle flex items-center justify-center text-sm">✓</div>
                   <span>Platforms connected ({connectedCount} platforms)</span>
                 </div>
