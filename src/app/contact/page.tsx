@@ -187,8 +187,8 @@ export default function ContactPage() {
                   <span className="text-xl">🔒</span>
                   <div>
                     <p className="font-medium">Privacy Requests</p>
-                    <a href="mailto:privacy@sails.tax" className="text-theme-accent hover:opacity-80">
-                      privacy@sails.tax
+                    <a href="mailto:support@sails.tax" className="text-theme-accent hover:opacity-80">
+                      support@sails.tax
                     </a>
                   </div>
                 </div>

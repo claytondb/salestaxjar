@@ -216,7 +216,7 @@ export default function CookiePolicyPage() {
                 If you have questions about our use of cookies, please contact us:
               </p>
               <div className="mt-4 p-4 bg-white/5 rounded-lg">
-                <p>Email: <a href="mailto:privacy@sails.tax" className="text-theme-accent hover:opacity-80">privacy@sails.tax</a></p>
+                <p>Email: <a href="mailto:support@sails.tax" className="text-theme-accent hover:opacity-80">support@sails.tax</a></p>
               </div>
             </section>
           </div>

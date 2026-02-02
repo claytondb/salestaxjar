@@ -1221,19 +1221,11 @@ export default function SettingsPage() {
                   <p className="text-theme-muted mb-4">
                     For any privacy-related inquiries or to exercise your data rights, contact us:
                   </p>
-                  <div className="space-y-2 text-sm">
+                  <div className="text-sm">
                     <p className="text-theme-secondary flex items-center gap-2">
                       <Mail className="w-4 h-4 text-theme-accent" />
-                      Email:{' '}
-                      <a href="mailto:privacy@sails.tax" className="text-theme-accent hover:text-emerald-300">
-                        privacy@sails.tax
-                      </a>
-                    </p>
-                    <p className="text-theme-secondary flex items-center gap-2">
-                      <Lock className="w-4 h-4 text-theme-accent" />
-                      GDPR DPO:{' '}
-                      <a href="mailto:dpo@sails.tax" className="text-theme-accent hover:text-emerald-300">
-                        dpo@sails.tax
+                      <a href="mailto:support@sails.tax" className="text-theme-accent hover:text-emerald-300">
+                        support@sails.tax
                       </a>
                     </p>
                   </div>

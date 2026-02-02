@@ -146,7 +146,7 @@ export default function PrivacyPage() {
               <p>
                 To exercise any of these rights, please visit your{' '}
                 <Link href="/settings" className="text-theme-accent hover:text-emerald-300">Account Settings</Link>{' '}
-                or contact us at <a href="mailto:privacy@sails.tax" className="text-theme-accent hover:text-emerald-300">privacy@sails.tax</a>.
+                or contact us at <a href="mailto:support@sails.tax" className="text-theme-accent hover:text-emerald-300">support@sails.tax</a>.
               </p>
             </section>
 
