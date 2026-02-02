@@ -177,6 +177,7 @@ export async function getCurrentUser() {
           plan: true,
           status: true,
           currentPeriodEnd: true,
+          cancelAtPeriodEnd: true,
         },
       },
     },
