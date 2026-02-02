@@ -198,3 +198,4 @@ npx prisma migrate reset
 ## License
 
 MIT License - see LICENSE file for details
+# Test branch for Stripe test mode
