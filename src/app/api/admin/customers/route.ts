@@ -32,14 +32,6 @@ export async function GET() {
             cancelAtPeriodEnd: true,
           },
         },
-        platformConnections: {
-          select: {
-            platform: true,
-            platformName: true,
-            connected: true,
-            lastSyncAt: true,
-          },
-        },
         _count: {
           select: {
             calculations: true,
@@ -75,12 +67,7 @@ export async function GET() {
         subscriptionStatus: c.subscription?.status || null,
         renewsAt: c.subscription?.currentPeriodEnd?.toISOString() || null,
         cancelAtPeriodEnd: c.subscription?.cancelAtPeriodEnd || false,
-        platforms: c.platformConnections.filter(p => p.connected).map(p => ({
-          platform: p.platform,
-          name: p.platformName,
-          lastSync: p.lastSyncAt?.toISOString() || null,
-        })),
-        transactionCount: c._count.transactions,
+        calculationCount: c._count.calculations,
         daysSinceSignup: Math.floor((Date.now() - c.createdAt.getTime()) / (1000 * 60 * 60 * 24)),
       })),
       stats,
