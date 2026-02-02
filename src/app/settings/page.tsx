@@ -88,6 +88,7 @@ export default function SettingsPage() {
     updateUser,
     isLoading,
     refreshData,
+    refreshUser,
   } = useAuth();
   const router = useRouter();
 
@@ -368,9 +369,9 @@ export default function SettingsPage() {
         setSelectedPlan(null);
         setProrationPreview(null);
         
-        // Refresh data to get updated subscription status
-        if (refreshData) {
-          await refreshData();
+        // Refresh user to get updated subscription status (cancelAtPeriodEnd, currentPeriodEnd)
+        if (refreshUser) {
+          await refreshUser();
         }
         
         setIsCheckingOut(false);
@@ -928,10 +929,21 @@ export default function SettingsPage() {
                         {billing.plan.charAt(0).toUpperCase() + billing.plan.slice(1)}
                       </div>
                       <div className="text-theme-muted">${billing.monthlyPrice}/month</div>
+                      {billing.cancelAtPeriodEnd && billing.currentPeriodEnd && (
+                        <div className="text-amber-400 text-sm mt-1">
+                          Ends {new Date(billing.currentPeriodEnd).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+                        </div>
+                      )}
                     </div>
-                    <span className="px-3 py-1 btn-theme-primary/20 text-theme-accent rounded-full text-sm">
-                      Active
-                    </span>
+                    {billing.cancelAtPeriodEnd ? (
+                      <span className="px-3 py-1 bg-amber-500/20 text-amber-400 rounded-full text-sm">
+                        Cancelling
+                      </span>
+                    ) : (
+                      <span className="px-3 py-1 btn-theme-primary/20 text-theme-accent rounded-full text-sm">
+                        Active
+                      </span>
+                    )}
                   </div>
                 </div>
 
@@ -943,28 +955,44 @@ export default function SettingsPage() {
                     {plans.map((plan) => {
                       const isCurrentPlan = billing.plan === plan.id;
                       const isSelected = selectedPlan === plan.id;
+                      const isCancelling = billing.cancelAtPeriodEnd && isCurrentPlan;
+                      const isScheduledFree = billing.cancelAtPeriodEnd && plan.id === 'free' && billing.plan !== 'free';
+                      const endDate = billing.currentPeriodEnd 
+                        ? new Date(billing.currentPeriodEnd).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
+                        : null;
                       
                       return (
                         <div 
                           key={plan.id}
-                          onClick={() => !isCurrentPlan && handleSelectPlan(plan.id)}
+                          onClick={() => !isCurrentPlan && !isScheduledFree && handleSelectPlan(plan.id)}
                           className={`p-6 rounded-xl border transition-all duration-150 cursor-pointer hover:-translate-y-1 hover:shadow-lg hover:shadow-black/20 ${
                             isSelected
                               ? 'bg-purple-500/20 border-purple-500 ring-2 ring-purple-500'
+                              : isScheduledFree
+                                ? 'bg-green-500/10 border-green-500/50'
                               : isCurrentPlan 
                                 ? 'btn-theme-primary/20 border-theme-accent' 
                                 : 'bg-white/5 border-theme-primary hover:bg-white/10'
                           }`}
                         >
                           <div className="flex items-center justify-between mb-2">
-                            {plan.popular && !isCurrentPlan && (
+                            {plan.popular && !isCurrentPlan && !isScheduledFree && (
                               <span className="px-2 py-0.5 btn-theme-primary text-theme-primary text-xs rounded-full">
                                 Most Popular
                               </span>
                             )}
-                            {isCurrentPlan && (
+                            {isCancelling && endDate ? (
+                              <span className="px-2 py-0.5 bg-amber-500/20 text-amber-400 text-xs rounded-full">
+                                Ending {endDate}
+                              </span>
+                            ) : isCurrentPlan && (
                               <span className="px-2 py-0.5 btn-theme-primary/30 text-theme-accent text-xs rounded-full">
                                 Current
+                              </span>
+                            )}
+                            {isScheduledFree && (
+                              <span className="px-2 py-0.5 bg-green-500/20 text-green-400 text-xs rounded-full">
+                                Starting {endDate}
                               </span>
                             )}
                             {isSelected && (
@@ -986,9 +1014,19 @@ export default function SettingsPage() {
                               </li>
                             ))}
                           </ul>
-                          {isCurrentPlan && (
+                          {isCurrentPlan && !isCancelling && (
                             <div className="text-center py-2 text-theme-muted text-sm">
                               Your current plan
+                            </div>
+                          )}
+                          {isCancelling && (
+                            <div className="text-center py-2 text-amber-400 text-sm">
+                              Cancellation pending
+                            </div>
+                          )}
+                          {isScheduledFree && (
+                            <div className="text-center py-2 text-green-400 text-sm">
+                              Your next plan
                             </div>
                           )}
                         </div>

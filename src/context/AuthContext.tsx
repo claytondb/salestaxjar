@@ -23,6 +23,7 @@ interface ApiUser {
     plan: string;
     status: string;
     currentPeriodEnd?: string;
+    cancelAtPeriodEnd?: boolean;
   } | null;
 }
 
@@ -193,6 +194,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           setBilling(prev => ({
             ...prev,
             plan: apiUser.subscription!.plan as BillingInfo['plan'],
+            cancelAtPeriodEnd: apiUser.subscription!.cancelAtPeriodEnd,
+            currentPeriodEnd: apiUser.subscription!.currentPeriodEnd,
           }));
         }
 

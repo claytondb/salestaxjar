@@ -23,6 +23,7 @@ export async function GET() {
           plan: user.subscription.plan,
           status: user.subscription.status,
           currentPeriodEnd: user.subscription.currentPeriodEnd?.toISOString(),
+          cancelAtPeriodEnd: user.subscription.cancelAtPeriodEnd,
         } : null,
       },
     });

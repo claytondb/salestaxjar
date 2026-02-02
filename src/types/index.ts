@@ -114,6 +114,8 @@ export interface BillingInfo {
   cardBrand?: string;
   nextBillingDate?: string;
   monthlyPrice: number;
+  cancelAtPeriodEnd?: boolean;
+  currentPeriodEnd?: string;
 }
 
 export interface AppState {
