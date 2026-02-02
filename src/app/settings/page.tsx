@@ -474,7 +474,7 @@ export default function SettingsPage() {
                   className={`w-full flex items-center gap-3 px-4 py-3 text-left transition-all duration-150 hover:duration-0 ${
                     activeTab === tab.id 
                       ? 'btn-theme-primary/20 text-theme-accent border-l-2 border-theme-accent' 
-                      : 'text-theme-secondary hover:text-theme-primary hover:bg-emerald-500/20 border-l-2 border-transparent'
+                      : 'text-theme-secondary hover:text-theme-primary hover:bg-theme-accent border-l-2 border-transparent'
                   }`}
                 >
                   <span className={activeTab === tab.id ? 'text-theme-accent' : 'text-theme-muted'}>{tab.icon}</span>
