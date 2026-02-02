@@ -256,13 +256,28 @@ export default function SettingsPage() {
   };
 
   // Account deletion handler
-  const handleDeleteAccount = () => {
+  const handleDeleteAccount = async () => {
     if (deleteConfirmText.toLowerCase() !== 'delete my account') {
       setSaveMessage('Please type "delete my account" to confirm');
       return;
     }
-    deleteAllUserData();
-    router.push('/');
+    
+    setIsSaving(true);
+    try {
+      const response = await fetch('/api/auth/delete-account', { method: 'DELETE' });
+      
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || 'Failed to delete account');
+      }
+      
+      // Clear local storage and redirect
+      deleteAllUserData();
+      router.push('/');
+    } catch (error) {
+      setSaveMessage(error instanceof Error ? error.message : 'Failed to delete account');
+      setIsSaving(false);
+    }
   };
 
   const handleSaveProfile = async () => {
