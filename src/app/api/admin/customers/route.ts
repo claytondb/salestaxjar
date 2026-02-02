@@ -42,7 +42,7 @@ export async function GET() {
         },
         _count: {
           select: {
-            transactions: true,
+            calculations: true,
           },
         },
       },
