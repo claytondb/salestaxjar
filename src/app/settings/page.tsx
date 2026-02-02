@@ -916,14 +916,12 @@ export default function SettingsPage() {
                         <div 
                           key={plan.id}
                           onClick={() => !isCurrentPlan && handleSelectPlan(plan.id)}
-                          className={`p-6 rounded-xl border transition cursor-pointer ${
+                          className={`p-6 rounded-xl border transition-all duration-150 cursor-pointer hover:-translate-y-1 hover:shadow-lg hover:shadow-black/20 ${
                             isSelected
                               ? 'bg-purple-500/20 border-purple-500 ring-2 ring-purple-500'
                               : isCurrentPlan 
                                 ? 'btn-theme-primary/20 border-theme-accent' 
-                                : plan.popular 
-                                  ? 'bg-white/5 border-theme-accent/50 hover:bg-white/10' 
-                                  : 'bg-white/5 border-theme-primary hover:bg-white/10'
+                                : 'bg-white/5 border-theme-primary hover:bg-white/10'
                           }`}
                         >
                           <div className="flex items-center justify-between mb-2">
