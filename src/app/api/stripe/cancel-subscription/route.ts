@@ -40,14 +40,35 @@ export async function POST(request: NextRequest) {
       where: { userId: user.id },
     });
 
-    if (!subscription?.stripeSubscriptionId) {
+    // If no subscription record or already on free plan
+    if (!subscription || subscription.plan === 'free') {
       return NextResponse.json(
         { error: 'No active subscription found' },
         { status: 400 }
       );
     }
 
-    // Cancel the subscription
+    // If there's a subscription record but no Stripe subscription ID,
+    // just reset to free plan locally (manual/test data)
+    if (!subscription.stripeSubscriptionId) {
+      await prisma.subscription.update({
+        where: { userId: user.id },
+        data: {
+          plan: 'free',
+          cancelAtPeriodEnd: false,
+          currentPeriodEnd: null,
+          updatedAt: new Date(),
+        },
+      });
+
+      return NextResponse.json({
+        success: true,
+        cancelledImmediately: true,
+        message: 'Your subscription has been reset. You are now on the Free plan.',
+      });
+    }
+
+    // Cancel the Stripe subscription
     const result = await cancelSubscription(
       subscription.stripeSubscriptionId,
       cancelImmediately
@@ -68,6 +89,7 @@ export async function POST(request: NextRequest) {
         data: {
           plan: 'free',
           stripeSubscriptionId: null,
+          cancelAtPeriodEnd: false,
           updatedAt: new Date(),
         },
       });
