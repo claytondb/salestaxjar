@@ -237,12 +237,12 @@ export default function TermsPage() {
 
             <section>
               <h2 className="text-xl font-semibold text-theme-primary mb-4">14. Contact Information</h2>
-              <p>For questions about these Terms, please contact us:</p>
-              <div className="mt-4 p-4 bg-white/5 rounded-lg">
-                <p><strong>Sails Legal Department</strong></p>
-                <p>Email: <a href="mailto:legal@sails.tax" className="text-theme-accent hover:text-emerald-300">legal@sails.tax</a></p>
-                <p>Address: 123 Tax Lane, Suite 100, Austin, TX 78701</p>
-              </div>
+              <p>
+                For questions about these Terms, please contact us at{' '}
+                <a href="mailto:support@sails.tax" className="text-theme-accent hover:text-emerald-300">support@sails.tax</a>
+                {' '}or visit our{' '}
+                <Link href="/contact" className="text-theme-accent hover:text-emerald-300">Contact page</Link>.
+              </p>
             </section>
           </div>
         </div>

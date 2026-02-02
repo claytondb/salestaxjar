@@ -193,15 +193,12 @@ export default function PrivacyPage() {
 
             <section>
               <h2 className="text-xl font-semibold text-theme-primary mb-4">12. Contact Us</h2>
-              <p>If you have questions about this Privacy Policy or our data practices, please contact us:</p>
-              <div className="mt-4 p-4 bg-white/5 rounded-lg">
-                <p><strong>Sails Privacy Team</strong></p>
-                <p>Email: <a href="mailto:privacy@sails.tax" className="text-theme-accent hover:text-emerald-300">privacy@sails.tax</a></p>
-                <p>Address: 123 Tax Lane, Suite 100, Austin, TX 78701</p>
-                <p className="mt-2">
-                  For GDPR inquiries: <a href="mailto:dpo@sails.tax" className="text-theme-accent hover:text-emerald-300">dpo@sails.tax</a>
-                </p>
-              </div>
+              <p>
+                If you have questions about this Privacy Policy or our data practices, please contact us at{' '}
+                <a href="mailto:support@sails.tax" className="text-theme-accent hover:text-emerald-300">support@sails.tax</a>
+                {' '}or visit our{' '}
+                <Link href="/contact" className="text-theme-accent hover:text-emerald-300">Contact page</Link>.
+              </p>
             </section>
           </div>
         </div>
