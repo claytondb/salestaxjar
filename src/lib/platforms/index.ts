@@ -73,10 +73,9 @@ export function getPlatformConfigurations(): PlatformConfig[] {
     {
       platform: 'prestashop',
       name: 'PrestaShop',
-      configured: false, // Coming soon
+      configured: true, // Uses Webservice API key per store
       description: 'Automate US sales tax for your PrestaShop store.',
-      features: ['Order sync', 'Tax rules import', 'Multi-language'],
-      comingSoon: true,
+      features: ['Order sync', 'Webservice API', 'Multi-language'],
     },
     {
       platform: 'opencart',

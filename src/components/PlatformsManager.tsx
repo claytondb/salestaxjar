@@ -84,6 +84,12 @@ export default function PlatformsManager() {
   const [magentoAccessToken, setMagentoAccessToken] = useState('');
   const [magentoConnectError, setMagentoConnectError] = useState<string | null>(null);
   
+  // PrestaShop modal state
+  const [showPrestaShopModal, setShowPrestaShopModal] = useState(false);
+  const [prestaShopStoreUrl, setPrestaShopStoreUrl] = useState('');
+  const [prestaShopApiKey, setPrestaShopApiKey] = useState('');
+  const [prestaShopConnectError, setPrestaShopConnectError] = useState<string | null>(null);
+  
   // Platform request modal state
   const [showRequestModal, setShowRequestModal] = useState(false);
   const [requestedPlatform, setRequestedPlatform] = useState('');
@@ -125,6 +131,11 @@ export default function PlatformsManager() {
 
     if (platform === 'magento') {
       setShowMagentoModal(true);
+      return;
+    }
+
+    if (platform === 'prestashop') {
+      setShowPrestaShopModal(true);
       return;
     }
     
@@ -272,6 +283,48 @@ export default function PlatformsManager() {
       alert(`Successfully connected to ${data.store?.name || 'Magento store'}!`);
     } catch (err) {
       setMagentoConnectError(err instanceof Error ? err.message : 'Connection failed');
+      setConnectingPlatform(null);
+    }
+  };
+
+  const handlePrestaShopConnect = async () => {
+    if (!prestaShopStoreUrl.trim() || !prestaShopApiKey.trim()) {
+      setPrestaShopConnectError('Please fill in all fields');
+      return;
+    }
+
+    setConnectingPlatform('prestashop');
+    setPrestaShopConnectError(null);
+
+    try {
+      const response = await fetch('/api/platforms/prestashop/connect', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          storeUrl: prestaShopStoreUrl,
+          apiKey: prestaShopApiKey,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setPrestaShopConnectError(data.error || 'Failed to connect');
+        setConnectingPlatform(null);
+        return;
+      }
+
+      // Success - close modal and refresh
+      setShowPrestaShopModal(false);
+      setPrestaShopStoreUrl('');
+      setPrestaShopApiKey('');
+      setConnectingPlatform(null);
+      await fetchPlatforms();
+      
+      // Show success message
+      alert(`Successfully connected to ${data.store?.name || 'PrestaShop store'}!`);
+    } catch (err) {
+      setPrestaShopConnectError(err instanceof Error ? err.message : 'Connection failed');
       setConnectingPlatform(null);
     }
   };
@@ -910,6 +963,99 @@ export default function PlatformsManager() {
                 className="flex-1 btn-theme-primary text-theme-primary px-4 py-2 rounded-lg font-medium transition disabled:opacity-50 flex items-center justify-center gap-2"
               >
                 {connectingPlatform === 'magento' ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Connecting...
+                  </>
+                ) : (
+                  'Connect Store'
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* PrestaShop API Key Modal */}
+      {showPrestaShopModal && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="card-theme rounded-xl p-6 max-w-md w-full">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h3 className="text-xl font-semibold text-theme-primary flex items-center gap-2">
+                  <Store className="w-6 h-6 text-theme-accent" />
+                  Connect PrestaShop
+                </h3>
+                <p className="text-theme-muted text-sm mt-1">
+                  Enter your store URL and Webservice API Key
+                </p>
+              </div>
+              <button
+                onClick={() => {
+                  setShowPrestaShopModal(false);
+                  setPrestaShopConnectError(null);
+                }}
+                className="p-2 bg-theme-secondary/30 hover:bg-white/20 text-theme-primary rounded-lg transition"
+              >
+                ✕
+              </button>
+            </div>
+            
+            <div className="bg-accent-subtle border border-theme-accent/30 rounded-lg p-3 mb-4">
+              <p className="text-theme-accent text-sm">
+                <strong>How to get an API Key:</strong> In PrestaShop Admin, go to Advanced Parameters → Webservice → Add new key. 
+                Enable <strong>orders</strong>, <strong>addresses</strong>, and <strong>customers</strong> with GET permission.
+              </p>
+            </div>
+
+            {prestaShopConnectError && (
+              <div className="rounded-lg p-3 mb-4 flex items-start gap-2" style={{ backgroundColor: 'var(--error-bg)', border: '1px solid var(--error-border)' }}>
+                <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" style={{ color: 'var(--error-text)' }} />
+                <p className="text-sm" style={{ color: 'var(--error-text)' }}>{prestaShopConnectError}</p>
+              </div>
+            )}
+            
+            <div className="space-y-4">
+              <div>
+                <label className="block text-theme-secondary text-sm mb-2">Store URL</label>
+                <input
+                  type="text"
+                  value={prestaShopStoreUrl}
+                  onChange={(e) => setPrestaShopStoreUrl(e.target.value)}
+                  placeholder="https://mystore.com"
+                  className="w-full px-4 py-3 bg-theme-secondary/30 border border-theme-secondary rounded-lg text-theme-primary focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                />
+              </div>
+              <div>
+                <label className="block text-theme-secondary text-sm mb-2">Webservice API Key</label>
+                <input
+                  type="password"
+                  value={prestaShopApiKey}
+                  onChange={(e) => setPrestaShopApiKey(e.target.value)}
+                  placeholder="Enter your API key"
+                  className="w-full px-4 py-3 bg-theme-secondary/30 border border-theme-secondary rounded-lg text-theme-primary focus:outline-none focus:ring-2 focus:ring-emerald-500 font-mono text-sm"
+                />
+              </div>
+            </div>
+
+            <div className="flex gap-3 mt-6">
+              <button
+                onClick={() => {
+                  setShowPrestaShopModal(false);
+                  setPrestaShopStoreUrl('');
+                  setPrestaShopApiKey('');
+                  setPrestaShopConnectError(null);
+                }}
+                className="px-4 py-2 bg-theme-secondary/30 hover:bg-white/20 text-theme-primary rounded-lg transition"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handlePrestaShopConnect}
+                disabled={!prestaShopStoreUrl.trim() || !prestaShopApiKey.trim() || connectingPlatform === 'prestashop'}
+                className="flex-1 btn-theme-primary text-theme-primary px-4 py-2 rounded-lg font-medium transition disabled:opacity-50 flex items-center justify-center gap-2"
+              >
+                {connectingPlatform === 'prestashop' ? (
                   <>
                     <Loader2 className="w-4 h-4 animate-spin" />
                     Connecting...
