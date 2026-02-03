@@ -99,7 +99,7 @@ async function handleCheckoutComplete(session: Stripe.Checkout.Session) {
     try {
       const { stripe } = await import('@/lib/stripe');
       if (stripe) {
-        const subscription = await stripe.subscriptions.retrieve(subscriptionId);
+        const subscription = await stripe.subscriptions.retrieve(subscriptionId) as Stripe.Subscription;
         priceId = subscription.items.data[0]?.price?.id;
         
         if (priceId) {
