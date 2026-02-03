@@ -23,6 +23,7 @@ export interface PlatformConfig {
   description: string;
   features: string[];
   setupUrl?: string;
+  comingSoon?: boolean;
 }
 
 /**
@@ -61,6 +62,38 @@ export function getPlatformConfigurations(): PlatformConfig[] {
       configured: true, // BigCommerce uses API credentials per store (stored in DB)
       description: 'Integrate your BigCommerce store for automated tax compliance.',
       features: ['Order import', 'Customer data', 'Tax settings sync'],
+    },
+    {
+      platform: 'magento',
+      name: 'Magento / Adobe Commerce',
+      configured: false, // Coming soon
+      description: 'Connect your Magento or Adobe Commerce store for enterprise-grade tax compliance.',
+      features: ['Order import', 'REST API', 'Multi-store support'],
+      comingSoon: true,
+    },
+    {
+      platform: 'prestashop',
+      name: 'PrestaShop',
+      configured: false, // Coming soon
+      description: 'Automate US sales tax for your PrestaShop store.',
+      features: ['Order sync', 'Tax rules import', 'Multi-language'],
+      comingSoon: true,
+    },
+    {
+      platform: 'opencart',
+      name: 'OpenCart',
+      configured: false, // Coming soon
+      description: 'Sales tax automation for your OpenCart store.',
+      features: ['Order import', 'Extension support', 'Self-hosted'],
+      comingSoon: true,
+    },
+    {
+      platform: 'ecwid',
+      name: 'Ecwid',
+      configured: false, // Coming soon
+      description: 'Add automated tax calculations to your Ecwid store.',
+      features: ['Order sync', 'Embed anywhere', 'Real-time rates'],
+      comingSoon: true,
     },
   ];
 }

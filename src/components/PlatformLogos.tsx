@@ -48,6 +48,42 @@ export function WixLogo({ className = "w-6 h-6" }: { className?: string }) {
   );
 }
 
+export function MagentoLogo({ className = "w-6 h-6" }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 256 303" fill="currentColor">
+      <path d="M144.852 90.67v172.192l-16.933 10.349V79.792l.075-.045 16.858 10.923zm-48.039 182.54l-16.933-10.349V90.67l16.858-10.924.075.046v193.419zM128 0L0 73.984v154.34l32.039 19.591V92.622L128 35.576l95.961 57.046v155.293L256 228.324V73.984L128 0z" fill="#EC6737"/>
+    </svg>
+  );
+}
+
+export function PrestaShopLogo({ className = "w-6 h-6" }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 256 256" fill="currentColor">
+      <path d="M256 128c0 70.692-57.308 128-128 128C57.308 256 0 198.692 0 128 0 57.308 57.308 0 128 0c70.692 0 128 57.308 128 128z" fill="#DF0067"/>
+      <path d="M200.195 104.217c-5.26-30.418-32.986-53.156-65.65-53.156-32.267 0-59.714 22.166-65.368 52.042-10.49 2.017-18.407 11.243-18.407 22.28 0 12.537 10.164 22.701 22.701 22.701h.846v32.266c0 6.682 5.416 12.098 12.098 12.098h95.961c6.682 0 12.098-5.416 12.098-12.098v-32.266h.846c12.537 0 22.701-10.164 22.701-22.701 0-10.659-7.343-19.608-17.226-22.033l-.8-.133z" fill="#fff"/>
+    </svg>
+  );
+}
+
+export function OpenCartLogo({ className = "w-6 h-6" }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 256 256" fill="currentColor">
+      <circle cx="128" cy="128" r="128" fill="#2AC1D2"/>
+      <path d="M128 50c-43.078 0-78 34.922-78 78s34.922 78 78 78 78-34.922 78-78-34.922-78-78-78zm0 130c-28.719 0-52-23.281-52-52s23.281-52 52-52 52 23.281 52 52-23.281 52-52 52z" fill="#fff"/>
+      <circle cx="128" cy="128" r="26" fill="#fff"/>
+    </svg>
+  );
+}
+
+export function EcwidLogo({ className = "w-6 h-6" }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 256 256" fill="currentColor">
+      <rect width="256" height="256" rx="50" fill="#0D84D9"/>
+      <path d="M198 108H140V78c0-11.046-8.954-20-20-20h-8c-11.046 0-20 8.954-20 20v30H58c-11.046 0-20 8.954-20 20v8c0 11.046 8.954 20 20 20h34v30c0 11.046 8.954 20 20 20h8c11.046 0 20-8.954 20-20v-30h58c11.046 0 20-8.954 20-20v-8c0-11.046-8.954-20-20-20z" fill="#fff"/>
+    </svg>
+  );
+}
+
 // Export all logos as a lookup object
 export const platformLogos: Record<string, React.FC<{ className?: string }>> = {
   shopify: ShopifyLogo,
@@ -55,4 +91,8 @@ export const platformLogos: Record<string, React.FC<{ className?: string }>> = {
   squarespace: SquarespaceLogo,
   bigcommerce: BigCommerceLogo,
   wix: WixLogo,
+  magento: MagentoLogo,
+  prestashop: PrestaShopLogo,
+  opencart: OpenCartLogo,
+  ecwid: EcwidLogo,
 };

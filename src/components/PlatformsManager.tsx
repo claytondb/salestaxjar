@@ -35,6 +35,7 @@ interface PlatformConfig {
   description: string;
   features: string[];
   setupUrl?: string;
+  comingSoon?: boolean;
   connections: PlatformConnection[];
   connectedCount: number;
 }
@@ -364,7 +365,12 @@ export default function PlatformsManager() {
                 </div>
               </div>
               
-              {platform.configured ? (
+              {platform.comingSoon ? (
+                <span className="px-4 py-2 bg-theme-secondary/50 text-theme-muted rounded-lg font-medium flex items-center gap-2">
+                  <Clock className="w-4 h-4" />
+                  Coming Soon
+                </span>
+              ) : platform.configured ? (
                 <button
                   onClick={() => handleConnect(platform.platform)}
                   disabled={connectingPlatform === platform.platform}
