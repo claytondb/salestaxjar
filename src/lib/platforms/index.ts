@@ -29,7 +29,11 @@ export interface PlatformConfig {
  * Get configuration status for all platforms
  * 
  * Priority platforms (own-website sellers who need tax help):
- * - Shopify, WooCommerce, Squarespace, BigCommerce, Wix
+ * - Shopify, WooCommerce, BigCommerce
+ * 
+ * Not supported (already have built-in tax solutions):
+ * - Squarespace (has built-in automated tax)
+ * - Wix (has built-in Avalara integration)
  * 
  * Not prioritized (marketplace facilitators handle tax):
  * - Etsy, Amazon, eBay, Gumroad
@@ -52,28 +56,11 @@ export function getPlatformConfigurations(): PlatformConfig[] {
       features: ['Order sync', 'Product tax classes', 'Webhook support', 'Self-hosted friendly'],
     },
     {
-      platform: 'squarespace',
-      name: 'Squarespace',
-      configured: !!(process.env.SQUARESPACE_CLIENT_ID && process.env.SQUARESPACE_CLIENT_SECRET),
-      description: 'Finally, proper sales tax tools for your Squarespace store.',
-      features: ['Order import', 'Commerce API', 'Automatic sync'],
-      setupUrl: 'https://developers.squarespace.com',
-    },
-    {
       platform: 'bigcommerce',
       name: 'BigCommerce',
-      configured: !!(process.env.BIGCOMMERCE_CLIENT_ID && process.env.BIGCOMMERCE_CLIENT_SECRET),
+      configured: true, // BigCommerce uses API credentials per store (stored in DB)
       description: 'Integrate your BigCommerce store for automated tax compliance.',
       features: ['Order import', 'Customer data', 'Tax settings sync'],
-      setupUrl: 'https://developer.bigcommerce.com',
-    },
-    {
-      platform: 'wix',
-      name: 'Wix',
-      configured: !!(process.env.WIX_CLIENT_ID && process.env.WIX_CLIENT_SECRET),
-      description: 'Connect your Wix eCommerce store for sales tax tracking.',
-      features: ['Order sync', 'Wix Stores API', 'Automatic import'],
-      setupUrl: 'https://dev.wix.com',
     },
   ];
 }

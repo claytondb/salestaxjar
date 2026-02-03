@@ -4,7 +4,6 @@ import { useState, useEffect, useCallback } from 'react';
 import { 
   Package, 
   Plug,
-  Square,
   Store,
   RefreshCw,
   ExternalLink,
@@ -72,12 +71,6 @@ export default function PlatformsManager() {
   const [wooConsumerSecret, setWooConsumerSecret] = useState('');
   const [wooConnectError, setWooConnectError] = useState<string | null>(null);
   
-  // Squarespace modal state
-  const [showSquarespaceModal, setShowSquarespaceModal] = useState(false);
-  const [squarespaceApiKey, setSquarespaceApiKey] = useState('');
-  const [squarespaceStoreName, setSquarespaceStoreName] = useState('');
-  const [squarespaceConnectError, setSquarespaceConnectError] = useState<string | null>(null);
-  
   // BigCommerce modal state
   const [showBigCommerceModal, setShowBigCommerceModal] = useState(false);
   const [bigCommerceStoreHash, setBigCommerceStoreHash] = useState('');
@@ -115,11 +108,6 @@ export default function PlatformsManager() {
 
     if (platform === 'woocommerce') {
       setShowWooCommerceModal(true);
-      return;
-    }
-
-    if (platform === 'squarespace') {
-      setShowSquarespaceModal(true);
       return;
     }
 
@@ -188,48 +176,6 @@ export default function PlatformsManager() {
       alert(`Successfully connected to ${data.store?.name || 'WooCommerce store'}!`);
     } catch (err) {
       setWooConnectError(err instanceof Error ? err.message : 'Connection failed');
-      setConnectingPlatform(null);
-    }
-  };
-
-  const handleSquarespaceConnect = async () => {
-    if (!squarespaceApiKey.trim()) {
-      setSquarespaceConnectError('Please enter your API key');
-      return;
-    }
-
-    setConnectingPlatform('squarespace');
-    setSquarespaceConnectError(null);
-
-    try {
-      const response = await fetch('/api/platforms/squarespace/connect', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          apiKey: squarespaceApiKey,
-          storeName: squarespaceStoreName || undefined,
-        }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        setSquarespaceConnectError(data.error || 'Failed to connect');
-        setConnectingPlatform(null);
-        return;
-      }
-
-      // Success - close modal and refresh
-      setShowSquarespaceModal(false);
-      setSquarespaceApiKey('');
-      setSquarespaceStoreName('');
-      setConnectingPlatform(null);
-      await fetchPlatforms();
-      
-      // Show success message
-      alert(`Successfully connected to ${data.store?.name || 'Squarespace store'}!`);
-    } catch (err) {
-      setSquarespaceConnectError(err instanceof Error ? err.message : 'Connection failed');
       setConnectingPlatform(null);
     }
   };
@@ -713,102 +659,6 @@ export default function PlatformsManager() {
                 className="flex-1 btn-theme-primary text-theme-primary px-4 py-2 rounded-lg font-medium transition disabled:opacity-50 flex items-center justify-center gap-2"
               >
                 {connectingPlatform === 'woocommerce' ? (
-                  <>
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                    Connecting...
-                  </>
-                ) : (
-                  'Connect Store'
-                )}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Squarespace API Key Modal */}
-      {showSquarespaceModal && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="card-theme rounded-xl p-6 max-w-md w-full">
-            <div className="flex items-center justify-between mb-4">
-              <div>
-                <h3 className="text-xl font-semibold text-theme-primary flex items-center gap-2">
-                  <Square className="w-6 h-6 text-theme-accent" />
-                  Connect Squarespace
-                </h3>
-                <p className="text-theme-muted text-sm mt-1">
-                  Enter your Commerce API key
-                </p>
-              </div>
-              <button
-                onClick={() => {
-                  setShowSquarespaceModal(false);
-                  setSquarespaceConnectError(null);
-                }}
-                className="p-2 bg-theme-secondary/30 hover:bg-white/20 text-theme-primary rounded-lg transition"
-              >
-                ✕
-              </button>
-            </div>
-            
-            <div className="bg-accent-subtle border border-theme-accent/30 rounded-lg p-3 mb-4">
-              <p className="text-theme-accent text-sm">
-                <strong>How to get an API key:</strong> In Squarespace, go to Settings → Advanced → Developer API Keys → Generate Key. 
-                Select <strong>Orders API (Read)</strong> permission.
-              </p>
-              <p className="text-theme-accent/70 text-xs mt-2">
-                Note: Requires Commerce Advanced plan.
-              </p>
-            </div>
-
-            {squarespaceConnectError && (
-              <div className="rounded-lg p-3 mb-4 flex items-start gap-2" style={{ backgroundColor: 'var(--error-bg)', border: '1px solid var(--error-border)' }}>
-                <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" style={{ color: 'var(--error-text)' }} />
-                <p className="text-sm" style={{ color: 'var(--error-text)' }}>{squarespaceConnectError}</p>
-              </div>
-            )}
-            
-            <div className="space-y-4">
-              <div>
-                <label className="block text-theme-secondary text-sm mb-2">API Key</label>
-                <input
-                  type="password"
-                  value={squarespaceApiKey}
-                  onChange={(e) => setSquarespaceApiKey(e.target.value)}
-                  placeholder="Enter your API key"
-                  className="w-full px-4 py-3 bg-theme-secondary/30 border border-theme-secondary rounded-lg text-theme-primary focus:outline-none focus:ring-2 focus:ring-emerald-500 font-mono text-sm"
-                />
-              </div>
-              <div>
-                <label className="block text-theme-secondary text-sm mb-2">Store Name (optional)</label>
-                <input
-                  type="text"
-                  value={squarespaceStoreName}
-                  onChange={(e) => setSquarespaceStoreName(e.target.value)}
-                  placeholder="My Squarespace Store"
-                  className="w-full px-4 py-3 bg-theme-secondary/30 border border-theme-secondary rounded-lg text-theme-primary focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                />
-              </div>
-            </div>
-
-            <div className="flex gap-3 mt-6">
-              <button
-                onClick={() => {
-                  setShowSquarespaceModal(false);
-                  setSquarespaceApiKey('');
-                  setSquarespaceStoreName('');
-                  setSquarespaceConnectError(null);
-                }}
-                className="px-4 py-2 bg-theme-secondary/30 hover:bg-white/20 text-theme-primary rounded-lg transition"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleSquarespaceConnect}
-                disabled={!squarespaceApiKey.trim() || connectingPlatform === 'squarespace'}
-                className="flex-1 btn-theme-primary text-theme-primary px-4 py-2 rounded-lg font-medium transition disabled:opacity-50 flex items-center justify-center gap-2"
-              >
-                {connectingPlatform === 'squarespace' ? (
                   <>
                     <Loader2 className="w-4 h-4 animate-spin" />
                     Connecting...
