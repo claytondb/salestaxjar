@@ -87,10 +87,9 @@ export function getPlatformConfigurations(): PlatformConfig[] {
     {
       platform: 'ecwid',
       name: 'Ecwid',
-      configured: false, // Coming soon
+      configured: true, // Uses Store ID + API token
       description: 'Add automated tax calculations to your Ecwid store.',
-      features: ['Order sync', 'Embed anywhere', 'Real-time rates'],
-      comingSoon: true,
+      features: ['Order sync', 'REST API', 'Real-time rates'],
     },
   ];
 }

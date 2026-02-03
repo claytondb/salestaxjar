@@ -97,6 +97,12 @@ export default function PlatformsManager() {
   const [openCartApiKey, setOpenCartApiKey] = useState('');
   const [openCartConnectError, setOpenCartConnectError] = useState<string | null>(null);
   
+  // Ecwid modal state
+  const [showEcwidModal, setShowEcwidModal] = useState(false);
+  const [ecwidStoreId, setEcwidStoreId] = useState('');
+  const [ecwidApiToken, setEcwidApiToken] = useState('');
+  const [ecwidConnectError, setEcwidConnectError] = useState<string | null>(null);
+  
   // Platform request modal state
   const [showRequestModal, setShowRequestModal] = useState(false);
   const [requestedPlatform, setRequestedPlatform] = useState('');
@@ -148,6 +154,11 @@ export default function PlatformsManager() {
 
     if (platform === 'opencart') {
       setShowOpenCartModal(true);
+      return;
+    }
+
+    if (platform === 'ecwid') {
+      setShowEcwidModal(true);
       return;
     }
     
@@ -381,6 +392,48 @@ export default function PlatformsManager() {
       alert(`Successfully connected to ${data.store?.name || 'OpenCart store'}!`);
     } catch (err) {
       setOpenCartConnectError(err instanceof Error ? err.message : 'Connection failed');
+      setConnectingPlatform(null);
+    }
+  };
+
+  const handleEcwidConnect = async () => {
+    if (!ecwidStoreId.trim() || !ecwidApiToken.trim()) {
+      setEcwidConnectError('Please fill in all fields');
+      return;
+    }
+
+    setConnectingPlatform('ecwid');
+    setEcwidConnectError(null);
+
+    try {
+      const response = await fetch('/api/platforms/ecwid/connect', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          storeId: ecwidStoreId,
+          apiToken: ecwidApiToken,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setEcwidConnectError(data.error || 'Failed to connect');
+        setConnectingPlatform(null);
+        return;
+      }
+
+      // Success - close modal and refresh
+      setShowEcwidModal(false);
+      setEcwidStoreId('');
+      setEcwidApiToken('');
+      setConnectingPlatform(null);
+      await fetchPlatforms();
+      
+      // Show success message
+      alert(`Successfully connected to ${data.store?.name || 'Ecwid store'}!`);
+    } catch (err) {
+      setEcwidConnectError(err instanceof Error ? err.message : 'Connection failed');
       setConnectingPlatform(null);
     }
   };
@@ -1219,6 +1272,99 @@ export default function PlatformsManager() {
                 className="flex-1 btn-theme-primary text-theme-primary px-4 py-2 rounded-lg font-medium transition disabled:opacity-50 flex items-center justify-center gap-2"
               >
                 {connectingPlatform === 'opencart' ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Connecting...
+                  </>
+                ) : (
+                  'Connect Store'
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Ecwid API Credentials Modal */}
+      {showEcwidModal && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="card-theme rounded-xl p-6 max-w-md w-full">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h3 className="text-xl font-semibold text-theme-primary flex items-center gap-2">
+                  <Store className="w-6 h-6 text-theme-accent" />
+                  Connect Ecwid
+                </h3>
+                <p className="text-theme-muted text-sm mt-1">
+                  Enter your Store ID and API Token
+                </p>
+              </div>
+              <button
+                onClick={() => {
+                  setShowEcwidModal(false);
+                  setEcwidConnectError(null);
+                }}
+                className="p-2 bg-theme-secondary/30 hover:bg-white/20 text-theme-primary rounded-lg transition"
+              >
+                ✕
+              </button>
+            </div>
+            
+            <div className="bg-accent-subtle border border-theme-accent/30 rounded-lg p-3 mb-4">
+              <p className="text-theme-accent text-sm">
+                <strong>Where to find credentials:</strong> In Ecwid Admin, go to Settings → API → Access tokens. 
+                Your Store ID is shown at the top, and you can copy your Secret token.
+              </p>
+            </div>
+
+            {ecwidConnectError && (
+              <div className="rounded-lg p-3 mb-4 flex items-start gap-2" style={{ backgroundColor: 'var(--error-bg)', border: '1px solid var(--error-border)' }}>
+                <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" style={{ color: 'var(--error-text)' }} />
+                <p className="text-sm" style={{ color: 'var(--error-text)' }}>{ecwidConnectError}</p>
+              </div>
+            )}
+            
+            <div className="space-y-4">
+              <div>
+                <label className="block text-theme-secondary text-sm mb-2">Store ID</label>
+                <input
+                  type="text"
+                  value={ecwidStoreId}
+                  onChange={(e) => setEcwidStoreId(e.target.value)}
+                  placeholder="12345678"
+                  className="w-full px-4 py-3 bg-theme-secondary/30 border border-theme-secondary rounded-lg text-theme-primary focus:outline-none focus:ring-2 focus:ring-emerald-500 font-mono"
+                />
+              </div>
+              <div>
+                <label className="block text-theme-secondary text-sm mb-2">Secret API Token</label>
+                <input
+                  type="password"
+                  value={ecwidApiToken}
+                  onChange={(e) => setEcwidApiToken(e.target.value)}
+                  placeholder="secret_..."
+                  className="w-full px-4 py-3 bg-theme-secondary/30 border border-theme-secondary rounded-lg text-theme-primary focus:outline-none focus:ring-2 focus:ring-emerald-500 font-mono text-sm"
+                />
+              </div>
+            </div>
+
+            <div className="flex gap-3 mt-6">
+              <button
+                onClick={() => {
+                  setShowEcwidModal(false);
+                  setEcwidStoreId('');
+                  setEcwidApiToken('');
+                  setEcwidConnectError(null);
+                }}
+                className="px-4 py-2 bg-theme-secondary/30 hover:bg-white/20 text-theme-primary rounded-lg transition"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleEcwidConnect}
+                disabled={!ecwidStoreId.trim() || !ecwidApiToken.trim() || connectingPlatform === 'ecwid'}
+                className="flex-1 btn-theme-primary text-theme-primary px-4 py-2 rounded-lg font-medium transition disabled:opacity-50 flex items-center justify-center gap-2"
+              >
+                {connectingPlatform === 'ecwid' ? (
                   <>
                     <Loader2 className="w-4 h-4 animate-spin" />
                     Connecting...
