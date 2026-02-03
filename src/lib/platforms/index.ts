@@ -54,7 +54,8 @@ export function getPlatformConfigurations(): PlatformConfig[] {
       name: 'WooCommerce',
       configured: true, // WooCommerce uses REST API keys per store (stored in DB)
       description: 'Connect your WooCommerce store using REST API keys. No more tax headaches!',
-      features: ['Order sync', 'Product tax classes', 'Webhook support', 'Self-hosted friendly'],
+      features: ['Order sync', 'Checkout tax calc', 'WordPress plugin', 'Self-hosted friendly'],
+      setupUrl: '/dashboard/integrations/woocommerce',
     },
     {
       platform: 'bigcommerce',
