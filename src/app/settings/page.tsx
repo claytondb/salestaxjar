@@ -1,9 +1,6 @@
 'use client';
 
 import { Suspense, useState, useEffect } from 'react';
-
-// Prevent static generation - this page uses useSearchParams
-export const dynamic = 'force-dynamic';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
@@ -78,7 +75,20 @@ const plans = [
   },
 ];
 
+// Wrapper component with Suspense for useSearchParams
 export default function SettingsPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-theme-gradient flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-theme-accent"></div>
+      </div>
+    }>
+      <SettingsPageContent />
+    </Suspense>
+  );
+}
+
+function SettingsPageContent() {
   const { 
     user,
     businessProfile, 
