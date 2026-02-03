@@ -71,7 +71,7 @@ export default function Footer() {
         {/* Bottom Bar */}
         <div className="flex flex-col md:flex-row justify-between items-center gap-4 pt-8 border-t border-theme-primary">
           <div className="text-theme-muted text-sm">
-            © {currentYear} Sails. All rights reserved.
+            © {currentYear} Sails. All rights reserved. <span className="text-theme-muted/50 text-xs ml-1">v{process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA?.slice(0, 7) || 'dev'}</span>
           </div>
           <div className="flex gap-6 text-theme-muted text-sm">
             <Link href="/privacy" className="hover:text-theme-primary transition">Privacy</Link>
