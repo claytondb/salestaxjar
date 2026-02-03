@@ -94,11 +94,27 @@ export async function POST(request: NextRequest) {
         },
       });
     } else {
-      // Scheduled cancellation - mark as canceling (webhook will handle final update)
+      // Scheduled cancellation - mark as canceling and fetch period end from Stripe
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      let periodEnd: Date | undefined;
+      try {
+        const { stripe } = await import('@/lib/stripe');
+        if (stripe && subscription.stripeSubscriptionId) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const stripeSub = await stripe.subscriptions.retrieve(subscription.stripeSubscriptionId) as any;
+          if (stripeSub.current_period_end) {
+            periodEnd = new Date(stripeSub.current_period_end * 1000);
+          }
+        }
+      } catch (e) {
+        console.error('Failed to fetch subscription period end:', e);
+      }
+      
       await prisma.subscription.update({
         where: { userId: user.id },
         data: {
           cancelAtPeriodEnd: true,
+          ...(periodEnd && { currentPeriodEnd: periodEnd }),
           updatedAt: new Date(),
         },
       });

@@ -1037,9 +1037,9 @@ function SettingsPageContent() {
                                 Most Popular
                               </span>
                             )}
-                            {isCancelling && endDate ? (
+                            {isCancelling ? (
                               <span className="px-2 py-0.5 bg-amber-500/20 text-amber-400 text-xs rounded-full">
-                                Ending {endDate}
+                                Ending {endDate || 'soon'}
                               </span>
                             ) : isCurrentPlan && (
                               <span className="px-2 py-0.5 btn-theme-primary/30 text-theme-accent text-xs rounded-full">
@@ -1048,7 +1048,7 @@ function SettingsPageContent() {
                             )}
                             {isScheduledFree && (
                               <span className="px-2 py-0.5 bg-green-500/20 text-green-400 text-xs rounded-full">
-                                Starting {endDate}
+                                Starting {endDate || 'after billing period'}
                               </span>
                             )}
                             {isSelected && (
@@ -1077,7 +1077,7 @@ function SettingsPageContent() {
                           )}
                           {isCancelling && (
                             <div className="text-center py-2 text-amber-400 text-sm">
-                              Active until {endDate}
+                              Active until {endDate || 'end of billing period'}
                             </div>
                           )}
                           {isScheduledFree && (
