@@ -178,6 +178,7 @@ export async function getCurrentUser() {
           status: true,
           currentPeriodEnd: true,
           cancelAtPeriodEnd: true,
+          stripeSubscriptionId: true,
         },
       },
     },
