@@ -66,10 +66,9 @@ export function getPlatformConfigurations(): PlatformConfig[] {
     {
       platform: 'magento',
       name: 'Magento / Adobe Commerce',
-      configured: false, // Coming soon
+      configured: true, // Uses access token per store (stored in DB)
       description: 'Connect your Magento or Adobe Commerce store for enterprise-grade tax compliance.',
       features: ['Order import', 'REST API', 'Multi-store support'],
-      comingSoon: true,
     },
     {
       platform: 'prestashop',

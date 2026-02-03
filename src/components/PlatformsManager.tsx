@@ -78,6 +78,12 @@ export default function PlatformsManager() {
   const [bigCommerceAccessToken, setBigCommerceAccessToken] = useState('');
   const [bigCommerceConnectError, setBigCommerceConnectError] = useState<string | null>(null);
   
+  // Magento modal state
+  const [showMagentoModal, setShowMagentoModal] = useState(false);
+  const [magentoStoreUrl, setMagentoStoreUrl] = useState('');
+  const [magentoAccessToken, setMagentoAccessToken] = useState('');
+  const [magentoConnectError, setMagentoConnectError] = useState<string | null>(null);
+  
   // Platform request modal state
   const [showRequestModal, setShowRequestModal] = useState(false);
   const [requestedPlatform, setRequestedPlatform] = useState('');
@@ -114,6 +120,11 @@ export default function PlatformsManager() {
 
     if (platform === 'bigcommerce') {
       setShowBigCommerceModal(true);
+      return;
+    }
+
+    if (platform === 'magento') {
+      setShowMagentoModal(true);
       return;
     }
     
@@ -219,6 +230,48 @@ export default function PlatformsManager() {
       alert(`Successfully connected to ${data.store?.name || 'BigCommerce store'}!`);
     } catch (err) {
       setBigCommerceConnectError(err instanceof Error ? err.message : 'Connection failed');
+      setConnectingPlatform(null);
+    }
+  };
+
+  const handleMagentoConnect = async () => {
+    if (!magentoStoreUrl.trim() || !magentoAccessToken.trim()) {
+      setMagentoConnectError('Please fill in all fields');
+      return;
+    }
+
+    setConnectingPlatform('magento');
+    setMagentoConnectError(null);
+
+    try {
+      const response = await fetch('/api/platforms/magento/connect', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          storeUrl: magentoStoreUrl,
+          accessToken: magentoAccessToken,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setMagentoConnectError(data.error || 'Failed to connect');
+        setConnectingPlatform(null);
+        return;
+      }
+
+      // Success - close modal and refresh
+      setShowMagentoModal(false);
+      setMagentoStoreUrl('');
+      setMagentoAccessToken('');
+      setConnectingPlatform(null);
+      await fetchPlatforms();
+      
+      // Show success message
+      alert(`Successfully connected to ${data.store?.name || 'Magento store'}!`);
+    } catch (err) {
+      setMagentoConnectError(err instanceof Error ? err.message : 'Connection failed');
       setConnectingPlatform(null);
     }
   };
@@ -761,6 +814,102 @@ export default function PlatformsManager() {
                 className="flex-1 btn-theme-primary text-theme-primary px-4 py-2 rounded-lg font-medium transition disabled:opacity-50 flex items-center justify-center gap-2"
               >
                 {connectingPlatform === 'bigcommerce' ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Connecting...
+                  </>
+                ) : (
+                  'Connect Store'
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Magento API Credentials Modal */}
+      {showMagentoModal && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="card-theme rounded-xl p-6 max-w-md w-full">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h3 className="text-xl font-semibold text-theme-primary flex items-center gap-2">
+                  <Store className="w-6 h-6 text-theme-accent" />
+                  Connect Magento / Adobe Commerce
+                </h3>
+                <p className="text-theme-muted text-sm mt-1">
+                  Enter your store URL and Access Token
+                </p>
+              </div>
+              <button
+                onClick={() => {
+                  setShowMagentoModal(false);
+                  setMagentoConnectError(null);
+                }}
+                className="p-2 bg-theme-secondary/30 hover:bg-white/20 text-theme-primary rounded-lg transition"
+              >
+                ✕
+              </button>
+            </div>
+            
+            <div className="bg-accent-subtle border border-theme-accent/30 rounded-lg p-3 mb-4">
+              <p className="text-theme-accent text-sm">
+                <strong>How to get an Access Token:</strong> In Magento Admin, go to System → Integrations → Add New Integration. 
+                Give it <strong>Sales (Orders)</strong> read access, then activate to get the Access Token.
+              </p>
+              <p className="text-theme-accent/70 text-xs mt-2">
+                For Adobe Commerce Cloud, use your store&apos;s base URL (e.g., https://mystore.com).
+              </p>
+            </div>
+
+            {magentoConnectError && (
+              <div className="rounded-lg p-3 mb-4 flex items-start gap-2" style={{ backgroundColor: 'var(--error-bg)', border: '1px solid var(--error-border)' }}>
+                <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" style={{ color: 'var(--error-text)' }} />
+                <p className="text-sm" style={{ color: 'var(--error-text)' }}>{magentoConnectError}</p>
+              </div>
+            )}
+            
+            <div className="space-y-4">
+              <div>
+                <label className="block text-theme-secondary text-sm mb-2">Store URL</label>
+                <input
+                  type="text"
+                  value={magentoStoreUrl}
+                  onChange={(e) => setMagentoStoreUrl(e.target.value)}
+                  placeholder="https://mystore.com"
+                  className="w-full px-4 py-3 bg-theme-secondary/30 border border-theme-secondary rounded-lg text-theme-primary focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                />
+              </div>
+              <div>
+                <label className="block text-theme-secondary text-sm mb-2">Access Token</label>
+                <input
+                  type="password"
+                  value={magentoAccessToken}
+                  onChange={(e) => setMagentoAccessToken(e.target.value)}
+                  placeholder="Enter your access token"
+                  className="w-full px-4 py-3 bg-theme-secondary/30 border border-theme-secondary rounded-lg text-theme-primary focus:outline-none focus:ring-2 focus:ring-emerald-500 font-mono text-sm"
+                />
+              </div>
+            </div>
+
+            <div className="flex gap-3 mt-6">
+              <button
+                onClick={() => {
+                  setShowMagentoModal(false);
+                  setMagentoStoreUrl('');
+                  setMagentoAccessToken('');
+                  setMagentoConnectError(null);
+                }}
+                className="px-4 py-2 bg-theme-secondary/30 hover:bg-white/20 text-theme-primary rounded-lg transition"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleMagentoConnect}
+                disabled={!magentoStoreUrl.trim() || !magentoAccessToken.trim() || connectingPlatform === 'magento'}
+                className="flex-1 btn-theme-primary text-theme-primary px-4 py-2 rounded-lg font-medium transition disabled:opacity-50 flex items-center justify-center gap-2"
+              >
+                {connectingPlatform === 'magento' ? (
                   <>
                     <Loader2 className="w-4 h-4 animate-spin" />
                     Connecting...
