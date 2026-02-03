@@ -80,10 +80,9 @@ export function getPlatformConfigurations(): PlatformConfig[] {
     {
       platform: 'opencart',
       name: 'OpenCart',
-      configured: false, // Coming soon
+      configured: true, // Uses API username + key per store
       description: 'Sales tax automation for your OpenCart store.',
-      features: ['Order import', 'Extension support', 'Self-hosted'],
-      comingSoon: true,
+      features: ['Order import', 'Session API', 'Self-hosted'],
     },
     {
       platform: 'ecwid',

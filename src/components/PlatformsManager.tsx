@@ -90,6 +90,13 @@ export default function PlatformsManager() {
   const [prestaShopApiKey, setPrestaShopApiKey] = useState('');
   const [prestaShopConnectError, setPrestaShopConnectError] = useState<string | null>(null);
   
+  // OpenCart modal state
+  const [showOpenCartModal, setShowOpenCartModal] = useState(false);
+  const [openCartStoreUrl, setOpenCartStoreUrl] = useState('');
+  const [openCartApiUsername, setOpenCartApiUsername] = useState('');
+  const [openCartApiKey, setOpenCartApiKey] = useState('');
+  const [openCartConnectError, setOpenCartConnectError] = useState<string | null>(null);
+  
   // Platform request modal state
   const [showRequestModal, setShowRequestModal] = useState(false);
   const [requestedPlatform, setRequestedPlatform] = useState('');
@@ -136,6 +143,11 @@ export default function PlatformsManager() {
 
     if (platform === 'prestashop') {
       setShowPrestaShopModal(true);
+      return;
+    }
+
+    if (platform === 'opencart') {
+      setShowOpenCartModal(true);
       return;
     }
     
@@ -325,6 +337,50 @@ export default function PlatformsManager() {
       alert(`Successfully connected to ${data.store?.name || 'PrestaShop store'}!`);
     } catch (err) {
       setPrestaShopConnectError(err instanceof Error ? err.message : 'Connection failed');
+      setConnectingPlatform(null);
+    }
+  };
+
+  const handleOpenCartConnect = async () => {
+    if (!openCartStoreUrl.trim() || !openCartApiUsername.trim() || !openCartApiKey.trim()) {
+      setOpenCartConnectError('Please fill in all fields');
+      return;
+    }
+
+    setConnectingPlatform('opencart');
+    setOpenCartConnectError(null);
+
+    try {
+      const response = await fetch('/api/platforms/opencart/connect', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          storeUrl: openCartStoreUrl,
+          apiUsername: openCartApiUsername,
+          apiKey: openCartApiKey,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setOpenCartConnectError(data.error || 'Failed to connect');
+        setConnectingPlatform(null);
+        return;
+      }
+
+      // Success - close modal and refresh
+      setShowOpenCartModal(false);
+      setOpenCartStoreUrl('');
+      setOpenCartApiUsername('');
+      setOpenCartApiKey('');
+      setConnectingPlatform(null);
+      await fetchPlatforms();
+      
+      // Show success message
+      alert(`Successfully connected to ${data.store?.name || 'OpenCart store'}!`);
+    } catch (err) {
+      setOpenCartConnectError(err instanceof Error ? err.message : 'Connection failed');
       setConnectingPlatform(null);
     }
   };
@@ -1056,6 +1112,113 @@ export default function PlatformsManager() {
                 className="flex-1 btn-theme-primary text-theme-primary px-4 py-2 rounded-lg font-medium transition disabled:opacity-50 flex items-center justify-center gap-2"
               >
                 {connectingPlatform === 'prestashop' ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Connecting...
+                  </>
+                ) : (
+                  'Connect Store'
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* OpenCart API Credentials Modal */}
+      {showOpenCartModal && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="card-theme rounded-xl p-6 max-w-md w-full">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h3 className="text-xl font-semibold text-theme-primary flex items-center gap-2">
+                  <Store className="w-6 h-6 text-theme-accent" />
+                  Connect OpenCart
+                </h3>
+                <p className="text-theme-muted text-sm mt-1">
+                  Enter your store URL and API credentials
+                </p>
+              </div>
+              <button
+                onClick={() => {
+                  setShowOpenCartModal(false);
+                  setOpenCartConnectError(null);
+                }}
+                className="p-2 bg-theme-secondary/30 hover:bg-white/20 text-theme-primary rounded-lg transition"
+              >
+                ✕
+              </button>
+            </div>
+            
+            <div className="bg-accent-subtle border border-theme-accent/30 rounded-lg p-3 mb-4">
+              <p className="text-theme-accent text-sm">
+                <strong>How to get API credentials:</strong> In OpenCart Admin, go to System → Users → API → Add New. 
+                Generate a key and <strong>add your server IP</strong> to the allowed list.
+              </p>
+              <p className="text-theme-accent/70 text-xs mt-2">
+                Note: IP whitelisting is required for API access.
+              </p>
+            </div>
+
+            {openCartConnectError && (
+              <div className="rounded-lg p-3 mb-4 flex items-start gap-2" style={{ backgroundColor: 'var(--error-bg)', border: '1px solid var(--error-border)' }}>
+                <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" style={{ color: 'var(--error-text)' }} />
+                <p className="text-sm" style={{ color: 'var(--error-text)' }}>{openCartConnectError}</p>
+              </div>
+            )}
+            
+            <div className="space-y-4">
+              <div>
+                <label className="block text-theme-secondary text-sm mb-2">Store URL</label>
+                <input
+                  type="text"
+                  value={openCartStoreUrl}
+                  onChange={(e) => setOpenCartStoreUrl(e.target.value)}
+                  placeholder="https://mystore.com"
+                  className="w-full px-4 py-3 bg-theme-secondary/30 border border-theme-secondary rounded-lg text-theme-primary focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                />
+              </div>
+              <div>
+                <label className="block text-theme-secondary text-sm mb-2">API Username</label>
+                <input
+                  type="text"
+                  value={openCartApiUsername}
+                  onChange={(e) => setOpenCartApiUsername(e.target.value)}
+                  placeholder="Default"
+                  className="w-full px-4 py-3 bg-theme-secondary/30 border border-theme-secondary rounded-lg text-theme-primary focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                />
+              </div>
+              <div>
+                <label className="block text-theme-secondary text-sm mb-2">API Key</label>
+                <input
+                  type="password"
+                  value={openCartApiKey}
+                  onChange={(e) => setOpenCartApiKey(e.target.value)}
+                  placeholder="Enter your API key"
+                  className="w-full px-4 py-3 bg-theme-secondary/30 border border-theme-secondary rounded-lg text-theme-primary focus:outline-none focus:ring-2 focus:ring-emerald-500 font-mono text-sm"
+                />
+              </div>
+            </div>
+
+            <div className="flex gap-3 mt-6">
+              <button
+                onClick={() => {
+                  setShowOpenCartModal(false);
+                  setOpenCartStoreUrl('');
+                  setOpenCartApiUsername('');
+                  setOpenCartApiKey('');
+                  setOpenCartConnectError(null);
+                }}
+                className="px-4 py-2 bg-theme-secondary/30 hover:bg-white/20 text-theme-primary rounded-lg transition"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleOpenCartConnect}
+                disabled={!openCartStoreUrl.trim() || !openCartApiUsername.trim() || !openCartApiKey.trim() || connectingPlatform === 'opencart'}
+                className="flex-1 btn-theme-primary text-theme-primary px-4 py-2 rounded-lg font-medium transition disabled:opacity-50 flex items-center justify-center gap-2"
+              >
+                {connectingPlatform === 'opencart' ? (
                   <>
                     <Loader2 className="w-4 h-4 animate-spin" />
                     Connecting...
