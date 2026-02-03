@@ -90,20 +90,59 @@ async function handleCheckoutComplete(session: Stripe.Checkout.Session) {
     return;
   }
 
+  // Fetch the full subscription to get price/plan details
+  let plan = 'starter';
+  let priceId: string | undefined;
+  let currentPeriodEnd: Date | null = null;
+  
+  if (subscriptionId) {
+    try {
+      const { stripe } = await import('@/lib/stripe');
+      if (stripe) {
+        const subscription = await stripe.subscriptions.retrieve(subscriptionId);
+        priceId = subscription.items.data[0]?.price?.id;
+        
+        if (priceId) {
+          const planInfo = getPlanByPriceId(priceId);
+          if (planInfo) {
+            plan = planInfo.id;
+          }
+        }
+        
+        // Get period end for billing display
+        if (subscription.current_period_end) {
+          currentPeriodEnd = new Date(subscription.current_period_end * 1000);
+        }
+      }
+    } catch (error) {
+      console.error('Failed to fetch subscription details:', error);
+    }
+  }
+
   await prisma.subscription.upsert({
     where: { userId },
     create: {
       userId,
       stripeCustomerId: customerId,
       stripeSubscriptionId: subscriptionId,
+      stripePriceId: priceId,
+      plan,
       status: 'active',
+      currentPeriodEnd,
+      cancelAtPeriodEnd: false,
     },
     update: {
       stripeCustomerId: customerId,
       stripeSubscriptionId: subscriptionId,
+      stripePriceId: priceId,
+      plan,
       status: 'active',
+      currentPeriodEnd,
+      cancelAtPeriodEnd: false,
     },
   });
+  
+  console.log(`Checkout complete: user=${userId}, plan=${plan}, priceId=${priceId}`);
 }
 
 async function handleSubscriptionUpdate(subscription: Stripe.Subscription) {
