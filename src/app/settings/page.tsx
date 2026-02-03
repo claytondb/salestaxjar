@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import Header from '@/components/Header';
@@ -91,6 +91,7 @@ export default function SettingsPage() {
     refreshUser,
   } = useAuth();
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   const [activeTab, setActiveTab] = useState('profile');
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -164,6 +165,33 @@ export default function SettingsPage() {
       setActiveTab(hash);
     }
   }, []);
+
+  // Handle checkout success/cancel redirect
+  useEffect(() => {
+    const success = searchParams.get('success');
+    const canceled = searchParams.get('canceled');
+    const tab = searchParams.get('tab');
+    
+    if (tab === 'billing') {
+      setActiveTab('billing');
+    }
+    
+    if (success === 'true') {
+      // Refresh user data to get updated subscription
+      if (refreshUser) {
+        refreshUser().then(() => {
+          setSaveMessage('🎉 Subscription activated successfully!');
+          setTimeout(() => setSaveMessage(''), 5000);
+        });
+      }
+      // Clean up URL
+      router.replace('/settings#billing', { scroll: false });
+    } else if (canceled === 'true') {
+      setSaveMessage('Checkout was cancelled.');
+      setTimeout(() => setSaveMessage(''), 3000);
+      router.replace('/settings#billing', { scroll: false });
+    }
+  }, [searchParams, refreshUser, router]);
   
   // Load API keys when tab is active
   useEffect(() => {
@@ -952,7 +980,7 @@ export default function SettingsPage() {
                     </div>
                     {billing.cancelAtPeriodEnd ? (
                       <span className="px-3 py-1 bg-amber-500/20 text-amber-400 rounded-full text-sm">
-                        Cancelling
+                        Cancelled
                       </span>
                     ) : (
                       <span className="px-3 py-1 btn-theme-primary/20 text-theme-accent rounded-full text-sm">
@@ -1036,7 +1064,7 @@ export default function SettingsPage() {
                           )}
                           {isCancelling && (
                             <div className="text-center py-2 text-amber-400 text-sm">
-                              Cancellation pending
+                              Active until {endDate}
                             </div>
                           )}
                           {isScheduledFree && (
