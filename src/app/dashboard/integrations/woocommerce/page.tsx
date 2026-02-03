@@ -20,7 +20,6 @@ import {
 export default function WooCommerceIntegrationPage() {
   const { user, isLoading } = useAuth();
   const router = useRouter();
-  const [downloading, setDownloading] = useState(false);
   const [copied, setCopied] = useState(false);
 
   if (isLoading) {
@@ -36,27 +35,9 @@ export default function WooCommerceIntegrationPage() {
     return null;
   }
 
-  const handleDownload = async () => {
-    setDownloading(true);
-    try {
-      const response = await fetch('/api/integrations/woocommerce/download');
-      if (!response.ok) throw new Error('Download failed');
-      
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'sails-tax-for-woocommerce.zip';
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      window.URL.revokeObjectURL(url);
-    } catch (error) {
-      console.error('Download error:', error);
-      alert('Failed to download plugin. Please try again.');
-    } finally {
-      setDownloading(false);
-    }
+  const handleDownload = () => {
+    // Direct download from static file
+    window.location.href = '/downloads/sails-tax-for-woocommerce.zip';
   };
 
   const copyToClipboard = (text: string) => {
@@ -73,11 +54,10 @@ export default function WooCommerceIntegrationPage() {
       action: (
         <button
           onClick={handleDownload}
-          disabled={downloading}
-          className="btn-theme-primary px-6 py-3 rounded-lg font-medium flex items-center gap-2 disabled:opacity-50"
+          className="btn-theme-primary px-6 py-3 rounded-lg font-medium flex items-center gap-2"
         >
           <Download className="w-5 h-5" />
-          {downloading ? 'Downloading...' : 'Download Plugin (ZIP)'}
+          Download Plugin (ZIP)
         </button>
       ),
     },
