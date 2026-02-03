@@ -19,7 +19,9 @@ export async function DELETE() {
     if (user.subscription?.stripeSubscriptionId) {
       try {
         const stripe = (await import('@/lib/stripe')).stripe;
-        await stripe.subscriptions.cancel(user.subscription.stripeSubscriptionId);
+        if (stripe) {
+          await stripe.subscriptions.cancel(user.subscription.stripeSubscriptionId);
+        }
       } catch (stripeError) {
         console.error('Failed to cancel Stripe subscription:', stripeError);
         // Continue with deletion even if Stripe fails
