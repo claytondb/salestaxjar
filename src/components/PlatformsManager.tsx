@@ -12,7 +12,8 @@ import {
   Loader2,
   Unplug,
   Upload,
-  Clock
+  Clock,
+  Download
 } from 'lucide-react';
 import { platformLogos } from './PlatformLogos';
 // Platform integrations focused on own-website sellers (not marketplace facilitators)
@@ -586,20 +587,32 @@ export default function PlatformsManager() {
                   Coming Soon
                 </span>
               ) : platform.configured ? (
-                <button
-                  onClick={() => handleConnect(platform.platform)}
-                  disabled={connectingPlatform === platform.platform}
-                  className="btn-theme-primary  text-theme-primary px-4 py-2 rounded-lg font-medium transition disabled:opacity-50 flex items-center gap-2"
-                >
-                  {connectingPlatform === platform.platform ? (
-                    <>
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                      Connecting...
-                    </>
-                  ) : (
-                    <>Connect {platform.connectedCount > 0 ? 'Another' : ''}</>
+                <div className="flex items-center gap-2">
+                  {/* Show Get Plugin link for WooCommerce */}
+                  {platform.platform === 'woocommerce' && (
+                    <a
+                      href="/dashboard/integrations/woocommerce"
+                      className="px-4 py-2 bg-theme-secondary/50 text-theme-primary rounded-lg font-medium transition hover:bg-theme-secondary/70 flex items-center gap-2"
+                    >
+                      <Download className="w-4 h-4" />
+                      Get Plugin
+                    </a>
                   )}
-                </button>
+                  <button
+                    onClick={() => handleConnect(platform.platform)}
+                    disabled={connectingPlatform === platform.platform}
+                    className="btn-theme-primary text-theme-primary px-4 py-2 rounded-lg font-medium transition disabled:opacity-50 flex items-center gap-2"
+                  >
+                    {connectingPlatform === platform.platform ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        Connecting...
+                      </>
+                    ) : (
+                      <>Connect {platform.connectedCount > 0 ? 'Another' : ''}</>
+                    )}
+                  </button>
+                </div>
               ) : (
                 <div className="text-right">
                   <span className="text-theme-muted text-sm block mb-1">Not configured</span>
