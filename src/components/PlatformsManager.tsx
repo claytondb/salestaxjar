@@ -592,7 +592,7 @@ export default function PlatformsManager() {
                   {platform.platform === 'woocommerce' && (
                     <a
                       href="/dashboard/integrations/woocommerce"
-                      className="px-4 py-2 bg-theme-secondary/50 text-theme-primary rounded-lg font-medium transition hover:bg-theme-secondary/70 flex items-center gap-2"
+                      className="px-4 py-2 bg-white text-theme-accent rounded-lg font-medium transition hover:bg-gray-100 flex items-center gap-2 whitespace-nowrap"
                     >
                       <Download className="w-4 h-4" />
                       Get Plugin
