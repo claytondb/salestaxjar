@@ -49,21 +49,21 @@ const plans = [
     name: 'Free', 
     price: 0, 
     tier: 0,
-    features: ['Nexus monitoring', 'Economic nexus alerts', 'Unlimited calculations', 'Email support']
+    features: ['Nexus monitoring (all 50 states)', 'Unlimited calculations', 'Calculation history + CSV export', 'Email support']
   },
   { 
     id: 'starter', 
     name: 'Starter', 
     price: 9, 
     tier: 1,
-    features: ['Up to 200 orders/mo', 'Shopify & WooCommerce', 'Track 3 states', 'CSV import']
+    features: ['Shopify & WooCommerce', 'Order import', 'Email deadline reminders', 'CSV order import']
   },
   { 
     id: 'pro', 
     name: 'Pro', 
     price: 29, 
     tier: 2,
-    features: ['Up to 2,000 orders/mo', 'All integrations', 'Unlimited states', 'Faster email support'],
+    features: ['All platform integrations', 'Tax calculation API', 'Priority email support'],
     popular: true
   },
   { 
@@ -71,7 +71,7 @@ const plans = [
     name: 'Business', 
     price: 59, 
     tier: 3,
-    features: ['Unlimited orders', 'Priority email support', 'API access', 'Advanced reporting']
+    features: ['Highest priority support', 'Early access to new features', 'Auto-filing (coming soon)']
   },
 ];
 

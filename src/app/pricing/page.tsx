@@ -15,10 +15,9 @@ const plans = [
     price: 0,
     description: 'See if you even need to worry about sales tax',
     features: [
-      { text: 'Nexus monitoring (where do I owe?)', included: true },
-      { text: 'Economic nexus alerts', included: true },
+      { text: 'Nexus monitoring (all 50 states)', included: true },
       { text: 'Unlimited tax calculations', included: true },
-      { text: 'Educational guides', included: true },
+      { text: 'Calculation history + CSV export', included: true },
       { text: 'Email support', included: true },
     ],
     cta: 'Get Started Free',
@@ -30,9 +29,8 @@ const plans = [
     description: 'For side hustlers who just hit nexus thresholds',
     features: [
       { text: 'Everything in Free, plus:', included: true, bold: true },
-      { text: 'Up to 200 orders/month', included: true },
-      { text: 'Shopify & WooCommerce', included: true },
-      { text: 'Track 3 states', included: true },
+      { text: 'Connect Shopify & WooCommerce', included: true },
+      { text: 'Import orders from your store', included: true },
       { text: 'Email deadline reminders', included: true },
       { text: 'CSV order import', included: true },
     ],
@@ -42,14 +40,12 @@ const plans = [
   {
     name: 'Pro',
     price: 29,
-    description: 'For full-time sellers with multi-state sales',
+    description: 'For growing sellers with multi-platform sales',
     features: [
       { text: 'Everything in Starter, plus:', included: true, bold: true },
-      { text: 'Up to 2,000 orders/month', included: true },
-      { text: 'Shopify, WooCommerce + API', included: true },
-      { text: 'Unlimited state tracking', included: true },
-      { text: 'SMS + email reminders', included: true },
-      { text: 'Faster email support', included: true },
+      { text: 'All platform integrations', included: true },
+      { text: 'Tax calculation API + API keys', included: true },
+      { text: 'Priority email support', included: true },
       { text: 'Filing assistance', included: true, comingSoon: true },
     ],
     cta: 'Start Free Trial',
@@ -61,10 +57,8 @@ const plans = [
     description: 'For high-volume sellers who want it all',
     features: [
       { text: 'Everything in Pro, plus:', included: true, bold: true },
-      { text: 'Unlimited orders', included: true },
-      { text: 'Priority email support', included: true },
-      { text: 'API access', included: true },
-      { text: 'Advanced reporting', included: true },
+      { text: 'Highest priority support', included: true },
+      { text: 'Early access to new features', included: true },
       { text: 'Auto-filing', included: true, comingSoon: true },
     ],
     cta: 'Start Free Trial',
@@ -79,35 +73,35 @@ const faqs = [
   },
   {
     q: 'What happens after my free trial?',
-    a: 'After 14 days, you can pick a paid plan or stay on Free forever. The Free plan lets you monitor nexus and calculate taxes — you only pay when you need more.',
+    a: 'After 14 days, you can pick a paid plan or stay on Free forever. The Free plan lets you monitor nexus and calculate taxes — you only pay when you need store integrations.',
   },
   {
     q: 'Can I change plans later?',
     a: 'Yes! Upgrade or downgrade anytime. Changes take effect on your next billing cycle.',
   },
   {
-    q: 'What counts as an "order"?',
-    a: 'Any transaction you import or sync from your connected store counts as one order. Multi-item orders still count as just one order.',
+    q: 'What does the free plan include?',
+    a: 'Nexus monitoring across all 50 states + DC, unlimited tax calculations, calculation history with CSV export, and email support. No time limit, no credit card.',
   },
   {
     q: 'Do you file my sales tax returns for me?',
-    a: 'Filing assistance is coming soon for Pro plans! Right now we calculate what you owe and remind you of deadlines. Many users say this alone saves them hours.',
+    a: 'Not yet — filing assistance is coming soon. Right now Sails helps you track where you owe, calculate how much, and reminds you of deadlines so you can file yourself.',
   },
   {
     q: 'I\'m just a hobby seller. Do I even need this?',
-    a: 'Maybe not yet! Use our free nexus monitoring to see if you\'ve crossed any state thresholds. Many states require collection at $100K in sales. We\'ll alert you when you\'re getting close.',
+    a: 'Maybe not yet! Use our free nexus monitoring to see if you\'ve crossed any state thresholds. Many states require collection at $100K in sales or 200 transactions.',
   },
   {
     q: 'Is Sails a CPA or tax advisor?',
-    a: 'No — we\'re software that helps you track and calculate sales tax. We provide filing-ready reports, but you review and submit them yourself. For complex situations, we recommend consulting a tax professional.',
+    a: 'No — we\'re software that helps you track and calculate sales tax. You review and submit returns yourself. For complex situations, we recommend consulting a tax professional.',
   },
 ];
 
 const comparisons = [
-  { feature: 'Starting price', sails: '$9/mo', taxjar: '$19/mo', taxcloud: '$19/mo' },
   { feature: 'Free tier', sails: '✓ Yes', taxjar: '✗ No', taxcloud: '✗ No' },
+  { feature: 'Starting price', sails: '$9/mo', taxjar: '$19/mo', taxcloud: '$19/mo' },
+  { feature: 'Nexus monitoring', sails: '✓ Free', taxjar: 'Paid only', taxcloud: 'Paid only' },
   { feature: 'Shopify + WooCommerce', sails: '✓', taxjar: '✓', taxcloud: '✓' },
-  { feature: 'Tax calculation API', sails: '✓', taxjar: '✓', taxcloud: '✓' },
   { feature: 'Made for small sellers', sails: '✓', taxjar: 'Enterprise focus', taxcloud: 'Mixed' },
 ];
 
@@ -334,7 +328,7 @@ export default function PricingPage() {
             Ready to stop stressing about sales tax?
           </h2>
           <p className="text-theme-muted mb-8">
-            Join thousands of small business owners who finally understand their tax obligations.
+            Join small business owners who finally understand their tax obligations.
           </p>
           <Link href="/signup" className="inline-block btn-theme-primary text-white px-8 py-4 rounded-xl font-semibold text-lg transition">
             Start Free — No Credit Card
