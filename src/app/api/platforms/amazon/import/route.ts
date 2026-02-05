@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getCurrentUser } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
+import { userCanConnectPlatform, tierGateError } from '@/lib/plans';
 import { parse } from 'csv-parse/sync';
 
 /**
@@ -16,6 +17,15 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
+      );
+    }
+
+    // Tier gate: Amazon requires Pro or higher
+    const access = userCanConnectPlatform(user, 'amazon');
+    if (!access.allowed) {
+      return NextResponse.json(
+        tierGateError(access.userPlan, access.requiredPlan, 'platform_amazon'),
+        { status: 403 }
       );
     }
 

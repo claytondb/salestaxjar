@@ -8,6 +8,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getCurrentUser } from '@/lib/auth';
 import { generateApiKey, listApiKeys } from '@/lib/apikeys';
+import { userCanAccess, tierGateError } from '@/lib/plans';
 import { z } from 'zod';
 
 const createKeySchema = z.object({
@@ -20,6 +21,15 @@ export async function GET() {
     const user = await getCurrentUser();
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    // Tier gate: API keys require Pro or higher
+    const access = userCanAccess(user, 'api_keys');
+    if (!access.allowed) {
+      return NextResponse.json(
+        tierGateError(access.userPlan, access.requiredPlan, 'api_keys'),
+        { status: 403 }
+      );
     }
     
     const keys = await listApiKeys(user.id);
@@ -36,6 +46,15 @@ export async function POST(request: NextRequest) {
     const user = await getCurrentUser();
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    // Tier gate: API keys require Pro or higher
+    const access = userCanAccess(user, 'api_keys');
+    if (!access.allowed) {
+      return NextResponse.json(
+        tierGateError(access.userPlan, access.requiredPlan, 'api_keys'),
+        { status: 403 }
+      );
     }
     
     const body = await request.json();

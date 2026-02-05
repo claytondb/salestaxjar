@@ -7,6 +7,7 @@ import {
   updateSalesSummary,
   ImportedOrderData,
 } from '@/lib/platforms';
+import { userCanConnectPlatform, tierGateError } from '@/lib/plans';
 import { fetchOrders as fetchShopifyOrders, ShopifyOrder } from '@/lib/platforms/shopify';
 import { 
   getCredentials as getWooCredentials,
@@ -45,6 +46,15 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: 'Missing platform or platformId' },
         { status: 400 }
+      );
+    }
+
+    // Tier gate: check platform access
+    const access = userCanConnectPlatform(user, platform);
+    if (!access.allowed) {
+      return NextResponse.json(
+        tierGateError(access.userPlan, access.requiredPlan, `platform_${platform}`),
+        { status: 403 }
       );
     }
 

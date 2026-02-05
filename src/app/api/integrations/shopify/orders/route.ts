@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getCurrentUser } from '@/lib/auth';
 import { getConnection } from '@/lib/platforms';
 import { fetchOrders, isShopifyConfigured } from '@/lib/platforms/shopify';
+import { userCanConnectPlatform, tierGateError } from '@/lib/plans';
 
 /**
  * GET /api/integrations/shopify/orders
@@ -22,6 +23,15 @@ export async function GET(request: NextRequest) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
+      );
+    }
+
+    // Tier gate: Shopify requires Starter or higher
+    const access = userCanConnectPlatform(user, 'shopify');
+    if (!access.allowed) {
+      return NextResponse.json(
+        tierGateError(access.userPlan, access.requiredPlan, 'platform_shopify'),
+        { status: 403 }
       );
     }
 

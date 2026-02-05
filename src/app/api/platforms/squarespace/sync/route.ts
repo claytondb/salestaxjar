@@ -15,6 +15,7 @@ import {
   mapOrderToImport 
 } from '@/lib/platforms/squarespace';
 import { saveImportedOrders, updateSyncStatus } from '@/lib/platforms';
+import { userCanConnectPlatform, tierGateError } from '@/lib/plans';
 import { z } from 'zod';
 
 const syncSchema = z.object({
@@ -30,6 +31,15 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
+      );
+    }
+
+    // Tier gate: Squarespace requires Pro or higher
+    const access = userCanConnectPlatform(user, 'squarespace');
+    if (!access.allowed) {
+      return NextResponse.json(
+        tierGateError(access.userPlan, access.requiredPlan, 'platform_squarespace'),
+        { status: 403 }
       );
     }
 

@@ -4,10 +4,28 @@ import { prisma } from '@/lib/prisma';
 import { sendPaymentFailedEmail } from '@/lib/email';
 import Stripe from 'stripe';
 
-// Note: Next.js App Router handles raw body automatically for webhooks
+/**
+ * Stripe Webhook Handler
+ * 
+ * IMPORTANT: If you're seeing 401 errors on this endpoint, it's likely
+ * caused by Vercel Deployment Protection. To fix:
+ * 
+ * 1. Go to Vercel Dashboard → Project Settings → Deployment Protection
+ * 2. Either disable protection for Production, OR
+ * 3. Under "Protection Bypass for Automation", enable it and set the
+ *    VERCEL_AUTOMATION_BYPASS_SECRET env var. Then configure Stripe
+ *    to send the header: x-vercel-protection-bypass: <secret>
+ *    (Stripe supports custom headers in webhook endpoint settings)
+ * 
+ * Next.js App Router handles raw body automatically for webhooks.
+ */
+
+// Ensure this route is not statically optimized and runs on edge/serverless
+export const dynamic = 'force-dynamic';
 
 export async function POST(request: NextRequest) {
   if (!isStripeConfigured()) {
+    console.error('Stripe webhook received but Stripe is not configured');
     return NextResponse.json(
       { error: 'Stripe not configured' },
       { status: 503 }
@@ -19,6 +37,7 @@ export async function POST(request: NextRequest) {
     const signature = request.headers.get('stripe-signature');
 
     if (!signature) {
+      console.error('Stripe webhook: missing stripe-signature header');
       return NextResponse.json(
         { error: 'Missing signature' },
         { status: 400 }
@@ -27,11 +46,14 @@ export async function POST(request: NextRequest) {
 
     const event = constructWebhookEvent(body, signature);
     if (!event) {
+      console.error('Stripe webhook: signature verification failed');
       return NextResponse.json(
         { error: 'Invalid signature' },
         { status: 400 }
       );
     }
+
+    console.log(`Stripe webhook received: ${event.type} (${event.id})`);
 
     // Handle the event
     switch (event.type) {
@@ -67,12 +89,15 @@ export async function POST(request: NextRequest) {
       }
 
       default:
-        console.log(`Unhandled event type: ${event.type}`);
+        console.log(`Unhandled Stripe event type: ${event.type}`);
     }
 
     return NextResponse.json({ received: true });
   } catch (error) {
     console.error('Webhook error:', error);
+    // Return 200 to prevent Stripe from retrying on application errors
+    // (Stripe retries on 5xx, which can cause duplicate processing)
+    // Only return 500 for truly unexpected errors where we want a retry
     return NextResponse.json(
       { error: 'Webhook handler failed' },
       { status: 500 }
@@ -86,7 +111,16 @@ async function handleCheckoutComplete(session: Stripe.Checkout.Session) {
   const subscriptionId = session.subscription as string;
 
   if (!userId) {
-    console.error('No user ID in checkout session');
+    console.error('checkout.session.completed: No user ID found in session', {
+      sessionId: session.id,
+      clientReferenceId: session.client_reference_id,
+      metadata: session.metadata,
+    });
+    return;
+  }
+
+  if (!customerId) {
+    console.error('checkout.session.completed: No customer ID', { sessionId: session.id, userId });
     return;
   }
 
@@ -94,6 +128,7 @@ async function handleCheckoutComplete(session: Stripe.Checkout.Session) {
   let plan = 'starter';
   let priceId: string | undefined;
   let currentPeriodEnd: Date | null = null;
+  let currentPeriodStart: Date | null = null;
   
   if (subscriptionId) {
     try {
@@ -107,17 +142,28 @@ async function handleCheckoutComplete(session: Stripe.Checkout.Session) {
           const planInfo = getPlanByPriceId(priceId);
           if (planInfo) {
             plan = planInfo.id;
+          } else {
+            console.warn(`checkout.session.completed: Unknown price ID ${priceId}, defaulting to starter`);
           }
         }
         
-        // Get period end for billing display
+        // Get period dates for billing display
+        if (subscription.current_period_start) {
+          currentPeriodStart = new Date(subscription.current_period_start * 1000);
+        }
         if (subscription.current_period_end) {
           currentPeriodEnd = new Date(subscription.current_period_end * 1000);
         }
       }
     } catch (error) {
-      console.error('Failed to fetch subscription details:', error);
+      console.error('checkout.session.completed: Failed to fetch subscription details:', error);
+      // Continue with defaults — we still want to activate the subscription
     }
+  } else {
+    console.warn('checkout.session.completed: No subscription ID (one-time payment?)', {
+      sessionId: session.id,
+      userId,
+    });
   }
 
   await prisma.subscription.upsert({
@@ -129,6 +175,7 @@ async function handleCheckoutComplete(session: Stripe.Checkout.Session) {
       stripePriceId: priceId,
       plan,
       status: 'active',
+      currentPeriodStart,
       currentPeriodEnd,
       cancelAtPeriodEnd: false,
     },
@@ -138,12 +185,13 @@ async function handleCheckoutComplete(session: Stripe.Checkout.Session) {
       stripePriceId: priceId,
       plan,
       status: 'active',
+      currentPeriodStart,
       currentPeriodEnd,
       cancelAtPeriodEnd: false,
     },
   });
   
-  console.log(`Checkout complete: user=${userId}, plan=${plan}, priceId=${priceId}`);
+  console.log(`checkout.session.completed: user=${userId}, plan=${plan}, priceId=${priceId}, periodEnd=${currentPeriodEnd?.toISOString()}`);
 }
 
 async function handleSubscriptionUpdate(subscription: Stripe.Subscription) {

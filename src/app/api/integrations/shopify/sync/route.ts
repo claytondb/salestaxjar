@@ -8,6 +8,7 @@ import {
   ImportedOrderData,
 } from '@/lib/platforms';
 import { fetchOrders, isShopifyConfigured, ShopifyOrder } from '@/lib/platforms/shopify';
+import { userCanConnectPlatform, tierGateError } from '@/lib/plans';
 
 /**
  * POST /api/integrations/shopify/sync
@@ -26,6 +27,15 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
+      );
+    }
+
+    // Tier gate: Shopify requires Starter or higher
+    const access = userCanConnectPlatform(user, 'shopify');
+    if (!access.allowed) {
+      return NextResponse.json(
+        tierGateError(access.userPlan, access.requiredPlan, 'platform_shopify'),
+        { status: 403 }
       );
     }
 

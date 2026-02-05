@@ -13,6 +13,7 @@ import {
   saveConnection, 
   normalizeStoreUrl 
 } from '@/lib/platforms/woocommerce';
+import { userCanConnectPlatform, tierGateError } from '@/lib/plans';
 import { z } from 'zod';
 
 const connectSchema = z.object({
@@ -29,6 +30,15 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
+      );
+    }
+
+    // Tier gate: WooCommerce requires Starter or higher
+    const access = userCanConnectPlatform(user, 'woocommerce');
+    if (!access.allowed) {
+      return NextResponse.json(
+        tierGateError(access.userPlan, access.requiredPlan, 'platform_woocommerce'),
+        { status: 403 }
       );
     }
 

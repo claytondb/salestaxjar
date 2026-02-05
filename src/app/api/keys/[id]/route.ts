@@ -7,6 +7,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getCurrentUser } from '@/lib/auth';
 import { deleteApiKey, revokeApiKey } from '@/lib/apikeys';
+import { userCanAccess, tierGateError } from '@/lib/plans';
 
 export async function DELETE(
   request: NextRequest,
@@ -16,6 +17,15 @@ export async function DELETE(
     const user = await getCurrentUser();
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    // Tier gate: API keys require Pro or higher
+    const access = userCanAccess(user, 'api_keys');
+    if (!access.allowed) {
+      return NextResponse.json(
+        tierGateError(access.userPlan, access.requiredPlan, 'api_keys'),
+        { status: 403 }
+      );
     }
     
     const { id } = await params;
@@ -41,6 +51,15 @@ export async function PATCH(
     const user = await getCurrentUser();
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    // Tier gate: API keys require Pro or higher
+    const accessPatch = userCanAccess(user, 'api_keys');
+    if (!accessPatch.allowed) {
+      return NextResponse.json(
+        tierGateError(accessPatch.userPlan, accessPatch.requiredPlan, 'api_keys'),
+        { status: 403 }
+      );
     }
     
     const { id } = await params;

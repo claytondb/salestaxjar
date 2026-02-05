@@ -9,6 +9,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getCurrentUser } from '@/lib/auth';
 import { validateCredentials, saveConnection } from '@/lib/platforms/ecwid';
+import { userCanConnectPlatform, tierGateError } from '@/lib/plans';
 
 export async function POST(request: NextRequest) {
   try {
@@ -18,6 +19,15 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
+      );
+    }
+
+    // Tier gate: Ecwid requires Pro or higher
+    const access = userCanConnectPlatform(user, 'ecwid');
+    if (!access.allowed) {
+      return NextResponse.json(
+        tierGateError(access.userPlan, access.requiredPlan, 'platform_ecwid'),
+        { status: 403 }
       );
     }
 

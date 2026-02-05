@@ -5,6 +5,7 @@ import {
   getPlatformConfigurations,
   deleteConnection,
 } from '@/lib/platforms';
+import { resolveUserPlan, canConnectPlatform, getPlanDisplayName } from '@/lib/plans';
 
 /**
  * GET /api/platforms
@@ -24,20 +25,29 @@ export async function GET() {
     // Get platform configurations (which platforms are enabled)
     const configurations = getPlatformConfigurations();
 
-    // Merge connections with configurations
+    // Resolve user plan for tier gating info
+    const userPlan = resolveUserPlan(user.subscription);
+
+    // Merge connections with configurations and tier-gating info
     const platforms = configurations.map(config => {
       const userConnections = connections.filter(c => c.platform === config.platform);
+      const { allowed, requiredPlan } = canConnectPlatform(userPlan, config.platform);
       
       return {
         ...config,
         connections: userConnections,
         connectedCount: userConnections.length,
+        // Tier gating info for frontend
+        allowed,
+        requiredPlan,
+        requiredPlanName: getPlanDisplayName(requiredPlan),
       };
     });
 
     return NextResponse.json({
       platforms,
       totalConnections: connections.length,
+      userPlan,
     });
   } catch (error) {
     console.error('Error fetching platforms:', error);

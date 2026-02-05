@@ -9,6 +9,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getCurrentUser } from '@/lib/auth';
 import { validateCredentials, saveConnection } from '@/lib/platforms/prestashop';
+import { userCanConnectPlatform, tierGateError } from '@/lib/plans';
 
 export async function POST(request: NextRequest) {
   try {
@@ -18,6 +19,15 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
+      );
+    }
+
+    // Tier gate: PrestaShop requires Pro or higher
+    const access = userCanConnectPlatform(user, 'prestashop');
+    if (!access.allowed) {
+      return NextResponse.json(
+        tierGateError(access.userPlan, access.requiredPlan, 'platform_prestashop'),
+        { status: 403 }
       );
     }
 

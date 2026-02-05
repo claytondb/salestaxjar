@@ -9,6 +9,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getCurrentUser } from '@/lib/auth';
 import { validateCredentials, saveConnection } from '@/lib/platforms/squarespace';
+import { userCanConnectPlatform, tierGateError } from '@/lib/plans';
 import { z } from 'zod';
 
 const connectSchema = z.object({
@@ -24,6 +25,15 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
+      );
+    }
+
+    // Tier gate: Squarespace requires Pro or higher
+    const access = userCanConnectPlatform(user, 'squarespace');
+    if (!access.allowed) {
+      return NextResponse.json(
+        tierGateError(access.userPlan, access.requiredPlan, 'platform_squarespace'),
+        { status: 403 }
       );
     }
 
