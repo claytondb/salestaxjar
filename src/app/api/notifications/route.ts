@@ -8,6 +8,7 @@ const notificationPrefsSchema = z.object({
   emailDeadlineReminders: z.boolean().optional(),
   emailWeeklyDigest: z.boolean().optional(),
   emailNewRates: z.boolean().optional(),
+  emailNexusAlerts: z.boolean().optional(),
   reminderDaysBefore: z.number().min(1).max(30).optional(),
 });
 
@@ -42,6 +43,7 @@ export async function GET() {
         emailDeadlineReminders: prefs.emailDeadlineReminders,
         emailWeeklyDigest: prefs.emailWeeklyDigest,
         emailNewRates: prefs.emailNewRates,
+        emailNexusAlerts: prefs.emailNexusAlerts,
         reminderDaysBefore: prefs.reminderDaysBefore,
       },
     });
@@ -93,6 +95,7 @@ export async function PUT(request: NextRequest) {
         emailDeadlineReminders: prefs.emailDeadlineReminders,
         emailWeeklyDigest: prefs.emailWeeklyDigest,
         emailNewRates: prefs.emailNewRates,
+        emailNexusAlerts: prefs.emailNexusAlerts,
         reminderDaysBefore: prefs.reminderDaysBefore,
       },
     });

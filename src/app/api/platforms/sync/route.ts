@@ -25,6 +25,8 @@ import {
   fetchOrderShippingAddresses as fetchBigCommerceShippingAddresses,
   mapOrderToImport as mapBigCommerceOrder,
 } from '@/lib/platforms/bigcommerce';
+import { aggregateForStates } from '@/lib/sales-aggregation';
+import { checkAndCreateAlerts } from '@/lib/nexus-alerts';
 
 /**
  * POST /api/platforms/sync
@@ -101,12 +103,30 @@ export async function POST(request: NextRequest) {
 
       // Update sales summaries for affected states
       const affectedStates = new Set(orders.map(o => o.shippingState).filter(Boolean));
+      const affectedStateArray = Array.from(affectedStates).filter((s): s is string => !!s);
       const currentMonth = new Date().toISOString().slice(0, 7); // YYYY-MM
       
       for (const state of affectedStates) {
         if (state) {
           await updateSalesSummary(user.id, state, currentMonth);
         }
+      }
+
+      // Run full aggregation for affected states (rolling 12-month + calendar year)
+      if (affectedStateArray.length > 0) {
+        try {
+          await aggregateForStates(user.id, affectedStateArray);
+        } catch (aggError) {
+          console.error('Sales aggregation error (non-fatal):', aggError);
+        }
+      }
+
+      // Check nexus thresholds and create alerts
+      let newAlerts: unknown[] = [];
+      try {
+        newAlerts = await checkAndCreateAlerts(user.id);
+      } catch (alertError) {
+        console.error('Nexus alert check error (non-fatal):', alertError);
       }
 
       // Update sync status
@@ -116,7 +136,8 @@ export async function POST(request: NextRequest) {
         success: true,
         imported,
         errors: errors.length > 0 ? errors : undefined,
-        affectedStates: Array.from(affectedStates),
+        affectedStates: affectedStateArray,
+        newAlerts: newAlerts.length > 0 ? newAlerts.length : undefined,
       });
     } catch (syncError) {
       // Update sync status with error

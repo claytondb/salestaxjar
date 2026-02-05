@@ -239,6 +239,7 @@ model NotificationPreference {
   emailDeadlineReminders Boolean @default(true)
   emailWeeklyDigest      Boolean @default(true)
   emailNewRates          Boolean @default(false)
+  emailNexusAlerts       Boolean @default(true)
   reminderDaysBefore     Int     @default(7)
   createdAt              DateTime @default(now())
   updatedAt              DateTime @updatedAt
@@ -332,6 +333,30 @@ model ApiKey {
   @@index([userId])
   @@index([keyHash])
   @@index([keyPrefix])
+}
+
+// ============================================================================
+// Nexus Alerts (threshold crossing notifications)
+// ============================================================================
+
+model NexusAlert {
+  id          String   @id @default(cuid())
+  userId      String
+  stateCode   String
+  stateName   String
+  alertLevel  String   // approaching (75%), warning (90%), exceeded (100%)
+  salesAmount Decimal  @db.Decimal(14, 2)
+  threshold   Decimal  @db.Decimal(14, 2)
+  percentage  Decimal  @db.Decimal(6, 2)
+  message     String
+  read        Boolean  @default(false)
+  emailSent   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+
+  @@unique([userId, stateCode, alertLevel])
+  @@index([userId])
+  @@index([userId, read])
+  @@index([createdAt])
 }
 
 // ============================================================================
