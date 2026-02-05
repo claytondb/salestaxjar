@@ -7,7 +7,8 @@ import {
   updateSalesSummary,
   ImportedOrderData,
 } from '@/lib/platforms';
-import { userCanConnectPlatform, tierGateError } from '@/lib/plans';
+import { userCanConnectPlatform, tierGateError, resolveUserPlan, checkOrderLimit, orderLimitError, getOrderLimitDisplay, getPlanDisplayName } from '@/lib/plans';
+import { prisma } from '@/lib/prisma';
 import { fetchOrders as fetchShopifyOrders, ShopifyOrder } from '@/lib/platforms/shopify';
 import { 
   getCredentials as getWooCredentials,
@@ -60,6 +61,30 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Check order limit before syncing
+    const userPlan = resolveUserPlan(user.subscription);
+    const now = new Date();
+    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+    const currentMonthOrderCount = await prisma.importedOrder.count({
+      where: {
+        userId: user.id,
+        createdAt: { gte: monthStart },
+      },
+    });
+    
+    const limitCheck = checkOrderLimit(userPlan, currentMonthOrderCount);
+    if (!limitCheck.allowed) {
+      return NextResponse.json(
+        orderLimitError(userPlan, limitCheck.currentCount, limitCheck.limit!, limitCheck.upgradeNeeded),
+        { status: 403 }
+      );
+    }
+
+    // Calculate how many more orders we can import this month
+    const remainingCapacity = limitCheck.limit !== null 
+      ? limitCheck.limit - currentMonthOrderCount 
+      : Infinity;
+
     // Get the connection
     const connection = await getConnection(user.id, platform, platformId);
     if (!connection) {
@@ -92,6 +117,13 @@ export async function POST(request: NextRequest) {
         // Future: wix
         default:
           throw new Error(`Unsupported platform: ${platform}`);
+      }
+
+      // Trim orders to remaining capacity if needed
+      let trimmed = false;
+      if (orders.length > remainingCapacity && remainingCapacity !== Infinity) {
+        orders = orders.slice(0, remainingCapacity);
+        trimmed = true;
       }
 
       // Save orders to database
@@ -132,12 +164,63 @@ export async function POST(request: NextRequest) {
       // Update sync status
       await updateSyncStatus(user.id, platform, platformId, 'success');
 
+      // Check order usage after import for approaching-limit warnings
+      const updatedOrderCount = currentMonthOrderCount + imported;
+      const updatedLimitCheck = checkOrderLimit(userPlan, updatedOrderCount);
+      
+      let usageWarning: {
+        type: 'approaching' | 'warning' | 'at_limit';
+        message: string;
+        currentCount: number;
+        limit: number;
+        percentUsed: number;
+        upgradeTo: string | null;
+      } | undefined;
+
+      if (updatedLimitCheck.limit !== null && updatedLimitCheck.limit > 0) {
+        const percentUsed = Math.round((updatedOrderCount / updatedLimitCheck.limit) * 100);
+        
+        if (percentUsed >= 100) {
+          usageWarning = {
+            type: 'at_limit',
+            message: `You've reached your monthly limit of ${updatedLimitCheck.limit.toLocaleString()} orders. Upgrade to ${updatedLimitCheck.upgradeNeeded ? getPlanDisplayName(updatedLimitCheck.upgradeNeeded) : 'a higher plan'} for ${updatedLimitCheck.upgradeNeeded ? getOrderLimitDisplay(updatedLimitCheck.upgradeNeeded).toLowerCase() : 'more orders'}.`,
+            currentCount: updatedOrderCount,
+            limit: updatedLimitCheck.limit,
+            percentUsed,
+            upgradeTo: updatedLimitCheck.upgradeNeeded,
+          };
+        } else if (percentUsed >= 90) {
+          usageWarning = {
+            type: 'warning',
+            message: `You've used ${percentUsed}% of your monthly order limit (${updatedOrderCount.toLocaleString()} / ${updatedLimitCheck.limit.toLocaleString()}). Consider upgrading soon.`,
+            currentCount: updatedOrderCount,
+            limit: updatedLimitCheck.limit,
+            percentUsed,
+            upgradeTo: updatedLimitCheck.upgradeNeeded,
+          };
+        } else if (percentUsed >= 75) {
+          usageWarning = {
+            type: 'approaching',
+            message: `You've used ${percentUsed}% of your monthly order limit (${updatedOrderCount.toLocaleString()} / ${updatedLimitCheck.limit.toLocaleString()}).`,
+            currentCount: updatedOrderCount,
+            limit: updatedLimitCheck.limit,
+            percentUsed,
+            upgradeTo: updatedLimitCheck.upgradeNeeded,
+          };
+        }
+      }
+
       return NextResponse.json({
         success: true,
         imported,
+        trimmed: trimmed ? { 
+          message: `Only ${imported} of your orders were imported due to your monthly limit. Upgrade for more.`,
+          totalAvailable: orders.length + (trimmed ? 1 : 0), // approximate
+        } : undefined,
         errors: errors.length > 0 ? errors : undefined,
         affectedStates: affectedStateArray,
         newAlerts: newAlerts.length > 0 ? newAlerts.length : undefined,
+        usageWarning,
       });
     } catch (syncError) {
       // Update sync status with error
