@@ -16,6 +16,7 @@ import {
   Package
 } from 'lucide-react';
 import { platformLogos } from '@/components/PlatformLogos';
+import PlanUsage from '@/components/PlanUsage';
 
 const ICON_CLASS = "w-6 h-6 text-theme-accent";
 
@@ -176,6 +177,11 @@ export default function DashboardPage() {
               Connect more →
             </Link>
           </div>
+        </div>
+
+        {/* Plan Usage */}
+        <div className="mb-8">
+          <PlanUsage />
         </div>
 
         <div className="grid lg:grid-cols-2 gap-8">
