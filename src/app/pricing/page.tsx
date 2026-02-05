@@ -29,8 +29,9 @@ const plans = [
     description: 'For side hustlers who just hit nexus thresholds',
     features: [
       { text: 'Everything in Free, plus:', included: true, bold: true },
-      { text: 'Connect Shopify & WooCommerce', included: true },
-      { text: 'Import orders from your store', included: true },
+      { text: 'All platform integrations', included: true },
+      { text: 'Up to 500 orders/month', included: true },
+      { text: 'Automatic nexus exposure alerts', included: true },
       { text: 'Email deadline reminders', included: true },
       { text: 'CSV order import', included: true },
     ],
@@ -40,10 +41,10 @@ const plans = [
   {
     name: 'Pro',
     price: 29,
-    description: 'For growing sellers with multi-platform sales',
+    description: 'For growing sellers with multi-state sales',
     features: [
       { text: 'Everything in Starter, plus:', included: true, bold: true },
-      { text: 'All platform integrations', included: true },
+      { text: 'Up to 5,000 orders/month', included: true },
       { text: 'Tax calculation API + API keys', included: true },
       { text: 'Priority email support', included: true },
       { text: 'Filing assistance', included: true, comingSoon: true },
@@ -57,8 +58,8 @@ const plans = [
     description: 'For high-volume sellers who want it all',
     features: [
       { text: 'Everything in Pro, plus:', included: true, bold: true },
+      { text: 'Unlimited orders', included: true },
       { text: 'Highest priority support', included: true },
-      { text: 'Early access to new features', included: true },
       { text: 'Auto-filing', included: true, comingSoon: true },
     ],
     cta: 'Start Free Trial',

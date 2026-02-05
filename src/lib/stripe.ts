@@ -27,11 +27,11 @@ export const PLANS = {
     priceId: process.env.STRIPE_STARTER_PRICE_ID || 'price_starter',
     price: 9,
     features: [
-      'Connect Shopify & WooCommerce',
-      'Import orders from your store',
+      'All platform integrations',
+      'Up to 500 orders/month',
+      'Automatic nexus exposure alerts',
       'Email deadline reminders',
       'CSV order import',
-      'Email support',
     ],
   },
   pro: {
@@ -40,7 +40,7 @@ export const PLANS = {
     price: 29,
     popular: true,
     features: [
-      'All platform integrations',
+      'Up to 5,000 orders/month',
       'Tax calculation API + API keys',
       'Priority email support',
       'Filing assistance (coming soon)',
@@ -51,8 +51,8 @@ export const PLANS = {
     priceId: process.env.STRIPE_BUSINESS_PRICE_ID || 'price_business',
     price: 59,
     features: [
+      'Unlimited orders',
       'Highest priority support',
-      'Early access to new features',
       'Auto-filing (coming soon)',
     ],
   },

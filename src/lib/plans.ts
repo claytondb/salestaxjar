@@ -12,18 +12,18 @@
  *   - Calculation history + CSV export
  * 
  * Starter adds:
- *   - Shopify & WooCommerce integrations
- *   - Order import / sync
+ *   - ALL platform integrations
+ *   - Order import / sync (up to 500 orders/month)
  *   - Email deadline reminders
  *   - CSV order import
  * 
  * Pro adds:
- *   - All platform integrations (Amazon, BigCommerce, Squarespace, etc.)
+ *   - Up to 5,000 orders/month
  *   - API key creation
  *   - Priority support
  * 
  * Business adds:
- *   - Everything
+ *   - Unlimited orders
  *   - Highest priority support
  *   - Early access to features
  */
@@ -41,22 +41,12 @@ export type Feature =
   | 'calculation_history'
   | 'csv_export'
   // Starter features
-  | 'platform_shopify'
-  | 'platform_woocommerce'
+  | 'platform_connect'
   | 'order_import'
   | 'order_sync'
   | 'email_deadline_reminders'
   | 'csv_order_import'
   // Pro features
-  | 'platform_amazon'
-  | 'platform_bigcommerce'
-  | 'platform_squarespace'
-  | 'platform_ecwid'
-  | 'platform_magento'
-  | 'platform_opencart'
-  | 'platform_prestashop'
-  | 'platform_etsy'
-  | 'all_platforms'
   | 'api_keys'
   | 'priority_support'
   // Business features
@@ -70,6 +60,14 @@ export type Feature =
 
 const PLAN_TIER_ORDER: PlanTier[] = ['free', 'starter', 'pro', 'business'];
 
+/** Monthly order limits per plan */
+export const PLAN_ORDER_LIMITS: Record<PlanTier, number | null> = {
+  free: 0,        // No order imports
+  starter: 500,   // Up to 500 orders/month
+  pro: 5000,      // Up to 5,000 orders/month
+  business: null,  // Unlimited
+};
+
 /** Minimum plan tier required for each feature */
 const FEATURE_MINIMUM_TIER: Record<Feature, PlanTier> = {
   // Free
@@ -78,24 +76,14 @@ const FEATURE_MINIMUM_TIER: Record<Feature, PlanTier> = {
   calculation_history: 'free',
   csv_export: 'free',
 
-  // Starter
-  platform_shopify: 'starter',
-  platform_woocommerce: 'starter',
+  // Starter — all platform integrations available
+  platform_connect: 'starter',
   order_import: 'starter',
   order_sync: 'starter',
   email_deadline_reminders: 'starter',
   csv_order_import: 'starter',
 
   // Pro
-  platform_amazon: 'pro',
-  platform_bigcommerce: 'pro',
-  platform_squarespace: 'pro',
-  platform_ecwid: 'pro',
-  platform_magento: 'pro',
-  platform_opencart: 'pro',
-  platform_prestashop: 'pro',
-  platform_etsy: 'pro',
-  all_platforms: 'pro',
   api_keys: 'pro',
   priority_support: 'pro',
 
@@ -103,22 +91,6 @@ const FEATURE_MINIMUM_TIER: Record<Feature, PlanTier> = {
   auto_filing: 'business',
   highest_priority_support: 'business',
   early_access: 'business',
-};
-
-/**
- * Map platform slug → feature name for gating checks
- */
-const PLATFORM_FEATURE_MAP: Record<string, Feature> = {
-  shopify: 'platform_shopify',
-  woocommerce: 'platform_woocommerce',
-  amazon: 'platform_amazon',
-  bigcommerce: 'platform_bigcommerce',
-  squarespace: 'platform_squarespace',
-  ecwid: 'platform_ecwid',
-  magento: 'platform_magento',
-  opencart: 'platform_opencart',
-  prestashop: 'platform_prestashop',
-  etsy: 'platform_etsy',
 };
 
 // ---------------------------------------------------------------------------
@@ -177,24 +149,62 @@ export function canAccessFeature(tier: PlanTier, feature: Feature): boolean {
 }
 
 /**
- * Check whether a plan tier can connect a specific platform.
- * Returns { allowed, requiredPlan } for detailed error messages.
+ * Check whether a plan tier can connect ANY platform.
+ * All platforms are available on Starter+.
  */
 export function canConnectPlatform(
   tier: PlanTier,
-  platform: string
+  _platform?: string
 ): { allowed: boolean; requiredPlan: PlanTier } {
-  const feature = PLATFORM_FEATURE_MAP[platform.toLowerCase()];
+  const allowed = getPlanLevel(tier) >= getPlanLevel('starter');
+  return { allowed, requiredPlan: 'starter' };
+}
+
+/**
+ * Get the monthly order limit for a plan tier.
+ * Returns null for unlimited.
+ */
+export function getOrderLimit(tier: PlanTier): number | null {
+  return PLAN_ORDER_LIMITS[tier];
+}
+
+/**
+ * Check if a user has exceeded their monthly order limit.
+ * Returns { allowed, currentCount, limit, remaining }
+ */
+export function checkOrderLimit(
+  tier: PlanTier,
+  currentMonthOrderCount: number
+): { 
+  allowed: boolean; 
+  currentCount: number; 
+  limit: number | null; 
+  remaining: number | null;
+  upgradeNeeded: PlanTier | null;
+} {
+  const limit = PLAN_ORDER_LIMITS[tier];
   
-  if (!feature) {
-    // Unknown platform — deny by default, require pro
-    return { allowed: false, requiredPlan: 'pro' };
+  // Unlimited
+  if (limit === null) {
+    return { allowed: true, currentCount: currentMonthOrderCount, limit: null, remaining: null, upgradeNeeded: null };
   }
   
-  const requiredTier = FEATURE_MINIMUM_TIER[feature];
-  const allowed = getPlanLevel(tier) >= getPlanLevel(requiredTier);
+  // Free users can't import
+  if (limit === 0) {
+    return { allowed: false, currentCount: currentMonthOrderCount, limit: 0, remaining: 0, upgradeNeeded: 'starter' };
+  }
   
-  return { allowed, requiredPlan: requiredTier };
+  const remaining = Math.max(0, limit - currentMonthOrderCount);
+  const allowed = currentMonthOrderCount < limit;
+  
+  // Suggest next tier if at limit
+  let upgradeNeeded: PlanTier | null = null;
+  if (!allowed) {
+    if (tier === 'starter') upgradeNeeded = 'pro';
+    else if (tier === 'pro') upgradeNeeded = 'business';
+  }
+  
+  return { allowed, currentCount: currentMonthOrderCount, limit, remaining, upgradeNeeded };
 }
 
 /**
@@ -217,6 +227,16 @@ export function getPlanDisplayName(tier: PlanTier): string {
 }
 
 /**
+ * Human-readable order limit text.
+ */
+export function getOrderLimitDisplay(tier: PlanTier): string {
+  const limit = PLAN_ORDER_LIMITS[tier];
+  if (limit === null) return 'Unlimited orders';
+  if (limit === 0) return 'No order imports';
+  return `Up to ${limit.toLocaleString()} orders/month`;
+}
+
+/**
  * Convenience: resolve user plan from the getCurrentUser() result shape
  * and check a feature in one call. Used in API routes.
  */
@@ -232,14 +252,15 @@ export function userCanAccess(
 
 /**
  * Convenience: resolve user plan and check platform access in one call.
+ * All platforms available on Starter+.
  */
 export function userCanConnectPlatform(
   user: { subscription?: { plan?: string | null; status?: string | null } | null } | null,
-  platform: string
+  _platform?: string
 ): { allowed: boolean; userPlan: PlanTier; requiredPlan: PlanTier } {
   const userPlan = resolveUserPlan(user?.subscription);
-  const { allowed, requiredPlan } = canConnectPlatform(userPlan, platform);
-  return { allowed, userPlan, requiredPlan };
+  const allowed = getPlanLevel(userPlan) >= getPlanLevel('starter');
+  return { allowed, userPlan, requiredPlan: 'starter' };
 }
 
 /**
@@ -253,5 +274,25 @@ export function tierGateError(userPlan: PlanTier, requiredPlan: PlanTier, featur
     feature,
     upgradeUrl: '/pricing',
     message: `This feature requires the ${getPlanDisplayName(requiredPlan)} plan or higher. You are currently on the ${getPlanDisplayName(userPlan)} plan.`,
+  };
+}
+
+/**
+ * Build a 403 error body for order limit exceeded.
+ */
+export function orderLimitError(
+  userPlan: PlanTier, 
+  currentCount: number, 
+  limit: number,
+  upgradeNeeded: PlanTier | null
+) {
+  return {
+    error: 'Monthly order limit reached',
+    currentPlan: userPlan,
+    currentCount,
+    limit,
+    upgradeUrl: '/pricing',
+    upgradeTo: upgradeNeeded,
+    message: `You've reached your monthly limit of ${limit.toLocaleString()} orders on the ${getPlanDisplayName(userPlan)} plan.${upgradeNeeded ? ` Upgrade to ${getPlanDisplayName(upgradeNeeded)} for ${getOrderLimitDisplay(upgradeNeeded).toLowerCase()}.` : ''}`,
   };
 }

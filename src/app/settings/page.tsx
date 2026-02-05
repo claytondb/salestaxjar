@@ -56,14 +56,14 @@ const plans = [
     name: 'Starter', 
     price: 9, 
     tier: 1,
-    features: ['Shopify & WooCommerce', 'Order import', 'Email deadline reminders', 'CSV order import']
+    features: ['All platform integrations', '500 orders/month', 'Nexus exposure alerts', 'Email reminders']
   },
   { 
     id: 'pro', 
     name: 'Pro', 
     price: 29, 
     tier: 2,
-    features: ['All platform integrations', 'Tax calculation API', 'Priority email support'],
+    features: ['5,000 orders/month', 'Tax calculation API', 'Priority email support'],
     popular: true
   },
   { 
@@ -71,7 +71,7 @@ const plans = [
     name: 'Business', 
     price: 59, 
     tier: 3,
-    features: ['Highest priority support', 'Early access to new features', 'Auto-filing (coming soon)']
+    features: ['Unlimited orders', 'Highest priority support', 'Auto-filing (coming soon)']
   },
 ];
 
