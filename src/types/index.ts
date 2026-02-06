@@ -128,3 +128,176 @@ export interface AppState {
   notifications: NotificationPreferences;
   billing: BillingInfo;
 }
+
+// API Request Types
+export interface TaxCalculateRequest {
+  amount: number;
+  stateCode: string;
+  category?: ProductCategory;
+  zipCode?: string;
+  city?: string;
+  shipping?: number;
+}
+
+export interface TaxCalculateResponse {
+  success: boolean;
+  amount: number;
+  stateCode: string;
+  state: string;
+  rate: number;
+  taxAmount: number;
+  total: number;
+  category: ProductCategory;
+  breakdown?: {
+    stateRate: number;
+    countyRate: number;
+    cityRate: number;
+    specialRate: number;
+  };
+  calculationId?: string;
+}
+
+export interface ApiKeyCreateRequest {
+  name: string;
+  permissions?: ApiKeyPermission[];
+}
+
+export interface ApiKeyResponse {
+  id: string;
+  name: string;
+  keyPrefix: string;
+  permissions: ApiKeyPermission[];
+  createdAt: string;
+  lastUsed?: string;
+  usageCount: number;
+}
+
+export type ApiKeyPermission = 'calculate' | 'rates' | 'nexus' | 'filings';
+
+export interface PaginatedResponse<T> {
+  data: T[];
+  pagination: {
+    page: number;
+    pageSize: number;
+    total: number;
+    totalPages: number;
+    hasMore: boolean;
+  };
+}
+
+// Calculation History
+export interface CalculationHistoryRequest {
+  startDate?: string;
+  endDate?: string;
+  stateCode?: string;
+  category?: ProductCategory;
+  page?: number;
+  pageSize?: number;
+}
+
+export interface CalculationSummary {
+  totalCalculations: number;
+  totalAmount: number;
+  totalTax: number;
+  byState: Record<string, { count: number; amount: number; tax: number }>;
+  byCategory: Record<ProductCategory, { count: number; amount: number; tax: number }>;
+  period: { start: string; end: string };
+}
+
+// Platform Integration Types
+export interface PlatformConnectRequest {
+  platform: ConnectedPlatform['type'];
+  credentials: ShopifyCredentials | WooCommerceCredentials | BigCommerceCredentials;
+}
+
+export interface ShopifyCredentials {
+  shopDomain: string;
+  accessToken: string;
+}
+
+export interface WooCommerceCredentials {
+  siteUrl: string;
+  consumerKey: string;
+  consumerSecret: string;
+}
+
+export interface BigCommerceCredentials {
+  storeHash: string;
+  accessToken: string;
+  clientId: string;
+}
+
+export interface PlatformSyncResponse {
+  success: boolean;
+  ordersImported: number;
+  ordersSkipped: number;
+  errors?: string[];
+  lastOrderDate?: string;
+}
+
+// Nexus Alert Types
+export interface NexusAlert {
+  id: string;
+  stateCode: string;
+  state: string;
+  thresholdType: 'revenue' | 'transactions';
+  currentValue: number;
+  threshold: number;
+  percentOfThreshold: number;
+  status: 'approaching' | 'exceeded' | 'safe';
+  createdAt: string;
+}
+
+export interface NexusExposure {
+  stateCode: string;
+  state: string;
+  hasPhysicalNexus: boolean;
+  hasEconomicNexus: boolean;
+  revenue: number;
+  transactions: number;
+  revenueThreshold: number;
+  transactionThreshold: number;
+  isRegistered: boolean;
+  riskLevel: 'low' | 'medium' | 'high' | 'critical';
+}
+
+// Error Response
+export interface ApiError {
+  error: string;
+  code?: string;
+  details?: Record<string, string>;
+}
+
+// Stripe/Billing Types
+export interface CreateCheckoutRequest {
+  priceId: string;
+  successUrl?: string;
+  cancelUrl?: string;
+}
+
+export interface SubscriptionStatus {
+  status: 'active' | 'canceled' | 'past_due' | 'trialing' | 'incomplete';
+  plan: BillingInfo['plan'];
+  currentPeriodEnd: string;
+  cancelAtPeriodEnd: boolean;
+}
+
+// Usage Tracking
+export interface UsageStats {
+  currentPeriod: {
+    calculations: number;
+    apiCalls: number;
+    ordersImported: number;
+  };
+  limits: {
+    calculations: number;
+    apiCalls: number;
+    ordersImported: number;
+  };
+  percentUsed: {
+    calculations: number;
+    apiCalls: number;
+    ordersImported: number;
+  };
+  resetDate: string;
+}
