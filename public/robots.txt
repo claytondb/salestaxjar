@@ -1,0 +1,24 @@
+# Sails - Sales Tax Made Breezy
+# https://sails.tax
+
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://sails.tax/sitemap.xml
+
+# Disallow admin and API routes
+Disallow: /admin
+Disallow: /api/
+Disallow: /dashboard
+Disallow: /settings
+Disallow: /filings
+
+# Allow main marketing pages
+Allow: /
+Allow: /pricing
+Allow: /calculator
+Allow: /contact
+Allow: /privacy
+Allow: /terms
+Allow: /cookies
