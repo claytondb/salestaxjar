@@ -1,7 +1,16 @@
-import { NextResponse } from 'next/server';
+﻿import { NextResponse } from 'next/server';
 import { stripe } from '@/lib/stripe';
 
+// Debug route - development only
 export async function GET() {
+  // Block access in production
+  if (process.env.NODE_ENV === 'production' || process.env.VERCEL_ENV === 'production') {
+    return NextResponse.json(
+      { error: 'Debug endpoints are disabled in production' },
+      { status: 403 }
+    );
+  }
+  
   if (!stripe) {
     return NextResponse.json({ error: 'Stripe not configured' });
   }
@@ -23,7 +32,7 @@ export async function GET() {
       success: false,
       error: error instanceof Error ? error.message : 'Unknown error',
       attemptedPriceId: priceId,
-      stripeKeyPrefix: process.env.STRIPE_SECRET_KEY?.substring(0, 15),
+      // Don''t expose key prefix in any environment
     });
   }
 }

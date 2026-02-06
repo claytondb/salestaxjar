@@ -1,20 +1,23 @@
-import { NextResponse } from 'next/server';
-import { PLANS } from '@/lib/stripe';
+﻿import { NextResponse } from 'next/server';
 
+// Debug routes should only be accessible in development
 export async function GET() {
+  // Block access in production
+  if (process.env.NODE_ENV === 'production' || process.env.VERCEL_ENV === 'production') {
+    return NextResponse.json(
+      { error: 'Debug endpoints are disabled in production' },
+      { status: 403 }
+    );
+  }
+  
+  // Only show safe information
   return NextResponse.json({
     env: {
-      STRIPE_STARTER_PRICE_ID: process.env.STRIPE_STARTER_PRICE_ID || '(not set)',
-      STRIPE_PRO_PRICE_ID: process.env.STRIPE_PRO_PRICE_ID || '(not set)',
-      STRIPE_BUSINESS_PRICE_ID: process.env.STRIPE_BUSINESS_PRICE_ID || '(not set)',
-      STRIPE_SECRET_KEY_PREFIX: process.env.STRIPE_SECRET_KEY?.substring(0, 12) || '(not set)',
       NODE_ENV: process.env.NODE_ENV,
-      VERCEL_ENV: process.env.VERCEL_ENV,
+      VERCEL_ENV: process.env.VERCEL_ENV || '(not set)',
+      HAS_STRIPE_KEY: !!process.env.STRIPE_SECRET_KEY,
+      HAS_DATABASE: !!process.env.DATABASE_URL,
     },
-    plans: {
-      starter: PLANS.starter.priceId,
-      pro: PLANS.pro.priceId,
-      business: PLANS.business.priceId,
-    }
+    message: 'Debug endpoint - development only',
   });
 }
