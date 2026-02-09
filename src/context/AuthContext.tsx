@@ -70,6 +70,14 @@ const defaultBilling: BillingInfo = {
   monthlyPrice: 0,
 };
 
+// Plan prices mapping
+const PLAN_PRICES: Record<string, number> = {
+  free: 0,
+  starter: 9,
+  pro: 29,
+  business: 59,
+};
+
 const AuthContext = createContext<AuthContextType | null>(null);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -191,9 +199,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
         // Update billing from subscription
         if (apiUser.subscription) {
+          const plan = apiUser.subscription.plan as BillingInfo['plan'];
           setBilling(prev => ({
             ...prev,
-            plan: apiUser.subscription!.plan as BillingInfo['plan'],
+            plan,
+            monthlyPrice: PLAN_PRICES[plan] ?? 0,
             cancelAtPeriodEnd: apiUser.subscription!.cancelAtPeriodEnd,
             currentPeriodEnd: apiUser.subscription!.currentPeriodEnd,
           }));
