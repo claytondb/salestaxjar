@@ -101,6 +101,10 @@ export async function POST(request: NextRequest) {
       }
     }
     
+    // If no nexus states configured, assume nexus everywhere (recommended for e-commerce)
+    // This will be populated with the destination state below after we parse the request
+    const assumeNexusEverywhere = nexusAddresses.length === 0;
+    
     // Parse request body
     const body = await request.json();
     
@@ -166,6 +170,12 @@ export async function POST(request: NextRequest) {
     const effectiveFromAddress = from_state 
       ? { state: from_state.toUpperCase(), zip: from_zip, city: from_city }
       : businessAddress;
+    
+    // If assuming nexus everywhere, add the destination state as nexus
+    // This ensures TaxJar calculates tax for any destination
+    if (assumeNexusEverywhere) {
+      nexusAddresses.push({ state: to_state.toUpperCase() });
+    }
     
     // Calculate tax
     const result = await calculateTax({
