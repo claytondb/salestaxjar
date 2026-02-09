@@ -13,6 +13,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { validateApiKey } from '@/lib/apikeys';
 import { calculateTax } from '@/lib/taxjar';
 import { getStateByCode } from '@/data/taxRates';
+import { prisma } from '@/lib/prisma';
 import type { ProductCategory } from '@/types';
 
 // CORS headers for external requests
@@ -57,6 +58,47 @@ export async function POST(request: NextRequest) {
         { error: 'API key does not have calculate permission' },
         { status: 403, headers: corsHeaders }
       );
+    }
+    
+    // Fetch user's business and nexus states for TaxJar
+    let nexusAddresses: Array<{ state: string; zip?: string; city?: string }> = [];
+    let businessAddress: { state: string; zip?: string; city?: string } | undefined;
+    
+    if (validation.userId) {
+      const business = await prisma.business.findFirst({
+        where: { userId: validation.userId },
+        include: {
+          nexusStates: {
+            where: { hasNexus: true },
+            select: { stateCode: true },
+          },
+        },
+      });
+      
+      if (business) {
+        // Use business address as default from address
+        if (business.state) {
+          businessAddress = {
+            state: business.state,
+            zip: business.zip || undefined,
+            city: business.city || undefined,
+          };
+        }
+        
+        // Build nexus addresses from registered nexus states
+        nexusAddresses = business.nexusStates.map(n => ({
+          state: n.stateCode,
+        }));
+        
+        // Always include business state as nexus if not already there
+        if (business.state && !nexusAddresses.find(n => n.state === business.state)) {
+          nexusAddresses.push({
+            state: business.state,
+            zip: business.zip || undefined,
+            city: business.city || undefined,
+          });
+        }
+      }
     }
     
     // Parse request body
@@ -120,6 +162,11 @@ export async function POST(request: NextRequest) {
       );
     }
     
+    // Use request from_address, fall back to business address
+    const effectiveFromAddress = from_state 
+      ? { state: from_state.toUpperCase(), zip: from_zip, city: from_city }
+      : businessAddress;
+    
     // Calculate tax
     const result = await calculateTax({
       amount,
@@ -130,12 +177,9 @@ export async function POST(request: NextRequest) {
         city: to_city,
         country: to_country || 'US',
       },
-      fromAddress: from_state ? {
-        state: from_state.toUpperCase(),
-        zip: from_zip,
-        city: from_city,
-      } : undefined,
+      fromAddress: effectiveFromAddress,
       category: (product_tax_code as ProductCategory) || 'general',
+      nexusAddresses: nexusAddresses.length > 0 ? nexusAddresses : undefined,
     });
     
     // Calculate breakdown amounts from rates
