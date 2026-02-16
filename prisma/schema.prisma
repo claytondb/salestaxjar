@@ -19,6 +19,7 @@ model User {
   passwordHash    String
   name            String
   emailVerified   Boolean   @default(false)
+  isBetaUser      Boolean   @default(false)
   verifyToken     String?   @unique
   verifyExpires   DateTime?
   resetToken      String?   @unique

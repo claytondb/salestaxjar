@@ -195,6 +195,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           name: apiUser.name,
           createdAt: apiUser.createdAt,
           emailVerified: apiUser.emailVerified,
+          isBetaUser: apiUser.isBetaUser,
         });
 
         // Update billing from subscription

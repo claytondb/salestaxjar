@@ -5,6 +5,7 @@ export interface User {
   name: string;
   createdAt: string;
   emailVerified?: boolean;
+  isBetaUser?: boolean;
 }
 
 export interface BusinessProfile {

@@ -126,6 +126,12 @@ export async function POST(request: NextRequest) {
           },
         });
 
+        // Mark user as beta user
+        await prisma.user.update({
+          where: { id: user.id },
+          data: { isBetaUser: true },
+        });
+
         // Create a lifetime Pro subscription for beta users
         // Using a special "beta" customer ID to distinguish from paid users
         await prisma.subscription.create({

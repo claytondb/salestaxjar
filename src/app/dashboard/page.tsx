@@ -185,8 +185,8 @@ export default function DashboardPage() {
           <PlanUsage />
         </div>
 
-        {/* Beta Survey Card - show for beta users (pro plan with beta indicator) */}
-        {billing?.plan === 'pro' && (
+        {/* Beta Survey Card - show only for beta users */}
+        {user.isBetaUser && (
           <div className="mb-8">
             <BetaSurveyCard userEmail={user.email} compact />
           </div>
