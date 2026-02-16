@@ -14,7 +14,6 @@ import {
   ClipboardList
 } from 'lucide-react';
 import SailsLogo from '@/components/SailsLogo';
-import BetaSurveyCard from '@/components/BetaSurveyCard';
 
 const BETA_END_DATE = new Date('2026-03-02'); // 2 weeks from now - adjust as needed
 
@@ -271,14 +270,6 @@ export default function BetaPage() {
           </p>
         </motion.div>
 
-        {/* Survey Card */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 }}
-        >
-          <BetaSurveyCard userEmail={email} />
-        </motion.div>
       </main>
 
       {/* Footer */}
