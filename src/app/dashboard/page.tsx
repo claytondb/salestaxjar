@@ -85,6 +85,13 @@ export default function DashboardPage() {
           </p>
         </div>
 
+        {/* Beta Survey Card - show at top for beta users */}
+        {user.isBetaUser && (
+          <div className="mb-8">
+            <BetaSurveyCard userEmail={user.email} compact />
+          </div>
+        )}
+
         {/* Setup Checklist (if not complete) */}
         {(!businessProfile || activeNexusCount === 0 || connectedCount === 0) && (
           <div className="rounded-xl p-6 mb-8 card-theme border-2" style={{ borderColor: 'var(--accent-primary)' }}>
@@ -184,13 +191,6 @@ export default function DashboardPage() {
         <div className="mb-8">
           <PlanUsage />
         </div>
-
-        {/* Beta Survey Card - show only for beta users */}
-        {user.isBetaUser && (
-          <div className="mb-8">
-            <BetaSurveyCard userEmail={user.email} compact />
-          </div>
-        )}
 
         <div className="grid lg:grid-cols-2 gap-8">
           {/* Upcoming Deadlines */}
@@ -322,17 +322,24 @@ export default function DashboardPage() {
                 <h3 className="text-lg font-semibold text-theme-primary">
                   {billing.plan.charAt(0).toUpperCase() + billing.plan.slice(1)} Plan
                 </h3>
-                <span className="px-2 py-0.5 bg-accent-subtle text-theme-accent text-xs rounded-full border border-theme-accent">
-                  ${billing.monthlyPrice}/mo
-                </span>
+                {user.isBetaUser ? (
+                  <span className="px-2 py-0.5 bg-emerald-100 text-emerald-700 text-xs rounded-full border border-emerald-300 font-medium">
+                    Lifetime Free
+                  </span>
+                ) : (
+                  <span className="px-2 py-0.5 bg-accent-subtle text-theme-accent text-xs rounded-full border border-theme-accent">
+                    ${billing.monthlyPrice}/mo
+                  </span>
+                )}
               </div>
               <p className="text-theme-muted text-sm">
-                {billing.plan === 'starter' && 'Upgrade to Growth for unlimited state filings and advanced features.'}
-                {billing.plan === 'pro' && 'You have access to all growth features including nexus tracking.'}
-                {billing.plan === 'business' && 'You have unlimited access to all features and priority email support.'}
+                {user.isBetaUser && 'Thanks for being a beta tester! You have lifetime free Pro access.'}
+                {!user.isBetaUser && billing.plan === 'starter' && 'Upgrade to Growth for unlimited state filings and advanced features.'}
+                {!user.isBetaUser && billing.plan === 'pro' && 'You have access to all growth features including nexus tracking.'}
+                {!user.isBetaUser && billing.plan === 'business' && 'You have unlimited access to all features and priority email support.'}
               </p>
             </div>
-            {billing.plan !== 'business' && (
+            {!user.isBetaUser && billing.plan !== 'business' && (
               <Link 
                 href="/settings#billing" 
                 className="btn-theme-primary px-4 py-2 rounded-lg font-medium transition whitespace-nowrap"

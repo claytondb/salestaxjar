@@ -24,6 +24,11 @@ export default function Header() {
               <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition">
                 <SailsLogo className="w-9 h-9 text-theme-accent" />
                 <span className="text-xl font-bold text-theme-primary hidden sm:inline">Sails</span>
+                {user.isBetaUser && (
+                  <span className="px-2 py-0.5 bg-emerald-100 text-emerald-700 text-xs rounded-full font-semibold border border-emerald-300">
+                    Beta
+                  </span>
+                )}
               </Link>
               
               {/* Desktop Navigation */}
