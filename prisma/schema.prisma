@@ -402,3 +402,14 @@ model BetaUser {
   @@index([email])
   @@index([status])
 }
+
+model BetaWaitlist {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  source    String?  @default("website") // website, reddit, twitter, referral
+  notified  Boolean  @default(false) // true when we've reached out
+  createdAt DateTime @default(now())
+
+  @@index([email])
+  @@index([notified])
+}

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { 
@@ -11,16 +11,47 @@ import {
   MessageSquare, 
   ArrowRight,
   Loader2,
-  ClipboardList
+  ClipboardList,
+  Bell,
+  AlertCircle
 } from 'lucide-react';
 import SailsLogo from '@/components/SailsLogo';
 
-const BETA_END_DATE = new Date('2026-03-02'); // 2 weeks from now - adjust as needed
+const BETA_END_DATE = new Date('2026-03-02');
+const TOTAL_SLOTS = 25;
 
 export default function BetaPage() {
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error' | 'already'>('idle');
   const [message, setMessage] = useState('');
+  
+  // Beta availability state
+  const [betaStatus, setBetaStatus] = useState<{
+    slotsRemaining: number;
+    isFull: boolean;
+    loading: boolean;
+  }>({ slotsRemaining: TOTAL_SLOTS, isFull: false, loading: true });
+  
+  // Waitlist state
+  const [waitlistEmail, setWaitlistEmail] = useState('');
+  const [waitlistStatus, setWaitlistStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const [waitlistMessage, setWaitlistMessage] = useState('');
+
+  // Fetch beta availability on mount
+  useEffect(() => {
+    fetch('/api/beta/status')
+      .then(res => res.json())
+      .then(data => {
+        setBetaStatus({
+          slotsRemaining: data.slotsRemaining ?? TOTAL_SLOTS,
+          isFull: data.isFull ?? false,
+          loading: false,
+        });
+      })
+      .catch(() => {
+        setBetaStatus(prev => ({ ...prev, loading: false }));
+      });
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -53,11 +84,37 @@ export default function BetaPage() {
     }
   };
 
+  const handleWaitlistSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setWaitlistStatus('loading');
+
+    try {
+      const res = await fetch('/api/beta/waitlist', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: waitlistEmail.toLowerCase().trim(), source: 'website' }),
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        setWaitlistStatus('success');
+        setWaitlistMessage(data.message);
+      } else {
+        setWaitlistStatus('error');
+        setWaitlistMessage(data.error || 'Something went wrong. Please try again.');
+      }
+    } catch {
+      setWaitlistStatus('error');
+      setWaitlistMessage('Something went wrong. Please try again.');
+    }
+  };
+
   const daysLeft = Math.max(0, Math.ceil((BETA_END_DATE.getTime() - Date.now()) / (1000 * 60 * 60 * 24)));
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white">
-      {/* Header - matches main site */}
+      {/* Header */}
       <header className="border-b border-gray-200 bg-white/80 backdrop-blur-sm sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex justify-between items-center">
@@ -82,118 +139,221 @@ export default function BetaPage() {
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-12"
         >
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-100 rounded-full text-emerald-700 text-sm font-medium mb-6">
-            <Sparkles className="w-4 h-4" />
-            Beta Program — {daysLeft} days left
-          </div>
+          {betaStatus.isFull ? (
+            // Beta Full Badge
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-amber-100 rounded-full text-amber-700 text-sm font-medium mb-6">
+              <AlertCircle className="w-4 h-4" />
+              Beta Full — Join the Waitlist
+            </div>
+          ) : (
+            // Slots Available Badge
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-100 rounded-full text-emerald-700 text-sm font-medium mb-6">
+              <Sparkles className="w-4 h-4" />
+              {betaStatus.loading ? 'Loading...' : `${betaStatus.slotsRemaining} spots left`} — {daysLeft} days remaining
+            </div>
+          )}
           
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-            You're Invited to the<br />
-            <span className="text-emerald-600">Sails Beta</span>
+            {betaStatus.isFull ? (
+              <>
+                Beta Program<br />
+                <span className="text-amber-600">Currently Full</span>
+              </>
+            ) : (
+              <>
+                You're Invited to the<br />
+                <span className="text-emerald-600">Sails Beta</span>
+              </>
+            )}
           </h1>
           
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Thanks for your interest! Enter your email below to check your beta status 
-            and claim your <strong>lifetime free Pro account</strong>.
+            {betaStatus.isFull ? (
+              <>
+                All {TOTAL_SLOTS} beta spots have been claimed! Join the waitlist below 
+                and we'll notify you if a spot opens up or when we launch publicly.
+              </>
+            ) : (
+              <>
+                Thanks for your interest! Enter your email below to check your beta status 
+                and claim your <strong>lifetime free Pro account</strong>.
+              </>
+            )}
           </p>
         </motion.div>
 
-        {/* Email Check Form */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="max-w-md mx-auto mb-16"
-        >
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Enter your email"
-                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none text-lg"
-                required
-              />
+        {/* Conditional Form: Check Status OR Waitlist */}
+        {betaStatus.isFull ? (
+          // WAITLIST FORM
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="max-w-md mx-auto mb-16"
+          >
+            <div className="bg-amber-50 border border-amber-200 rounded-2xl p-6">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 bg-amber-100 rounded-xl flex items-center justify-center">
+                  <Bell className="w-5 h-5 text-amber-600" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-gray-900">Join the Waitlist</h3>
+                  <p className="text-sm text-gray-600">Be first to know when spots open</p>
+                </div>
+              </div>
+              
+              {waitlistStatus === 'success' ? (
+                <div className="p-4 bg-green-50 border border-green-200 rounded-xl">
+                  <div className="flex items-start gap-3">
+                    <CheckCircle2 className="w-6 h-6 text-green-600 flex-shrink-0" />
+                    <p className="text-green-800">{waitlistMessage}</p>
+                  </div>
+                </div>
+              ) : (
+                <form onSubmit={handleWaitlistSubmit} className="space-y-4">
+                  <input
+                    type="email"
+                    value={waitlistEmail}
+                    onChange={(e) => setWaitlistEmail(e.target.value)}
+                    placeholder="Enter your email"
+                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-transparent outline-none text-lg"
+                    required
+                  />
+                  
+                  <button
+                    type="submit"
+                    disabled={waitlistStatus === 'loading'}
+                    className="w-full py-3 bg-amber-600 text-white font-semibold rounded-xl hover:bg-amber-700 disabled:opacity-50 flex items-center justify-center gap-2"
+                  >
+                    {waitlistStatus === 'loading' ? (
+                      <>
+                        <Loader2 className="w-5 h-5 animate-spin" />
+                        Joining...
+                      </>
+                    ) : (
+                      <>
+                        Join Waitlist
+                        <ArrowRight className="w-5 h-5" />
+                      </>
+                    )}
+                  </button>
+                  
+                  {waitlistStatus === 'error' && (
+                    <p className="text-red-600 text-sm text-center">{waitlistMessage}</p>
+                  )}
+                </form>
+              )}
             </div>
             
-            <button
-              type="submit"
-              disabled={status === 'loading'}
-              className="w-full py-3 bg-emerald-600 text-white font-semibold rounded-xl hover:bg-emerald-700 disabled:opacity-50 flex items-center justify-center gap-2"
-            >
-              {status === 'loading' ? (
-                <>
-                  <Loader2 className="w-5 h-5 animate-spin" />
-                  Checking...
-                </>
-              ) : (
-                <>
-                  Check My Status
-                  <ArrowRight className="w-5 h-5" />
-                </>
-              )}
-            </button>
-          </form>
-
-          {/* Status Messages */}
-          {status === 'success' && (
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="mt-6 p-4 bg-green-50 border border-green-200 rounded-xl"
-            >
-              <div className="flex items-start gap-3">
-                <CheckCircle2 className="w-6 h-6 text-green-600 flex-shrink-0" />
-                <div>
-                  <p className="text-green-800 font-medium">{message}</p>
-                  <Link 
-                    href={`/signup?email=${encodeURIComponent(email)}&beta=true`}
-                    className="inline-flex items-center gap-2 mt-3 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
-                  >
-                    Create Your Account
-                    <ArrowRight className="w-4 h-4" />
-                  </Link>
-                </div>
+            {/* Already have an invite? */}
+            <div className="mt-6 text-center">
+              <p className="text-gray-500 text-sm mb-2">Already received a beta invite?</p>
+              <button
+                onClick={() => setBetaStatus(prev => ({ ...prev, isFull: false }))}
+                className="text-emerald-600 hover:text-emerald-700 font-medium text-sm"
+              >
+                Check your beta status →
+              </button>
+            </div>
+          </motion.div>
+        ) : (
+          // CHECK STATUS FORM
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="max-w-md mx-auto mb-16"
+          >
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="Enter your email"
+                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none text-lg"
+                  required
+                />
               </div>
-            </motion.div>
-          )}
+              
+              <button
+                type="submit"
+                disabled={status === 'loading'}
+                className="w-full py-3 bg-emerald-600 text-white font-semibold rounded-xl hover:bg-emerald-700 disabled:opacity-50 flex items-center justify-center gap-2"
+              >
+                {status === 'loading' ? (
+                  <>
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                    Checking...
+                  </>
+                ) : (
+                  <>
+                    Check My Status
+                    <ArrowRight className="w-5 h-5" />
+                  </>
+                )}
+              </button>
+            </form>
 
-          {status === 'already' && (
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-xl"
-            >
-              <div className="flex items-start gap-3">
-                <CheckCircle2 className="w-6 h-6 text-blue-600 flex-shrink-0" />
-                <div>
-                  <p className="text-blue-800 font-medium">{message}</p>
-                  <Link 
-                    href="/login"
-                    className="inline-flex items-center gap-2 mt-3 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-                  >
-                    Log In
-                    <ArrowRight className="w-4 h-4" />
-                  </Link>
+            {/* Status Messages */}
+            {status === 'success' && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="mt-6 p-4 bg-green-50 border border-green-200 rounded-xl"
+              >
+                <div className="flex items-start gap-3">
+                  <CheckCircle2 className="w-6 h-6 text-green-600 flex-shrink-0" />
+                  <div>
+                    <p className="text-green-800 font-medium">{message}</p>
+                    <Link 
+                      href={`/signup?email=${encodeURIComponent(email)}&beta=true`}
+                      className="inline-flex items-center gap-2 mt-3 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
+                    >
+                      Create Your Account
+                      <ArrowRight className="w-4 h-4" />
+                    </Link>
+                  </div>
                 </div>
-              </div>
-            </motion.div>
-          )}
+              </motion.div>
+            )}
 
-          {status === 'error' && (
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="mt-6 p-4 bg-red-50 border border-red-200 rounded-xl"
-            >
-              <p className="text-red-800">{message}</p>
-              <p className="text-red-600 text-sm mt-2">
-                Think this is a mistake? Reply to the Reddit thread or email support.
-              </p>
-            </motion.div>
-          )}
-        </motion.div>
+            {status === 'already' && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-xl"
+              >
+                <div className="flex items-start gap-3">
+                  <CheckCircle2 className="w-6 h-6 text-blue-600 flex-shrink-0" />
+                  <div>
+                    <p className="text-blue-800 font-medium">{message}</p>
+                    <Link 
+                      href="/login"
+                      className="inline-flex items-center gap-2 mt-3 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                    >
+                      Log In
+                      <ArrowRight className="w-4 h-4" />
+                    </Link>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+
+            {status === 'error' && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="mt-6 p-4 bg-red-50 border border-red-200 rounded-xl"
+              >
+                <p className="text-red-800">{message}</p>
+                <p className="text-red-600 text-sm mt-2">
+                  Think this is a mistake? Reply to the Reddit thread or email support.
+                </p>
+              </motion.div>
+            )}
+          </motion.div>
+        )}
 
         {/* What Beta Testers Get */}
         <motion.div
