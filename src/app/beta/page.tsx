@@ -11,8 +11,9 @@ import {
   MessageSquare, 
   ArrowRight,
   Loader2,
-  Ship
+  ClipboardList
 } from 'lucide-react';
+import SailsLogo from '@/components/SailsLogo';
 
 const BETA_END_DATE = new Date('2026-03-02'); // 2 weeks from now - adjust as needed
 
@@ -56,19 +57,21 @@ export default function BetaPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white">
-      {/* Header */}
-      <header className="border-b bg-white/80 backdrop-blur-sm sticky top-0 z-50">
-        <div className="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2">
-            <Ship className="w-8 h-8 text-blue-600" />
-            <span className="font-bold text-xl text-gray-900">Sails</span>
-          </Link>
-          <Link 
-            href="/login"
-            className="text-sm text-gray-600 hover:text-gray-900"
-          >
-            Already have an account? Log in
-          </Link>
+      {/* Header - matches main site */}
+      <header className="border-b border-gray-200 bg-white/80 backdrop-blur-sm sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <div className="flex justify-between items-center">
+            <Link href="/" className="flex items-center gap-2">
+              <SailsLogo className="w-10 h-10 text-blue-600" />
+              <span className="text-2xl font-bold text-gray-900">Sails</span>
+            </Link>
+            <Link 
+              href="/login"
+              className="border border-gray-300 hover:border-gray-400 text-gray-600 hover:text-gray-900 px-4 py-2 rounded-lg transition text-sm"
+            >
+              Already have an account? Log in
+            </Link>
+          </div>
         </div>
       </header>
 
@@ -254,13 +257,16 @@ export default function BetaPage() {
           <h2 className="text-2xl font-bold text-gray-900 mb-4">
             What We Ask in Return
           </h2>
-          <p className="text-gray-600 max-w-2xl mx-auto mb-6">
-            Just use Sails with your real store and tell us what's broken, confusing, or missing. 
-            A 15-minute feedback call is appreciated but not required.
+          <p className="text-gray-600 max-w-2xl mx-auto mb-4">
+            Use Sails with your real store and tell us what's broken, confusing, or missing.
           </p>
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-amber-100 text-amber-800 rounded-lg text-sm font-medium mb-4">
+            <ClipboardList className="w-4 h-4" />
+            Complete a short survey at the end of beta to lock in your lifetime free Pro account
+          </div>
           <p className="text-sm text-gray-500">
             Beta ends {BETA_END_DATE.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}. 
-            Your lifetime Pro access continues after.
+            Complete the survey to keep your lifetime Pro access.
           </p>
         </motion.div>
       </main>
