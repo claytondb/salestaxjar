@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { getSession } from '@/lib/auth';
+import { getCurrentUser } from '@/lib/auth';
 
 // Admin-only endpoint to add beta users
 // For now, we'll use a simple secret key check
@@ -16,10 +16,10 @@ export async function POST(request: NextRequest) {
     // Check admin secret
     if (providedSecret !== ADMIN_SECRET) {
       // Also allow logged-in admin users (you as the owner)
-      const session = await getSession();
+      const user = await getCurrentUser();
       const adminEmails = ['ghwst.vr@gmail.com']; // Add your email(s)
       
-      if (!session?.user?.email || !adminEmails.includes(session.user.email)) {
+      if (!user?.email || !adminEmails.includes(user.email)) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
       }
     }
@@ -74,10 +74,10 @@ export async function GET(request: NextRequest) {
     const providedSecret = authHeader?.replace('Bearer ', '');
 
     if (providedSecret !== ADMIN_SECRET) {
-      const session = await getSession();
+      const user = await getCurrentUser();
       const adminEmails = ['ghwst.vr@gmail.com'];
       
-      if (!session?.user?.email || !adminEmails.includes(session.user.email)) {
+      if (!user?.email || !adminEmails.includes(user.email)) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
       }
     }
