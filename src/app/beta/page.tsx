@@ -82,14 +82,14 @@ export default function BetaPage() {
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-12"
         >
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-100 rounded-full text-blue-700 text-sm font-medium mb-6">
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-100 rounded-full text-emerald-700 text-sm font-medium mb-6">
             <Sparkles className="w-4 h-4" />
             Beta Program — {daysLeft} days left
           </div>
           
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
             You're Invited to the<br />
-            <span className="text-blue-600">Sails Beta</span>
+            <span className="text-emerald-600">Sails Beta</span>
           </h1>
           
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
@@ -120,7 +120,7 @@ export default function BetaPage() {
             <button
               type="submit"
               disabled={status === 'loading'}
-              className="w-full py-3 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 disabled:opacity-50 flex items-center justify-center gap-2"
+              className="w-full py-3 bg-emerald-600 text-white font-semibold rounded-xl hover:bg-emerald-700 disabled:opacity-50 flex items-center justify-center gap-2"
             >
               {status === 'loading' ? (
                 <>
