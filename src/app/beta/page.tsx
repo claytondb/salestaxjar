@@ -14,6 +14,7 @@ import {
   ClipboardList
 } from 'lucide-react';
 import SailsLogo from '@/components/SailsLogo';
+import BetaSurveyCard from '@/components/BetaSurveyCard';
 
 const BETA_END_DATE = new Date('2026-03-02'); // 2 weeks from now - adjust as needed
 
@@ -252,7 +253,7 @@ export default function BetaPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
-          className="bg-gray-50 rounded-2xl p-8 text-center"
+          className="bg-gray-50 rounded-2xl p-8 text-center mb-8"
         >
           <h2 className="text-2xl font-bold text-gray-900 mb-4">
             What We Ask in Return
@@ -268,6 +269,15 @@ export default function BetaPage() {
             Beta ends {BETA_END_DATE.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}. 
             Complete the survey to keep your lifetime Pro access.
           </p>
+        </motion.div>
+
+        {/* Survey Card */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5 }}
+        >
+          <BetaSurveyCard userEmail={email} />
         </motion.div>
       </main>
 

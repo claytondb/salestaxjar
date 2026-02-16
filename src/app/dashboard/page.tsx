@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import { platformLogos } from '@/components/PlatformLogos';
 import PlanUsage from '@/components/PlanUsage';
+import BetaSurveyCard from '@/components/BetaSurveyCard';
 
 const ICON_CLASS = "w-6 h-6 text-theme-accent";
 
@@ -183,6 +184,13 @@ export default function DashboardPage() {
         <div className="mb-8">
           <PlanUsage />
         </div>
+
+        {/* Beta Survey Card - show for beta users */}
+        {billing?.subscription?.stripePriceId === 'beta_pro_lifetime' && (
+          <div className="mb-8">
+            <BetaSurveyCard userEmail={user.email} compact />
+          </div>
+        )}
 
         <div className="grid lg:grid-cols-2 gap-8">
           {/* Upcoming Deadlines */}
