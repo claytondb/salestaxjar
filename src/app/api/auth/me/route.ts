@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getCurrentUser } from '@/lib/auth';
+import { prisma } from '@/lib/prisma';
 
 export async function GET() {
   try {
@@ -12,6 +13,12 @@ export async function GET() {
       );
     }
 
+    // Check if user is a beta tester
+    const betaUser = await prisma.betaUser.findUnique({
+      where: { email: user.email.toLowerCase() },
+    });
+    const isBetaUser = betaUser?.status === 'redeemed';
+
     return NextResponse.json({
       user: {
         id: user.id,
@@ -19,6 +26,7 @@ export async function GET() {
         name: user.name,
         emailVerified: user.emailVerified,
         createdAt: user.createdAt.toISOString(),
+        isBetaUser,
         subscription: user.subscription ? {
           plan: user.subscription.plan,
           status: user.subscription.status,

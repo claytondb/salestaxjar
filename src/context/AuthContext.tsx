@@ -19,6 +19,7 @@ interface ApiUser {
   name: string;
   emailVerified: boolean;
   createdAt: string;
+  isBetaUser?: boolean;
   subscription?: {
     plan: string;
     status: string;
