@@ -381,3 +381,23 @@ model SalesSummary {
   @@index([stateCode])
   @@index([period])
 }
+
+// ============================================================================
+// Beta Program
+// ============================================================================
+
+model BetaUser {
+  id             String    @id @default(cuid())
+  email          String    @unique
+  name           String?
+  source         String?   @default("reddit") // reddit, twitter, referral, etc.
+  status         String    @default("invited") // invited, redeemed, expired
+  redeemedAt     DateTime?
+  redeemedUserId String?   // links to User.id when they sign up
+  notes          String?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  @@index([email])
+  @@index([status])
+}

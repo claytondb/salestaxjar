@@ -108,8 +108,50 @@ export async function POST(request: NextRequest) {
       },
     });
 
+    // Check if this is a beta user and grant them Pro
+    let isBetaUser = false;
+    try {
+      const betaUser = await prisma.betaUser.findUnique({
+        where: { email },
+      });
+
+      if (betaUser && betaUser.status === 'invited') {
+        // Mark beta user as redeemed
+        await prisma.betaUser.update({
+          where: { email },
+          data: {
+            status: 'redeemed',
+            redeemedAt: new Date(),
+            redeemedUserId: user.id,
+          },
+        });
+
+        // Create a lifetime Pro subscription for beta users
+        // Using a special "beta" customer ID to distinguish from paid users
+        await prisma.subscription.create({
+          data: {
+            userId: user.id,
+            stripeCustomerId: `beta_${user.id}`,
+            stripeSubscriptionId: `beta_lifetime_${user.id}`,
+            stripePriceId: 'beta_pro_lifetime',
+            status: 'active',
+            plan: 'pro',
+            currentPeriodStart: new Date(),
+            currentPeriodEnd: new Date('2099-12-31'), // Effectively lifetime
+            cancelAtPeriodEnd: false,
+          },
+        });
+
+        isBetaUser = true;
+      }
+    } catch (betaError) {
+      // Don't fail signup if beta check fails
+      console.error('Beta user check error:', betaError);
+    }
+
     return NextResponse.json({
       success: true,
+      isBetaUser,
       user: {
         id: user.id,
         email: user.email,
