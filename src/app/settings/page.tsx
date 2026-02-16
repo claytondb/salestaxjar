@@ -981,17 +981,30 @@ function SettingsPageContent() {
                   <h2 className="text-xl font-semibold text-theme-primary mb-4">Current Plan</h2>
                   <div className="flex items-center justify-between">
                     <div>
-                      <div className="text-2xl font-bold text-theme-primary">
-                        {billing.plan.charAt(0).toUpperCase() + billing.plan.slice(1)}
-                      </div>
-                      <div className="text-theme-muted">${billing.monthlyPrice}/month</div>
-                      {billing.cancelAtPeriodEnd && billing.currentPeriodEnd && (
-                        <div className="text-amber-400 text-sm mt-1">
-                          Ends {new Date(billing.currentPeriodEnd).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
-                        </div>
+                      {user.isBetaUser ? (
+                        <>
+                          <div className="text-2xl font-bold text-theme-primary">Pro</div>
+                          <div className="text-emerald-400 font-medium">Lifetime Free (Beta)</div>
+                        </>
+                      ) : (
+                        <>
+                          <div className="text-2xl font-bold text-theme-primary">
+                            {billing.plan.charAt(0).toUpperCase() + billing.plan.slice(1)}
+                          </div>
+                          <div className="text-theme-muted">${billing.monthlyPrice}/month</div>
+                          {billing.cancelAtPeriodEnd && billing.currentPeriodEnd && (
+                            <div className="text-amber-400 text-sm mt-1">
+                              Ends {new Date(billing.currentPeriodEnd).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+                            </div>
+                          )}
+                        </>
                       )}
                     </div>
-                    {billing.cancelAtPeriodEnd ? (
+                    {user.isBetaUser ? (
+                      <span className="px-3 py-1 bg-emerald-500/20 text-emerald-400 rounded-full text-sm font-medium">
+                        Lifetime Member
+                      </span>
+                    ) : billing.cancelAtPeriodEnd ? (
                       <span className="px-3 py-1 bg-amber-500/20 text-amber-400 rounded-full text-sm">
                         Cancelled
                       </span>
@@ -1006,8 +1019,18 @@ function SettingsPageContent() {
                 {/* Plan Selection */}
                 <div className="card-theme rounded-xl border border-theme-primary p-6">
                   <h2 className="text-xl font-semibold text-theme-primary mb-2">Available Plans</h2>
-                  <p className="text-theme-muted text-sm mb-6">Select a plan to see pricing details</p>
-                  <div className="grid md:grid-cols-3 gap-4">
+                  {user.isBetaUser ? (
+                    <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-lg p-4 mb-6">
+                      <p className="text-emerald-400 text-sm">
+                        Thank you for being part of our Beta test. You have lifetime use of the Sails Pro account. 
+                        Should you decide to upgrade to Business at any point, it will be offered at a discounted rate ($30/mo), 
+                        and you can downgrade to the Pro account at any time (free for you).
+                      </p>
+                    </div>
+                  ) : (
+                    <p className="text-theme-muted text-sm mb-6">Select a plan to see pricing details</p>
+                  )}
+                  <div className="grid md:grid-cols-4 gap-4">
                     {plans.map((plan) => {
                       const isCurrentPlan = billing.plan === plan.id;
                       const isSelected = selectedPlan === plan.id;
@@ -1017,31 +1040,46 @@ function SettingsPageContent() {
                         ? new Date(billing.currentPeriodEnd).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
                         : null;
                       
+                      // Beta user logic
+                      const isBetaUser = user.isBetaUser;
+                      const isBetaDisabled = isBetaUser && plan.id !== 'pro' && plan.id !== 'business';
+                      const isBetaPro = isBetaUser && plan.id === 'pro';
+                      const isBetaBusinessUpgrade = isBetaUser && plan.id === 'business';
+                      
                       return (
                         <div 
                           key={plan.id}
-                          onClick={() => !isCurrentPlan && !isScheduledFree && handleSelectPlan(plan.id)}
-                          className={`p-6 rounded-xl border transition-all duration-150 cursor-pointer hover:-translate-y-1 hover:shadow-lg hover:shadow-black/20 ${
-                            isSelected
-                              ? 'bg-purple-500/20 border-purple-500 ring-2 ring-purple-500'
-                              : isScheduledFree
-                                ? 'bg-green-500/10 border-green-500/50'
-                              : isCurrentPlan 
-                                ? 'btn-theme-primary/20 border-theme-accent' 
-                                : 'bg-white/5 border-theme-primary hover:bg-white/10'
+                          onClick={() => !isCurrentPlan && !isScheduledFree && !isBetaDisabled && !isBetaPro && handleSelectPlan(plan.id)}
+                          className={`p-6 rounded-xl border transition-all duration-150 ${
+                            isBetaDisabled
+                              ? 'bg-gray-500/10 border-gray-500/30 opacity-50 cursor-not-allowed'
+                              : isBetaPro
+                                ? 'bg-emerald-500/20 border-emerald-500 cursor-default'
+                                : isSelected
+                                  ? 'bg-purple-500/20 border-purple-500 ring-2 ring-purple-500 cursor-pointer hover:-translate-y-1 hover:shadow-lg hover:shadow-black/20'
+                                  : isScheduledFree
+                                    ? 'bg-green-500/10 border-green-500/50 cursor-pointer'
+                                  : isCurrentPlan 
+                                    ? 'btn-theme-primary/20 border-theme-accent cursor-default' 
+                                    : 'bg-white/5 border-theme-primary hover:bg-white/10 cursor-pointer hover:-translate-y-1 hover:shadow-lg hover:shadow-black/20'
                           }`}
                         >
                           <div className="flex items-center justify-between mb-2">
-                            {plan.popular && !isCurrentPlan && !isScheduledFree && (
+                            {isBetaPro && (
+                              <span className="px-2 py-0.5 bg-emerald-500/30 text-emerald-400 text-xs rounded-full font-semibold">
+                                Lifetime Member
+                              </span>
+                            )}
+                            {!isBetaPro && plan.popular && !isCurrentPlan && !isScheduledFree && !isBetaDisabled && (
                               <span className="px-2 py-0.5 btn-theme-primary text-theme-primary text-xs rounded-full">
                                 Most Popular
                               </span>
                             )}
-                            {isCancelling ? (
+                            {!isBetaPro && isCancelling ? (
                               <span className="px-2 py-0.5 bg-amber-500/20 text-amber-400 text-xs rounded-full">
                                 Ending {endDate || 'soon'}
                               </span>
-                            ) : isCurrentPlan && (
+                            ) : !isBetaPro && isCurrentPlan && (
                               <span className="px-2 py-0.5 btn-theme-primary/30 text-theme-accent text-xs rounded-full">
                                 Current
                               </span>
@@ -1051,31 +1089,48 @@ function SettingsPageContent() {
                                 Starting {endDate || 'after billing period'}
                               </span>
                             )}
-                            {isSelected && (
+                            {isSelected && !isBetaPro && (
                               <span className="px-2 py-0.5 bg-purple-500 text-theme-primary text-xs rounded-full">
                                 Selected
                               </span>
                             )}
                           </div>
-                          <h3 className="text-lg font-semibold text-theme-primary">{plan.name}</h3>
+                          <h3 className={`text-lg font-semibold ${isBetaDisabled ? 'text-gray-500' : 'text-theme-primary'}`}>{plan.name}</h3>
                           <div className="mt-2 mb-4">
-                            <span className="text-3xl font-bold text-theme-primary">${plan.price}</span>
-                            <span className="text-theme-muted">/mo</span>
+                            {isBetaPro ? (
+                              <span className="text-2xl font-bold text-emerald-400">Free Forever</span>
+                            ) : isBetaBusinessUpgrade ? (
+                              <>
+                                <span className="text-3xl font-bold text-theme-primary">$30</span>
+                                <span className="text-theme-muted">/mo</span>
+                                <span className="ml-2 text-sm text-emerald-400">(Beta discount)</span>
+                              </>
+                            ) : (
+                              <>
+                                <span className={`text-3xl font-bold ${isBetaDisabled ? 'text-gray-500' : 'text-theme-primary'}`}>${plan.price}</span>
+                                <span className={isBetaDisabled ? 'text-gray-500' : 'text-theme-muted'}>/mo</span>
+                              </>
+                            )}
                           </div>
                           <ul className="space-y-2 mb-4">
                             {plan.features.map((feature, i) => (
-                              <li key={i} className="flex items-center gap-2 text-sm text-theme-secondary">
-                                <Check className="w-4 h-4 text-theme-accent flex-shrink-0" />
+                              <li key={i} className={`flex items-center gap-2 text-sm ${isBetaDisabled ? 'text-gray-500' : 'text-theme-secondary'}`}>
+                                <Check className={`w-4 h-4 flex-shrink-0 ${isBetaDisabled ? 'text-gray-500' : 'text-theme-accent'}`} />
                                 {feature}
                               </li>
                             ))}
                           </ul>
-                          {isCurrentPlan && !isCancelling && (
+                          {isBetaPro && (
+                            <div className="text-center py-2 text-emerald-400 text-sm font-medium">
+                              ✨ Your lifetime plan
+                            </div>
+                          )}
+                          {!isBetaPro && isCurrentPlan && !isCancelling && (
                             <div className="text-center py-2 text-theme-muted text-sm">
                               Your current plan
                             </div>
                           )}
-                          {isCancelling && (
+                          {!isBetaPro && isCancelling && (
                             <div className="text-center py-2 text-amber-400 text-sm">
                               Active until {endDate || 'end of billing period'}
                             </div>
