@@ -138,6 +138,7 @@ Squarespace has Commerce API:
 
 ## 🔧 Technical Debt / Ongoing
 
+- [ ] **Run `npx prisma generate`** - BetaWaitlist model added to schema but client needs regeneration
 - [ ] Connect frontend to all database APIs (AuthContext cleanup)
 - [ ] Email system setup (Resend)
 - [ ] Tax rate API integration (or build own rate database)

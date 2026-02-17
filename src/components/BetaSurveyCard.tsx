@@ -17,7 +17,6 @@ export default function BetaSurveyCard({ userEmail, compact = false }: BetaSurve
   const handleSetReminder = async () => {
     setLoading(true);
     try {
-      // TODO: Call API to set reminder
       await fetch('/api/beta/reminder', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -34,7 +33,6 @@ export default function BetaSurveyCard({ userEmail, compact = false }: BetaSurve
   const handleCancelReminder = async () => {
     setLoading(true);
     try {
-      // TODO: Call API to cancel reminder
       await fetch('/api/beta/reminder', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
