@@ -16,6 +16,7 @@ import {
 } from '@/lib/platforms/woocommerce';
 import { saveImportedOrders, updateSyncStatus } from '@/lib/platforms';
 import { userCanConnectPlatform, tierGateError } from '@/lib/plans';
+import { canImportOrders, getImportableOrderCount, freeUserImportError, orderLimitExceededError, getUserUsageStatus } from '@/lib/usage';
 import { z } from 'zod';
 
 const syncSchema = z.object({
@@ -39,6 +40,23 @@ export async function POST(request: NextRequest) {
     if (!access.allowed) {
       return NextResponse.json(
         tierGateError(access.userPlan, access.requiredPlan, 'platform_woocommerce'),
+        { status: 403 }
+      );
+    }
+
+    // Check order limit - free users can't import
+    const importCheck = await canImportOrders(user.id, user.subscription);
+    if (!importCheck.allowed) {
+      if (importCheck.limit === 0) {
+        return NextResponse.json(freeUserImportError(), { status: 403 });
+      }
+      return NextResponse.json(
+        orderLimitExceededError(
+          access.userPlan,
+          importCheck.currentCount,
+          importCheck.limit!,
+          0
+        ),
         { status: 403 }
       );
     }
@@ -92,10 +110,19 @@ export async function POST(request: NextRequest) {
       afterDate.setDate(afterDate.getDate() - daysBack);
 
       // Fetch orders from WooCommerce
-      const wooOrders = await fetchAllOrders(credentials, {
+      const allWooOrders = await fetchAllOrders(credentials, {
         after: afterDate.toISOString(),
         status: ['processing', 'completed', 'on-hold'], // Skip cancelled/refunded
       });
+
+      // Check and enforce order limits - truncate if necessary
+      const importableInfo = await getImportableOrderCount(user.id, user.subscription, allWooOrders.length);
+      const wooOrders = importableInfo.truncated 
+        ? allWooOrders.slice(0, importableInfo.canImport)
+        : allWooOrders;
+      
+      const truncated = importableInfo.truncated;
+      const skippedCount = allWooOrders.length - wooOrders.length;
 
       // Map to our format
       const importedOrders = wooOrders.map(order => 
@@ -114,21 +141,43 @@ export async function POST(request: NextRequest) {
 
       // Update sales summaries for each state
       const stateSet = new Set(importedOrders.map(o => o.shippingState).filter(Boolean));
-      const period = new Date().toISOString().slice(0, 7); // YYYY-MM format
       
-      // Note: updateSalesSummary would be called here for each state
-      // Skipping for now as it requires more complex aggregation
+      // Get updated usage stats
+      const usageStatus = await getUserUsageStatus(user.id, user.subscription);
 
       return NextResponse.json({
         success: true,
         imported: result.imported,
         errors: result.errors,
-        totalOrders: wooOrders.length,
+        totalOrders: allWooOrders.length,
+        processed: wooOrders.length,
         dateRange: {
           from: afterDate.toISOString(),
           to: new Date().toISOString(),
         },
         statesFound: Array.from(stateSet),
+        // Usage info
+        usage: {
+          current: usageStatus.currentCount,
+          limit: usageStatus.limit,
+          remaining: usageStatus.remaining,
+          percentUsed: usageStatus.percentUsed,
+        },
+        // Truncation warning
+        ...(truncated && {
+          truncated: true,
+          skipped: skippedCount,
+          message: `Imported ${result.imported} of ${allWooOrders.length} orders. ${skippedCount} orders were skipped due to your plan's monthly limit.`,
+        }),
+        // Usage warnings
+        ...(usageStatus.atLimit && {
+          warning: 'limit_reached',
+          warningMessage: `You've reached your monthly order limit. Upgrade to continue importing orders.`,
+        }),
+        ...(usageStatus.nearLimit && !usageStatus.atLimit && {
+          warning: 'near_limit',
+          warningMessage: `You've used ${usageStatus.percentUsed}% of your monthly order limit.`,
+        }),
       });
 
     } catch (syncError) {

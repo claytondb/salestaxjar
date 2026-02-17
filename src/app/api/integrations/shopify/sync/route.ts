@@ -9,6 +9,7 @@ import {
 } from '@/lib/platforms';
 import { fetchOrders, isShopifyConfigured, ShopifyOrder } from '@/lib/platforms/shopify';
 import { userCanConnectPlatform, tierGateError } from '@/lib/plans';
+import { canImportOrders, getImportableOrderCount, freeUserImportError, orderLimitExceededError, getUserUsageStatus } from '@/lib/usage';
 
 /**
  * POST /api/integrations/shopify/sync
@@ -35,6 +36,23 @@ export async function POST(request: NextRequest) {
     if (!access.allowed) {
       return NextResponse.json(
         tierGateError(access.userPlan, access.requiredPlan, 'platform_shopify'),
+        { status: 403 }
+      );
+    }
+
+    // Check order limit - free users can't import
+    const importCheck = await canImportOrders(user.id, user.subscription);
+    if (!importCheck.allowed) {
+      if (importCheck.limit === 0) {
+        return NextResponse.json(freeUserImportError(), { status: 403 });
+      }
+      return NextResponse.json(
+        orderLimitExceededError(
+          access.userPlan,
+          importCheck.currentCount,
+          importCheck.limit!,
+          0
+        ),
         { status: 403 }
       );
     }
@@ -79,15 +97,24 @@ export async function POST(request: NextRequest) {
       if (dateRange?.end) params.createdAtMax = dateRange.end;
 
       // Fetch orders from Shopify
-      const { orders, error } = await fetchOrders(
+      const { orders: allOrders, error } = await fetchOrders(
         connection.platformId,
         connection.accessToken,
         params
       );
 
-      if (error || !orders) {
+      if (error || !allOrders) {
         throw new Error(error || 'Failed to fetch Shopify orders');
       }
+
+      // Check and enforce order limits - truncate if necessary
+      const importableInfo = await getImportableOrderCount(user.id, user.subscription, allOrders.length);
+      const orders = importableInfo.truncated 
+        ? allOrders.slice(0, importableInfo.canImport)
+        : allOrders;
+      
+      const truncated = importableInfo.truncated;
+      const skippedCount = allOrders.length - orders.length;
 
       // Transform orders for import
       const importedOrders: ImportedOrderData[] = orders.map((order: ShopifyOrder) => ({
@@ -134,14 +161,40 @@ export async function POST(request: NextRequest) {
       // Update sync status to success
       await updateSyncStatus(user.id, 'shopify', connection.platformId, 'success');
 
+      // Get updated usage stats
+      const usageStatus = await getUserUsageStatus(user.id, user.subscription);
+
       return NextResponse.json({
         success: true,
         shop: connection.platformId,
         shopName: connection.platformName,
         imported,
-        total: orders.length,
+        total: allOrders.length,
+        processed: orders.length,
         errors: saveErrors.length > 0 ? saveErrors : undefined,
         affectedStates: Array.from(affectedStates),
+        // Usage info
+        usage: {
+          current: usageStatus.currentCount,
+          limit: usageStatus.limit,
+          remaining: usageStatus.remaining,
+          percentUsed: usageStatus.percentUsed,
+        },
+        // Truncation warning
+        ...(truncated && {
+          truncated: true,
+          skipped: skippedCount,
+          message: `Imported ${imported} of ${allOrders.length} orders. ${skippedCount} orders were skipped due to your plan's monthly limit of ${usageStatus.limit} orders.`,
+        }),
+        // Usage warnings
+        ...(usageStatus.atLimit && {
+          warning: 'limit_reached',
+          warningMessage: `You've reached your monthly order limit. Upgrade to continue importing orders.`,
+        }),
+        ...(usageStatus.nearLimit && !usageStatus.atLimit && {
+          warning: 'near_limit',
+          warningMessage: `You've used ${usageStatus.percentUsed}% of your monthly order limit.`,
+        }),
       });
     } catch (syncError) {
       // Update sync status with error

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getCurrentUser } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { userCanConnectPlatform, tierGateError } from '@/lib/plans';
+import { canImportOrders, getImportableOrderCount, freeUserImportError, orderLimitExceededError, getUserUsageStatus } from '@/lib/usage';
 import { parse } from 'csv-parse/sync';
 
 /**
@@ -20,11 +21,28 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Tier gate: Amazon requires Pro or higher
+    // Tier gate: Amazon requires Starter or higher
     const access = userCanConnectPlatform(user, 'amazon');
     if (!access.allowed) {
       return NextResponse.json(
         tierGateError(access.userPlan, access.requiredPlan, 'platform_amazon'),
+        { status: 403 }
+      );
+    }
+
+    // Check order limit - free users can't import
+    const importCheck = await canImportOrders(user.id, user.subscription);
+    if (!importCheck.allowed) {
+      if (importCheck.limit === 0) {
+        return NextResponse.json(freeUserImportError(), { status: 403 });
+      }
+      return NextResponse.json(
+        orderLimitExceededError(
+          access.userPlan,
+          importCheck.currentCount,
+          importCheck.limit!,
+          0
+        ),
         { status: 403 }
       );
     }
@@ -78,14 +96,23 @@ export async function POST(request: NextRequest) {
     }
 
     // Parse orders based on report type
-    const orders = parseAmazonReport(records, reportType);
+    const allOrders = parseAmazonReport(records, reportType);
     
-    if (orders.length === 0) {
+    if (allOrders.length === 0) {
       return NextResponse.json(
         { error: 'No valid orders found in the report' },
         { status: 400 }
       );
     }
+
+    // Check and enforce order limits - truncate if necessary
+    const importableInfo = await getImportableOrderCount(user.id, user.subscription, allOrders.length);
+    const orders = importableInfo.truncated 
+      ? allOrders.slice(0, importableInfo.canImport)
+      : allOrders;
+    
+    const truncated = importableInfo.truncated;
+    const skippedCount = allOrders.length - orders.length;
 
     // Calculate totals
     const totalSales = orders.reduce((sum, o) => sum + o.totalAmount, 0);
@@ -166,12 +193,39 @@ export async function POST(request: NextRequest) {
       data: { lastSyncAt: new Date() },
     });
 
+    // Get updated usage stats
+    const usageStatus = await getUserUsageStatus(user.id, user.subscription);
+
     return NextResponse.json({
       success: true,
       ordersImported,
+      totalOrders: allOrders.length,
+      processed: orders.length,
       totalSales: Math.round(totalSales * 100) / 100,
       totalTax: Math.round(totalTax * 100) / 100,
       reportType,
+      // Usage info
+      usage: {
+        current: usageStatus.currentCount,
+        limit: usageStatus.limit,
+        remaining: usageStatus.remaining,
+        percentUsed: usageStatus.percentUsed,
+      },
+      // Truncation warning
+      ...(truncated && {
+        truncated: true,
+        skipped: skippedCount,
+        message: `Imported ${ordersImported} of ${allOrders.length} orders. ${skippedCount} orders were skipped due to your plan's monthly limit.`,
+      }),
+      // Usage warnings
+      ...(usageStatus.atLimit && {
+        warning: 'limit_reached',
+        warningMessage: `You've reached your monthly order limit. Upgrade to continue importing orders.`,
+      }),
+      ...(usageStatus.nearLimit && !usageStatus.atLimit && {
+        warning: 'near_limit',
+        warningMessage: `You've used ${usageStatus.percentUsed}% of your monthly order limit.`,
+      }),
     });
   } catch (error) {
     console.error('Amazon import error:', error);

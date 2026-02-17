@@ -17,6 +17,7 @@ import {
 } from '@/lib/platforms/bigcommerce';
 import { saveImportedOrders, updateSyncStatus } from '@/lib/platforms';
 import { userCanConnectPlatform, tierGateError } from '@/lib/plans';
+import { canImportOrders, getImportableOrderCount, freeUserImportError, orderLimitExceededError, getUserUsageStatus } from '@/lib/usage';
 import { z } from 'zod';
 
 const syncSchema = z.object({
@@ -35,11 +36,28 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Tier gate: BigCommerce requires Pro or higher
+    // Tier gate: BigCommerce requires Starter or higher
     const access = userCanConnectPlatform(user, 'bigcommerce');
     if (!access.allowed) {
       return NextResponse.json(
         tierGateError(access.userPlan, access.requiredPlan, 'platform_bigcommerce'),
+        { status: 403 }
+      );
+    }
+
+    // Check order limit - free users can't import
+    const importCheck = await canImportOrders(user.id, user.subscription);
+    if (!importCheck.allowed) {
+      if (importCheck.limit === 0) {
+        return NextResponse.json(freeUserImportError(), { status: 403 });
+      }
+      return NextResponse.json(
+        orderLimitExceededError(
+          access.userPlan,
+          importCheck.currentCount,
+          importCheck.limit!,
+          0
+        ),
         { status: 403 }
       );
     }
@@ -100,9 +118,18 @@ export async function POST(request: NextRequest) {
       });
 
       // Filter out cancelled and refunded orders
-      const validOrders = bigCommerceOrders.filter(
+      const allValidOrders = bigCommerceOrders.filter(
         order => ![4, 5, 6].includes(order.status_id) // Exclude refunded, cancelled, declined
       );
+
+      // Check and enforce order limits - truncate if necessary
+      const importableInfo = await getImportableOrderCount(user.id, user.subscription, allValidOrders.length);
+      const validOrders = importableInfo.truncated 
+        ? allValidOrders.slice(0, importableInfo.canImport)
+        : allValidOrders;
+      
+      const truncated = importableInfo.truncated;
+      const skippedCount = allValidOrders.length - validOrders.length;
 
       // Map orders to our format
       // For better accuracy, we fetch shipping addresses for each order
@@ -136,17 +163,43 @@ export async function POST(request: NextRequest) {
       // Get unique states
       const stateSet = new Set(importedOrders.map(o => o.shippingState).filter(Boolean));
 
+      // Get updated usage stats
+      const usageStatus = await getUserUsageStatus(user.id, user.subscription);
+
       return NextResponse.json({
         success: true,
         imported: result.imported,
         errors: result.errors,
         totalOrders: bigCommerceOrders.length,
-        validOrders: validOrders.length,
+        validOrders: allValidOrders.length,
+        processed: validOrders.length,
         dateRange: {
           from: afterDate.toISOString(),
           to: now.toISOString(),
         },
         statesFound: Array.from(stateSet),
+        // Usage info
+        usage: {
+          current: usageStatus.currentCount,
+          limit: usageStatus.limit,
+          remaining: usageStatus.remaining,
+          percentUsed: usageStatus.percentUsed,
+        },
+        // Truncation warning
+        ...(truncated && {
+          truncated: true,
+          skipped: skippedCount,
+          message: `Imported ${result.imported} of ${allValidOrders.length} orders. ${skippedCount} orders were skipped due to your plan's monthly limit.`,
+        }),
+        // Usage warnings
+        ...(usageStatus.atLimit && {
+          warning: 'limit_reached',
+          warningMessage: `You've reached your monthly order limit. Upgrade to continue importing orders.`,
+        }),
+        ...(usageStatus.nearLimit && !usageStatus.atLimit && {
+          warning: 'near_limit',
+          warningMessage: `You've used ${usageStatus.percentUsed}% of your monthly order limit.`,
+        }),
       });
 
     } catch (syncError) {
