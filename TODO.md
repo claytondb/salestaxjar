@@ -1,6 +1,6 @@
 # Sails - Task List
 
-Last updated: 2026-01-29
+Last updated: 2026-02-17
 
 ## 🎯 Strategic Focus
 
@@ -30,20 +30,24 @@ Last updated: 2026-01-29
 - [x] Nexus management
 - [x] Settings page
 - [x] Pricing page structure
+- [x] **Order limit enforcement** (2026-02-17) - Usage tracking across all sync routes
+- [x] **WooCommerce Plugin** - Plugin zip + in-app setup guide
+- [x] **API Documentation** - docs/API_REFERENCE.md + docs/WOOCOMMERCE_SETUP.md
 
 ---
 
 ## 🔥 Phase 1: Launch-Ready (Current Sprint)
 
-### 1. Usage Tracking & Limits
+### 1. Usage Tracking & Limits ✅ DONE
 **Priority:** HIGH - Enables free tier
 
-- [ ] Add `orderCount` tracking per user per month
-- [ ] Add `platformCount` per user
-- [ ] Create usage check middleware
-- [ ] Show usage in dashboard ("42 of 50 orders used")
-- [ ] Soft limit warnings at 80%
-- [ ] Hard limit enforcement at 100%
+- [x] Add `orderCount` tracking per user per month
+- [x] Add `platformCount` per user  
+- [x] Create usage check middleware (`src/lib/usage.ts`)
+- [x] Show usage in dashboard (`PlanUsage` component)
+- [x] Soft limit warnings at 80% and 90%
+- [x] Hard limit enforcement at 100%
+- [x] Order import truncation when approaching limit
 
 ### 2. Stripe Billing - New Tiers
 **Priority:** HIGH
@@ -138,7 +142,7 @@ Squarespace has Commerce API:
 
 ## 🔧 Technical Debt / Ongoing
 
-- [ ] **Run `npx prisma generate`** - BetaWaitlist model added to schema but client needs regeneration
+- [x] **Run `npx prisma generate`** - BetaWaitlist model regenerated
 - [ ] Connect frontend to all database APIs (AuthContext cleanup)
 - [ ] Email system setup (Resend)
 - [ ] Tax rate API integration (or build own rate database)
@@ -198,16 +202,17 @@ NEXT_PUBLIC_APP_URL=https://usesails.com
 
 | Area | Status |
 |------|--------|
-| Core Infrastructure | 90% |
+| Core Infrastructure | 95% |
 | Auth | 100% |
 | Database | 95% |
 | Shopify | 80% |
-| WooCommerce | 0% |
+| WooCommerce | 70% (plugin done, sync TODO) |
 | Squarespace | 0% |
 | BigCommerce | 0% |
 | Wix | 0% |
 | Billing/Stripe | 20% |
-| Usage Limits | 0% |
+| Usage Limits | 100% ✅ |
+| Documentation | 80% |
 | Filing Prep | 0% |
 
-**Overall:** ~50% to MVP launch
+**Overall:** ~60% to MVP launch
