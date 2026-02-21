@@ -206,7 +206,7 @@ NEXT_PUBLIC_APP_URL=https://usesails.com
 | Auth | 100% |
 | Database | 95% |
 | Shopify | 80% |
-| WooCommerce | 70% (plugin done, sync TODO) |
+| WooCommerce | 90% (plugin v0.3.0, sync done) |
 | Squarespace | 0% |
 | BigCommerce | 0% |
 | Wix | 0% |

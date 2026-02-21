@@ -1,6 +1,8 @@
-# SalesTaxJar
+# Sails ⛵
 
-A modern sales tax calculation and compliance platform built with Next.js 16, Prisma 7, and PostgreSQL.
+Sales tax made breezy. A modern tax calculation and compliance platform built for small online sellers.
+
+Built with Next.js 16, Prisma 7, and PostgreSQL.
 
 ## Features
 
@@ -35,8 +37,8 @@ A modern sales tax calculation and compliance platform built with Next.js 16, Pr
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/salestaxjar.git
-   cd salestaxjar
+   git clone https://github.com/claytondb/sails.git
+   cd sails
    ```
 
 2. Install dependencies:
