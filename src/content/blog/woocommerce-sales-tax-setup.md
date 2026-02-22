@@ -1,6 +1,6 @@
 ---
 title: "WooCommerce Sales Tax: The Complete Setup Guide"
-date: "2025-02-18"
+date: "2026-02-18"
 excerpt: "Learn how to set up automatic sales tax calculation for your WooCommerce store using the free Sails plugin. Step-by-step instructions included."
 author: "Sails Team"
 category: "Integrations"
@@ -28,28 +28,28 @@ First, [sign up for a free Sails account](/signup). You'll need this to get your
 ### Step 2: Get Your API Key
 
 1. Log into your Sails dashboard
-2. Go to **Settings** → **API Keys**
+2. Go to **Settings** > **API Keys**
 3. Click **Generate New Key**
-4. Copy the key — you'll need it in the next step
+4. Copy the key. You'll need it in the next step.
 
 ### Step 3: Download the Plugin
 
 Download the Sails Tax for WooCommerce plugin:
 
-1. In your Sails dashboard, go to **Integrations** → **WooCommerce**
+1. In your Sails dashboard, go to **Integrations** > **WooCommerce**
 2. Click **Download Plugin**
 3. Save the ZIP file to your computer
 
 ### Step 4: Install in WordPress
 
 1. Log into your WordPress admin panel
-2. Go to **Plugins** → **Add New** → **Upload Plugin**
+2. Go to **Plugins** > **Add New** > **Upload Plugin**
 3. Choose the ZIP file you downloaded
 4. Click **Install Now**, then **Activate**
 
 ### Step 5: Configure the Plugin
 
-1. Go to **WooCommerce** → **Settings** → **Sails Tax**
+1. Go to **WooCommerce** > **Settings** > **Sails Tax**
 2. Enter your API key from Step 2
 3. Set your **Store Address** (where your business is located)
 4. Choose your **Tax Display** preferences
@@ -66,7 +66,7 @@ When a customer reaches checkout, the Sails plugin:
 3. Receives the precise tax rate for that exact location
 4. Applies the correct tax to the order
 
-All of this happens in milliseconds — customers won't notice any delay.
+All of this happens in milliseconds. Customers won't notice any delay.
 
 ## Plugin Settings Explained
 
@@ -77,7 +77,7 @@ Your unique key that connects your WooCommerce store to your Sails account.
 The location of your business. This determines your origin-based tax calculations if applicable.
 
 ### Enable Logging
-Turn this on if you need to troubleshoot. Logs are written to WooCommerce → Status → Logs.
+Turn this on if you need to troubleshoot. Logs are written to WooCommerce > Status > Logs.
 
 ### Fallback Behavior
 If the Sails API is temporarily unavailable, the plugin can fall back to WooCommerce's built-in tax tables. We recommend keeping some basic rates configured as a safety net.
@@ -116,7 +116,7 @@ The plugin caches tax calculations to minimize API calls. The same customer addr
 
 1. Make sure the plugin is activated
 2. Verify your API key is correct in settings
-3. Check that you've enabled taxes in WooCommerce → Settings → General
+3. Check that you've enabled taxes in WooCommerce > Settings > General
 
 ### Incorrect tax rates
 

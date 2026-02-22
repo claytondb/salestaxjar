@@ -30,9 +30,9 @@ This is the traditional type. You have physical nexus in a state if you have:
 
 ### 2. Economic Nexus
 
-This is the newer type, and it's what catches most online sellers off guard. After the 2018 Supreme Court case *South Dakota v. Wayfair*, states can require you to collect sales tax even if you have zero physical presence there — if you exceed certain sales thresholds.
+This is the newer type, and it catches many online sellers off guard. After the 2018 Supreme Court case *South Dakota v. Wayfair*, states can require you to collect sales tax even without any physical presence, as long as you exceed certain sales thresholds.
 
-**Example:** If you're based in Texas but sell over $100,000 worth of products to customers in California, California says you have economic nexus and must collect their sales tax.
+**Example:** If you're based in Texas but sell over $100,000 worth of products to customers in Florida, Florida says you have economic nexus and must collect their sales tax.
 
 ## Economic Nexus Thresholds by State
 
@@ -42,24 +42,22 @@ Every state sets its own threshold. Here are some common ones:
 |-------|-----------|
 | California | $500,000 in sales |
 | Texas | $500,000 in sales |
-| New York | $500,000 + 100 transactions |
+| New York | $500,000 AND 100 transactions |
 | Florida | $100,000 in sales |
 | Pennsylvania | $100,000 in sales |
-| Most other states | $100,000 or 200 transactions |
+| Most other states | $100,000 in sales |
 
-**Important:** Some states use "OR" logic (meet either threshold) while others use "AND" logic (must meet both). Always check the specific state's rules.
+**Note:** Many states originally had a 200-transaction threshold as an alternative to the dollar amount, but most have removed it. New York and Connecticut still require both a dollar amount AND a transaction count. Always verify current rules with the state.
 
 ## States Without Sales Tax
 
-Good news! Five states have no state sales tax at all:
+Five states have no state sales tax at all:
 
-- Alaska*
+- Alaska (though some local jurisdictions do collect sales tax)
 - Delaware
 - Montana
 - New Hampshire
 - Oregon
-
-*Alaska has no state sales tax, but some local jurisdictions do collect it.
 
 ## How Do I Know If I Have Nexus?
 
@@ -86,7 +84,7 @@ It sounds like a lot, but tools like Sails can automate most of this for you.
 
 ### Ignoring Amazon FBA
 
-If you use Fulfillment by Amazon, your inventory might be stored in warehouses across multiple states — each one potentially creating physical nexus. This catches a lot of sellers off guard.
+If you use Fulfillment by Amazon, your inventory might be stored in warehouses across multiple states. Each one can create physical nexus. This catches a lot of sellers off guard.
 
 ### Not Tracking Sales by State
 

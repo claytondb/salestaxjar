@@ -1,13 +1,13 @@
 ---
-title: "2025 Sales Tax Deadlines Every Online Seller Should Know"
-date: "2025-02-20"
-excerpt: "Never miss a sales tax filing deadline again. Here's your complete guide to 2025 filing schedules, due dates, and tips for staying compliant."
+title: "2026 Sales Tax Deadlines Every Online Seller Should Know"
+date: "2026-02-20"
+excerpt: "Never miss a sales tax filing deadline again. Here's your complete guide to 2026 filing schedules, due dates, and tips for staying compliant."
 author: "Sails Team"
 category: "Compliance"
 readTime: "5 min read"
 ---
 
-Missing a sales tax deadline can mean penalties, interest, and a lot of stress. Whether you file monthly, quarterly, or annually, here's what you need to know about 2025 sales tax deadlines.
+Missing a sales tax deadline can mean penalties, interest, and a lot of stress. Whether you file monthly, quarterly, or annually, here's what you need to know about 2026 sales tax deadlines.
 
 ## Understanding Filing Frequencies
 
@@ -19,25 +19,25 @@ States assign you a filing frequency based on how much sales tax you collect:
 
 Your assigned frequency can change as your business grows, so check your state's portal annually.
 
-## 2025 Quarterly Due Dates
+## 2026 Quarterly Due Dates
 
 If you file quarterly, mark these dates:
 
 | Quarter | Period | Due Date |
 |---------|--------|----------|
-| Q1 | Jan 1 - Mar 31 | April 20, 2025* |
-| Q2 | Apr 1 - Jun 30 | July 20, 2025* |
-| Q3 | Jul 1 - Sep 30 | October 20, 2025* |
-| Q4 | Oct 1 - Dec 31 | January 20, 2026* |
+| Q1 | Jan 1 - Mar 31 | April 20, 2026 |
+| Q2 | Apr 1 - Jun 30 | July 20, 2026 |
+| Q3 | Jul 1 - Sep 30 | October 20, 2026 |
+| Q4 | Oct 1 - Dec 31 | January 20, 2027 |
 
-*Most states use the 20th, but some vary. Always confirm with your specific state.
+Most states use the 20th, but some vary. Always confirm with your specific state.
 
 ## Monthly Filing Due Dates
 
 Monthly filers typically must file by the 20th of the following month:
 
-- January sales → Due February 20
-- February sales → Due March 20
+- January sales: Due February 20
+- February sales: Due March 20
 - And so on...
 
 Some states (like Texas) use the 20th, while others might use the last day of the month. Check your state.
@@ -94,7 +94,7 @@ Maintain clean records throughout the month instead of scrambling at filing time
 
 ### Penalties
 
-Most states charge a percentage of the tax due, often 5-25%. Some states also have minimum penalty amounts ($50+).
+Most states charge a percentage of the tax due, often 5-25%. Some states also have minimum penalty amounts ($50 or more).
 
 ### Interest
 
@@ -112,4 +112,4 @@ Sails automatically tracks all your deadlines and sends reminders before each du
 
 ---
 
-*Want deadline reminders sent straight to your inbox? [Sign up for Sails](/signup) — it's free to start.*
+*Want deadline reminders sent straight to your inbox? [Sign up for Sails](/signup). It's free to start.*
