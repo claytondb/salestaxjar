@@ -53,36 +53,32 @@ Download the plugin from your Sails dashboard:
 | Setting | Description |
 |---------|-------------|
 | **Enable Sails Tax** | Turn tax calculation on/off |
-| **API Key** | Your Sails Tax API key (starts with `stax_`) |
-| **Business Address** | Your business address (city, state, ZIP) |
-| **Enable Caching** | Cache tax rates for faster checkout (recommended) |
-| **Cache Duration** | How long to cache rates (default: 1 hour) |
-| **Debug Mode** | Log API calls for troubleshooting |
+| **Sails API Base URL** | API endpoint (default: https://sails.tax) |
+| **Sails API Key** | Your Sails Tax API key |
+| **Show estimate note** | Display disclaimer when using estimated rates |
+| **Enable Debug Logging** | Log API calls to WooCommerce logs |
 
-## Product Categories
+**Note:** Tax rates are automatically cached for 5 minutes. You can clear the cache manually from the settings page.
 
-You can assign tax categories to WooCommerce products for accurate exemption handling:
+## Product Categories (Coming Soon)
 
-1. Edit a product in WooCommerce
-2. Find the "Sails Tax Category" dropdown
-3. Select the appropriate category:
-   - **General** - Standard taxable goods (default)
-   - **Clothing** - Apparel (exempt/reduced in some states)
-   - **Food (Grocery)** - Unprepared food (often exempt)
-   - **Food (Prepared)** - Restaurant/ready-to-eat food
-   - **Digital Goods** - Software, music, ebooks
-   - **Medical** - Medical equipment/supplies
+> **Note:** Product category support is planned for a future release. Currently, all products are treated as standard taxable goods.
+
+Future support will include:
+- Clothing (exempt/reduced in some states)
+- Food (grocery vs. prepared)
+- Digital goods
+- Medical equipment/supplies
 
 ## How It Works
 
-1. Customer enters shipping address at checkout
+1. Customer enters shipping/billing address at checkout
 2. Plugin calls Sails Tax API with:
-   - Order subtotal
-   - Ship-from address (your business)
-   - Ship-to address (customer)
-   - Product categories
-3. API returns the calculated tax
+   - Order subtotal + shipping total
+   - Ship-to ZIP code and state (from shipping or billing address)
+3. API returns the calculated tax with confidence level
 4. Tax is displayed and added to the order total
+5. Tax details are stored on the order for auditing
 
 ## Testing
 
@@ -104,15 +100,15 @@ Enable debug mode to see API calls:
 
 ## API Usage & Limits
 
-Each tax calculation uses 1 API call. Your plan includes:
+Each tax calculation uses 1 API call (cached for 5 minutes). Your plan includes:
 
 | Plan | Monthly Orders |
 |------|----------------|
-| Starter | 500 |
-| Pro | 5,000 |
-| Business | Unlimited |
+| Free | 50 |
+| Starter ($9/mo) | 500 |
+| Growth ($29/mo) | 5,000 |
 
-View your usage at [Dashboard](https://sails.tax/dashboard).
+View your usage at your [Sails Dashboard](https://sails.tax/dashboard).
 
 ## Troubleshooting
 
