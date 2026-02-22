@@ -1,4 +1,4 @@
-// Prisma configuration for SalesTaxJar
+// Prisma configuration for Sails
 import "dotenv/config";
 import { defineConfig } from "prisma/config";
 

@@ -82,11 +82,14 @@ Squarespace has Commerce API:
 ### 5. Rebrand to Sails
 **Priority:** MEDIUM
 
-- [ ] Update app name throughout
+- [x] Update app name throughout (package.json, README)
+- [x] Update documentation (docs/SETUP.md, AMAZON_SETUP.md, SHOPIFY_SETUP.md)
+- [x] Update export filenames and legal text
 - [ ] New logo/branding
 - [ ] Domain: sailstax.com? usesails.com?
 - [ ] Update Vercel project name
 - [ ] Update meta tags, OG images
+- [ ] Update cookie names (requires migration for existing users)
 
 ---
 

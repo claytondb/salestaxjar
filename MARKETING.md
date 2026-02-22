@@ -1,4 +1,4 @@
-# dc-salestaxjar Marketing Plan
+# Sails Marketing Plan
 
 ## Status
 - **Current state:** In-progress (Next.js app, needs completion)

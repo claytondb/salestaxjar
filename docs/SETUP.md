@@ -1,4 +1,4 @@
-# SalesTaxJar Setup Documentation
+# Sails Setup Documentation
 
 This document covers the setup required for external services: Stripe (payments) and Resend (email).
 
@@ -42,7 +42,7 @@ STRIPE_ENTERPRISE_PRICE_ID="price_1SuKQzG6BWpSwmrt9kUmZhzJ"
 1. Go to [Stripe Dashboard > Developers > Webhooks](https://dashboard.stripe.com/webhooks)
 2. Click **"Add endpoint"**
 3. Set the endpoint URL:
-   - For production: `https://salestaxjar.com/api/stripe/webhook`
+   - For production: `https://usesails.com/api/stripe/webhook`
    - For local development: Use [Stripe CLI](https://stripe.com/docs/stripe-cli) or ngrok
 4. Select these events to listen for:
    - `checkout.session.completed` - When a user completes checkout
@@ -63,7 +63,7 @@ STRIPE_ENTERPRISE_PRICE_ID="price_1SuKQzG6BWpSwmrt9kUmZhzJ"
    - ✅ View invoice history
    - ✅ Cancel subscription
    - ✅ Switch plans (optional)
-4. Set the redirect URL: `https://salestaxjar.com/settings`
+4. Set the redirect URL: `https://usesails.com/settings`
 
 ### Local Development with Stripe
 
@@ -107,13 +107,13 @@ stripe listen --forward-to localhost:3000/api/stripe/webhook
 #### 2. Verify Your Domain (Required for Production)
 1. Go to [Resend Dashboard > Domains](https://resend.com/domains)
 2. Click **"Add Domain"**
-3. Enter your domain: `salestaxjar.com`
+3. Enter your domain: `usesails.com`
 4. Add the DNS records Resend provides:
    - **MX record** (for receiving bounces)
    - **TXT record** (SPF)
    - **CNAME record** (DKIM)
 5. Wait for verification (usually 5-30 minutes)
-6. Set your FROM_EMAIL: `FROM_EMAIL="SalesTaxJar <noreply@salestaxjar.com>"`
+6. Set your FROM_EMAIL: `FROM_EMAIL="Sails <noreply@usesails.com>"`
 
 **Note:** Until domain is verified, you can only send to your own email address. 
 
@@ -144,7 +144,7 @@ For production, make sure these are set:
 DATABASE_URL="..."
 DIRECT_URL="..."
 JWT_SECRET="..."
-NEXT_PUBLIC_APP_URL="https://salestaxjar.com"
+NEXT_PUBLIC_APP_URL="https://usesails.com"
 
 # Stripe (required for billing)
 STRIPE_SECRET_KEY="sk_live_..."
@@ -156,7 +156,7 @@ STRIPE_ENTERPRISE_PRICE_ID="price_..."
 
 # Resend (required for emails)
 RESEND_API_KEY="re_..."
-FROM_EMAIL="SalesTaxJar <noreply@salestaxjar.com>"
+FROM_EMAIL="Sails <noreply@usesails.com>"
 
 # Optional
 TAXJAR_API_KEY="..."

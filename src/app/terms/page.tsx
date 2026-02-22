@@ -124,7 +124,7 @@ export default function TermsPage() {
               <div className="bg-white/5 border border-white/20 rounded-lg p-4 mt-4">
                 <p className="uppercase font-semibold mb-2">LIMITATION OF DAMAGES</p>
                 <p>
-                  TO THE MAXIMUM EXTENT PERMITTED BY LAW, SALESTAXJAR SHALL NOT BE LIABLE FOR ANY INDIRECT, INCIDENTAL, 
+                  TO THE MAXIMUM EXTENT PERMITTED BY LAW, SAILS SHALL NOT BE LIABLE FOR ANY INDIRECT, INCIDENTAL, 
                   SPECIAL, CONSEQUENTIAL, OR PUNITIVE DAMAGES, INCLUDING BUT NOT LIMITED TO:
                 </p>
                 <ul className="list-disc pl-6 mt-2 space-y-1">

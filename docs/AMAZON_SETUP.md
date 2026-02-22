@@ -1,10 +1,10 @@
 # Amazon Seller Central Integration Setup
 
-This guide walks you through setting up the Amazon Seller Central integration for SalesTaxJar.
+This guide walks you through setting up the Amazon Seller Central integration for Sails.
 
 ## Overview
 
-SalesTaxJar uses Amazon's **Selling Partner API (SP-API)** to connect with Amazon Seller Central accounts. This requires:
+Sails uses Amazon's **Selling Partner API (SP-API)** to connect with Amazon Seller Central accounts. This requires:
 1. An Amazon Seller Central account
 2. An Amazon Developer account
 3. A registered SP-API application
@@ -26,10 +26,10 @@ SalesTaxJar uses Amazon's **Selling Partner API (SP-API)** to connect with Amazo
 1. In the Developer Portal, go to **Apps & Services** → **Developer Console**
 2. Click **Add new app client**
 3. Fill in the application details:
-   - **Application name:** SalesTaxJar
+   - **Application name:** Sails
    - **API type:** SP-API (Selling Partner API)
-   - **OAuth Login URI:** `https://salestaxjar.vercel.app/api/platforms/amazon/callback`
-   - **OAuth Redirect URI:** `https://salestaxjar.vercel.app/api/platforms/amazon/callback`
+   - **OAuth Login URI:** `https://usesails.com/api/platforms/amazon/callback`
+   - **OAuth Redirect URI:** `https://usesails.com/api/platforms/amazon/callback`
 
 ## Step 3: Request API Permissions
 
@@ -66,11 +66,11 @@ AMAZON_CLIENT_SECRET=your-client-secret-here
 
 ## Step 6: Test the Integration
 
-1. Go to SalesTaxJar → **Settings** → **Platforms**
+1. Go to Sails → **Settings** → **Platforms**
 2. Amazon Seller Central should now show **Connect** button
 3. Click **Connect** → You'll be redirected to Amazon
 4. Authorize the application
-5. You'll be redirected back to SalesTaxJar with the connection active
+5. You'll be redirected back to Sails with the connection active
 
 ## Troubleshooting
 
@@ -83,7 +83,7 @@ AMAZON_CLIENT_SECRET=your-client-secret-here
 - Make sure there are no extra spaces or newlines
 
 ### "Redirect URI mismatch"
-- The redirect URI must be exactly: `https://salestaxjar.vercel.app/api/platforms/amazon/callback`
+- The redirect URI must be exactly: `https://usesails.com/api/platforms/amazon/callback`
 - Check for trailing slashes or protocol mismatches
 
 ### Token refresh failures
@@ -96,7 +96,7 @@ AMAZON_CLIENT_SECRET=your-client-secret-here
 ### Authentication Flow
 1. User clicks Connect → redirects to Amazon OAuth
 2. User authorizes → Amazon redirects back with code
-3. SalesTaxJar exchanges code for access + refresh tokens
+3. Sails exchanges code for access + refresh tokens
 4. Tokens are stored encrypted in database
 
 ### Supported Features

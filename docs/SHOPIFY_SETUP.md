@@ -1,11 +1,11 @@
 # Shopify Integration Setup Guide
 
-This guide walks you through setting up the Shopify integration for SalesTaxJar.
+This guide walks you through setting up the Shopify integration for Sails.
 
 ## Prerequisites
 
 - A Shopify Partner account (free at [partners.shopify.com](https://partners.shopify.com))
-- Access to your SalesTaxJar production/development environment
+- Access to your Sails production/development environment
 - A development store for testing (optional but recommended)
 
 ## Step 1: Create a Shopify Partner Account
@@ -21,8 +21,8 @@ This guide walks you through setting up the Shopify integration for SalesTaxJar.
 3. Click **Create app**
 4. Choose **Create app manually**
 5. Enter the app details:
-   - **App name**: SalesTaxJar Integration (or your preferred name)
-   - **App URL**: `https://your-domain.com` (your SalesTaxJar deployment URL)
+   - **App name**: Sails Integration (or your preferred name)
+   - **App URL**: `https://your-domain.com` (your Sails deployment URL)
 
 ## Step 3: Configure OAuth Settings
 
@@ -85,7 +85,7 @@ NEXT_PUBLIC_APP_URL=https://your-domain.com
 
 1. Create a development store in Shopify Partners
 2. Start your local server: `npm run dev`
-3. Log in to SalesTaxJar
+3. Log in to Sails
 4. Go to Settings → Platforms → Shopify
 5. Enter your development store name (e.g., `my-dev-store`)
 6. Complete the OAuth flow
@@ -154,7 +154,7 @@ If you encounter issues:
 1. Check the troubleshooting section above
 2. Review the browser console for errors
 3. Check server logs for API errors
-4. Contact support@salestaxjar.com
+4. Contact support@usesails.com
 
 ---
 
