@@ -21,6 +21,7 @@
     "csv-parse": "^6.1.0",
     "dotenv": "^17.2.3",
     "framer-motion": "^12.34.0",
+    "gray-matter": "^4.0.3",
     "jsonwebtoken": "^9.0.3",
     "jszip": "^3.10.1",
     "lucide-react": "^0.563.0",
@@ -28,6 +29,8 @@
     "prisma": "^7.3.0",
     "react": "19.2.3",
     "react-dom": "19.2.3",
+    "remark": "^15.0.1",
+    "remark-html": "^16.0.1",
     "resend": "^6.9.1",
     "stripe": "^20.2.0",
     "uuid": "^13.0.0"

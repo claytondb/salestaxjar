@@ -1,0 +1,132 @@
+import Link from 'next/link';
+import { getAllPosts } from '@/lib/blog';
+import Footer from '@/components/Footer';
+import SailsLogo from '@/components/SailsLogo';
+import ThemeToggle from '@/components/ThemeToggle';
+import { Calendar, Clock, ArrowRight, Newspaper } from 'lucide-react';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Blog | Sails - Sales Tax Tips for Small Sellers',
+  description: 'Expert advice on sales tax compliance, nexus rules, filing deadlines, and tips to help small online sellers stay compliant and stress-free.',
+  openGraph: {
+    title: 'Sails Blog - Sales Tax Tips for Small Sellers',
+    description: 'Expert advice on sales tax compliance, nexus rules, and filing deadlines.',
+    type: 'website',
+    url: 'https://sails.tax/blog',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Sails Blog - Sales Tax Tips for Small Sellers',
+    description: 'Expert advice on sales tax compliance, nexus rules, and filing deadlines.',
+  },
+};
+
+export default function BlogPage() {
+  const posts = getAllPosts();
+
+  return (
+    <div className="min-h-screen bg-theme-gradient">
+      {/* Header */}
+      <header className="border-b border-theme-primary bg-transparent backdrop-blur-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <div className="flex justify-between items-center">
+            <Link href="/" className="flex items-center gap-2">
+              <SailsLogo className="w-10 h-10 text-theme-accent" />
+              <span className="text-2xl font-bold text-theme-primary">Sails</span>
+            </Link>
+            <nav className="hidden md:flex gap-6 items-center">
+              <Link href="/#features" className="text-theme-secondary hover:text-theme-primary transition">Features</Link>
+              <Link href="/pricing" className="text-theme-secondary hover:text-theme-primary transition">Pricing</Link>
+              <Link href="/blog" className="text-theme-accent font-medium">Blog</Link>
+              <ThemeToggle />
+            </nav>
+            <div className="flex gap-3 items-center">
+              <div className="md:hidden">
+                <ThemeToggle />
+              </div>
+              <Link href="/login" className="text-theme-secondary hover:text-theme-primary transition">Log in</Link>
+              <Link href="/signup" className="btn-theme-primary px-4 py-2 rounded-lg font-medium transition">
+                Get Started Free
+              </Link>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      {/* Hero */}
+      <section className="py-16 px-4">
+        <div className="max-w-4xl mx-auto text-center">
+          <div className="inline-flex items-center gap-2 bg-accent-subtle text-theme-accent px-4 py-2 rounded-full text-sm font-medium mb-6">
+            <Newspaper className="w-4 h-4" />
+            Sales Tax Insights
+          </div>
+          <h1 className="text-4xl sm:text-5xl font-bold text-theme-primary mb-4">
+            The Sails Blog
+          </h1>
+          <p className="text-xl text-theme-secondary max-w-2xl mx-auto">
+            Practical guides, tips, and news to help small online sellers navigate sales tax without the headache.
+          </p>
+        </div>
+      </section>
+
+      {/* Posts Grid */}
+      <section className="py-8 px-4 pb-20">
+        <div className="max-w-6xl mx-auto">
+          {posts.length === 0 ? (
+            <div className="text-center py-16">
+              <p className="text-theme-secondary text-lg">No posts yet. Check back soon!</p>
+            </div>
+          ) : (
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {posts.map((post) => (
+                <article 
+                  key={post.slug}
+                  className="bg-theme-card border border-theme-primary rounded-xl overflow-hidden hover:shadow-lg transition-shadow"
+                >
+                  <div className="p-6">
+                    <div className="flex items-center gap-3 text-sm text-theme-secondary mb-3">
+                      <span className="bg-accent-subtle text-theme-accent px-2 py-1 rounded text-xs font-medium">
+                        {post.category}
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <Clock className="w-3 h-3" />
+                        {post.readTime}
+                      </span>
+                    </div>
+                    <h2 className="text-xl font-semibold text-theme-primary mb-3 line-clamp-2">
+                      <Link href={`/blog/${post.slug}`} className="hover:text-theme-accent transition">
+                        {post.title}
+                      </Link>
+                    </h2>
+                    <p className="text-theme-secondary mb-4 line-clamp-3">
+                      {post.excerpt}
+                    </p>
+                    <div className="flex items-center justify-between">
+                      <span className="flex items-center gap-1 text-sm text-theme-secondary">
+                        <Calendar className="w-3 h-3" />
+                        {new Date(post.date).toLocaleDateString('en-US', {
+                          month: 'short',
+                          day: 'numeric',
+                          year: 'numeric',
+                        })}
+                      </span>
+                      <Link 
+                        href={`/blog/${post.slug}`}
+                        className="text-theme-accent font-medium text-sm flex items-center gap-1 hover:gap-2 transition-all"
+                      >
+                        Read more <ArrowRight className="w-4 h-4" />
+                      </Link>
+                    </div>
+                  </div>
+                </article>
+              ))}
+            </div>
+          )}
+        </div>
+      </section>
+
+      <Footer />
+    </div>
+  );
+}
