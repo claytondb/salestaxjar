@@ -15,6 +15,7 @@
     "@prisma/client": "^7.3.0",
     "@sentry/nextjs": "^10.38.0",
     "@stripe/stripe-js": "^8.6.4",
+    "@tailwindcss/typography": "^0.5.19",
     "@upstash/ratelimit": "^2.0.8",
     "@upstash/redis": "^1.36.1",
     "bcryptjs": "^3.0.3",
