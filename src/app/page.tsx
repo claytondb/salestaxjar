@@ -18,7 +18,9 @@ import {
   Check,
   Calendar,
   AlertTriangle,
-  Heart
+  Heart,
+  Menu,
+  X
 } from 'lucide-react';
 
 const ICON_CLASS = "w-8 h-8 text-theme-accent";
@@ -29,6 +31,7 @@ export default function Home() {
   const [amount, setAmount] = useState<string>('100');
   const [selectedState, setSelectedState] = useState<string>('CA');
   const [result, setResult] = useState<{ tax: number; total: number; rate: number } | null>(null);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   
   // Rotating business examples for "get back to ___"
   const businesses = [
@@ -93,6 +96,13 @@ export default function Home() {
               <div className="md:hidden">
                 <ThemeToggle />
               </div>
+              <button
+                className="md:hidden text-theme-secondary hover:text-theme-primary p-2"
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                aria-label="Toggle menu"
+              >
+                {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              </button>
               {user ? (
                 // Logged in - show dashboard link
                 <Link href="/dashboard" className="btn-theme-primary px-4 py-2 rounded-lg font-medium transition">
@@ -113,6 +123,18 @@ export default function Home() {
           </div>
         </div>
       </header>
+
+      {/* Mobile Menu */}
+      {mobileMenuOpen && (
+        <div className="md:hidden border-b border-theme-primary bg-theme-card/95 backdrop-blur-sm">
+          <nav className="max-w-7xl mx-auto px-4 py-4 flex flex-col gap-3">
+            <a href="#features" onClick={() => setMobileMenuOpen(false)} className="text-theme-secondary hover:text-theme-primary transition py-2">Features</a>
+            <Link href="/pricing" onClick={() => setMobileMenuOpen(false)} className="text-theme-secondary hover:text-theme-primary transition py-2">Pricing</Link>
+            <a href="#calculator" onClick={() => setMobileMenuOpen(false)} className="text-theme-secondary hover:text-theme-primary transition py-2">Calculator</a>
+            <Link href="/blog" onClick={() => setMobileMenuOpen(false)} className="text-theme-secondary hover:text-theme-primary transition py-2">Blog</Link>
+          </nav>
+        </div>
+      )}
 
       {/* Hero Section */}
       <section className="relative py-12 sm:py-20 px-4 overflow-hidden">

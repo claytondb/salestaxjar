@@ -46,10 +46,11 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Support Links */}
+          {/* Resources */}
           <div>
-            <h3 className="text-theme-primary font-semibold mb-4">Support</h3>
+            <h3 className="text-theme-primary font-semibold mb-4">Resources</h3>
             <ul className="space-y-2 text-theme-muted text-sm">
+              <li><Link href="/blog" className="hover:text-theme-primary transition">Blog</Link></li>
               <li><Link href="/contact" className="hover:text-theme-primary transition">Contact Us</Link></li>
               <li><Link href="/contact#faq" className="hover:text-theme-primary transition">FAQ</Link></li>
               <li><a href="mailto:support@sails.tax" className="hover:text-theme-primary transition">support@sails.tax</a></li>
