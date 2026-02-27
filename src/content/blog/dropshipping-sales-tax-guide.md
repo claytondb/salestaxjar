@@ -1,9 +1,10 @@
 ---
 title: "Dropshipping Sales Tax Guide: What Sellers Need to Know"
-description: "Understand your sales tax obligations as a dropshipper. Learn about nexus, marketplace facilitator laws, and when you need to collect sales tax."
-publishDate: "2026-02-27"
+excerpt: "Understand your sales tax obligations as a dropshipper. Learn about nexus, marketplace facilitator laws, and when you need to collect sales tax."
+date: "2026-02-27"
 author: "Sails Team"
-tags: ["dropshipping", "sales tax", "nexus", "e-commerce"]
+category: "Platform Guides"
+readTime: "8 min read"
 ---
 
 # Dropshipping Sales Tax Guide: What Sellers Need to Know
