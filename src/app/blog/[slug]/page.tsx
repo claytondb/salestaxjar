@@ -4,6 +4,7 @@ import { getPostBySlug, getAllPostSlugs } from '@/lib/blog';
 import Footer from '@/components/Footer';
 import SailsLogo from '@/components/SailsLogo';
 import ThemeToggle from '@/components/ThemeToggle';
+import ShareButtons from '@/components/ShareButtons';
 import { Calendar, Clock, ArrowLeft, User } from 'lucide-react';
 import type { Metadata } from 'next';
 
@@ -102,7 +103,7 @@ export default async function BlogPostPage({ params }: Props) {
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-theme-primary mt-4 mb-6">
               {post.title}
             </h1>
-            <div className="flex flex-wrap items-center gap-4 text-theme-secondary">
+            <div className="flex flex-wrap items-center gap-4 text-theme-secondary mb-6">
               <span className="flex items-center gap-2">
                 <User className="w-4 h-4" />
                 {post.author}
@@ -120,6 +121,9 @@ export default async function BlogPostPage({ params }: Props) {
                 {post.readTime}
               </span>
             </div>
+            
+            {/* Share Buttons */}
+            <ShareButtons title={post.title} slug={slug} />
           </header>
 
           {/* Content */}
@@ -140,6 +144,12 @@ export default async function BlogPostPage({ params }: Props) {
             "
             dangerouslySetInnerHTML={{ __html: post.content || '' }}
           />
+
+          {/* Share Buttons (Bottom) */}
+          <div className="mt-10 pt-8 border-t border-theme-primary">
+            <p className="text-theme-secondary text-sm mb-4">Found this helpful? Share it with others:</p>
+            <ShareButtons title={post.title} slug={slug} />
+          </div>
 
           {/* CTA */}
           <div className="mt-12 p-8 bg-theme-card border border-theme-primary rounded-xl text-center">
