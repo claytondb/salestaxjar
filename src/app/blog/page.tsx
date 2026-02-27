@@ -3,7 +3,8 @@ import { getAllPosts } from '@/lib/blog';
 import Footer from '@/components/Footer';
 import SailsLogo from '@/components/SailsLogo';
 import ThemeToggle from '@/components/ThemeToggle';
-import { Calendar, Clock, ArrowRight, Newspaper } from 'lucide-react';
+import BlogContent from '@/components/BlogContent';
+import { Newspaper } from 'lucide-react';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
@@ -70,61 +71,8 @@ export default function BlogPage() {
         </div>
       </section>
 
-      {/* Posts Grid */}
-      <section className="py-8 px-4 pb-20">
-        <div className="max-w-6xl mx-auto">
-          {posts.length === 0 ? (
-            <div className="text-center py-16">
-              <p className="text-theme-secondary text-lg">No posts yet. Check back soon!</p>
-            </div>
-          ) : (
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {posts.map((post) => (
-                <article 
-                  key={post.slug}
-                  className="bg-theme-card border border-theme-primary rounded-xl overflow-hidden hover:shadow-lg transition-shadow"
-                >
-                  <div className="p-6">
-                    <div className="flex items-center gap-3 text-sm text-theme-secondary mb-3">
-                      <span className="bg-accent-subtle text-theme-accent px-2 py-1 rounded text-xs font-medium">
-                        {post.category}
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <Clock className="w-3 h-3" />
-                        {post.readTime}
-                      </span>
-                    </div>
-                    <h2 className="text-xl font-semibold text-theme-primary mb-3 line-clamp-2">
-                      <Link href={`/blog/${post.slug}`} className="hover:text-theme-accent transition">
-                        {post.title}
-                      </Link>
-                    </h2>
-                    <p className="text-theme-secondary mb-4 line-clamp-3">
-                      {post.excerpt}
-                    </p>
-                    <div className="flex items-center justify-between">
-                      <span className="flex items-center gap-1 text-sm text-theme-secondary">
-                        <Calendar className="w-3 h-3" />
-                        {new Date(post.date).toLocaleDateString('en-US', {
-                          month: 'short',
-                          day: 'numeric',
-                          year: 'numeric',
-                        })}
-                      </span>
-                      <Link 
-                        href={`/blog/${post.slug}`}
-                        className="text-theme-accent font-medium text-sm flex items-center gap-1 hover:gap-2 transition-all"
-                      >
-                        Read more <ArrowRight className="w-4 h-4" />
-                      </Link>
-                    </div>
-                  </div>
-                </article>
-              ))}
-            </div>
-          )}
-        </div>
-      </section>
+      {/* Blog Content (Client Component with Search, Filters, View Toggle) */}
+      <BlogContent posts={posts} />
 
       <Footer />
     </div>
