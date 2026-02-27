@@ -305,3 +305,66 @@ input::placeholder, textarea::placeholder {
 .no-transitions * {
   transition: none !important;
 }
+
+/* =============================================================================
+   Blog Table Styles
+   ============================================================================= */
+
+.prose table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.5rem 0;
+  font-size: 0.95rem;
+  overflow: hidden;
+  border-radius: 0.5rem;
+  border: 1px solid var(--border-primary);
+}
+
+.prose thead {
+  background: var(--bg-card);
+}
+
+.prose th {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  font-weight: 600;
+  color: var(--text-primary);
+  border-bottom: 2px solid var(--border-primary);
+}
+
+.prose td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--border-primary);
+  color: var(--text-secondary);
+}
+
+.prose tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.prose tbody tr:hover {
+  background: var(--bg-card-hover);
+}
+
+/* Light theme table adjustments */
+.theme-nautical .prose table,
+.theme-emerald .prose table {
+  border-color: rgba(0, 0, 0, 0.1);
+}
+
+.theme-nautical .prose thead,
+.theme-emerald .prose thead {
+  background: rgba(0, 0, 0, 0.03);
+}
+
+.theme-nautical .prose th,
+.theme-emerald .prose th,
+.theme-nautical .prose td,
+.theme-emerald .prose td {
+  border-color: rgba(0, 0, 0, 0.1);
+}
+
+.theme-nautical .prose tbody tr:hover,
+.theme-emerald .prose tbody tr:hover {
+  background: rgba(0, 0, 0, 0.02);
+}
