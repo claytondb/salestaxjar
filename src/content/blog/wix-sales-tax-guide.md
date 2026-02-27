@@ -5,6 +5,7 @@ excerpt: "Everything you need to know about collecting and managing sales tax on
 author: "Sails Team"
 category: "Integrations"
 readTime: "5 min read"
+image: "/blog/images/01-wix-sales-tax-illustration.jpg"
 ---
 
 Running an online store on Wix means you'll eventually face the sales tax question. The good news: Wix has built-in tax tools that handle the basics. The challenge is understanding when you need to collect and how to stay compliant as your business grows.

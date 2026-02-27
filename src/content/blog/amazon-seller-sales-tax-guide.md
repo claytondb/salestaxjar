@@ -4,6 +4,7 @@ description: "Complete guide to sales tax for Amazon sellers. Learn about FBA ta
 date: "2026-02-27"
 author: "Sails Team"
 tags: ["amazon", "marketplace", "fba", "sales tax"]
+image: "/blog/images/08-amazon-seller-sales-tax-illustration.jpg"
 ---
 
 # Amazon Seller Sales Tax Guide: Everything You Need to Know in 2026

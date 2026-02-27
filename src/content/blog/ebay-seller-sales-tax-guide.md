@@ -4,6 +4,7 @@ description: "Learn how eBay handles sales tax collection, what sellers need to 
 date: "2026-02-27"
 author: "Sails Team"
 tags: ["ebay", "marketplace", "sales tax", "ecommerce"]
+image: "/blog/images/06-ebay-seller-sales-tax-illustration.jpg"
 ---
 
 # eBay Sales Tax Guide for Sellers: Complete 2026 Guide

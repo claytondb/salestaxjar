@@ -5,6 +5,7 @@ excerpt: "Learn how TikTok Shop handles sales tax collection, what your responsi
 author: "Sails Team"
 category: "Platform Guides"
 readTime: "9 min read"
+image: "/blog/images/02-tiktok-shop-sales-tax-illustration.jpg"
 ---
 
 # TikTok Shop Sales Tax Guide: What Sellers Need to Know in 2026

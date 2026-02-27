@@ -27,6 +27,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     };
   }
 
+  const ogImage = post.image ? `https://sails.tax${post.image}` : undefined;
+  
   return {
     title: `${post.title} | Sails Blog`,
     description: post.excerpt,
@@ -37,11 +39,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       publishedTime: post.date,
       authors: [post.author],
       url: `https://sails.tax/blog/${slug}`,
+      ...(ogImage && { images: [{ url: ogImage, width: 1200, height: 630, alt: post.title }] }),
     },
     twitter: {
       card: 'summary_large_image',
       title: post.title,
       description: post.excerpt,
+      ...(ogImage && { images: [ogImage] }),
     },
   };
 }
@@ -94,6 +98,17 @@ export default async function BlogPostPage({ params }: Props) {
             <ArrowLeft className="w-4 h-4" />
             Back to Blog
           </Link>
+
+          {/* Featured Image */}
+          {post.image && (
+            <div className="mb-8 rounded-xl overflow-hidden">
+              <img 
+                src={post.image} 
+                alt={post.title}
+                className="w-full h-auto object-cover"
+              />
+            </div>
+          )}
 
           {/* Header */}
           <header className="mb-8">

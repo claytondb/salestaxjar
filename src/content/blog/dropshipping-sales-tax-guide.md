@@ -5,6 +5,7 @@ date: "2026-02-27"
 author: "Sails Team"
 category: "Platform Guides"
 readTime: "8 min read"
+image: "/blog/images/07-dropshipping-sales-tax-illustration.jpg"
 ---
 
 # Dropshipping Sales Tax Guide: What Sellers Need to Know

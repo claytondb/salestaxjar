@@ -5,6 +5,7 @@ excerpt: "Learn how to configure sales tax on your Squarespace store, understand
 author: "Sails Team"
 category: "Platform Guides"
 readTime: "7 min read"
+image: "/blog/images/09-squarespace-sales-tax-illustration.jpg"
 ---
 
 Running an online store on Squarespace? At some point, you'll need to tackle sales tax. While Squarespace provides built-in tax tools, knowing how to configure them correctly—and understanding your obligations—is crucial for staying compliant.

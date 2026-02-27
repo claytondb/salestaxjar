@@ -15,6 +15,7 @@ export interface BlogPost {
   author: string;
   category: string;
   readTime: string;
+  image?: string;
   content?: string;
 }
 
@@ -41,6 +42,7 @@ export function getAllPosts(): BlogPost[] {
         author: data.author || 'Sails Team',
         category: data.category || 'General',
         readTime: data.readTime || '5 min read',
+        image: data.image || undefined,
       };
     });
 
@@ -74,6 +76,7 @@ export async function getPostBySlug(slug: string): Promise<BlogPost | null> {
       author: data.author || 'Sails Team',
       category: data.category || 'General',
       readTime: data.readTime || '5 min read',
+      image: data.image || undefined,
       content: contentHtml,
     };
   } catch {

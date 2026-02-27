@@ -5,6 +5,7 @@ excerpt: "Selling digital products or courses on Gumroad? Here's what you need t
 author: "Sails Team"
 category: "Platforms"
 readTime: "6 min read"
+image: "/blog/images/04-gumroad-sales-tax-illustration.jpg"
 ---
 
 Gumroad has become the go-to platform for creators selling digital products, courses, ebooks, and memberships. But when it comes to sales tax, many creators are confused about their obligations. Let's clear things up.

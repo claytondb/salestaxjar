@@ -5,6 +5,7 @@ excerpt: "Running a Patreon? Learn how sales tax applies to membership tiers, ph
 author: "Sails Team"
 category: "Platforms"
 readTime: "7 min read"
+image: "/blog/images/03-patreon-sales-tax-illustration.jpg"
 ---
 
 Patreon has revolutionized how creators monetize their work through memberships and patron support. But when it comes to sales tax, the rules can be confusing. Here's everything you need to know.
