@@ -157,6 +157,7 @@ export default function Header() {
             <a href="#features" className="text-theme-secondary hover:text-theme-primary transition">Features</a>
             <Link href="/pricing" className="text-theme-secondary hover:text-theme-primary transition">Pricing</Link>
             <a href="#calculator" className="text-theme-secondary hover:text-theme-primary transition">Calculator</a>
+            <Link href="/faq" className="text-theme-secondary hover:text-theme-primary transition">FAQ</Link>
             <ThemeToggle />
           </nav>
           <div className="flex gap-3 items-center">

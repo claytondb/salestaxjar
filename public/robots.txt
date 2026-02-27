@@ -18,6 +18,7 @@ Disallow: /filings
 Allow: /
 Allow: /pricing
 Allow: /calculator
+Allow: /faq
 Allow: /contact
 Allow: /privacy
 Allow: /terms
