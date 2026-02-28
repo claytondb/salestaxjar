@@ -1,12 +1,13 @@
 # Sails - Task List
 
-Last updated: 2026-02-17
+Last updated: 2026-02-28
 
 ## 🎯 Strategic Focus
 
 **Target:** Very small e-commerce sellers with their own websites
-**Platforms:** Shopify, WooCommerce, Squarespace, BigCommerce, Wix
+**Platforms:** Shopify, WooCommerce, BigCommerce, Magento, PrestaShop, OpenCart, Ecwid
 **NOT pursuing:** Etsy, eBay, Amazon, Gumroad (marketplace facilitators)
+**Reconsidering:** Squarespace, Wix (have built-in tax but API code exists)
 
 **Pricing:**
 - Free: $0 (50 orders/mo, 1 platform)
@@ -18,21 +19,36 @@ Last updated: 2026-02-17
 
 ## ✅ Completed
 
+### Core Infrastructure
 - [x] Next.js app with Tailwind
 - [x] Prisma schema + Neon database
 - [x] Authentication (signup, login, sessions)
 - [x] Email verification + password reset
-- [x] Shopify OAuth integration
-- [x] Amazon manual CSV import
-- [x] API routes (business, nexus, filings, calculations, notifications)
 - [x] Dashboard layout
 - [x] Tax calculator
 - [x] Nexus management
 - [x] Settings page
 - [x] Pricing page structure
 - [x] **Order limit enforcement** (2026-02-17) - Usage tracking across all sync routes
-- [x] **WooCommerce Plugin** - Plugin zip + in-app setup guide
 - [x] **API Documentation** - docs/API_REFERENCE.md + docs/WOOCOMMERCE_SETUP.md
+
+### Platform Integrations (Backend Complete)
+- [x] **Shopify** - OAuth + order sync + full UI
+- [x] **Amazon** - Manual CSV import
+- [x] **WooCommerce** - REST API keys + WordPress plugin + full UI
+- [x] **BigCommerce** - API connect + sync routes + UI modal
+- [x] **Magento/Adobe Commerce** - Access token + sync + UI modal
+- [x] **PrestaShop** - Webservice API + sync + UI modal
+- [x] **OpenCart** - Session API + sync + UI modal
+- [x] **Ecwid** - Store ID + token + sync + UI modal
+- [x] **Squarespace** - API routes exist (connect + sync + lib), needs UI modal
+
+### SEO & Content (2026-02-27)
+- [x] 22 blog posts covering major sales tax topics
+- [x] FAQ page with 20+ searchable questions
+- [x] Blog search, filters, grid/list toggle
+- [x] Social share buttons on all posts
+- [x] Featured images + OpenGraph meta tags
 
 ---
 
@@ -40,14 +56,7 @@ Last updated: 2026-02-17
 
 ### 1. Usage Tracking & Limits ✅ DONE
 **Priority:** HIGH - Enables free tier
-
-- [x] Add `orderCount` tracking per user per month
-- [x] Add `platformCount` per user  
-- [x] Create usage check middleware (`src/lib/usage.ts`)
-- [x] Show usage in dashboard (`PlanUsage` component)
-- [x] Soft limit warnings at 80% and 90%
-- [x] Hard limit enforcement at 100%
-- [x] Order import truncation when approaching limit
+All items completed 2026-02-17.
 
 ### 2. Stripe Billing - New Tiers
 **Priority:** HIGH
@@ -61,32 +70,27 @@ Last updated: 2026-02-17
 - [ ] Tier-based feature gating
 - [ ] Upgrade prompts when hitting limits
 
-### 3. WooCommerce Integration
-**Priority:** HIGH - Biggest pain point market
+### 3. Squarespace UI Integration
+**Priority:** MEDIUM (API done, needs UI)
 
-WooCommerce uses per-store REST API keys (no central OAuth):
-- [ ] UI for entering store URL + API keys
-- [ ] Key validation endpoint
-- [ ] Order fetch via WooCommerce REST API
-- [ ] Map orders to ImportedOrder model
-- [ ] Sync status tracking
+Backend code exists at:
+- `src/app/api/platforms/squarespace/connect/route.ts`
+- `src/app/api/platforms/squarespace/sync/route.ts`
+- `src/lib/platforms/squarespace.ts`
 
-### 4. Squarespace Integration  
-**Priority:** HIGH - No good tax tools exist
+Remaining:
+- [ ] Add to `getPlatformConfigurations()` in `src/lib/platforms/index.ts`
+- [ ] Add Squarespace modal to `PlatformsManager.tsx`
+- [ ] Test end-to-end with a Squarespace Commerce Advanced account
 
-Squarespace has Commerce API:
-- [ ] OAuth flow (or API key entry)
-- [ ] Order/transaction fetch
-- [ ] Map to ImportedOrder model
-
-### 5. Rebrand to Sails
+### 4. Rebrand to Sails
 **Priority:** MEDIUM
 
 - [x] Update app name throughout (package.json, README)
 - [x] Update documentation (docs/SETUP.md, AMAZON_SETUP.md, SHOPIFY_SETUP.md)
 - [x] Update export filenames and legal text
 - [ ] New logo/branding
-- [ ] Domain: sailstax.com? usesails.com?
+- [ ] Domain: sailstax.com? usesails.com? → Currently sails.tax
 - [ ] Update Vercel project name
 - [ ] Update meta tags, OG images
 - [ ] Update cookie names (requires migration for existing users)
@@ -95,27 +99,26 @@ Squarespace has Commerce API:
 
 ## 📋 Phase 2: Expand & Polish
 
-### 6. BigCommerce Integration
-- [ ] OAuth flow
+### 5. Wix Integration
+**Priority:** LOW (Wix has built-in Avalara)
+
+- [ ] Evaluate if worth pursuing given built-in tax
+- [ ] Wix Stores API integration if proceeding
 - [ ] Order sync
 
-### 7. Wix Integration
-- [ ] Wix Stores API integration
-- [ ] Order sync
-
-### 8. Improved Onboarding
+### 6. Improved Onboarding
 - [ ] Welcome wizard for new signups
 - [ ] Platform connection prompts
 - [ ] "What do you sell?" product type selection
 - [ ] State selection with nexus explanation
 
-### 9. Nexus Threshold Tracking
+### 7. Nexus Threshold Tracking
 - [ ] Track sales per state from imported orders
 - [ ] Alert when approaching $100K or 200 transactions
 - [ ] "You may have nexus in California" notifications
 - [ ] Registration guidance per state
 
-### 10. Reports & Exports
+### 8. Reports & Exports
 - [ ] Sales by state report
 - [ ] Tax liability report
 - [ ] CSV export
@@ -125,18 +128,18 @@ Squarespace has Commerce API:
 
 ## 📝 Phase 3: Filing Preparation (Future)
 
-### 11. Filing Calendar
+### 9. Filing Calendar
 - [ ] Auto-generate filing deadlines per nexus state
 - [ ] Reminder emails (7 days, 1 day before)
 - [ ] "Mark as filed" with confirmation tracking
 
-### 12. Filing Prep Reports
+### 10. Filing Prep Reports
 - [ ] State-specific report formats
 - [ ] Pre-calculated totals matching state forms
 - [ ] PDF generation with form field mapping
 - [ ] Clear disclaimers ("review before submitting")
 
-### 13. Filing Partnership (Optional)
+### 11. Filing Partnership (Optional)
 - [ ] Partner with licensed filing service
 - [ ] "One-click file" sends data to partner
 - [ ] Revenue share model
@@ -145,59 +148,12 @@ Squarespace has Commerce API:
 
 ## 🔧 Technical Debt / Ongoing
 
-- [x] **Run `npx prisma generate`** - BetaWaitlist model regenerated
 - [ ] Connect frontend to all database APIs (AuthContext cleanup)
 - [ ] Email system setup (Resend)
 - [ ] Tax rate API integration (or build own rate database)
 - [ ] Unit tests for API routes
 - [ ] Error handling improvements
 - [ ] Mobile responsive fixes
-
----
-
-## 🌐 Environment Variables Needed
-
-```env
-# Auth
-AUTH_SECRET=<generate>
-
-# Database (Vercel/Neon auto-sets)
-DATABASE_URL=
-DIRECT_URL=
-
-# Email
-RESEND_API_KEY=
-FROM_EMAIL=Sails <hello@usesails.com>
-
-# Stripe (new tiers)
-STRIPE_SECRET_KEY=
-STRIPE_PUBLISHABLE_KEY=
-STRIPE_WEBHOOK_SECRET=
-STRIPE_PRICE_STARTER=price_xxx
-STRIPE_PRICE_GROWTH=price_xxx
-STRIPE_PRICE_PRO=price_xxx
-
-# Shopify (done)
-SHOPIFY_API_KEY=
-SHOPIFY_API_SECRET=
-
-# WooCommerce - per-store keys stored in DB
-
-# Squarespace
-SQUARESPACE_CLIENT_ID=
-SQUARESPACE_CLIENT_SECRET=
-
-# BigCommerce
-BIGCOMMERCE_CLIENT_ID=
-BIGCOMMERCE_CLIENT_SECRET=
-
-# Wix
-WIX_CLIENT_ID=
-WIX_CLIENT_SECRET=
-
-# App
-NEXT_PUBLIC_APP_URL=https://usesails.com
-```
 
 ---
 
@@ -208,14 +164,19 @@ NEXT_PUBLIC_APP_URL=https://usesails.com
 | Core Infrastructure | 95% |
 | Auth | 100% |
 | Database | 95% |
-| Shopify | 80% |
-| WooCommerce | 90% (plugin v0.3.0, sync done) |
-| Squarespace | 0% |
-| BigCommerce | 0% |
-| Wix | 0% |
+| Shopify | 100% ✅ |
+| WooCommerce | 100% ✅ |
+| BigCommerce | 95% (UI done, needs testing) |
+| Magento | 95% (UI done, needs testing) |
+| PrestaShop | 95% (UI done, needs testing) |
+| OpenCart | 95% (UI done, needs testing) |
+| Ecwid | 95% (UI done, needs testing) |
+| Squarespace | 70% (API done, needs UI) |
+| Wix | 0% (deprioritized) |
 | Billing/Stripe | 20% |
 | Usage Limits | 100% ✅ |
-| Documentation | 80% |
+| SEO Content | 90% ✅ |
+| Documentation | 85% |
 | Filing Prep | 0% |
 
-**Overall:** ~60% to MVP launch
+**Overall:** ~75% to MVP launch
