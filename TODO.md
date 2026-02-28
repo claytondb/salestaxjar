@@ -70,17 +70,11 @@ All items completed 2026-02-17.
 - [ ] Tier-based feature gating
 - [ ] Upgrade prompts when hitting limits
 
-### 3. Squarespace UI Integration
-**Priority:** MEDIUM (API done, needs UI)
+### 3. Squarespace UI Integration ✅ DONE (2026-02-28)
+**Priority:** MEDIUM
 
-Backend code exists at:
-- `src/app/api/platforms/squarespace/connect/route.ts`
-- `src/app/api/platforms/squarespace/sync/route.ts`
-- `src/lib/platforms/squarespace.ts`
-
-Remaining:
-- [ ] Add to `getPlatformConfigurations()` in `src/lib/platforms/index.ts`
-- [ ] Add Squarespace modal to `PlatformsManager.tsx`
+- [x] Add to `getPlatformConfigurations()` in `src/lib/platforms/index.ts`
+- [x] Add Squarespace modal to `PlatformsManager.tsx`
 - [ ] Test end-to-end with a Squarespace Commerce Advanced account
 
 ### 4. Rebrand to Sails
@@ -171,7 +165,7 @@ Remaining:
 | PrestaShop | 95% (UI done, needs testing) |
 | OpenCart | 95% (UI done, needs testing) |
 | Ecwid | 95% (UI done, needs testing) |
-| Squarespace | 70% (API done, needs UI) |
+| Squarespace | 95% (UI done, needs testing) |
 | Wix | 0% (deprioritized) |
 | Billing/Stripe | 20% |
 | Usage Limits | 100% ✅ |

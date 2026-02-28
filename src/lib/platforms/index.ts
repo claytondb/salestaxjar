@@ -92,6 +92,13 @@ export function getPlatformConfigurations(): PlatformConfig[] {
       description: 'Add automated tax calculations to your Ecwid store.',
       features: ['Order sync', 'REST API', 'Real-time rates'],
     },
+    {
+      platform: 'squarespace',
+      name: 'Squarespace',
+      configured: true, // Uses API Key (requires Commerce Advanced plan)
+      description: 'Automate US sales tax for your Squarespace Commerce store.',
+      features: ['Order sync', 'REST API', 'Commerce Advanced'],
+    },
   ];
 }
 
