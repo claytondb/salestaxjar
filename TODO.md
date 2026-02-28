@@ -1,6 +1,6 @@
 # Sails - Task List
 
-Last updated: 2026-02-28
+Last updated: 2026-02-28 (3:00 AM)
 
 ## 🎯 Strategic Focus
 
@@ -106,11 +106,17 @@ All items completed 2026-02-17.
 - [ ] "What do you sell?" product type selection
 - [ ] State selection with nexus explanation
 
-### 7. Nexus Threshold Tracking
-- [ ] Track sales per state from imported orders
-- [ ] Alert when approaching $100K or 200 transactions
-- [ ] "You may have nexus in California" notifications
-- [ ] Registration guidance per state
+### 7. Nexus Threshold Tracking ✅ MOSTLY DONE
+**Status:** Core system implemented, needs user testing
+
+- [x] Track sales per state from imported orders (`src/lib/sales-aggregation.ts`)
+- [x] Alert when approaching $100K or 200 transactions (`src/lib/nexus-alerts.ts`)
+- [x] 51 state thresholds with measurement periods (`src/lib/nexus-thresholds.ts`)
+- [x] Beautiful dashboard showing exposure by state (`src/components/NexusExposure.tsx`)
+- [x] Email alerts for threshold crossings (`src/lib/email-alerts.ts`)
+- [x] API routes for exposure data + alerts (`/api/nexus/exposure`, `/api/nexus/alerts`)
+- [x] Notification preferences (enable/disable nexus alerts)
+- [ ] Registration guidance links per state (nice-to-have)
 
 ### 8. Reports & Exports
 - [ ] Sales by state report
@@ -143,7 +149,7 @@ All items completed 2026-02-17.
 ## 🔧 Technical Debt / Ongoing
 
 - [ ] Connect frontend to all database APIs (AuthContext cleanup)
-- [ ] Email system setup (Resend)
+- [x] Email system setup (Resend) — templates built, just needs `RESEND_API_KEY` env var
 - [ ] Tax rate API integration (or build own rate database)
 - [ ] Unit tests for API routes
 - [ ] Error handling improvements
@@ -171,6 +177,8 @@ All items completed 2026-02-17.
 | Usage Limits | 100% ✅ |
 | SEO Content | 90% ✅ |
 | Documentation | 85% |
+| Nexus Tracking | 90% ✅ |
+| Email System | 85% (templates done, needs Resend key) |
 | Filing Prep | 0% |
 
-**Overall:** ~75% to MVP launch
+**Overall:** ~78% to MVP launch
