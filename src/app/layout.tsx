@@ -13,18 +13,50 @@ const caveat = Caveat({
 });
 
 export const metadata: Metadata = {
-  title: "Sails - Sales Tax Made Breezy",
+  metadataBase: new URL('https://sails.tax'),
+  title: {
+    default: "Sails - Sales Tax Made Breezy",
+    template: "%s | Sails"
+  },
   description: "Know where you owe sales tax, when it's due, and how much. Built for small online sellers. Free to start, then just $9/month.",
   keywords: "sales tax, tax compliance, e-commerce tax, shopify tax, woocommerce tax, etsy tax, sales tax calculator, nexus tracking, small business",
+  authors: [{ name: "Sails" }],
+  creator: "Sails",
+  publisher: "Sails",
   openGraph: {
     title: "Sails - Sales Tax Made Breezy",
-    description: "Automatically calculate, collect, and file sales tax for all 45+ US states.",
+    description: "Automatically calculate, collect, and file sales tax for all 45+ US states. Free to start.",
+    url: "https://sails.tax",
+    siteName: "Sails",
+    locale: "en_US",
     type: "website",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "Sails - Sales Tax Made Breezy",
+      }
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Sails - Sales Tax Made Breezy",
+    description: "Know where you owe sales tax, when it's due, and how much. Built for small online sellers.",
+    images: ["/og-image.png"],
   },
   robots: {
     index: true,
     follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
   },
+  manifest: "/site.webmanifest",
 };
 
 // JSON-LD structured data for SEO
