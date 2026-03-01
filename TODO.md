@@ -83,10 +83,10 @@ All items completed 2026-02-17.
 - [x] Update app name throughout (package.json, README)
 - [x] Update documentation (docs/SETUP.md, AMAZON_SETUP.md, SHOPIFY_SETUP.md)
 - [x] Update export filenames and legal text
+- [x] **Meta tags & OG images** (2026-03-01) - Dynamic OpenGraph/Twitter images, enhanced metadata
 - [ ] New logo/branding
 - [ ] Domain: sailstax.com? usesails.com? → Currently sails.tax
 - [ ] Update Vercel project name
-- [ ] Update meta tags, OG images
 - [ ] Update cookie names (requires migration for existing users)
 
 ---
@@ -176,7 +176,7 @@ All items completed 2026-02-17.
 | Billing/Stripe | 20% |
 | Usage Limits | 100% ✅ |
 | SEO Content | 90% ✅ |
-| Documentation | 85% |
+| Documentation | 90% |
 | Nexus Tracking | 90% ✅ |
 | Email System | 85% (templates done, needs Resend key) |
 | Filing Prep | 0% |
