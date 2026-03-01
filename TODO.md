@@ -118,11 +118,11 @@ All items completed 2026-02-17.
 - [x] Notification preferences (enable/disable nexus alerts)
 - [ ] Registration guidance links per state (nice-to-have)
 
-### 8. Reports & Exports
-- [ ] Sales by state report
-- [ ] Tax liability report
-- [ ] CSV export
-- [ ] Filing-ready summaries
+### 8. Reports & Exports ✅ MOSTLY DONE (2026-03-01)
+- [x] Sales by state report (`/dashboard/reports`)
+- [x] CSV export (summary + detailed orders)
+- [ ] Tax liability report (nice-to-have)
+- [ ] Filing-ready summaries (future)
 
 ---
 
@@ -181,4 +181,4 @@ All items completed 2026-02-17.
 | Email System | 85% (templates done, needs Resend key) |
 | Filing Prep | 0% |
 
-**Overall:** ~78% to MVP launch
+**Overall:** ~82% to MVP launch
