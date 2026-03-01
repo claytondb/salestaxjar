@@ -58,6 +58,12 @@ export default function Header() {
                   Filings
                 </Link>
                 <Link 
+                  href="/dashboard/reports" 
+                  className={`px-4 py-2 rounded-lg transition ${isActive('/dashboard/reports') ? 'nav-active' : 'nav-inactive'}`}
+                >
+                  Reports
+                </Link>
+                <Link 
                   href="/settings" 
                   className={`px-4 py-2 rounded-lg transition ${isActive('/settings') ? 'nav-active' : 'nav-inactive'}`}
                 >
@@ -129,6 +135,13 @@ export default function Header() {
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Filings
+              </Link>
+              <Link 
+                href="/dashboard/reports" 
+                className={`block px-4 py-2 rounded-lg transition ${isActive('/dashboard/reports') ? 'nav-active' : 'nav-inactive'}`}
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Reports
               </Link>
               <Link 
                 href="/settings" 

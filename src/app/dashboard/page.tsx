@@ -170,9 +170,14 @@ export default function DashboardPage() {
               <DollarSign className={ICON_CLASS} />
             </div>
             <div className="text-3xl font-bold text-theme-primary">${totalTaxCollected.toFixed(2)}</div>
-            <Link href="/calculator" className="text-theme-accent text-sm hover:opacity-80 mt-2 inline-block">
-              New calculation →
-            </Link>
+            <div className="flex gap-4 mt-2">
+              <Link href="/calculator" className="text-theme-accent text-sm hover:opacity-80">
+                Calculate →
+              </Link>
+              <Link href="/dashboard/reports" className="text-theme-accent text-sm hover:opacity-80">
+                Reports →
+              </Link>
+            </div>
           </div>
 
           <div className="card-theme rounded-xl p-6">
