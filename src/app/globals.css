@@ -307,64 +307,106 @@ input::placeholder, textarea::placeholder {
 }
 
 /* =============================================================================
-   Blog Table Styles
+   Blog Table Styles - Enhanced for GFM Tables
    ============================================================================= */
 
-.prose table {
-  width: 100%;
-  border-collapse: collapse;
-  margin: 1.5rem 0;
+/* Reset and ensure table elements display correctly */
+.prose table,
+article table {
+  display: table !important;
+  width: 100% !important;
+  border-collapse: collapse !important;
+  margin: 1.5rem 0 !important;
   font-size: 0.95rem;
-  overflow: hidden;
+  overflow-x: auto;
   border-radius: 0.5rem;
   border: 1px solid var(--border-primary);
 }
 
-.prose thead {
+.prose thead,
+article thead {
+  display: table-header-group !important;
   background: var(--bg-card);
 }
 
-.prose th {
-  padding: 0.75rem 1rem;
+.prose tbody,
+article tbody {
+  display: table-row-group !important;
+}
+
+.prose tr,
+article tr {
+  display: table-row !important;
+}
+
+.prose th,
+article th {
+  display: table-cell !important;
+  padding: 0.75rem 1rem !important;
   text-align: left;
   font-weight: 600;
   color: var(--text-primary);
   border-bottom: 2px solid var(--border-primary);
+  background: var(--bg-card);
 }
 
-.prose td {
-  padding: 0.75rem 1rem;
+.prose td,
+article td {
+  display: table-cell !important;
+  padding: 0.75rem 1rem !important;
   border-bottom: 1px solid var(--border-primary);
   color: var(--text-secondary);
 }
 
-.prose tbody tr:last-child td {
+.prose tbody tr:last-child td,
+article tbody tr:last-child td {
   border-bottom: none;
 }
 
-.prose tbody tr:hover {
+.prose tbody tr:hover,
+article tbody tr:hover {
   background: var(--bg-card-hover);
+}
+
+/* Responsive table wrapper */
+.prose table {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 /* Light theme table adjustments */
 .theme-nautical .prose table,
-.theme-emerald .prose table {
-  border-color: rgba(0, 0, 0, 0.1);
+.theme-nautical article table,
+.theme-emerald .prose table,
+.theme-emerald article table {
+  border-color: rgba(0, 0, 0, 0.15);
 }
 
 .theme-nautical .prose thead,
-.theme-emerald .prose thead {
+.theme-nautical article thead,
+.theme-nautical .prose th,
+.theme-nautical article th,
+.theme-emerald .prose thead,
+.theme-emerald article thead,
+.theme-emerald .prose th,
+.theme-emerald article th {
   background: rgba(0, 0, 0, 0.03);
 }
 
 .theme-nautical .prose th,
-.theme-emerald .prose th,
+.theme-nautical article th,
 .theme-nautical .prose td,
-.theme-emerald .prose td {
+.theme-nautical article td,
+.theme-emerald .prose th,
+.theme-emerald article th,
+.theme-emerald .prose td,
+.theme-emerald article td {
   border-color: rgba(0, 0, 0, 0.1);
 }
 
 .theme-nautical .prose tbody tr:hover,
-.theme-emerald .prose tbody tr:hover {
+.theme-nautical article tbody tr:hover,
+.theme-emerald .prose tbody tr:hover,
+.theme-emerald article tbody tr:hover {
   background: rgba(0, 0, 0, 0.02);
 }
