@@ -32,7 +32,7 @@ export interface NexusAlertResult {
 /**
  * Alert level hierarchy for comparison
  */
-const ALERT_LEVEL_ORDER: Record<string, number> = {
+export const ALERT_LEVEL_ORDER: Record<string, number> = {
   safe: 0,
   approaching: 1,
   warning: 2,
@@ -213,7 +213,7 @@ async function sendNexusAlertEmails(
 /**
  * Generate a human-readable alert message
  */
-function generateAlertMessage(
+export function generateAlertMessage(
   stateName: string,
   level: ExposureStatus,
   sales: number,
