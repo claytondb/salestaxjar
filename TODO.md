@@ -151,7 +151,8 @@ All items completed 2026-02-17.
 - [ ] Connect frontend to all database APIs (AuthContext cleanup)
 - [x] Email system setup (Resend) — templates built, just needs `RESEND_API_KEY` env var
 - [ ] Tax rate API integration (or build own rate database)
-- [ ] Unit tests for API routes
+- [x] **Unit testing framework** (2026-03-02) - Vitest setup with 27 passing tests for nexus-thresholds & state-registration-urls
+- [ ] Additional unit tests for API routes
 - [ ] Error handling improvements
 - [ ] Mobile responsive fixes
 
