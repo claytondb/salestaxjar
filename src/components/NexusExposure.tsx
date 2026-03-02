@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { AlertTriangle, CheckCircle, TrendingUp, ShieldAlert, ShieldCheck, Info, Bell, ExternalLink } from 'lucide-react';
+import { getStateRegistrationUrl } from '@/lib/state-registration-urls';
 
 interface StateExposure {
   stateCode: string;
@@ -466,10 +467,25 @@ export default function NexusExposure() {
               {/* Action Items for Exceeded States */}
               {exposure.status === 'exceeded' && (
                 <div className="mt-3 flex flex-wrap gap-2">
-                  <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-500/10 text-red-400 text-sm">
-                    <ExternalLink className="w-3.5 h-3.5" />
-                    Register in {exposure.stateName}
-                  </span>
+                  {(() => {
+                    const regInfo = getStateRegistrationUrl(exposure.stateCode);
+                    return regInfo ? (
+                      <a
+                        href={regInfo.registrationUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-500/10 text-red-400 text-sm hover:bg-red-500/20 transition-colors"
+                      >
+                        <ExternalLink className="w-3.5 h-3.5" />
+                        Register in {exposure.stateName}
+                      </a>
+                    ) : (
+                      <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-500/10 text-red-400 text-sm">
+                        <ExternalLink className="w-3.5 h-3.5" />
+                        Register in {exposure.stateName}
+                      </span>
+                    );
+                  })()}
                   <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-500/10 text-red-400 text-sm">
                     <CheckCircle className="w-3.5 h-3.5" />
                     Start collecting tax
