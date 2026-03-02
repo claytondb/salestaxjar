@@ -116,7 +116,7 @@ All items completed 2026-02-17.
 - [x] Email alerts for threshold crossings (`src/lib/email-alerts.ts`)
 - [x] API routes for exposure data + alerts (`/api/nexus/exposure`, `/api/nexus/alerts`)
 - [x] Notification preferences (enable/disable nexus alerts)
-- [ ] Registration guidance links per state (nice-to-have)
+- [x] **Registration guidance links per state** (2026-03-02) - Direct links to official state portals
 
 ### 8. Reports & Exports ✅ MOSTLY DONE (2026-03-01)
 - [x] Sales by state report (`/dashboard/reports`)
