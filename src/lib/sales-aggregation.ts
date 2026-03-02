@@ -10,13 +10,13 @@ import { prisma } from './prisma';
 
 /**
  * Get all distinct months in YYYY-MM format from a start date to now.
+ * Exported for testing.
  */
-function getMonthRange(startDate: Date): string[] {
+export function getMonthRange(startDate: Date, endDate: Date = new Date()): string[] {
   const months: string[] = [];
-  const now = new Date();
   const current = new Date(startDate.getFullYear(), startDate.getMonth(), 1);
 
-  while (current <= now) {
+  while (current <= endDate) {
     months.push(
       `${current.getFullYear()}-${String(current.getMonth() + 1).padStart(2, '0')}`
     );
