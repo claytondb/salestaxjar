@@ -14,7 +14,8 @@ const resend = RESEND_API_KEY ? new Resend(RESEND_API_KEY) : null;
 const FROM_EMAIL = process.env.FROM_EMAIL || 'Sails <noreply@sails.tax>';
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://sails.tax';
 
-interface NexusAlertEmailParams {
+// Export for testing
+export interface NexusAlertEmailParams {
   to: string;
   name: string;
   userId: string;
@@ -26,7 +27,8 @@ interface NexusAlertEmailParams {
   percentage: number;
 }
 
-function formatCurrency(amount: number): string {
+// Export for testing
+export function formatCurrency(amount: number): string {
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: 'USD',
@@ -35,7 +37,8 @@ function formatCurrency(amount: number): string {
   }).format(amount);
 }
 
-function getAlertConfig(level: ExposureStatus): {
+// Export for testing
+export function getAlertConfig(level: ExposureStatus): {
   emoji: string;
   urgency: string;
   bgColor: string;
@@ -83,7 +86,8 @@ function getAlertConfig(level: ExposureStatus): {
   }
 }
 
-function nexusAlertEmailTemplate(params: NexusAlertEmailParams): {
+// Export for testing
+export function nexusAlertEmailTemplate(params: NexusAlertEmailParams): {
   subject: string;
   html: string;
   text: string;
