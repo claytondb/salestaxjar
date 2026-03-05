@@ -101,6 +101,7 @@ describe('API Keys', () => {
         isActive: true,
         usageCount: 0,
         createdAt: new Date(),
+        updatedAt: new Date(),
         lastUsedAt: null,
         expiresAt: null,
       });
@@ -123,6 +124,7 @@ describe('API Keys', () => {
           isActive: true,
           usageCount: 0,
           createdAt: new Date(),
+          updatedAt: new Date(),
           lastUsedAt: null,
           expiresAt: null,
         })
@@ -137,6 +139,7 @@ describe('API Keys', () => {
           isActive: true,
           usageCount: 0,
           createdAt: new Date(),
+          updatedAt: new Date(),
           lastUsedAt: null,
           expiresAt: null,
         });
@@ -148,7 +151,7 @@ describe('API Keys', () => {
     });
     
     test('keyPrefix is first 12 characters of key', async () => {
-      vi.mocked(prisma.apiKey.create).mockImplementation(async (args) => ({
+      (vi.mocked(prisma.apiKey.create) as any).mockImplementation(async (args: any) => ({
         id: 'key-123',
         userId: args.data.userId,
         name: args.data.name,
@@ -159,6 +162,7 @@ describe('API Keys', () => {
         isActive: true,
         usageCount: 0,
         createdAt: new Date(),
+        updatedAt: new Date(),
         lastUsedAt: null,
         expiresAt: args.data.expiresAt || null,
       }));
@@ -170,7 +174,7 @@ describe('API Keys', () => {
     });
     
     test('saves hashed key to database, not plain key', async () => {
-      vi.mocked(prisma.apiKey.create).mockImplementation(async (args) => ({
+      (vi.mocked(prisma.apiKey.create) as any).mockImplementation(async (args: any) => ({
         id: 'key-123',
         userId: args.data.userId,
         name: args.data.name,
@@ -181,6 +185,7 @@ describe('API Keys', () => {
         isActive: true,
         usageCount: 0,
         createdAt: new Date(),
+        updatedAt: new Date(),
         lastUsedAt: null,
         expiresAt: null,
       }));
@@ -196,7 +201,7 @@ describe('API Keys', () => {
     });
     
     test('uses default permissions when not specified', async () => {
-      vi.mocked(prisma.apiKey.create).mockImplementation(async (args) => ({
+      (vi.mocked(prisma.apiKey.create) as any).mockImplementation(async (args: any) => ({
         id: 'key-123',
         userId: args.data.userId,
         name: args.data.name,
@@ -207,6 +212,7 @@ describe('API Keys', () => {
         isActive: true,
         usageCount: 0,
         createdAt: new Date(),
+        updatedAt: new Date(),
         lastUsedAt: null,
         expiresAt: null,
       }));
@@ -218,7 +224,7 @@ describe('API Keys', () => {
     });
     
     test('uses default rate limit when not specified', async () => {
-      vi.mocked(prisma.apiKey.create).mockImplementation(async (args) => ({
+      (vi.mocked(prisma.apiKey.create) as any).mockImplementation(async (args: any) => ({
         id: 'key-123',
         userId: args.data.userId,
         name: args.data.name,
@@ -229,6 +235,7 @@ describe('API Keys', () => {
         isActive: true,
         usageCount: 0,
         createdAt: new Date(),
+        updatedAt: new Date(),
         lastUsedAt: null,
         expiresAt: null,
       }));
@@ -240,7 +247,7 @@ describe('API Keys', () => {
     });
     
     test('accepts custom permissions', async () => {
-      vi.mocked(prisma.apiKey.create).mockImplementation(async (args) => ({
+      (vi.mocked(prisma.apiKey.create) as any).mockImplementation(async (args: any) => ({
         id: 'key-123',
         userId: args.data.userId,
         name: args.data.name,
@@ -251,6 +258,7 @@ describe('API Keys', () => {
         isActive: true,
         usageCount: 0,
         createdAt: new Date(),
+        updatedAt: new Date(),
         lastUsedAt: null,
         expiresAt: null,
       }));
@@ -262,7 +270,7 @@ describe('API Keys', () => {
     });
     
     test('accepts custom rate limit', async () => {
-      vi.mocked(prisma.apiKey.create).mockImplementation(async (args) => ({
+      (vi.mocked(prisma.apiKey.create) as any).mockImplementation(async (args: any) => ({
         id: 'key-123',
         userId: args.data.userId,
         name: args.data.name,
@@ -273,6 +281,7 @@ describe('API Keys', () => {
         isActive: true,
         usageCount: 0,
         createdAt: new Date(),
+        updatedAt: new Date(),
         lastUsedAt: null,
         expiresAt: null,
       }));
@@ -286,7 +295,7 @@ describe('API Keys', () => {
     test('accepts expiration date', async () => {
       const expiresAt = new Date('2030-01-01');
       
-      vi.mocked(prisma.apiKey.create).mockImplementation(async (args) => ({
+      (vi.mocked(prisma.apiKey.create) as any).mockImplementation(async (args: any) => ({
         id: 'key-123',
         userId: args.data.userId,
         name: args.data.name,
@@ -297,6 +306,7 @@ describe('API Keys', () => {
         isActive: true,
         usageCount: 0,
         createdAt: new Date(),
+        updatedAt: new Date(),
         lastUsedAt: null,
         expiresAt: args.data.expiresAt || null,
       }));
@@ -348,6 +358,7 @@ describe('API Keys', () => {
         isActive: false,
         usageCount: 0,
         createdAt: new Date(),
+        updatedAt: new Date(),
         lastUsedAt: null,
         expiresAt: null,
       });
@@ -372,6 +383,7 @@ describe('API Keys', () => {
         isActive: true,
         usageCount: 0,
         createdAt: new Date(),
+        updatedAt: new Date(),
         lastUsedAt: null,
         expiresAt: pastDate,
       });
@@ -394,6 +406,7 @@ describe('API Keys', () => {
         isActive: true,
         usageCount: 0,
         createdAt: new Date(),
+        updatedAt: new Date(),
         lastUsedAt: null,
         expiresAt: null,
       });
@@ -423,6 +436,7 @@ describe('API Keys', () => {
         isActive: true,
         usageCount: 10,
         createdAt: new Date(),
+        updatedAt: new Date(),
         lastUsedAt: null,
         expiresAt: futureDate,
       });
@@ -463,7 +477,7 @@ describe('API Keys', () => {
     });
     
     test('returns keys for user', async () => {
-      vi.mocked(prisma.apiKey.findMany).mockResolvedValueOnce([
+      (vi.mocked(prisma.apiKey.findMany) as any).mockResolvedValueOnce([
         {
           id: 'key-1',
           name: 'Production Key',
@@ -496,7 +510,7 @@ describe('API Keys', () => {
     });
     
     test('does not return keyHash (security)', async () => {
-      vi.mocked(prisma.apiKey.findMany).mockResolvedValueOnce([
+      (vi.mocked(prisma.apiKey.findMany) as any).mockResolvedValueOnce([
         {
           id: 'key-1',
           name: 'Test Key',

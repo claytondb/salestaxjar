@@ -51,7 +51,7 @@ describe('ratelimit', () => {
         limit: 100,
       };
 
-      const headers = rateLimitHeaders(result);
+      const headers = rateLimitHeaders(result) as Record<string, string>;
 
       expect(headers['X-RateLimit-Limit']).toBe('100');
       expect(headers['X-RateLimit-Remaining']).toBe('95');
@@ -66,7 +66,7 @@ describe('ratelimit', () => {
         limit: 5,
       };
 
-      const headers = rateLimitHeaders(result);
+      const headers = rateLimitHeaders(result) as Record<string, string>;
 
       expect(typeof headers['X-RateLimit-Limit']).toBe('string');
       expect(typeof headers['X-RateLimit-Remaining']).toBe('string');
