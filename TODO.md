@@ -1,6 +1,6 @@
 # Sails - Task List
 
-Last updated: 2026-03-04 (3:00 AM)
+Last updated: 2026-03-05 (3:00 AM)
 
 ## 🎯 Strategic Focus
 
@@ -151,7 +151,7 @@ All items completed 2026-02-17.
 - [ ] Connect frontend to all database APIs (AuthContext cleanup)
 - [x] Email system setup (Resend) — templates built, just needs `RESEND_API_KEY` env var
 - [ ] Tax rate API integration (or build own rate database)
-- [x] **Unit testing framework** (2026-03-05) - Vitest setup with 448 passing tests:
+- [x] **Unit testing framework** (2026-03-05) - Vitest setup with 463 passing tests:
   - nexus-thresholds.ts (18 tests)
   - state-registration-urls.ts (9 tests)
   - plans.ts (65 tests) - comprehensive billing/tier logic coverage
@@ -166,6 +166,7 @@ All items completed 2026-02-17.
   - taxjar.ts (36 tests) - tax calculation, state rates, category modifiers
   - platforms/index.ts (18 tests) - platform configuration, supported integrations
   - stripe.ts (37 tests) - plan configuration, tier logic, upgrade detection
+  - blog.ts (15 tests) - blog post loading, parsing, slug generation
 - [ ] Additional unit tests for API routes
 - [ ] Error handling improvements
 - [ ] Mobile responsive fixes
