@@ -151,7 +151,7 @@ All items completed 2026-02-17.
 - [ ] Connect frontend to all database APIs (AuthContext cleanup)
 - [x] Email system setup (Resend) — templates built, just needs `RESEND_API_KEY` env var
 - [ ] Tax rate API integration (or build own rate database)
-- [x] **Unit testing framework** (2026-03-05) - Vitest setup with 463 passing tests:
+- [x] **Unit testing framework** (2026-03-05) - Vitest setup with 492 passing tests:
   - nexus-thresholds.ts (18 tests)
   - state-registration-urls.ts (9 tests)
   - plans.ts (65 tests) - comprehensive billing/tier logic coverage
@@ -167,6 +167,7 @@ All items completed 2026-02-17.
   - platforms/index.ts (18 tests) - platform configuration, supported integrations
   - stripe.ts (37 tests) - plan configuration, tier logic, upgrade detection
   - blog.ts (15 tests) - blog post loading, parsing, slug generation
+  - email.ts (29 tests) - URL construction, date formatting, currency formatting, urgency levels
 - [ ] Additional unit tests for API routes
 - [ ] Error handling improvements
 - [ ] Mobile responsive fixes
