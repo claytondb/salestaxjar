@@ -151,7 +151,7 @@ All items completed 2026-02-17.
 - [ ] Connect frontend to all database APIs (AuthContext cleanup)
 - [x] Email system setup (Resend) — templates built, just needs `RESEND_API_KEY` env var
 - [ ] Tax rate API integration (or build own rate database)
-- [x] **Unit testing framework** (2026-03-04) - Vitest setup with 411 passing tests:
+- [x] **Unit testing framework** (2026-03-05) - Vitest setup with 448 passing tests:
   - nexus-thresholds.ts (18 tests)
   - state-registration-urls.ts (9 tests)
   - plans.ts (65 tests) - comprehensive billing/tier logic coverage
@@ -165,6 +165,7 @@ All items completed 2026-02-17.
   - auth.ts (64 tests) - password hashing, JWT, session management
   - taxjar.ts (36 tests) - tax calculation, state rates, category modifiers
   - platforms/index.ts (18 tests) - platform configuration, supported integrations
+  - stripe.ts (37 tests) - plan configuration, tier logic, upgrade detection
 - [ ] Additional unit tests for API routes
 - [ ] Error handling improvements
 - [ ] Mobile responsive fixes
@@ -187,7 +188,7 @@ All items completed 2026-02-17.
 | Ecwid | 95% (UI done, needs testing) |
 | Squarespace | 95% (UI done, needs testing) |
 | Wix | 0% (deprioritized) |
-| Billing/Stripe | 20% |
+| Billing/Stripe | 70% (needs real Stripe products) |
 | Usage Limits | 100% ✅ |
 | SEO Content | 90% ✅ |
 | Documentation | 90% |
