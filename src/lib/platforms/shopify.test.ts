@@ -114,9 +114,7 @@ describe('getAuthorizationUrl', () => {
 });
 
 describe('ShopifyOrder type', () => {
-  it('should define required fields', async () => {
-    const { type } = await import('./shopify') as { type: unknown };
-    
+  it('should define required fields', () => {
     // Type check at compile time - just verify the types exist
     const order: import('./shopify').ShopifyOrder = {
       id: 12345,

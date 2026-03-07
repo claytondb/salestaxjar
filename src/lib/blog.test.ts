@@ -65,7 +65,7 @@ describe('blog.ts', () => {
 
     it('should return empty array when directory has no markdown files', () => {
       vi.mocked(fs.existsSync).mockReturnValue(true);
-      vi.mocked(fs.readdirSync).mockReturnValue(['image.png', 'readme.txt'] as unknown as fs.Dirent[]);
+      (vi.mocked(fs.readdirSync) as ReturnType<typeof vi.fn>).mockReturnValue(['image.png', 'readme.txt']);
 
       const posts = getAllPosts();
 
@@ -74,7 +74,7 @@ describe('blog.ts', () => {
 
     it('should parse markdown files and return posts', () => {
       vi.mocked(fs.existsSync).mockReturnValue(true);
-      vi.mocked(fs.readdirSync).mockReturnValue(['post-1.md', 'post-2.md'] as unknown as fs.Dirent[]);
+      (vi.mocked(fs.readdirSync) as ReturnType<typeof vi.fn>).mockReturnValue(['post-1.md', 'post-2.md']);
       vi.mocked(fs.readFileSync).mockImplementation((filePath) => {
         if (String(filePath).includes('post-1')) {
           return `---
@@ -106,7 +106,7 @@ More content`;
 
     it('should sort posts by date (newest first)', () => {
       vi.mocked(fs.existsSync).mockReturnValue(true);
-      vi.mocked(fs.readdirSync).mockReturnValue(['old-post.md', 'new-post.md'] as unknown as fs.Dirent[]);
+      (vi.mocked(fs.readdirSync) as ReturnType<typeof vi.fn>).mockReturnValue(['old-post.md', 'new-post.md']);
       vi.mocked(fs.readFileSync).mockImplementation((filePath) => {
         if (String(filePath).includes('old-post')) {
           return `---
@@ -130,7 +130,7 @@ New content`;
 
     it('should use default values for missing frontmatter', () => {
       vi.mocked(fs.existsSync).mockReturnValue(true);
-      vi.mocked(fs.readdirSync).mockReturnValue(['minimal-post.md'] as unknown as fs.Dirent[]);
+      (vi.mocked(fs.readdirSync) as ReturnType<typeof vi.fn>).mockReturnValue(['minimal-post.md']);
       vi.mocked(fs.readFileSync).mockReturnValue('Just content, no frontmatter');
 
       const posts = getAllPosts();
@@ -145,12 +145,12 @@ New content`;
 
     it('should filter out non-markdown files', () => {
       vi.mocked(fs.existsSync).mockReturnValue(true);
-      vi.mocked(fs.readdirSync).mockReturnValue([
+      (vi.mocked(fs.readdirSync) as ReturnType<typeof vi.fn>).mockReturnValue([
         'post.md',
         'image.png',
         '.gitkeep',
         'draft.mdx',
-      ] as unknown as fs.Dirent[]);
+      ]);
       vi.mocked(fs.readFileSync).mockReturnValue(`---
 title: Only Post
 date: 2026-03-01
@@ -237,11 +237,11 @@ This is **bold** text.`);
 
     it('should return slugs without .md extension', () => {
       vi.mocked(fs.existsSync).mockReturnValue(true);
-      vi.mocked(fs.readdirSync).mockReturnValue([
+      (vi.mocked(fs.readdirSync) as ReturnType<typeof vi.fn>).mockReturnValue([
         'first-post.md',
         'second-post.md',
         'third-post.md',
-      ] as unknown as fs.Dirent[]);
+      ]);
 
       const slugs = getAllPostSlugs();
 
@@ -250,12 +250,12 @@ This is **bold** text.`);
 
     it('should filter non-markdown files', () => {
       vi.mocked(fs.existsSync).mockReturnValue(true);
-      vi.mocked(fs.readdirSync).mockReturnValue([
+      (vi.mocked(fs.readdirSync) as ReturnType<typeof vi.fn>).mockReturnValue([
         'valid-post.md',
         'image.jpg',
         '.DS_Store',
         'README.txt',
-      ] as unknown as fs.Dirent[]);
+      ]);
 
       const slugs = getAllPostSlugs();
 
