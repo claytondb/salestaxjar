@@ -151,7 +151,7 @@ All items completed 2026-02-17.
 - [ ] Connect frontend to all database APIs (AuthContext cleanup)
 - [x] Email system setup (Resend) — templates built, just needs `RESEND_API_KEY` env var
 - [ ] Tax rate API integration (or build own rate database)
-- [x] **Unit testing framework** (2026-03-07) - Vitest setup with 748 passing tests:
+- [x] **Unit testing framework** (2026-03-07) - Vitest setup with 878 passing tests:
   - nexus-thresholds.ts (18 tests)
   - state-registration-urls.ts (9 tests)
   - plans.ts (65 tests) - comprehensive billing/tier logic coverage
@@ -171,9 +171,15 @@ All items completed 2026-02-17.
   - platforms/ecwid.ts (49 tests) - credential types, order mapping, status mapping, tax breakdown, edge cases
   - platforms/magento.ts (52 tests) - credential types, order mapping, status transitions, tax breakdown, URL normalization
   - platforms/prestashop.ts (53 tests) - credential types, order mapping, all 12 status states, entity fetches, tax calculations
+  - platforms/opencart.ts (74 tests) - credential types, order mapping, all 16 status states, tax calculations, line items
+  - platforms/squarespace.ts (56 tests) - credential types, order mapping, fulfillment status, line items, tax breakdown
   - stripe.ts (37 tests) - plan configuration, tier logic, upgrade detection
   - blog.ts (15 tests) - blog post loading, parsing, slug generation
   - email.ts (29 tests) - URL construction, date formatting, currency formatting, urgency levels
+  
+  **Platform Integration Test Coverage: 8/8 strategic platforms complete! ✅**
+  - Shopify ✅ | WooCommerce ✅ | BigCommerce ✅ | Ecwid ✅
+  - Magento ✅ | PrestaShop ✅ | OpenCart ✅ | Squarespace ✅
 - [ ] Additional unit tests for API routes
 - [ ] Error handling improvements
 - [ ] Mobile responsive fixes
