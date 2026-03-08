@@ -1209,6 +1209,8 @@ describe('Database operations', () => {
         platformName: 'My OpenCart Store',
         accessToken: JSON.stringify({ username: 'api_user', key: 'secret123' }),
         refreshToken: 'https://mystore.com',
+        tokenExpires: null,
+        metadata: null,
         syncStatus: 'active',
         syncError: null,
         lastSyncAt: new Date(),
@@ -1236,6 +1238,8 @@ describe('Database operations', () => {
         platformName: 'Bad Store',
         accessToken: 'not-valid-json',
         refreshToken: 'https://badstore.com',
+        tokenExpires: null,
+        metadata: null,
         syncStatus: 'error',
         syncError: null,
         lastSyncAt: null,
@@ -1247,7 +1251,7 @@ describe('Database operations', () => {
       expect(result).toBeNull();
     });
 
-    it('should return null when accessToken is missing', async () => {
+    it('should return null when accessToken is empty', async () => {
       const { prisma } = await import('../prisma');
       const { getCredentials } = await import('./opencart');
       
@@ -1257,8 +1261,10 @@ describe('Database operations', () => {
         platform: 'opencart',
         platformId: 'notoken.com',
         platformName: 'No Token',
-        accessToken: null,
+        accessToken: '',
         refreshToken: 'https://notoken.com',
+        tokenExpires: null,
+        metadata: null,
         syncStatus: 'pending',
         syncError: null,
         lastSyncAt: null,
@@ -1282,6 +1288,8 @@ describe('Database operations', () => {
         platformName: 'No URL',
         accessToken: JSON.stringify({ username: 'api', key: 'key' }),
         refreshToken: null,
+        tokenExpires: null,
+        metadata: null,
         syncStatus: 'pending',
         syncError: null,
         lastSyncAt: null,
