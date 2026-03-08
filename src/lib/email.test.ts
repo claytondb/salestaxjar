@@ -44,17 +44,26 @@ describe('email utility functions', () => {
 
   describe('date formatting for filing reminders', () => {
     it('should calculate days until due correctly', () => {
-      const dueDate = new Date();
-      dueDate.setDate(dueDate.getDate() + 7);
-      const daysUntilDue = Math.ceil((dueDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24));
+      // Use UTC dates to avoid DST edge cases
+      const now = new Date();
+      const todayUTC = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate());
+      const sevenDaysFromNowUTC = todayUTC + (7 * 24 * 60 * 60 * 1000);
+      
+      // Calculate using UTC to avoid DST issues
+      const daysUntilDue = Math.ceil((sevenDaysFromNowUTC - todayUTC) / (1000 * 60 * 60 * 24));
       
       expect(daysUntilDue).toBe(7);
     });
 
     it('should handle overdue dates (negative days)', () => {
-      const dueDate = new Date();
-      dueDate.setDate(dueDate.getDate() - 3);
-      const daysUntilDue = Math.ceil((dueDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24));
+      // Use UTC dates to avoid DST edge cases (e.g., March 8th spring forward)
+      const now = new Date();
+      const todayUTC = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate());
+      const threeDaysAgoUTC = todayUTC - (3 * 24 * 60 * 60 * 1000);
+      const dueDate = new Date(threeDaysAgoUTC);
+      
+      // Calculate using UTC to avoid DST issues
+      const daysUntilDue = Math.ceil((threeDaysAgoUTC - todayUTC) / (1000 * 60 * 60 * 24));
       
       expect(daysUntilDue).toBe(-3);
     });
