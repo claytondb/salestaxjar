@@ -217,7 +217,7 @@ export async function validateCredentials(
   try {
     // Try to fetch the API root to verify credentials
     // PrestaShop returns available resources at /api/
-    const response = await prestashopRequest<Record<string, unknown>>(
+    await prestashopRequest<Record<string, unknown>>(
       credentials.storeUrl,
       '/',
       credentials.apiKey
@@ -225,7 +225,7 @@ export async function validateCredentials(
     
     // If we get here, credentials are valid
     // Try to extract shop name from configuration if available
-    let shopInfo: PrestaShopShopInfo = {};
+    const shopInfo: PrestaShopShopInfo = {};
     
     try {
       const configResponse = await prestashopRequest<{ configurations?: Array<{ name: string; value: string }> }>(

@@ -176,7 +176,7 @@ export async function validateCredentials(
     const now = new Date();
     const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000);
     
-    const response = await squarespaceRequest<SquarespaceOrdersResponse>(
+    await squarespaceRequest<SquarespaceOrdersResponse>(
       '/commerce/orders',
       apiKey,
       {
