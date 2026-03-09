@@ -69,14 +69,14 @@ export default function BetaSurveyCard({ userEmail, compact = false }: BetaSurve
               <div className="flex items-center gap-2 mt-2">
                 <span className="text-xs text-amber-600 flex items-center gap-1">
                   <Check className="w-3 h-3" />
-                  We'll email you when it opens
+                  We&apos;ll email you when it opens
                 </span>
                 <button
                   onClick={handleCancelReminder}
                   disabled={loading}
                   className="text-xs text-amber-600 hover:text-amber-800 underline"
                 >
-                  Don't remind me
+                  Don&apos;t remind me
                 </button>
               </div>
             ) : (
@@ -116,7 +116,7 @@ export default function BetaSurveyCard({ userEmail, compact = false }: BetaSurve
               <div className="flex items-center gap-3 mt-3">
                 <span className="text-sm text-amber-700 flex items-center gap-1">
                   <Check className="w-4 h-4 text-green-600" />
-                  We'll send you an email when the survey opens
+                  We&apos;ll send you an email when the survey opens
                 </span>
                 <button
                   onClick={handleCancelReminder}

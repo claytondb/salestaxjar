@@ -4,7 +4,6 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import Footer from '@/components/Footer';
-import Header from '@/components/Header';
 import SailsLogo from '@/components/SailsLogo';
 import ThemeToggle from '@/components/ThemeToggle';
 import { Check, Clock, Sparkles, Heart, Zap, Shield } from 'lucide-react';
@@ -172,7 +171,7 @@ export default function PricingPage() {
             <span className="text-theme-accent">All the features you need.</span>
           </h1>
           <p className="text-xl text-theme-secondary mb-2">
-            Sales tax software that doesn't assume you have an accounting department.
+            Sales tax software that doesn&apos;t assume you have an accounting department.
           </p>
         </div>
       </section>

@@ -110,9 +110,9 @@ export function AmazonManualImport() {
               <ExternalLink className="w-3 h-3" />
             </a>
           </li>
-          <li>Select <strong>"Sales Tax Report"</strong> or <strong>"Tax Document Library"</strong></li>
+          <li>Select <strong>&quot;Sales Tax Report&quot;</strong> or <strong>&quot;Tax Document Library&quot;</strong></li>
           <li>Choose your date range (we recommend monthly reports)</li>
-          <li>Click <strong>"Generate Report"</strong> and wait for it to complete</li>
+          <li>Click <strong>&quot;Generate Report&quot;</strong> and wait for it to complete</li>
           <li>Download the CSV file</li>
           <li>Upload the file below</li>
         </ol>

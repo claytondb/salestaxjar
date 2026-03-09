@@ -10,7 +10,7 @@ import { cookies } from 'next/headers';
  * 
  * Initiates Amazon Seller Central OAuth flow
  */
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     // Check if user is authenticated
     const user = await getCurrentUser();

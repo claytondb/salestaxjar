@@ -25,12 +25,19 @@ interface UsageData {
 export default function PlanUsage() {
   const [usage, setUsage] = useState<UsageData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [daysLeft, setDaysLeft] = useState(0);
 
   useEffect(() => {
     fetch('/api/usage')
       .then(res => res.json())
       .then(data => {
-        if (!data.error) setUsage(data);
+        if (!data.error) {
+          setUsage(data);
+          // Calculate days left when we get usage data
+          const periodEnd = new Date(data.billingPeriod.end);
+          const now = Date.now();
+          setDaysLeft(Math.max(0, Math.ceil((periodEnd.getTime() - now) / (1000 * 60 * 60 * 24))));
+        }
       })
       .catch(() => {})
       .finally(() => setLoading(false));
@@ -109,7 +116,6 @@ export default function PlanUsage() {
   }
 
   const periodEnd = new Date(usage.billingPeriod.end);
-  const daysLeft = Math.max(0, Math.ceil((periodEnd.getTime() - Date.now()) / (1000 * 60 * 60 * 24)));
 
   return (
     <div className="card-theme rounded-xl p-6">

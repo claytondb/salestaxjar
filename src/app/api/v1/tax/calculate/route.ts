@@ -16,6 +16,14 @@ import { getStateByCode } from '@/data/taxRates';
 import { prisma } from '@/lib/prisma';
 import type { ProductCategory } from '@/types';
 
+// Line item interface for tax calculation requests
+interface TaxLineItem {
+  id?: string;
+  unit_price: number;
+  quantity: number;
+  product_tax_code?: string;
+}
+
 // CORS headers for external requests
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -227,7 +235,7 @@ export async function POST(request: NextRequest) {
         special_tax_rate: result.breakdown?.specialRate || 0,
         special_district_tax_collectable: specialAmount,
         combined_tax_rate: result.rate,
-        line_items: line_items?.map((item: any, index: number) => ({
+        line_items: (line_items as TaxLineItem[] | undefined)?.map((item, index) => ({
           id: item.id || String(index),
           taxable_amount: item.unit_price * item.quantity,
           tax_collectable: (item.unit_price * item.quantity) * result.rate,

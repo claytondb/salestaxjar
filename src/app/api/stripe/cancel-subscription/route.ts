@@ -95,7 +95,6 @@ export async function POST(request: NextRequest) {
       });
     } else {
       // Scheduled cancellation - mark as canceling and fetch period end from Stripe
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       let periodEnd: Date | undefined;
       try {
         const { stripe } = await import('@/lib/stripe');

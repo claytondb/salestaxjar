@@ -8,12 +8,10 @@ import {
   Users, 
   CreditCard, 
   CheckCircle, 
-  Clock,
   Store,
   RefreshCw,
   ChevronDown,
   ChevronUp,
-  Mail,
   Calendar,
   ShoppingCart
 } from 'lucide-react';

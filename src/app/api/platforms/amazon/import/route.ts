@@ -70,7 +70,7 @@ export async function POST(request: NextRequest) {
         trim: true,
         relax_column_count: true,
       });
-    } catch (parseError) {
+    } catch {
       return NextResponse.json(
         { error: 'Invalid CSV format. Please upload a valid Amazon tax report.' },
         { status: 400 }
@@ -284,7 +284,6 @@ function parseAmazonReport(
   records: Record<string, string>[], 
   reportType: string
 ): ParsedOrder[] {
-  const orders: ParsedOrder[] = [];
   const orderMap = new Map<string, ParsedOrder>();
   
   for (const record of records) {
@@ -374,7 +373,7 @@ function parseAmazonReport(
           raw: record,
         });
       }
-    } catch (e) {
+    } catch {
       // Skip malformed rows
       continue;
     }

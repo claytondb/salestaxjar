@@ -36,6 +36,16 @@ export default function BetaPage() {
   const [waitlistEmail, setWaitlistEmail] = useState('');
   const [waitlistStatus, setWaitlistStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [waitlistMessage, setWaitlistMessage] = useState('');
+  
+  // Days left calculation - use lazy initializer to calculate on client only
+  const [daysLeft] = useState(() => {
+    // This runs only once during initial render
+    // On server it will be 0, on client it will calculate
+    if (typeof window === 'undefined') return 0;
+    const now = Date.now();
+    const diff = BETA_END_DATE.getTime() - now;
+    return Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));
+  });
 
   // Fetch beta availability on mount
   useEffect(() => {
@@ -110,8 +120,6 @@ export default function BetaPage() {
     }
   };
 
-  const daysLeft = Math.max(0, Math.ceil((BETA_END_DATE.getTime() - Date.now()) / (1000 * 60 * 60 * 24)));
-
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white">
       {/* Header */}
@@ -161,7 +169,7 @@ export default function BetaPage() {
               </>
             ) : (
               <>
-                You're Invited to the<br />
+                You&apos;re Invited to the<br />
                 <span className="text-emerald-600">Sails Beta</span>
               </>
             )}
@@ -171,7 +179,7 @@ export default function BetaPage() {
             {betaStatus.isFull ? (
               <>
                 All {TOTAL_SLOTS} beta spots have been claimed! Join the waitlist below 
-                and we'll notify you if a spot opens up or when we launch publicly.
+                and we&apos;ll notify you if a spot opens up or when we launch publicly.
               </>
             ) : (
               <>
@@ -418,7 +426,7 @@ export default function BetaPage() {
             What We Ask in Return
           </h2>
           <p className="text-gray-600 max-w-2xl mx-auto mb-4">
-            Use Sails with your real store and tell us what's broken, confusing, or missing.
+            Use Sails with your real store and tell us what&apos;s broken, confusing, or missing.
           </p>
           <div className="inline-flex items-center gap-2 px-4 py-2 bg-amber-100 text-amber-800 rounded-lg text-sm font-medium mb-4">
             <ClipboardList className="w-4 h-4" />

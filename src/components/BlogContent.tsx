@@ -132,7 +132,7 @@ export default function BlogContent({ posts }: BlogContentProps) {
             <p className="mt-4 text-theme-secondary text-sm">
               Showing {filteredPosts.length} of {posts.length} articles
               {selectedCategory && <span> in <strong>{selectedCategory}</strong></span>}
-              {searchQuery && <span> matching "<strong>{searchQuery}</strong>"</span>}
+              {searchQuery && <span> matching &quot;<strong>{searchQuery}</strong>&quot;</span>}
             </p>
           )}
         </div>

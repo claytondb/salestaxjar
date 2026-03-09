@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getCurrentUser } from '@/lib/auth';
-import { removeShopifyConnection, isShopifyConfigured } from '@/lib/platforms/shopify';
-import { prisma } from '@/lib/prisma';
+import { removeShopifyConnection } from '@/lib/platforms/shopify';
 
 /**
  * POST /api/integrations/shopify/disconnect
