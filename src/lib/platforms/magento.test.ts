@@ -539,7 +539,7 @@ describe('mapOrderToImport', () => {
 
   it('should handle missing currency gracefully', () => {
     const order = createMockOrder();
-    // @ts-ignore - testing edge case
+    // @ts-expect-error - testing edge case with undefined currency
     order.order_currency_code = undefined;
     const mapped = mapOrderToImport(order);
     

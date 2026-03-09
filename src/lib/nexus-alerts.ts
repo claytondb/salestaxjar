@@ -13,7 +13,6 @@ import { prisma } from './prisma';
 import { getExposureTotals } from './sales-aggregation';
 import {
   STATE_NEXUS_THRESHOLDS,
-  THRESHOLD_BY_STATE,
   calculateExposureStatus,
   ExposureStatus,
 } from './nexus-thresholds';

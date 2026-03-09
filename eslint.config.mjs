@@ -12,7 +12,22 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Utility scripts (Node.js, not Next.js)
+    "clear-stripe.js",
+    "clear-stripe-pg.js",
+    "delete-user.js",
   ]),
+  // Custom rules
+  {
+    rules: {
+      // Allow unused vars/args prefixed with underscore
+      "@typescript-eslint/no-unused-vars": ["warn", {
+        argsIgnorePattern: "^_",
+        varsIgnorePattern: "^_",
+        caughtErrorsIgnorePattern: "^_"
+      }],
+    }
+  }
 ]);
 
 export default eslintConfig;

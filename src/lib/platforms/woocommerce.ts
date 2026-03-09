@@ -344,7 +344,7 @@ export async function fetchAllOrders(
 /**
  * Map WooCommerce order to our ImportedOrder format
  */
-export function mapOrderToImport(order: WooCommerceOrder, storeUrl: string) {
+export function mapOrderToImport(order: WooCommerceOrder, _storeUrl: string) {
   const shipping = order.shipping.state ? order.shipping : order.billing;
   
   return {

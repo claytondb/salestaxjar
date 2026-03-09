@@ -28,8 +28,6 @@ import {
   Copy,
   Trash2,
   Plus,
-  Eye,
-  EyeOff
 } from 'lucide-react';
 
 const ICON_CLASS = "w-5 h-5";
@@ -93,14 +91,14 @@ function SettingsPageContent() {
     user,
     businessProfile, 
     updateBusinessProfile, 
-    connectedPlatforms, 
+    connectedPlatforms: _connectedPlatforms, 
     notifications,
     updateNotifications,
     billing,
     updateBilling,
     updateUser,
     isLoading,
-    refreshData,
+    refreshData: _refreshData,
     refreshUser,
   } = useAuth();
   const router = useRouter();
@@ -252,7 +250,7 @@ function SettingsPageContent() {
         const error = await response.json();
         setSaveMessage(error.error || 'Failed to create API key');
       }
-    } catch (error) {
+    } catch (_error) {
       setSaveMessage('Failed to create API key');
     } finally {
       setIsCreatingKey(false);
@@ -271,7 +269,7 @@ function SettingsPageContent() {
         setSaveMessage('API key deleted');
         setTimeout(() => setSaveMessage(''), 3000);
       }
-    } catch (error) {
+    } catch (_error) {
       setSaveMessage('Failed to delete API key');
     }
   };

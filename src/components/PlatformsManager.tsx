@@ -11,7 +11,6 @@ import {
   Check,
   Loader2,
   Unplug,
-  Upload,
   Clock,
   Download
 } from 'lucide-react';
@@ -178,7 +177,7 @@ export default function PlatformsManager() {
     setConnectingPlatform(platform);
     try {
       window.location.href = `/api/platforms/${platform}/auth`;
-    } catch (err) {
+    } catch (_err) {
       setError(`Failed to connect to ${platform}`);
       setConnectingPlatform(null);
     }

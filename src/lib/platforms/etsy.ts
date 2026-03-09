@@ -56,11 +56,8 @@ export function generatePKCE(): { verifier: string; challenge: string } {
   const verifier = base64UrlEncode(array);
   
   // Generate challenge using SHA-256
-  const encoder = new TextEncoder();
-  const data = encoder.encode(verifier);
-  
   // Note: In Node.js we need to use crypto module for SHA-256
-  // This is a simplified version - in production use proper crypto
+  // This is a simplified version - in production use proper SHA-256 hash
   const challenge = verifier; // Simplified - use proper SHA-256 in production
   
   return { verifier, challenge };

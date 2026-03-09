@@ -115,7 +115,7 @@ export default function PlanUsage() {
     statusText = 'Getting close';
   }
 
-  const periodEnd = new Date(usage.billingPeriod.end);
+  const _periodEnd = new Date(usage.billingPeriod.end);
 
   return (
     <div className="card-theme rounded-xl p-6">

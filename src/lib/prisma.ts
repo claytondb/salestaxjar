@@ -1,6 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import { PrismaNeon } from '@prisma/adapter-neon';
-import { neonConfig, Pool } from '@neondatabase/serverless';
+import { neonConfig } from '@neondatabase/serverless';
 
 // Enable WebSocket for fetch-based environments (Edge, serverless)
 neonConfig.fetchConnectionCache = true;
@@ -17,10 +17,7 @@ const createPrismaClient = () => {
     });
   }
   
-  // Create Neon pool with connection string
-  const neonPool = new Pool({ connectionString });
-  
-  // Create Prisma adapter for Neon - pass the pool config, not the pool instance
+  // Create Prisma adapter for Neon
   const adapter = new PrismaNeon({ connectionString });
   
   // Create Prisma client with adapter

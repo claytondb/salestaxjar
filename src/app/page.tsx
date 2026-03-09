@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import { stateTaxRates, calculateTax, getNoTaxStates, taxRateMetadata } from '@/data/taxRates';
 import { useAuth } from '@/context/AuthContext';
 import Footer from '@/components/Footer';
@@ -27,7 +26,6 @@ const ICON_CLASS = "w-8 h-8 text-theme-accent";
 
 export default function Home() {
   const { user, isLoading } = useAuth();
-  const router = useRouter();
   const [amount, setAmount] = useState<string>('100');
   const [selectedState, setSelectedState] = useState<string>('CA');
   const [result, setResult] = useState<{ tax: number; total: number; rate: number } | null>(null);

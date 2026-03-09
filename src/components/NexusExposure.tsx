@@ -42,7 +42,8 @@ interface NexusAlert {
   createdAt: string;
 }
 
-function formatCurrency(amount: number): string {
+// Reserved for future use
+function _formatCurrency(amount: number): string {
   if (amount >= 1000000) {
     return `$${(amount / 1000000).toFixed(1)}M`;
   }

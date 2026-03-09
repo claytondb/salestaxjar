@@ -147,7 +147,7 @@ export default function WooCommerceIntegrationPage() {
           <h2 className="text-xl font-semibold text-theme-primary mb-6">Setup Instructions</h2>
           
           <div className="space-y-6">
-            {steps.map((step, index) => (
+            {steps.map((step) => (
               <div key={step.number} className="flex gap-4">
                 <div className="flex-shrink-0 w-8 h-8 bg-theme-accent/20 rounded-full flex items-center justify-center">
                   <span className="text-theme-accent font-semibold">{step.number}</span>

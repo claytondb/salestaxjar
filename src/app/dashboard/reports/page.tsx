@@ -138,7 +138,7 @@ export default function ReportsPage() {
       a.click();
       window.URL.revokeObjectURL(downloadUrl);
       document.body.removeChild(a);
-    } catch (err) {
+    } catch (_err) {
       alert('Export failed. Please try again.');
     } finally {
       setIsExporting(false);

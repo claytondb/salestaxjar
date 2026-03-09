@@ -79,7 +79,7 @@ export function AmazonManualImport() {
           errors: [data.error || 'Failed to import file'],
         });
       }
-    } catch (error) {
+    } catch (_error) {
       setResult({
         success: false,
         errors: ['Network error. Please try again.'],
