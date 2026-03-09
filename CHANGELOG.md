@@ -11,6 +11,25 @@ All notable changes to Sails (sails.tax).
 
 ---
 
+## [0.9.1] - 2026-03-09
+
+### Added
+- **Unit tests for env.ts** (20 tests) - Tests for environment configuration, service availability checks, and validateEnv
+
+### Fixed
+- **ESLint warnings cleanup** - Reduced warnings from 74 to ~30:
+  - Updated eslint.config.mjs to allow underscore-prefixed unused vars
+  - Removed unused imports (useRouter, Eye, EyeOff, Upload, Pool)
+  - Fixed unused variable warnings with underscore prefix
+  - Removed dead code (unused neonPool, encoder.encode)
+  - Changed @ts-ignore to @ts-expect-error
+  - Added utility JS files to eslint ignore list
+
+### Changed
+- Test count increased from 918 to 938
+
+---
+
 ## [0.9.0] - 2026-02-28
 
 ### Added
