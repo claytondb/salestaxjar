@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import { getPostBySlug, getAllPostSlugs } from '@/lib/blog';
 import Footer from '@/components/Footer';
@@ -101,11 +102,14 @@ export default async function BlogPostPage({ params }: Props) {
 
           {/* Featured Image */}
           {post.image && (
-            <div className="mb-8 rounded-xl overflow-hidden">
-              <img 
+            <div className="mb-8 rounded-xl overflow-hidden relative aspect-video">
+              <Image 
                 src={post.image} 
                 alt={post.title}
-                className="w-full h-auto object-cover"
+                fill
+                className="object-cover"
+                sizes="(max-width: 768px) 100vw, 768px"
+                priority
               />
             </div>
           )}
