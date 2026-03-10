@@ -3,7 +3,7 @@
  * Tests pure functions that don't require database access
  */
 
-import { describe, test, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, test, expect, vi } from 'vitest';
 
 // Mock external dependencies before importing
 vi.mock('next/headers', () => ({

@@ -15,8 +15,6 @@ import {
   tierGateError,
   orderLimitError,
   PLAN_ORDER_LIMITS,
-  type PlanTier,
-  type Feature,
 } from './plans'
 
 describe('plans', () => {

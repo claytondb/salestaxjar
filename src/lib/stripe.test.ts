@@ -265,7 +265,7 @@ describe('Plan features consistency', () => {
   test('all plans should have required properties', () => {
     const requiredKeys = ['name', 'priceId', 'price', 'features'];
     
-    for (const [planId, plan] of Object.entries(PLANS)) {
+    for (const [, plan] of Object.entries(PLANS)) {
       for (const key of requiredKeys) {
         expect(plan).toHaveProperty(key);
       }
@@ -279,9 +279,11 @@ describe('Plan features consistency', () => {
   });
 
   test('only pro plan should be marked as popular', () => {
-    expect((PLANS.starter as any).popular).toBeFalsy();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    expect((PLANS.starter as unknown as any).popular).toBeFalsy();
     expect(PLANS.pro.popular).toBe(true);
-    expect((PLANS.business as any).popular).toBeFalsy();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    expect((PLANS.business as unknown as any).popular).toBeFalsy();
   });
 });
 

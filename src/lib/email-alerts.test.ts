@@ -107,7 +107,8 @@ describe('email-alerts.ts', () => {
 
     it('returns default config for unknown levels', () => {
       // TypeScript would catch this, but test runtime behavior
-      const config = getAlertConfig('unknown' as any);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const config = getAlertConfig('unknown' as unknown as any);
       expect(config.urgency).toBe('Info');
     });
 
@@ -281,7 +282,7 @@ describe('email-alerts.ts', () => {
       });
 
       it('handles over 100% threshold', () => {
-        const { subject, html, text } = nexusAlertEmailTemplate({
+        const { subject, html } = nexusAlertEmailTemplate({
           ...baseParams,
           alertLevel: 'exceeded',
           salesAmount: 150000,
@@ -293,7 +294,7 @@ describe('email-alerts.ts', () => {
       });
 
       it('handles very small percentages', () => {
-        const { subject, html, text } = nexusAlertEmailTemplate({
+        const { subject, html } = nexusAlertEmailTemplate({
           ...baseParams,
           alertLevel: 'safe',
           salesAmount: 500,

@@ -209,6 +209,7 @@ function SettingsPageContent() {
     if (activeTab === 'apikeys' && apiKeys.length === 0) {
       loadApiKeys();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- apiKeys.length intentionally omitted to prevent infinite loop
   }, [activeTab]);
   
   const loadApiKeys = async () => {

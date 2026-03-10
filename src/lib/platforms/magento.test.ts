@@ -26,9 +26,7 @@ import type {
   MagentoAddress,
   MagentoOrderItem,
   MagentoPayment,
-  MagentoOrdersResponse,
   MagentoStoreConfig,
-  MagentoExtensionAttributes,
 } from './magento';
 
 import { mapOrderToImport, validateCredentials, saveConnection, getCredentials, fetchOrders } from './magento';

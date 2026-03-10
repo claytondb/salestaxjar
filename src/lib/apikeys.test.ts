@@ -3,7 +3,10 @@
  * Tests for API key generation, hashing, and validation
  */
 
-import { describe, test, expect, vi, beforeEach, afterEach } from 'vitest';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+// Test file uses `any` for Prisma mock implementations - standard vitest pattern
+
+import { describe, test, expect, vi, beforeEach } from 'vitest';
 import crypto from 'crypto';
 
 // Mock prisma before importing apikeys
@@ -524,7 +527,7 @@ describe('API Keys', () => {
         },
       ]);
       
-      const result = await listApiKeys('user-1');
+      await listApiKeys('user-1');
       
       // Verify the select clause doesn't include keyHash
       expect(prisma.apiKey.findMany).toHaveBeenCalledWith(

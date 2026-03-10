@@ -21,7 +21,6 @@ import {
   calculateTax,
   getAllStateRates,
   type TaxCalculationRequest,
-  type TaxCalculationResult,
 } from './taxjar';
 
 // =============================================================================

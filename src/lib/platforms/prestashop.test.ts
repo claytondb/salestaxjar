@@ -28,8 +28,6 @@ import type {
   PrestaShopCustomer,
   PrestaShopState,
   PrestaShopCountry,
-  PrestaShopOrdersResponse,
-  PrestaShopShopInfo,
 } from './prestashop';
 
 import { 

@@ -64,7 +64,7 @@ export default function IntegrationsPage() {
 
   useEffect(() => {
     if (user) {
-      fetchStats();
+      fetchStats(); // eslint-disable-line react-hooks/set-state-in-effect -- Data fetching on mount
     }
   }, [user, fetchStats]);
 

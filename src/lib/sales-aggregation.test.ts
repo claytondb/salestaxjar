@@ -5,7 +5,7 @@
  * Database-dependent functions require integration testing.
  */
 
-import { describe, it, expect, vi, beforeAll } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 
 // Mock Prisma before importing the module
 vi.mock('./prisma', () => ({

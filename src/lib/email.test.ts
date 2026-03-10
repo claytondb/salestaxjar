@@ -60,7 +60,6 @@ describe('email utility functions', () => {
       const now = new Date();
       const todayUTC = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate());
       const threeDaysAgoUTC = todayUTC - (3 * 24 * 60 * 60 * 1000);
-      const dueDate = new Date(threeDaysAgoUTC);
       
       // Calculate using UTC to avoid DST issues
       const daysUntilDue = Math.ceil((threeDaysAgoUTC - todayUTC) / (1000 * 60 * 60 * 24));

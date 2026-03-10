@@ -18,7 +18,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
   // Load theme from localStorage on mount
   useEffect(() => {
-    setMounted(true);
+    setMounted(true); // eslint-disable-line react-hooks/set-state-in-effect -- Standard hydration pattern
     const saved = localStorage.getItem('sails-theme') as ThemeName | null;
     if (saved && (saved === 'default' || saved === 'nautical')) {
       setThemeState(saved);

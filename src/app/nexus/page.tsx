@@ -35,7 +35,7 @@ export default function NexusPage() {
   // If no connected platforms, default to manual tab
   useEffect(() => {
     if (!isLoading && !hasConnectedPlatform) {
-      setActiveTab('manual');
+      setActiveTab('manual'); // eslint-disable-line react-hooks/set-state-in-effect -- Initialize tab based on loaded state
     }
   }, [isLoading, hasConnectedPlatform]);
 

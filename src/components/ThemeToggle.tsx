@@ -8,7 +8,7 @@ export default function ThemeToggle() {
   
   // Only access theme after mounting (client-side)
   useEffect(() => {
-    setMounted(true);
+    setMounted(true); // eslint-disable-line react-hooks/set-state-in-effect -- Standard hydration pattern
   }, []);
 
   // During SSR/SSG, render a placeholder

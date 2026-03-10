@@ -6,7 +6,6 @@ import {
   getNoTaxStates,
   getHighestTaxStates,
   calculateTax,
-  type TaxRate,
 } from './taxRates';
 
 describe('taxRates data', () => {
