@@ -11,6 +11,29 @@ All notable changes to Sails (sails.tax).
 
 ---
 
+## [0.9.5] - 2026-03-10
+
+### Added
+- **Login API route tests** (24 tests) - Comprehensive coverage for /api/auth/login:
+  - Successful login flow with session creation and cookies
+  - Rate limiting enforcement and wait time calculation
+  - Email validation before database lookup
+  - User not found handling
+  - Password verification with attempts remaining
+  - Error handling (database errors, session errors, invalid JSON)
+  - Security tests (rate limit before processing, validation before DB)
+  - Edge cases (whitespace, unicode passwords, long passwords)
+
+### Fixed
+- **ESLint warnings cleanup** - Fixed 7 remaining warnings:
+  - Removed unused `data` variables in test files
+  - Added `coverage/**` to ESLint ignore list
+
+### Changed
+- Test count increased from 1108 to 1132
+
+---
+
 ## [0.9.4] - 2026-03-10
 
 ### Added

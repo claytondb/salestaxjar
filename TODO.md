@@ -1,6 +1,6 @@
 # Sails - Task List
 
-Last updated: 2026-03-10 (4:00 AM)
+Last updated: 2026-03-10 (5:15 AM)
 
 ## 🎯 Strategic Focus
 
@@ -188,8 +188,10 @@ All items completed 2026-02-17.
   
   **API Route Tests (2026-03-10):**
   - api/rates/route.ts (42 tests) - all states, single state lookup, no-tax filter, highest filter, edge cases
+  - api/calculate/route.ts (44 tests) - tax calculations, validation, state-specific logic
+  - api/auth/login/route.ts (24 tests) - login flow, rate limiting, validation, error handling
   
-- [ ] Additional unit tests for API routes (more routes needed)
+- [ ] Additional unit tests for API routes (auth/signup, auth/logout, etc.)
 - [ ] Error handling improvements
 - [ ] Mobile responsive fixes
 
