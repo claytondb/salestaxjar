@@ -11,6 +11,14 @@ All notable changes to Sails (sails.tax).
 
 ---
 
+## [0.9.2] - 2026-03-10
+
+### Fixed
+- **Blog featured images optimization** - Replaced `<img>` with Next.js `<Image>` component for better LCP and bandwidth efficiency
+- Resolved ESLint @next/next/no-img-element warning
+
+---
+
 ## [0.9.1] - 2026-03-09
 
 ### Added
