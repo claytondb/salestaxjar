@@ -11,6 +11,17 @@ All notable changes to Sails (sails.tax).
 
 ---
 
+## [0.9.3] - 2026-03-10
+
+### Added
+- **Amazon platform tests** (40 tests) - Comprehensive coverage for SP-API integration, OAuth flow, order fetching
+- **Etsy platform tests** (44 tests) - Comprehensive coverage for Open API v3, PKCE OAuth, receipts and transactions
+
+### Changed
+- Test count increased from 938 to 1022
+
+---
+
 ## [0.9.2] - 2026-03-10
 
 ### Fixed
