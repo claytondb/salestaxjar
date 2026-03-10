@@ -346,7 +346,6 @@ describe('POST /api/calculate', () => {
     it('should reject zero amount', async () => {
       const request = createPostRequest({ amount: 0, stateCode: 'CA' });
       const response = await POST(request);
-      const data = await response.json();
 
       expect(response.status).toBe(400);
     });
@@ -354,7 +353,6 @@ describe('POST /api/calculate', () => {
     it('should reject negative amount', async () => {
       const request = createPostRequest({ amount: -100, stateCode: 'CA' });
       const response = await POST(request);
-      const data = await response.json();
 
       expect(response.status).toBe(400);
     });
@@ -362,9 +360,9 @@ describe('POST /api/calculate', () => {
     it('should reject missing stateCode', async () => {
       const request = createPostRequest({ amount: 100 });
       const response = await POST(request);
-      const data = await response.json();
 
       expect(response.status).toBe(400);
+      const data = await response.json();
       expect(data.error).toContain('State');
     });
 
@@ -397,7 +395,6 @@ describe('POST /api/calculate', () => {
         headers: { 'Content-Type': 'application/json' },
       });
       const response = await POST(request);
-      const data = await response.json();
 
       expect(response.status).toBe(400);
     });

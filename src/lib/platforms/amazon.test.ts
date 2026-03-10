@@ -169,8 +169,7 @@ describe('getAuthorizationUrl', () => {
 
 describe('AmazonOrder type validation', () => {
   it('should accept valid AmazonOrder structure', async () => {
-    const { AmazonOrder } = await import('./amazon') as { AmazonOrder: unknown };
-    
+    // AmazonOrder is a type, validated at compile time - import not needed at runtime
     // Type validation is done at compile time, this tests runtime usage
     const order = {
       AmazonOrderId: '123-4567890-1234567',

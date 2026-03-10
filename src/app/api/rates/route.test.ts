@@ -157,7 +157,6 @@ describe('GET /api/rates?state=XX (single state)', () => {
   it('should return 404 for numeric state code', async () => {
     const request = createRequest({ state: '12' });
     const response = await GET(request);
-    const data = await response.json();
 
     expect(response.status).toBe(404);
   });
@@ -452,7 +451,6 @@ describe('Edge Cases', () => {
   it('should handle negative limit', async () => {
     const request = createRequest({ filter: 'highest', limit: '-5' });
     const response = await GET(request);
-    const data = await response.json();
 
     // Behavior depends on implementation
     expect(response.status).toBe(200);

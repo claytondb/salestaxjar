@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Test coverage output
+    "coverage/**",
     // Utility scripts (Node.js, not Next.js)
     "clear-stripe.js",
     "clear-stripe-pg.js",
