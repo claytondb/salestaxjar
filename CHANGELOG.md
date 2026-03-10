@@ -11,6 +11,24 @@ All notable changes to Sails (sails.tax).
 
 ---
 
+## [0.9.4] - 2026-03-10
+
+### Added
+- **API route tests for /api/rates** (42 tests) - Comprehensive coverage for:
+  - All states listing with count validation (51 jurisdictions)
+  - Single state lookups (CA, TX, DC, etc.) with data validation
+  - No-tax states filter (DE, MT, NH, OR)
+  - Highest tax states filter with sorting verification
+  - State-specific rate validation (rates, local tax, combined)
+  - Edge cases (invalid codes, empty params, whitespace handling)
+  - Response format consistency checks
+
+### Changed
+- Test count increased from 1066 to 1108
+- Updated TODO.md with latest test coverage stats
+
+---
+
 ## [0.9.3] - 2026-03-10
 
 ### Added
@@ -18,7 +36,7 @@ All notable changes to Sails (sails.tax).
 - **Etsy platform tests** (44 tests) - Comprehensive coverage for Open API v3, PKCE OAuth, receipts and transactions
 
 ### Changed
-- Test count increased from 938 to 1022
+- Test count increased from 938 to 1066
 
 ---
 

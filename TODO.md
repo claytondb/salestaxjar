@@ -1,6 +1,6 @@
 # Sails - Task List
 
-Last updated: 2026-03-09 (12:00 AM)
+Last updated: 2026-03-10 (4:00 AM)
 
 ## 🎯 Strategic Focus
 
@@ -151,7 +151,7 @@ All items completed 2026-02-17.
 - [ ] Connect frontend to all database APIs (AuthContext cleanup)
 - [x] Email system setup (Resend) — templates built, just needs `RESEND_API_KEY` env var
 - [ ] Tax rate API integration (or build own rate database)
-- [x] **Unit testing framework** (2026-03-10) - Vitest setup with 1022 passing tests:
+- [x] **Unit testing framework** (2026-03-10) - Vitest setup with 1108 passing tests:
   - nexus-thresholds.ts (18 tests)
   - state-registration-urls.ts (9 tests)
   - plans.ts (65 tests) - comprehensive billing/tier logic coverage
@@ -185,7 +185,11 @@ All items completed 2026-02-17.
   - Shopify ✅ | WooCommerce ✅ | BigCommerce ✅ | Ecwid ✅
   - Magento ✅ | PrestaShop ✅ | OpenCart ✅ | Squarespace ✅
   - Amazon ✅ | Etsy ✅
-- [ ] Additional unit tests for API routes
+  
+  **API Route Tests (2026-03-10):**
+  - api/rates/route.ts (42 tests) - all states, single state lookup, no-tax filter, highest filter, edge cases
+  
+- [ ] Additional unit tests for API routes (more routes needed)
 - [ ] Error handling improvements
 - [ ] Mobile responsive fixes
 
