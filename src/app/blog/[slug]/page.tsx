@@ -59,7 +59,42 @@ export default async function BlogPostPage({ params }: Props) {
     notFound();
   }
 
+  const ogImage = post.image ? `https://sails.tax${post.image}` : 'https://sails.tax/og-image.png';
+
+  // Article JSON-LD schema for rich Google results
+  const articleJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: post.title,
+    description: post.excerpt,
+    image: ogImage,
+    author: {
+      '@type': 'Person',
+      name: post.author,
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: 'Sails',
+      logo: {
+        '@type': 'ImageObject',
+        url: 'https://sails.tax/logo.svg',
+      },
+    },
+    datePublished: post.date,
+    dateModified: post.date,
+    mainEntityOfPage: {
+      '@type': 'WebPage',
+      '@id': `https://sails.tax/blog/${slug}`,
+    },
+    url: `https://sails.tax/blog/${slug}`,
+  };
+
   return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
+      />
     <div className="min-h-screen bg-theme-gradient">
       {/* Header */}
       <header className="border-b border-theme-primary bg-transparent backdrop-blur-sm">
@@ -72,6 +107,7 @@ export default async function BlogPostPage({ params }: Props) {
             <nav className="hidden md:flex gap-6 items-center">
               <Link href="/#features" className="text-theme-secondary hover:text-theme-primary transition">Features</Link>
               <Link href="/pricing" className="text-theme-secondary hover:text-theme-primary transition">Pricing</Link>
+              <Link href="/free-calculator" className="text-theme-secondary hover:text-theme-primary transition">Free Calculator</Link>
               <Link href="/blog" className="text-theme-accent font-medium">Blog</Link>
               <ThemeToggle />
             </nav>
@@ -190,5 +226,6 @@ export default async function BlogPostPage({ params }: Props) {
 
       <Footer />
     </div>
+    </>
   );
 }

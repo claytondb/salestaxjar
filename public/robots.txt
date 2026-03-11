@@ -18,8 +18,10 @@ Disallow: /filings
 Allow: /
 Allow: /pricing
 Allow: /calculator
+Allow: /free-calculator
 Allow: /faq
 Allow: /contact
 Allow: /privacy
 Allow: /terms
 Allow: /cookies
+Allow: /blog

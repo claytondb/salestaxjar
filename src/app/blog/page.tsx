@@ -39,6 +39,7 @@ export default function BlogPage() {
             <nav className="hidden md:flex gap-6 items-center">
               <Link href="/#features" className="text-theme-secondary hover:text-theme-primary transition">Features</Link>
               <Link href="/pricing" className="text-theme-secondary hover:text-theme-primary transition">Pricing</Link>
+              <Link href="/free-calculator" className="text-theme-secondary hover:text-theme-primary transition">Free Calculator</Link>
               <Link href="/blog" className="text-theme-accent font-medium">Blog</Link>
               <ThemeToggle />
             </nav>
