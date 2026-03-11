@@ -17,7 +17,6 @@ import {
 } from 'lucide-react';
 import SailsLogo from '@/components/SailsLogo';
 
-const BETA_END_DATE = new Date('2026-03-02');
 const TOTAL_SLOTS = 25;
 
 export default function BetaPage() {
@@ -36,16 +35,6 @@ export default function BetaPage() {
   const [waitlistEmail, setWaitlistEmail] = useState('');
   const [waitlistStatus, setWaitlistStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [waitlistMessage, setWaitlistMessage] = useState('');
-  
-  // Days left calculation - use lazy initializer to calculate on client only
-  const [daysLeft] = useState(() => {
-    // This runs only once during initial render
-    // On server it will be 0, on client it will calculate
-    if (typeof window === 'undefined') return 0;
-    const now = Date.now();
-    const diff = BETA_END_DATE.getTime() - now;
-    return Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));
-  });
 
   // Fetch beta availability on mount
   useEffect(() => {
@@ -157,7 +146,7 @@ export default function BetaPage() {
             // Slots Available Badge
             <div className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-100 rounded-full text-emerald-700 text-sm font-medium mb-6">
               <Sparkles className="w-4 h-4" />
-              {betaStatus.loading ? 'Loading...' : `${betaStatus.slotsRemaining} spots left`} — {daysLeft} days remaining
+              {betaStatus.loading ? 'Loading...' : `${betaStatus.slotsRemaining} spots left`}
             </div>
           )}
           
@@ -432,10 +421,7 @@ export default function BetaPage() {
             <ClipboardList className="w-4 h-4" />
             Complete a short survey at the end of beta to lock in your lifetime free Pro account
           </div>
-          <p className="text-sm text-gray-500">
-            Beta ends {BETA_END_DATE.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}. 
-            Complete the survey to keep your lifetime Pro access.
-          </p>
+
         </motion.div>
 
       </main>
