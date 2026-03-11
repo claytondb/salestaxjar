@@ -11,6 +11,34 @@ All notable changes to Sails (sails.tax).
 
 ---
 
+## [0.9.7] - 2026-03-11
+
+### Added
+- **Auth/Me API route tests** (27 tests) - Comprehensive coverage for /api/auth/me:
+  - Authentication checks (401 when not authenticated)
+  - User data retrieval (id, email, name, emailVerified, createdAt)
+  - Subscription data (plan, status, currentPeriodEnd, cancelAtPeriodEnd)
+  - Beta user status detection and lowercase email query
+  - Error handling (database errors, auth errors)
+  - Edge cases (null name, unverified email, sensitive field filtering)
+  - Response structure validation
+
+- **Delete Account API route tests** (26 tests) - Comprehensive coverage for /api/auth/delete-account:
+  - Authentication enforcement
+  - Successful deletion with transaction
+  - Stripe subscription cancellation (active subscriptions)
+  - Stripe failure handling (continues deletion even if Stripe fails)
+  - Session cookie clearing
+  - Error handling (auth errors, transaction errors, database errors)
+  - Data cleanup (notification preferences, platform connections, orders, API keys)
+  - Security tests (only deletes authenticated user's data)
+  - Edge cases (no related data, lots of related data, error detail hiding)
+
+### Changed
+- Test count increased from 1189 to 1242
+
+---
+
 ## [0.9.6] - 2026-03-11
 
 ### Added

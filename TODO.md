@@ -151,7 +151,7 @@ All items completed 2026-02-17.
 - [ ] Connect frontend to all database APIs (AuthContext cleanup)
 - [x] Email system setup (Resend) — templates built, just needs `RESEND_API_KEY` env var
 - [ ] Tax rate API integration (or build own rate database)
-- [x] **Unit testing framework** (2026-03-11) - Vitest setup with 1189 passing tests:
+- [x] **Unit testing framework** (2026-03-11) - Vitest setup with 1242 passing tests:
   - nexus-thresholds.ts (18 tests)
   - state-registration-urls.ts (9 tests)
   - plans.ts (65 tests) - comprehensive billing/tier logic coverage
@@ -192,8 +192,10 @@ All items completed 2026-02-17.
   - api/auth/login/route.ts (24 tests) - login flow, rate limiting, validation, error handling
   - api/auth/signup/route.ts (31 tests) - registration flow, validation, beta users, error handling
   - api/auth/logout/route.ts (26 tests) - logout flow, session invalidation, error handling, security
+  - api/auth/me/route.ts (27 tests) - current user endpoint, subscription data, beta user status
+  - api/auth/delete-account/route.ts (26 tests) - account deletion, Stripe cleanup, data cascade
   
-- [ ] Additional unit tests for API routes (auth/me, auth/delete-account, email routes, etc.)
+- [ ] Additional unit tests for API routes (email routes, stripe routes, etc.)
 - [ ] Error handling improvements
 - [ ] Mobile responsive fixes
 
