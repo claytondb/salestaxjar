@@ -11,6 +11,35 @@ All notable changes to Sails (sails.tax).
 
 ---
 
+## [0.9.6] - 2026-03-11
+
+### Added
+- **Signup API route tests** (31 tests) - Comprehensive coverage for /api/auth/signup:
+  - Successful signup flow with session creation, cookies, and welcome email
+  - Email validation (invalid format, empty, missing)
+  - Name validation
+  - Password validation (weak passwords, missing uppercase, empty)
+  - Duplicate user handling (existing accounts)
+  - Rate limiting enforcement
+  - Beta user handling (Pro subscription grant, status tracking)
+  - Error handling (database errors, session creation failure, invalid JSON)
+  - Input sanitization (whitespace trimming)
+  - Response format validation (ISO dates, no password hash leakage)
+
+- **Logout API route tests** (26 tests) - Comprehensive coverage for /api/auth/logout:
+  - Successful logout with session invalidation and cookie clearing
+  - No session handling (graceful success)
+  - Invalid session handling (expired tokens)
+  - Error handling (always clears cookie even on errors)
+  - Session state edge cases
+  - Idempotency (safe to call multiple times)
+  - Security tests (no information leakage in responses)
+
+### Changed
+- Test count increased from 1132 to 1189
+
+---
+
 ## [0.9.5] - 2026-03-10
 
 ### Added

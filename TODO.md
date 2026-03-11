@@ -1,6 +1,6 @@
 # Sails - Task List
 
-Last updated: 2026-03-10 (5:15 AM)
+Last updated: 2026-03-11 (12:00 AM)
 
 ## 🎯 Strategic Focus
 
@@ -151,7 +151,7 @@ All items completed 2026-02-17.
 - [ ] Connect frontend to all database APIs (AuthContext cleanup)
 - [x] Email system setup (Resend) — templates built, just needs `RESEND_API_KEY` env var
 - [ ] Tax rate API integration (or build own rate database)
-- [x] **Unit testing framework** (2026-03-10) - Vitest setup with 1108 passing tests:
+- [x] **Unit testing framework** (2026-03-11) - Vitest setup with 1189 passing tests:
   - nexus-thresholds.ts (18 tests)
   - state-registration-urls.ts (9 tests)
   - plans.ts (65 tests) - comprehensive billing/tier logic coverage
@@ -186,12 +186,14 @@ All items completed 2026-02-17.
   - Magento ✅ | PrestaShop ✅ | OpenCart ✅ | Squarespace ✅
   - Amazon ✅ | Etsy ✅
   
-  **API Route Tests (2026-03-10):**
+  **API Route Tests (2026-03-11):**
   - api/rates/route.ts (42 tests) - all states, single state lookup, no-tax filter, highest filter, edge cases
   - api/calculate/route.ts (44 tests) - tax calculations, validation, state-specific logic
   - api/auth/login/route.ts (24 tests) - login flow, rate limiting, validation, error handling
+  - api/auth/signup/route.ts (31 tests) - registration flow, validation, beta users, error handling
+  - api/auth/logout/route.ts (26 tests) - logout flow, session invalidation, error handling, security
   
-- [ ] Additional unit tests for API routes (auth/signup, auth/logout, etc.)
+- [ ] Additional unit tests for API routes (auth/me, auth/delete-account, email routes, etc.)
 - [ ] Error handling improvements
 - [ ] Mobile responsive fixes
 
