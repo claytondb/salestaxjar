@@ -151,7 +151,7 @@ All items completed 2026-02-17.
 - [ ] Connect frontend to all database APIs (AuthContext cleanup)
 - [x] Email system setup (Resend) — templates built, just needs `RESEND_API_KEY` env var
 - [ ] Tax rate API integration (or build own rate database)
-- [x] **Unit testing framework** (2026-03-11) - Vitest setup with 1322 passing tests:
+- [x] **Unit testing framework** (2026-03-11) - Vitest setup, now 1472 passing tests:
   - nexus-thresholds.ts (18 tests)
   - state-registration-urls.ts (9 tests)
   - plans.ts (65 tests) - comprehensive billing/tier logic coverage
@@ -199,6 +199,7 @@ All items completed 2026-02-17.
 - [x] **Stripe checkout session tests** (2026-03-12) - create-checkout-session route (23 tests)
 - [x] **Additional Stripe API route tests** (2026-03-12) - webhook, cancel-subscription, update-subscription, create-portal-session (65 tests)
 - [x] **TypeScript test errors fixed** (2026-03-12) - All test mock objects updated to match current Prisma/auth types; zero TS errors, all 1387 tests passing
+- [x] **Nexus, Usage, API Keys route tests** (2026-03-12) - nexus GET/POST/PUT (35 tests), usage GET (28 tests), keys GET/POST (22 tests) — 1472 total
 - [ ] Error handling improvements
 - [ ] Mobile responsive fixes
 
