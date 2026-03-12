@@ -101,6 +101,15 @@ export async function POST(request: NextRequest) {
       userEmail: email,
     });
 
+    // Onboarding drip sequence — the daily cron at /api/drip/cron handles delivery.
+    // It checks user.createdAt to find users in each eligibility window:
+    //   Day 1  (~24h)  — "Connect Your Store"          → if no platform connected
+    //   Day 3  (~72h)  — "Nexus Awareness"              → if no orders imported
+    //   Day 7  (~7d)   — "What you're missing on free"  → if still on free plan
+    //   Day 14 (~14d)  — "How are things going?"        → if still on free plan
+    // No scheduling action needed here — createdAt is the trigger.
+    console.log(`[drip] New user ${user.id} created at ${user.createdAt.toISOString()} — enrolled in drip sequence.`);
+
     // Create default notification preferences
     await prisma.notificationPreference.create({
       data: {

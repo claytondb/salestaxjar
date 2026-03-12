@@ -653,6 +653,461 @@ export async function sendMonthlySummaryEmail(params: {
 }
 
 // =============================================================================
+// Onboarding Drip Email Templates
+// =============================================================================
+
+// Day 1 — "Connect Your Store" (send ~24h after signup if no platform connected)
+function dripDay1Template(params: { name: string; platformsUrl: string }): EmailTemplate {
+  return {
+    subject: 'One step away from knowing your sales tax exposure',
+    html: `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f4f4f5;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f4f4f5; padding: 40px 20px;">
+    <tr>
+      <td align="center">
+        <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 600px; background-color: #ffffff; border-radius: 8px; overflow: hidden;">
+          <!-- Header -->
+          <tr>
+            <td style="background: linear-gradient(135deg, #0f172a 0%, #581c87 100%); padding: 40px; text-align: center;">
+              <h1 style="margin: 0; color: #10b981; font-size: 28px; font-weight: bold;">Sails</h1>
+              <p style="margin: 10px 0 0; color: #94a3b8; font-size: 14px;">Sales Tax Made Breezy</p>
+            </td>
+          </tr>
+
+          <!-- Content -->
+          <tr>
+            <td style="padding: 40px;">
+              <h2 style="margin: 0 0 20px; color: #0f172a; font-size: 24px;">Hey ${params.name} 👋</h2>
+              <p style="margin: 0 0 20px; color: #475569; font-size: 16px; line-height: 1.6;">
+                You're one step away from seeing exactly where you have sales tax obligations.
+              </p>
+              <p style="margin: 0 0 20px; color: #475569; font-size: 16px; line-height: 1.6;">
+                Connect your store and Sails will automatically import your orders, calculate your nexus exposure, and flag any states where you may owe taxes.
+              </p>
+
+              <!-- Platform list -->
+              <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f8fafc; border-radius: 8px; padding: 0; margin: 0 0 30px; overflow: hidden;">
+                <tr><td style="padding: 16px 20px; border-bottom: 1px solid #e2e8f0; color: #0f172a; font-size: 15px;">🛍️ <strong>Shopify</strong> — OAuth connect in seconds</td></tr>
+                <tr><td style="padding: 16px 20px; border-bottom: 1px solid #e2e8f0; color: #0f172a; font-size: 15px;">🔌 <strong>WooCommerce</strong> — Install our free plugin, paste an API key</td></tr>
+                <tr><td style="padding: 16px 20px; color: #0f172a; font-size: 15px;">🏪 <strong>BigCommerce</strong> — Connect with your store credentials</td></tr>
+              </table>
+
+              <!-- CTA -->
+              <table width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td align="center">
+                    <a href="${params.platformsUrl}" style="display: inline-block; background-color: #10b981; color: #ffffff; text-decoration: none; padding: 14px 32px; border-radius: 6px; font-weight: 600; font-size: 16px;">
+                      Connect My Store →
+                    </a>
+                  </td>
+                </tr>
+              </table>
+
+              <p style="margin: 30px 0 0; color: #94a3b8; font-size: 14px; line-height: 1.6;">
+                Takes about 2 minutes. No credit card needed.
+              </p>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="background-color: #f8fafc; padding: 24px; text-align: center; border-top: 1px solid #e2e8f0;">
+              <p style="margin: 0; color: #94a3b8; font-size: 12px;">
+                © ${new Date().getFullYear()} Sails. <a href="${APP_URL}/settings#notifications" style="color: #94a3b8;">Unsubscribe from tips</a>
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`,
+    text: `Hey ${params.name},
+
+You're one step away from knowing your sales tax exposure.
+
+Connect your store and Sails will automatically import your orders, calculate your nexus exposure, and flag any states where you may owe taxes.
+
+Supported platforms:
+• Shopify — OAuth connect in seconds
+• WooCommerce — Install our free plugin, paste an API key
+• BigCommerce — Connect with your store credentials
+
+Connect My Store: ${params.platformsUrl}
+
+Takes about 2 minutes. No credit card needed.`,
+  };
+}
+
+// Day 3 — "Nexus Awareness" (send 3 days after signup if no orders imported)
+function dripDay3Template(params: { name: string; dashboardUrl: string }): EmailTemplate {
+  return {
+    subject: "Most sellers don't know they owe taxes in other states",
+    html: `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f4f4f5;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f4f4f5; padding: 40px 20px;">
+    <tr>
+      <td align="center">
+        <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 600px; background-color: #ffffff; border-radius: 8px; overflow: hidden;">
+          <!-- Header -->
+          <tr>
+            <td style="background: linear-gradient(135deg, #0f172a 0%, #581c87 100%); padding: 40px; text-align: center;">
+              <h1 style="margin: 0; color: #10b981; font-size: 28px; font-weight: bold;">Sails</h1>
+              <p style="margin: 10px 0 0; color: #94a3b8; font-size: 14px;">Sales Tax Made Breezy</p>
+            </td>
+          </tr>
+
+          <!-- Content -->
+          <tr>
+            <td style="padding: 40px;">
+              <h2 style="margin: 0 0 20px; color: #0f172a; font-size: 24px;">Hi ${params.name},</h2>
+              <p style="margin: 0 0 20px; color: #475569; font-size: 16px; line-height: 1.6;">
+                Here's a fact that surprises most online sellers: you may owe sales tax in states you've never set foot in.
+              </p>
+
+              <!-- Alert box -->
+              <div style="background-color: #fef3c7; border-left: 4px solid #f59e0b; padding: 16px 20px; border-radius: 4px; margin: 0 0 24px;">
+                <p style="margin: 0; color: #92400e; font-size: 15px; font-weight: 600;">
+                  ⚠️ After $100K in sales to a single state (or 200 transactions), you likely have <em>economic nexus</em> there — meaning you're required to collect and remit sales tax.
+                </p>
+              </div>
+
+              <h3 style="margin: 0 0 12px; color: #0f172a; font-size: 18px;">Why does this matter?</h3>
+              <p style="margin: 0 0 20px; color: #475569; font-size: 16px; line-height: 1.6;">
+                In 2018, the Supreme Court's <strong>South Dakota v. Wayfair</strong> decision changed everything. States can now require out-of-state sellers to collect sales tax once they cross certain thresholds — even with zero physical presence.
+              </p>
+              <p style="margin: 0 0 20px; color: #475569; font-size: 16px; line-height: 1.6;">
+                Most sellers don't realize this until they receive an audit notice. By then, penalties and back taxes can add up fast.
+              </p>
+
+              <h3 style="margin: 0 0 12px; color: #0f172a; font-size: 18px;">How Sails helps</h3>
+              <p style="margin: 0 0 30px; color: #475569; font-size: 16px; line-height: 1.6;">
+                Sails tracks your sales by state and automatically alerts you when you're approaching economic nexus thresholds. Connect your store and we'll show you exactly where you stand — before it becomes a problem.
+              </p>
+
+              <!-- CTA -->
+              <table width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td align="center">
+                    <a href="${params.dashboardUrl}" style="display: inline-block; background-color: #10b981; color: #ffffff; text-decoration: none; padding: 14px 32px; border-radius: 6px; font-weight: 600; font-size: 16px;">
+                      Check My Nexus Exposure →
+                    </a>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="background-color: #f8fafc; padding: 24px; text-align: center; border-top: 1px solid #e2e8f0;">
+              <p style="margin: 0; color: #94a3b8; font-size: 12px;">
+                © ${new Date().getFullYear()} Sails. <a href="${APP_URL}/settings#notifications" style="color: #94a3b8;">Unsubscribe from tips</a>
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`,
+    text: `Hi ${params.name},
+
+Here's a fact that surprises most online sellers: you may owe sales tax in states you've never set foot in.
+
+⚠️ After $100K in sales to a single state (or 200 transactions), you likely have economic nexus there — meaning you're required to collect and remit sales tax.
+
+In 2018, the Supreme Court's South Dakota v. Wayfair decision changed everything. States can now require out-of-state sellers to collect sales tax once they cross certain thresholds — even with zero physical presence.
+
+Sails tracks your sales by state and automatically alerts you when you're approaching economic nexus thresholds. Connect your store and we'll show you exactly where you stand.
+
+Check My Nexus Exposure: ${params.dashboardUrl}`,
+  };
+}
+
+// Day 7 — "Free Plan Limits" (send 7 days after signup if still on free)
+function dripDay7Template(params: { name: string; pricingUrl: string }): EmailTemplate {
+  return {
+    subject: "Your free Sails account is limited — here's what you're missing",
+    html: `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f4f4f5;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f4f4f5; padding: 40px 20px;">
+    <tr>
+      <td align="center">
+        <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 600px; background-color: #ffffff; border-radius: 8px; overflow: hidden;">
+          <!-- Header -->
+          <tr>
+            <td style="background: linear-gradient(135deg, #0f172a 0%, #581c87 100%); padding: 40px; text-align: center;">
+              <h1 style="margin: 0; color: #10b981; font-size: 28px; font-weight: bold;">Sails</h1>
+              <p style="margin: 10px 0 0; color: #94a3b8; font-size: 14px;">Sales Tax Made Breezy</p>
+            </td>
+          </tr>
+
+          <!-- Content -->
+          <tr>
+            <td style="padding: 40px;">
+              <h2 style="margin: 0 0 20px; color: #0f172a; font-size: 24px;">Hi ${params.name},</h2>
+              <p style="margin: 0 0 30px; color: #475569; font-size: 16px; line-height: 1.6;">
+                You've been on Sails for a week — here's a quick look at what's included in each plan and what you'd unlock with Starter.
+              </p>
+
+              <!-- Comparison table -->
+              <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse: collapse; border-radius: 8px; overflow: hidden;">
+                <!-- Header row -->
+                <tr>
+                  <td style="padding: 12px 16px; background-color: #f1f5f9; color: #64748b; font-size: 13px; font-weight: 600; text-transform: uppercase; border-bottom: 2px solid #e2e8f0;">Feature</td>
+                  <td style="padding: 12px 16px; background-color: #f1f5f9; color: #64748b; font-size: 13px; font-weight: 600; text-transform: uppercase; text-align: center; border-bottom: 2px solid #e2e8f0;">Free</td>
+                  <td style="padding: 12px 16px; background-color: #ecfdf5; color: #059669; font-size: 13px; font-weight: 600; text-transform: uppercase; text-align: center; border-bottom: 2px solid #d1fae5;">Starter — $9/mo</td>
+                </tr>
+                <!-- Rows -->
+                <tr style="border-bottom: 1px solid #f1f5f9;">
+                  <td style="padding: 12px 16px; color: #475569; font-size: 14px;">Orders tracked / mo</td>
+                  <td style="padding: 12px 16px; color: #94a3b8; font-size: 14px; text-align: center;">50</td>
+                  <td style="padding: 12px 16px; color: #059669; font-weight: 600; font-size: 14px; text-align: center; background-color: #f0fdf4;">1,000</td>
+                </tr>
+                <tr style="border-bottom: 1px solid #f1f5f9;">
+                  <td style="padding: 12px 16px; color: #475569; font-size: 14px;">Platform connections</td>
+                  <td style="padding: 12px 16px; color: #94a3b8; font-size: 14px; text-align: center;">1</td>
+                  <td style="padding: 12px 16px; color: #059669; font-weight: 600; font-size: 14px; text-align: center; background-color: #f0fdf4;">3</td>
+                </tr>
+                <tr style="border-bottom: 1px solid #f1f5f9;">
+                  <td style="padding: 12px 16px; color: #475569; font-size: 14px;">Nexus threshold alerts</td>
+                  <td style="padding: 12px 16px; color: #94a3b8; font-size: 14px; text-align: center;">—</td>
+                  <td style="padding: 12px 16px; color: #059669; font-weight: 600; font-size: 14px; text-align: center; background-color: #f0fdf4;">✓ All states</td>
+                </tr>
+                <tr style="border-bottom: 1px solid #f1f5f9;">
+                  <td style="padding: 12px 16px; color: #475569; font-size: 14px;">Filing reminders</td>
+                  <td style="padding: 12px 16px; color: #94a3b8; font-size: 14px; text-align: center;">—</td>
+                  <td style="padding: 12px 16px; color: #059669; font-weight: 600; font-size: 14px; text-align: center; background-color: #f0fdf4;">✓ Included</td>
+                </tr>
+                <tr>
+                  <td style="padding: 12px 16px; color: #475569; font-size: 14px;">Monthly tax reports</td>
+                  <td style="padding: 12px 16px; color: #94a3b8; font-size: 14px; text-align: center;">—</td>
+                  <td style="padding: 12px 16px; color: #059669; font-weight: 600; font-size: 14px; text-align: center; background-color: #f0fdf4;">✓ Included</td>
+                </tr>
+              </table>
+
+              <p style="margin: 30px 0 30px; color: #475569; font-size: 16px; line-height: 1.6;">
+                At <strong>$9/month</strong>, Starter pays for itself with a single missed nexus alert. No annual commitment required.
+              </p>
+
+              <!-- CTA -->
+              <table width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td align="center">
+                    <a href="${params.pricingUrl}" style="display: inline-block; background-color: #10b981; color: #ffffff; text-decoration: none; padding: 14px 32px; border-radius: 6px; font-weight: 600; font-size: 16px;">
+                      Upgrade to Starter — $9/mo →
+                    </a>
+                  </td>
+                </tr>
+              </table>
+
+              <p style="margin: 20px 0 0; color: #94a3b8; font-size: 14px; text-align: center;">
+                Cancel anytime. No tricks.
+              </p>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="background-color: #f8fafc; padding: 24px; text-align: center; border-top: 1px solid #e2e8f0;">
+              <p style="margin: 0; color: #94a3b8; font-size: 12px;">
+                © ${new Date().getFullYear()} Sails. <a href="${APP_URL}/settings#notifications" style="color: #94a3b8;">Unsubscribe from tips</a>
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`,
+    text: `Hi ${params.name},
+
+You've been on Sails for a week — here's a look at what you'd unlock with Starter ($9/mo):
+
+FREE PLAN:
+- 50 orders/mo
+- 1 platform connection
+- No nexus alerts
+- No filing reminders
+
+STARTER — $9/mo:
+- 1,000 orders/mo
+- 3 platform connections
+- Nexus alerts for all states
+- Filing reminders
+- Monthly tax reports
+
+At $9/month, Starter pays for itself with a single missed nexus alert. No annual commitment.
+
+Upgrade to Starter: ${params.pricingUrl}
+
+Cancel anytime.`,
+  };
+}
+
+// Day 14 — "How are things going?" (send 14 days after, if still on free)
+function dripDay14Template(params: { name: string; woocommerceUrl: string }): EmailTemplate {
+  return {
+    subject: 'Quick question about your sales tax situation',
+    html: `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f4f4f5;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f4f4f5; padding: 40px 20px;">
+    <tr>
+      <td align="center">
+        <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 600px; background-color: #ffffff; border-radius: 8px; overflow: hidden;">
+          <!-- Header -->
+          <tr>
+            <td style="background: linear-gradient(135deg, #0f172a 0%, #581c87 100%); padding: 40px; text-align: center;">
+              <h1 style="margin: 0; color: #10b981; font-size: 28px; font-weight: bold;">Sails</h1>
+              <p style="margin: 10px 0 0; color: #94a3b8; font-size: 14px;">Sales Tax Made Breezy</p>
+            </td>
+          </tr>
+
+          <!-- Content -->
+          <tr>
+            <td style="padding: 40px;">
+              <h2 style="margin: 0 0 20px; color: #0f172a; font-size: 24px;">Hey ${params.name},</h2>
+              <p style="margin: 0 0 20px; color: #475569; font-size: 16px; line-height: 1.6;">
+                It's been two weeks since you signed up for Sails, and I wanted to check in personally.
+              </p>
+              <p style="margin: 0 0 20px; color: #475569; font-size: 16px; line-height: 1.6;">
+                Are you running into any friction getting set up? Have questions about nexus, filing deadlines, or how Sails works? Just hit reply — I read every response and will get back to you directly.
+              </p>
+              <p style="margin: 0 0 30px; color: #475569; font-size: 16px; line-height: 1.6;">
+                If you're running a WooCommerce store, you might also want to check out our free plugin — it's the easiest way to get your orders into Sails and start tracking your tax exposure automatically.
+              </p>
+
+              <!-- CTA -->
+              <table width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td align="center">
+                    <a href="${params.woocommerceUrl}" style="display: inline-block; background-color: #10b981; color: #ffffff; text-decoration: none; padding: 14px 32px; border-radius: 6px; font-weight: 600; font-size: 16px;">
+                      Check Out the WooCommerce Plugin →
+                    </a>
+                  </td>
+                </tr>
+              </table>
+
+              <p style="margin: 30px 0 0; color: #475569; font-size: 16px; line-height: 1.6;">
+                Or just hit reply and tell me what's going on with your store. Happy to help.
+              </p>
+              <p style="margin: 20px 0 0; color: #0f172a; font-size: 16px;">
+                — David at Sails
+              </p>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="background-color: #f8fafc; padding: 24px; text-align: center; border-top: 1px solid #e2e8f0;">
+              <p style="margin: 0; color: #94a3b8; font-size: 12px;">
+                © ${new Date().getFullYear()} Sails. <a href="${APP_URL}/settings#notifications" style="color: #94a3b8;">Unsubscribe from tips</a>
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`,
+    text: `Hey ${params.name},
+
+It's been two weeks since you signed up for Sails, and I wanted to check in personally.
+
+Are you running into any friction getting set up? Have questions about nexus, filing deadlines, or how Sails works? Just hit reply — I read every response and will get back to you directly.
+
+If you're running a WooCommerce store, check out our free plugin — it's the easiest way to get your orders into Sails and start tracking your tax exposure automatically.
+
+WooCommerce plugin: ${params.woocommerceUrl}
+
+Or just reply and tell me what's going on with your store. Happy to help.
+
+— David at Sails`,
+  };
+}
+
+// =============================================================================
+// Public Drip Email Functions
+// =============================================================================
+
+export async function sendDripDay1Email(params: {
+  to: string;
+  name: string;
+  userId: string;
+}): Promise<{ success: boolean; error?: string }> {
+  const template = dripDay1Template({
+    name: params.name,
+    platformsUrl: `${APP_URL}/dashboard/platforms`,
+  });
+  return sendEmail({ to: params.to, template, templateName: 'drip_day1', userId: params.userId });
+}
+
+export async function sendDripDay3Email(params: {
+  to: string;
+  name: string;
+  userId: string;
+}): Promise<{ success: boolean; error?: string }> {
+  const template = dripDay3Template({
+    name: params.name,
+    dashboardUrl: `${APP_URL}/dashboard`,
+  });
+  return sendEmail({ to: params.to, template, templateName: 'drip_day3', userId: params.userId });
+}
+
+export async function sendDripDay7Email(params: {
+  to: string;
+  name: string;
+  userId: string;
+}): Promise<{ success: boolean; error?: string }> {
+  const template = dripDay7Template({
+    name: params.name,
+    pricingUrl: `${APP_URL}/pricing`,
+  });
+  return sendEmail({ to: params.to, template, templateName: 'drip_day7', userId: params.userId });
+}
+
+export async function sendDripDay14Email(params: {
+  to: string;
+  name: string;
+  userId: string;
+}): Promise<{ success: boolean; error?: string }> {
+  const template = dripDay14Template({
+    name: params.name,
+    woocommerceUrl: `${APP_URL}/integrations/woocommerce`,
+  });
+  return sendEmail({ to: params.to, template, templateName: 'drip_day14', userId: params.userId });
+}
+
+// =============================================================================
 // Admin Notifications
 // =============================================================================
 
