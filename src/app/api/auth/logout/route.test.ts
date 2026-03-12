@@ -39,7 +39,7 @@ beforeEach(() => {
     session: {
       id: 'session-123',
       userId: 'user-123',
-      token: 'valid-session-token',
+      expiresAt: new Date(Date.now() + 86400000),
     },
   });
   vi.mocked(invalidateSession).mockResolvedValue();
@@ -90,7 +90,7 @@ describe('POST /api/auth/logout - successful logout', () => {
 
 describe('POST /api/auth/logout - no session', () => {
   it('should succeed even with no session cookie', async () => {
-    vi.mocked(getSessionCookie).mockResolvedValue(null);
+    vi.mocked(getSessionCookie).mockResolvedValue(undefined);
 
     const response = await POST();
     const data = await response.json();
@@ -100,7 +100,7 @@ describe('POST /api/auth/logout - no session', () => {
   });
 
   it('should not try to validate session if no cookie', async () => {
-    vi.mocked(getSessionCookie).mockResolvedValue(null);
+    vi.mocked(getSessionCookie).mockResolvedValue(undefined);
 
     await POST();
 
@@ -109,7 +109,7 @@ describe('POST /api/auth/logout - no session', () => {
   });
 
   it('should still clear cookie when no session exists', async () => {
-    vi.mocked(getSessionCookie).mockResolvedValue(null);
+    vi.mocked(getSessionCookie).mockResolvedValue(undefined);
 
     await POST();
 
@@ -125,7 +125,7 @@ describe('POST /api/auth/logout - invalid session', () => {
   it('should succeed even with invalid session token', async () => {
     vi.mocked(validateSession).mockResolvedValue({
       valid: false,
-      session: null,
+      session: undefined,
     });
 
     const response = await POST();
@@ -138,7 +138,7 @@ describe('POST /api/auth/logout - invalid session', () => {
   it('should not try to invalidate invalid session', async () => {
     vi.mocked(validateSession).mockResolvedValue({
       valid: false,
-      session: null,
+      session: undefined,
     });
 
     await POST();
@@ -149,7 +149,7 @@ describe('POST /api/auth/logout - invalid session', () => {
   it('should clear cookie for invalid session', async () => {
     vi.mocked(validateSession).mockResolvedValue({
       valid: false,
-      session: null,
+      session: undefined,
     });
 
     await POST();
@@ -160,8 +160,7 @@ describe('POST /api/auth/logout - invalid session', () => {
   it('should handle expired session gracefully', async () => {
     vi.mocked(validateSession).mockResolvedValue({
       valid: false,
-      session: null,
-      error: 'Session expired',
+      session: undefined,
     });
 
     const response = await POST();
@@ -291,10 +290,10 @@ describe('POST /api/auth/logout - idempotency', () => {
     const data1 = await response1.json();
 
     // Reset mocks to simulate already logged out state
-    vi.mocked(getSessionCookie).mockResolvedValue(null);
+    vi.mocked(getSessionCookie).mockResolvedValue(undefined);
     vi.mocked(validateSession).mockResolvedValue({
       valid: false,
-      session: null,
+      session: undefined,
     });
 
     // Second call - no session
@@ -310,7 +309,7 @@ describe('POST /api/auth/logout - idempotency', () => {
     const response1 = await POST();
     const data1 = await response1.json();
 
-    vi.mocked(getSessionCookie).mockResolvedValue(null);
+    vi.mocked(getSessionCookie).mockResolvedValue(undefined);
 
     // Without session
     const response2 = await POST();

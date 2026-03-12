@@ -90,7 +90,12 @@ const mockCreatedUser = {
   passwordHash: '$2b$10$hashedpassword',
   emailVerified: false,
   isBetaUser: false,
+  verifyToken: null,
+  verifyExpires: null,
+  resetToken: null,
+  resetExpires: null,
   createdAt: new Date('2026-03-11T00:00:00Z'),
+  updatedAt: new Date('2026-03-11T00:00:00Z'),
 };
 
 // =============================================================================
@@ -113,11 +118,11 @@ beforeEach(() => {
   vi.mocked(prisma.user.findUnique).mockResolvedValue(null); // No existing user
   vi.mocked(hashPassword).mockResolvedValue('$2b$10$hashedpassword');
   vi.mocked(prisma.user.create).mockResolvedValue(mockCreatedUser);
-  vi.mocked(createSession).mockResolvedValue({ token: 'session-token-123' });
+  vi.mocked(createSession).mockResolvedValue({ sessionId: 'session-id-123', token: 'session-token-123' });
   vi.mocked(setSessionCookie).mockResolvedValue();
   vi.mocked(generateVerificationToken).mockResolvedValue('verify-token-123');
-  vi.mocked(sendWelcomeEmail).mockResolvedValue();
-  vi.mocked(sendNewSignupNotification).mockResolvedValue();
+  vi.mocked(sendWelcomeEmail).mockResolvedValue({ success: true });
+  vi.mocked(sendNewSignupNotification).mockResolvedValue({ success: true });
   vi.mocked(prisma.notificationPreference.create).mockResolvedValue({ id: 'pref-1' } as any);
   vi.mocked(prisma.betaUser.findUnique).mockResolvedValue(null);
 });

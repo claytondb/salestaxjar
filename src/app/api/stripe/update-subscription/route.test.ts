@@ -57,7 +57,14 @@ function createRequest(body: Record<string, unknown>): NextRequest {
   });
 }
 
-const mockUser = { id: 'user-123', email: 'test@example.com', name: 'Test User' };
+const mockUser = {
+  id: 'user-123',
+  email: 'test@example.com',
+  name: 'Test User',
+  emailVerified: true,
+  createdAt: new Date('2026-01-01T00:00:00Z'),
+  subscription: null,
+};
 
 const mockSubscription = {
   id: 'sub-db-1',
@@ -68,7 +75,9 @@ const mockSubscription = {
   stripePriceId: 'price_starter_monthly',
   status: 'active',
   cancelAtPeriodEnd: false,
+  currentPeriodStart: new Date('2026-03-12'),
   currentPeriodEnd: new Date('2026-04-12'),
+  createdAt: new Date('2026-01-01T00:00:00Z'),
   updatedAt: new Date(),
 };
 
@@ -157,7 +166,7 @@ describe('POST /api/stripe/update-subscription', () => {
       vi.mocked(getCurrentUser).mockResolvedValue(mockUser);
       vi.mocked(prisma.subscription.findUnique).mockResolvedValue(mockSubscription);
       vi.mocked(isUpgrade).mockReturnValue(true);
-      vi.mocked(updateSubscription).mockResolvedValue({ success: true });
+      vi.mocked(updateSubscription).mockResolvedValue({ subscription: {} as never });
       vi.mocked(prisma.subscription.update).mockResolvedValue({ ...mockSubscription });
 
       for (const plan of ['starter', 'growth', 'pro']) {
@@ -257,7 +266,7 @@ describe('POST /api/stripe/update-subscription', () => {
       vi.mocked(getCurrentUser).mockResolvedValue(mockUser);
       vi.mocked(prisma.subscription.findUnique).mockResolvedValue(mockSubscription);
       vi.mocked(isUpgrade).mockReturnValue(true);
-      vi.mocked(updateSubscription).mockResolvedValue({ success: true });
+      vi.mocked(updateSubscription).mockResolvedValue({ subscription: {} as never });
       vi.mocked(prisma.subscription.update).mockResolvedValue({ ...mockSubscription, plan: 'growth' });
 
       const res = await POST(createRequest({ newPlanId: 'growth' }));
@@ -273,7 +282,7 @@ describe('POST /api/stripe/update-subscription', () => {
       vi.mocked(getCurrentUser).mockResolvedValue(mockUser);
       vi.mocked(prisma.subscription.findUnique).mockResolvedValue(mockSubscription);
       vi.mocked(isUpgrade).mockReturnValue(true);
-      vi.mocked(updateSubscription).mockResolvedValue({ success: true });
+      vi.mocked(updateSubscription).mockResolvedValue({ subscription: {} as never });
       vi.mocked(prisma.subscription.update).mockResolvedValue({ ...mockSubscription });
 
       const res = await POST(createRequest({ newPlanId: 'growth' }));
@@ -286,7 +295,7 @@ describe('POST /api/stripe/update-subscription', () => {
       vi.mocked(getCurrentUser).mockResolvedValue(mockUser);
       vi.mocked(prisma.subscription.findUnique).mockResolvedValue(mockSubscription);
       vi.mocked(isUpgrade).mockReturnValue(true);
-      vi.mocked(updateSubscription).mockResolvedValue({ success: true });
+      vi.mocked(updateSubscription).mockResolvedValue({ subscription: {} as never });
       vi.mocked(prisma.subscription.update).mockResolvedValue({ ...mockSubscription });
 
       await POST(createRequest({ newPlanId: 'growth' }));
@@ -313,7 +322,7 @@ describe('POST /api/stripe/update-subscription', () => {
         plan: 'growth',
       });
       vi.mocked(isUpgrade).mockReturnValue(false);
-      vi.mocked(updateSubscription).mockResolvedValue({ success: true });
+      vi.mocked(updateSubscription).mockResolvedValue({ subscription: {} as never });
       vi.mocked(prisma.subscription.update).mockResolvedValue({ ...mockSubscription, plan: 'starter' });
 
       const res = await POST(createRequest({ newPlanId: 'starter' }));
@@ -331,7 +340,7 @@ describe('POST /api/stripe/update-subscription', () => {
         plan: 'growth',
       });
       vi.mocked(isUpgrade).mockReturnValue(false);
-      vi.mocked(updateSubscription).mockResolvedValue({ success: true });
+      vi.mocked(updateSubscription).mockResolvedValue({ subscription: {} as never });
       vi.mocked(prisma.subscription.update).mockResolvedValue({ ...mockSubscription });
 
       const res = await POST(createRequest({ newPlanId: 'starter' }));

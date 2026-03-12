@@ -226,7 +226,7 @@ describe('POST /api/stripe/webhook', () => {
         makeEvent('customer.subscription.updated', mockSubscription) as ReturnType<typeof constructWebhookEvent>
       );
       vi.mocked(prisma.subscription.findUnique).mockResolvedValue(mockDbSubscription as never);
-      vi.mocked(getPlanByPriceId).mockReturnValue({ id: 'starter', plan: { name: 'Starter', priceId: 'price_starter_monthly', price: 9, id: 'starter' } });
+      vi.mocked(getPlanByPriceId).mockReturnValue({ id: 'starter', plan: { name: 'Starter', priceId: 'price_starter_monthly', price: 9, features: [] } } as never);
       vi.mocked(prisma.subscription.update).mockResolvedValue(mockDbSubscription as never);
 
       const res = await POST(createWebhookRequest('{}'));
@@ -254,7 +254,7 @@ describe('POST /api/stripe/webhook', () => {
         makeEvent('customer.subscription.created', mockSubscription) as ReturnType<typeof constructWebhookEvent>
       );
       vi.mocked(prisma.subscription.findUnique).mockResolvedValue(mockDbSubscription as never);
-      vi.mocked(getPlanByPriceId).mockReturnValue({ id: 'starter', plan: { name: 'Starter', priceId: 'price_starter_monthly', price: 9, id: 'starter' } });
+      vi.mocked(getPlanByPriceId).mockReturnValue({ id: 'starter', plan: { name: 'Starter', priceId: 'price_starter_monthly', price: 9, features: [] } } as never);
       vi.mocked(prisma.subscription.update).mockResolvedValue(mockDbSubscription as never);
 
       const res = await POST(createWebhookRequest('{}'));
@@ -268,13 +268,13 @@ describe('POST /api/stripe/webhook', () => {
         makeEvent('customer.subscription.updated', mockSubscription) as ReturnType<typeof constructWebhookEvent>
       );
       vi.mocked(prisma.subscription.findUnique).mockResolvedValue(mockDbSubscription as never);
-      vi.mocked(getPlanByPriceId).mockReturnValue({ id: 'growth', plan: { name: 'Growth', priceId: 'price_growth_monthly', price: 29, id: 'growth' } });
+      vi.mocked(getPlanByPriceId).mockReturnValue({ id: 'pro', plan: { name: 'Pro', priceId: 'price_pro_monthly', price: 29, features: [] } } as never);
       vi.mocked(prisma.subscription.update).mockResolvedValue(mockDbSubscription as never);
 
       await POST(createWebhookRequest('{}'));
 
       const call = vi.mocked(prisma.subscription.update).mock.calls[0][0];
-      expect(call.data.plan).toBe('growth');
+      expect(call.data.plan).toBe('pro');
     });
 
     it('falls back to starter plan when price ID is unknown', async () => {
@@ -382,7 +382,7 @@ describe('POST /api/stripe/webhook', () => {
       );
       vi.mocked(prisma.subscription.updateMany).mockResolvedValue({ count: 1 });
       vi.mocked(prisma.subscription.findUnique).mockResolvedValue(mockDbSubscription as never);
-      vi.mocked(sendPaymentFailedEmail).mockResolvedValue(undefined);
+      vi.mocked(sendPaymentFailedEmail).mockResolvedValue({ success: true });
 
       await POST(createWebhookRequest('{}'));
 

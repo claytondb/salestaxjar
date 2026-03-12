@@ -51,6 +51,8 @@ const mockUser = {
   id: 'user-123',
   email: 'test@example.com',
   name: 'Test User',
+  emailVerified: true,
+  createdAt: new Date('2026-01-01T00:00:00Z'),
   subscription: null,
 };
 
@@ -60,6 +62,8 @@ const mockUserWithSubscription = {
     stripeSubscriptionId: 'sub_123456',
     plan: 'starter',
     status: 'active',
+    currentPeriodEnd: new Date('2026-12-31T00:00:00Z'),
+    cancelAtPeriodEnd: false,
   },
 };
 
@@ -175,6 +179,8 @@ describe('DELETE /api/auth/delete-account - Stripe subscription', () => {
         stripeSubscriptionId: null,
         plan: 'free',
         status: 'active',
+        currentPeriodEnd: null,
+        cancelAtPeriodEnd: false,
       },
     });
     

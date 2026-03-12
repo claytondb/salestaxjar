@@ -1,9 +1,9 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { getCurrentUser, generateVerificationToken } from '@/lib/auth';
 import { sendWelcomeEmail } from '@/lib/email';
 import { checkEmailRateLimit, rateLimitHeaders } from '@/lib/ratelimit';
 
-export async function POST() {
+export async function POST(_request: NextRequest) {
   try {
     const user = await getCurrentUser();
     if (!user) {

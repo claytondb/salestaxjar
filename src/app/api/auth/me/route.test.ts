@@ -39,6 +39,7 @@ const mockUser = {
 const mockUserWithSubscription = {
   ...mockUser,
   subscription: {
+    stripeSubscriptionId: 'sub_123456',
     plan: 'starter',
     status: 'active',
     currentPeriodEnd: new Date('2026-02-01T00:00:00Z'),
@@ -49,7 +50,14 @@ const mockUserWithSubscription = {
 const mockBetaUser = {
   id: 'beta-123',
   email: 'test@example.com',
+  name: null,
+  source: null,
   status: 'redeemed',
+  notes: null,
+  redeemedAt: null,
+  redeemedUserId: null,
+  createdAt: new Date('2026-01-01T00:00:00Z'),
+  updatedAt: new Date('2026-01-01T00:00:00Z'),
 };
 
 // =============================================================================
@@ -190,6 +198,7 @@ describe('GET /api/auth/me - subscription data', () => {
     vi.mocked(getCurrentUser).mockResolvedValue({
       ...mockUser,
       subscription: {
+        stripeSubscriptionId: null,
         plan: 'free',
         status: 'active',
         currentPeriodEnd: null,
@@ -301,7 +310,7 @@ describe('GET /api/auth/me - edge cases', () => {
     vi.mocked(getCurrentUser).mockResolvedValue({
       ...mockUser,
       name: null,
-    });
+    } as any);
     
     const response = await GET();
     const data = await response.json();
@@ -325,7 +334,7 @@ describe('GET /api/auth/me - edge cases', () => {
     vi.mocked(getCurrentUser).mockResolvedValue({
       ...mockUser,
       passwordHash: '$2b$10$sensitive',
-    });
+    } as any);
     
     const response = await GET();
     const data = await response.json();

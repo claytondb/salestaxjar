@@ -56,7 +56,13 @@ const mockUser = {
   name: 'Test User',
   passwordHash: '$2b$10$hashedpassword',
   emailVerified: true,
+  isBetaUser: false,
+  verifyToken: null,
+  verifyExpires: null,
+  resetToken: null,
+  resetExpires: null,
   createdAt: new Date('2026-01-01T00:00:00Z'),
+  updatedAt: new Date('2026-01-01T00:00:00Z'),
 };
 
 // =============================================================================
@@ -76,7 +82,7 @@ beforeEach(() => {
   vi.mocked(validateEmail).mockReturnValue(true);
   vi.mocked(prisma.user.findUnique).mockResolvedValue(mockUser);
   vi.mocked(verifyPassword).mockResolvedValue(true);
-  vi.mocked(createSession).mockResolvedValue({ token: 'session-token-123' });
+  vi.mocked(createSession).mockResolvedValue({ sessionId: 'session-id-123', token: 'session-token-123' });
   vi.mocked(setSessionCookie).mockResolvedValue();
 });
 

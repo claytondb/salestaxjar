@@ -50,7 +50,14 @@ function createRequest(body: Record<string, unknown> = {}): NextRequest {
   });
 }
 
-const mockUser = { id: 'user-123', email: 'test@example.com', name: 'Test User' };
+const mockUser = {
+  id: 'user-123',
+  email: 'test@example.com',
+  name: 'Test User',
+  emailVerified: true,
+  createdAt: new Date('2026-01-01T00:00:00Z'),
+  subscription: null,
+};
 
 const mockSubscription = {
   id: 'sub-db-1',
@@ -61,7 +68,9 @@ const mockSubscription = {
   stripePriceId: 'price_starter_monthly',
   status: 'active',
   cancelAtPeriodEnd: false,
+  currentPeriodStart: new Date('2026-03-12'),
   currentPeriodEnd: new Date('2026-04-12'),
+  createdAt: new Date('2026-01-01T00:00:00Z'),
   updatedAt: new Date(),
 };
 
