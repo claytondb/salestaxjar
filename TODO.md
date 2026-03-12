@@ -1,6 +1,6 @@
 # Sails - Task List
 
-Last updated: 2026-03-11 (12:00 AM)
+Last updated: 2026-03-12 (1:00 AM)
 
 ## 🎯 Strategic Focus
 
@@ -197,7 +197,7 @@ All items completed 2026-02-17.
   
 - [x] **Email API route tests** (2026-03-12) - forgot-password, reset-password, send-verification, verify (68 tests)
 - [x] **Stripe checkout session tests** (2026-03-12) - create-checkout-session route (23 tests)
-- [ ] Additional unit tests for API routes (stripe webhook, cancel/update subscription, etc.)
+- [x] **Additional Stripe API route tests** (2026-03-12) - webhook, cancel-subscription, update-subscription, create-portal-session (65 tests)
 - [ ] Error handling improvements
 - [ ] Mobile responsive fixes
 
