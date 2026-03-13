@@ -201,6 +201,7 @@ All items completed 2026-02-17.
 - [x] **TypeScript test errors fixed** (2026-03-12) - All test mock objects updated to match current Prisma/auth types; zero TS errors, all 1387 tests passing
 - [x] **Nexus, Usage, API Keys route tests** (2026-03-12) - nexus GET/POST/PUT (35 tests), usage GET (28 tests), keys GET/POST (22 tests) — 1472 total
 - [x] **Notifications and Calculations route tests** (2026-03-13) - notifications GET/PUT (20 tests), calculations GET/POST/DELETE (50 tests) — 1542 total
+- [x] **Reports and Nexus Exposure/Alerts route tests** (2026-03-13) - reports/sales-by-state GET (29 tests), reports/export GET (35 tests), nexus/alerts GET+PUT (22 tests), nexus/exposure GET (16 tests) — 1642 total
 - [ ] Error handling improvements
 - [ ] Mobile responsive fixes
 
