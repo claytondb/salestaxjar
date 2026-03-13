@@ -200,6 +200,7 @@ All items completed 2026-02-17.
 - [x] **Additional Stripe API route tests** (2026-03-12) - webhook, cancel-subscription, update-subscription, create-portal-session (65 tests)
 - [x] **TypeScript test errors fixed** (2026-03-12) - All test mock objects updated to match current Prisma/auth types; zero TS errors, all 1387 tests passing
 - [x] **Nexus, Usage, API Keys route tests** (2026-03-12) - nexus GET/POST/PUT (35 tests), usage GET (28 tests), keys GET/POST (22 tests) — 1472 total
+- [x] **Notifications and Calculations route tests** (2026-03-13) - notifications GET/PUT (20 tests), calculations GET/POST/DELETE (50 tests) — 1542 total
 - [ ] Error handling improvements
 - [ ] Mobile responsive fixes
 
