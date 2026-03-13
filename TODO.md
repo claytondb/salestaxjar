@@ -202,6 +202,7 @@ All items completed 2026-02-17.
 - [x] **Nexus, Usage, API Keys route tests** (2026-03-12) - nexus GET/POST/PUT (35 tests), usage GET (28 tests), keys GET/POST (22 tests) — 1472 total
 - [x] **Notifications and Calculations route tests** (2026-03-13) - notifications GET/PUT (20 tests), calculations GET/POST/DELETE (50 tests) — 1542 total
 - [x] **Reports and Nexus Exposure/Alerts route tests** (2026-03-13) - reports/sales-by-state GET (29 tests), reports/export GET (35 tests), nexus/alerts GET+PUT (22 tests), nexus/exposure GET (16 tests) — 1642 total
+- [x] **Business, Keys/[id], Calculations Summary, Filings route tests** (2026-03-13) - business CRUD (48 tests), keys/[id] DELETE+PATCH (25 tests), calculations/summary GET (30 tests), filings GET/POST/PUT (30 tests) — 1775 total
 - [ ] Error handling improvements
 - [ ] Mobile responsive fixes
 
@@ -231,4 +232,4 @@ All items completed 2026-02-17.
 | Email System | 85% (templates done, needs Resend key) |
 | Filing Prep | 0% |
 
-**Overall:** ~83% to MVP launch
+**Overall:** ~84% to MVP launch
