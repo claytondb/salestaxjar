@@ -205,6 +205,7 @@ All items completed 2026-02-17.
 - [x] **Business, Keys/[id], Calculations Summary, Filings route tests** (2026-03-13) - business CRUD (48 tests), keys/[id] DELETE+PATCH (25 tests), calculations/summary GET (30 tests), filings GET/POST/PUT (30 tests) — 1775 total
 - [x] **Beta routes, Tax calculate/rates, V1 public API tests** (2026-03-13) - beta/waitlist (12 tests), beta/check (12 tests), beta/status (8 tests), beta/add (17 tests), beta/reminder (11 tests), tax/calculate (24 tests), tax/rates (16 tests), v1/tax/calculate (28 tests) — 1891 total
 - [x] **Drip email send route tests** (2026-03-14) - drip/send POST (34 tests): auth, validation, user lookup, duplicate safety, all 4 day conditions, email outcomes, error handling — 1925 total
+- [x] **Drip cron route tests** (2026-03-14) - drip/cron GET (41 tests): auth, empty batches, all 4 day conditions, multi-user mixed outcomes, DB error isolation, stats accuracy — 1966 total
 - [ ] Error handling improvements
 - [ ] Mobile responsive fixes
 
