@@ -6,13 +6,16 @@ import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import { Calendar, ClipboardList, CheckCircle2, AlertTriangle, Check, List } from 'lucide-react';
+import { Calendar, ClipboardList, CheckCircle2, AlertTriangle, Check, List, Wand2, RefreshCw } from 'lucide-react';
 
 export default function FilingsPage() {
-  const { user, filingDeadlines, nexusStates, updateFilingDeadline, isLoading } = useAuth();
+  const { user, filingDeadlines, nexusStates, updateFilingDeadline, refreshData, isLoading } = useAuth();
   const router = useRouter();
   const [filter, setFilter] = useState<'all' | 'pending' | 'filed' | 'overdue'>('all');
   const [viewMode, setViewMode] = useState<'list' | 'calendar'>('list');
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [generateResult, setGenerateResult] = useState<{ created: number; skipped: number } | null>(null);
+  const [generateError, setGenerateError] = useState<string | null>(null);
   
   // Use state for current time to avoid calling Date.now() during render
   // Initialize with a function to avoid the impure call during render
@@ -44,6 +47,32 @@ export default function FilingsPage() {
 
   const hasNexus = nexusStates.some(s => s.hasNexus);
 
+  const handleGenerateDeadlines = async () => {
+    setIsGenerating(true);
+    setGenerateResult(null);
+    setGenerateError(null);
+    try {
+      const res = await fetch('/api/filings/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ remainingOnly: true }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setGenerateError(data.error || 'Failed to generate deadlines');
+      } else {
+        setGenerateResult({ created: data.created, skipped: data.skipped });
+        if (data.created > 0) {
+          await refreshData();
+        }
+      }
+    } catch {
+      setGenerateError('An unexpected error occurred');
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
   if (isLoading || !user) {
     return (
       <div className="min-h-screen bg-theme-gradient flex items-center justify-center">
@@ -57,9 +86,36 @@ export default function FilingsPage() {
       <Header />
       
       <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-theme-primary mb-2">Filing Calendar</h1>
-          <p className="text-theme-muted">Track and manage your sales tax filing deadlines</p>
+        <div className="mb-8 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+          <div>
+            <h1 className="text-3xl font-bold text-theme-primary mb-2">Filing Calendar</h1>
+            <p className="text-theme-muted">Track and manage your sales tax filing deadlines</p>
+          </div>
+          {hasNexus && (
+            <div className="flex flex-col items-end gap-2">
+              <button
+                onClick={handleGenerateDeadlines}
+                disabled={isGenerating}
+                className="btn-theme-primary text-theme-primary px-4 py-2 rounded-lg text-sm font-medium transition flex items-center gap-2 disabled:opacity-60"
+              >
+                {isGenerating
+                  ? <><RefreshCw className="w-4 h-4 animate-spin" /> Generating…</>
+                  : <><Wand2 className="w-4 h-4" /> Generate {new Date().getFullYear()} Deadlines</>
+                }
+              </button>
+              {generateResult && (
+                <p className="text-sm text-theme-accent">
+                  {generateResult.created > 0
+                    ? `✓ Created ${generateResult.created} deadline${generateResult.created !== 1 ? 's' : ''}${generateResult.skipped > 0 ? `, ${generateResult.skipped} already existed` : ''}`
+                    : `All deadlines already up to date (${generateResult.skipped} existing)`
+                  }
+                </p>
+              )}
+              {generateError && (
+                <p className="text-sm" style={{ color: 'var(--error-text)' }}>{generateError}</p>
+              )}
+            </div>
+          )}
         </div>
 
         {!hasNexus ? (
