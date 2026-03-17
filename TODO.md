@@ -207,6 +207,7 @@ All items completed 2026-02-17.
 - [x] **Drip email send route tests** (2026-03-14) - drip/send POST (34 tests): auth, validation, user lookup, duplicate safety, all 4 day conditions, email outcomes, error handling — 1925 total
 - [x] **Drip cron route tests** (2026-03-14) - drip/cron GET (41 tests): auth, empty batches, all 4 day conditions, multi-user mixed outcomes, DB error isolation, stats accuracy — 1966 total
 - [x] **Platforms list/disconnect and WooCommerce connect route tests** (2026-03-14) - platforms GET+DELETE (27 tests), woocommerce/connect POST (19 tests) — 2007 total
+- [x] **Platform connect route tests** (2026-03-17) - BigCommerce/connect (28 tests), Ecwid/connect (29 tests), Magento/connect (30 tests), OpenCart/connect (30 tests), PrestaShop/connect (30 tests), Squarespace/connect (28 tests) — 2202 total
 - [ ] Error handling improvements
 - [ ] Mobile responsive fixes
 
