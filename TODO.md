@@ -209,6 +209,7 @@ All items completed 2026-02-17.
 - [x] **Platforms list/disconnect and WooCommerce connect route tests** (2026-03-14) - platforms GET+DELETE (27 tests), woocommerce/connect POST (19 tests) — 2007 total
 - [x] **Platform connect route tests** (2026-03-17) - BigCommerce/connect (28 tests), Ecwid/connect (29 tests), Magento/connect (30 tests), OpenCart/connect (30 tests), PrestaShop/connect (30 tests), Squarespace/connect (28 tests) — 2202 total
 - [x] **Sync route test coverage** (2026-03-17) - WooCommerce/sync, BigCommerce/sync, Squarespace/sync (+66 tests, 2286 total)
+- [x] **Unified sync route: Ecwid/Magento/PrestaShop/OpenCart** (2026-03-19) - All 4 remaining platforms added to /api/platforms/sync; +95 tests (2381 total)
 - [ ] Error handling improvements
 - [ ] Mobile responsive fixes
 
