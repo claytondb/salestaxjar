@@ -26,6 +26,26 @@ import {
   fetchOrderShippingAddresses as fetchBigCommerceShippingAddresses,
   mapOrderToImport as mapBigCommerceOrder,
 } from '@/lib/platforms/bigcommerce';
+import {
+  getCredentials as getEcwidCredentials,
+  fetchAllOrders as fetchEcwidOrders,
+  mapOrderToImport as mapEcwidOrder,
+} from '@/lib/platforms/ecwid';
+import {
+  getCredentials as getMagentoCredentials,
+  fetchAllOrders as fetchMagentoOrders,
+  mapOrderToImport as mapMagentoOrder,
+} from '@/lib/platforms/magento';
+import {
+  getCredentials as getPrestaShopCredentials,
+  fetchAllOrders as fetchPrestaShopOrders,
+  mapOrderToImport as mapPrestaShopOrder,
+} from '@/lib/platforms/prestashop';
+import {
+  getCredentials as getOpenCartCredentials,
+  fetchOrders as fetchOpenCartOrders,
+  mapOrderToImport as mapOpenCartOrder,
+} from '@/lib/platforms/opencart';
 import { aggregateForStates } from '@/lib/sales-aggregation';
 import { checkAndCreateAlerts } from '@/lib/nexus-alerts';
 
@@ -113,6 +133,18 @@ export async function POST(request: NextRequest) {
           break;
         case 'bigcommerce':
           orders = await syncBigCommerceOrders(user.id, connection, dateRange);
+          break;
+        case 'ecwid':
+          orders = await syncEcwidOrders(user.id, connection, dateRange);
+          break;
+        case 'magento':
+          orders = await syncMagentoOrders(user.id, connection, dateRange);
+          break;
+        case 'prestashop':
+          orders = await syncPrestaShopOrders(user.id, connection, dateRange);
+          break;
+        case 'opencart':
+          orders = await syncOpenCartOrders(user.id, connection, dateRange);
           break;
         // Future: wix
         default:
@@ -416,6 +448,118 @@ async function syncBigCommerceOrders(
   );
 
   return mappedOrders;
+}
+
+async function syncEcwidOrders(
+  userId: string,
+  connection: PlatformConnection,
+  dateRange?: DateRange
+): Promise<ImportedOrderData[]> {
+  const credentials = await getEcwidCredentials(userId, connection.platformId);
+  if (!credentials) {
+    throw new Error('Ecwid credentials not found');
+  }
+
+  const now = new Date();
+  const defaultStart = new Date();
+  defaultStart.setDate(defaultStart.getDate() - 30);
+
+  const options = {
+    createdFrom: dateRange?.start || defaultStart.toISOString(),
+    createdTo: dateRange?.end || now.toISOString(),
+  };
+
+  const orders = await fetchEcwidOrders(credentials, options);
+
+  // Filter out cancelled/incomplete orders
+  const validOrders = orders.filter(
+    (order) => order.paymentStatus !== 'CANCELLED' && order.fulfillmentStatus !== 'RETURNED'
+  );
+
+  return validOrders.map((order) => mapEcwidOrder(order));
+}
+
+async function syncMagentoOrders(
+  userId: string,
+  connection: PlatformConnection,
+  dateRange?: DateRange
+): Promise<ImportedOrderData[]> {
+  const credentials = await getMagentoCredentials(userId, connection.platformId);
+  if (!credentials) {
+    throw new Error('Magento credentials not found');
+  }
+
+  const now = new Date();
+  const defaultStart = new Date();
+  defaultStart.setDate(defaultStart.getDate() - 30);
+
+  const options = {
+    createdAtFrom: dateRange?.start || defaultStart.toISOString(),
+    createdAtTo: dateRange?.end || now.toISOString(),
+  };
+
+  const orders = await fetchMagentoOrders(credentials, options);
+
+  // Filter out cancelled orders (status = 'canceled' in Magento)
+  const validOrders = orders.filter(
+    (order) => order.status !== 'canceled' && order.status !== 'closed'
+  );
+
+  return validOrders.map((order) => mapMagentoOrder(order));
+}
+
+async function syncPrestaShopOrders(
+  userId: string,
+  connection: PlatformConnection,
+  dateRange?: DateRange
+): Promise<ImportedOrderData[]> {
+  const credentials = await getPrestaShopCredentials(userId, connection.platformId);
+  if (!credentials) {
+    throw new Error('PrestaShop credentials not found');
+  }
+
+  const now = new Date();
+  const defaultStart = new Date();
+  defaultStart.setDate(defaultStart.getDate() - 30);
+
+  const options = {
+    dateFrom: dateRange?.start || defaultStart.toISOString(),
+    dateTo: dateRange?.end || now.toISOString(),
+  };
+
+  const orders = await fetchPrestaShopOrders(credentials, options);
+
+  // Map orders (PrestaShop's mapper fetches address details async)
+  const mappedOrders = await Promise.all(
+    orders.map((order) => mapPrestaShopOrder(order, credentials))
+  );
+
+  return mappedOrders;
+}
+
+async function syncOpenCartOrders(
+  userId: string,
+  connection: PlatformConnection,
+  dateRange?: DateRange
+): Promise<ImportedOrderData[]> {
+  const credentials = await getOpenCartCredentials(userId, connection.platformId);
+  if (!credentials) {
+    throw new Error('OpenCart credentials not found');
+  }
+
+  const now = new Date();
+  const defaultStart = new Date();
+  defaultStart.setDate(defaultStart.getDate() - 30);
+
+  const options = {
+    dateFrom: dateRange?.start || defaultStart.toISOString(),
+    dateTo: dateRange?.end || now.toISOString(),
+    limit: 250,
+  };
+
+  const orders = await fetchOpenCartOrders(credentials, options);
+
+  return orders.map((order) => mapOpenCartOrder(order));
 }
 
 // =============================================================================
