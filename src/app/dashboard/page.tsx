@@ -13,7 +13,9 @@ import {
   Link2, 
   Calendar, 
   Calculator,
-  Package
+  Package,
+  Wand2,
+  Loader2
 } from 'lucide-react';
 import { platformLogos } from '@/components/PlatformLogos';
 import PlanUsage from '@/components/PlanUsage';
@@ -39,11 +41,14 @@ export default function DashboardPage() {
     filingDeadlines, 
     connectedPlatforms,
     billing,
+    refreshData,
     isLoading 
   } = useAuth();
   const router = useRouter();
   
   const [currentTime] = useState<number>(() => Date.now());
+  const [isGeneratingDeadlines, setIsGeneratingDeadlines] = useState(false);
+  const [deadlinesGenerated, setDeadlinesGenerated] = useState(false);
 
   useEffect(() => {
     if (!isLoading && !user) {
@@ -69,6 +74,25 @@ export default function DashboardPage() {
     .slice(0, 3);
 
   const recentCalculations = calculations.slice(0, 5);
+
+  const handleGenerateDeadlines = async () => {
+    setIsGeneratingDeadlines(true);
+    try {
+      const res = await fetch('/api/filings/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ remainingOnly: true }),
+      });
+      if (res.ok) {
+        setDeadlinesGenerated(true);
+        await refreshData();
+      }
+    } catch {
+      // silently ignore — user can try from the full filings page
+    } finally {
+      setIsGeneratingDeadlines(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-theme-gradient">
@@ -212,8 +236,35 @@ export default function DashboardPage() {
               {upcomingDeadlines.length === 0 ? (
                 <div className="text-center py-8">
                   <Calendar className="w-10 h-10 text-theme-accent mx-auto mb-4" />
-                  <p className="text-theme-muted">No upcoming deadlines</p>
-                  <p className="text-theme-muted text-sm mt-1">Configure your nexus states to see filing deadlines</p>
+                  {activeNexusCount > 0 && !deadlinesGenerated ? (
+                    <>
+                      <p className="text-theme-muted font-medium">Filing calendar not generated yet</p>
+                      <p className="text-theme-muted text-sm mt-1 mb-4">
+                        You have {activeNexusCount} nexus {activeNexusCount === 1 ? 'state' : 'states'} configured. Generate your {new Date().getFullYear()} filing deadlines.
+                      </p>
+                      <button
+                        onClick={handleGenerateDeadlines}
+                        disabled={isGeneratingDeadlines}
+                        className="inline-flex items-center gap-2 btn-theme-primary px-4 py-2 rounded-lg font-medium text-sm transition disabled:opacity-60"
+                      >
+                        {isGeneratingDeadlines ? (
+                          <><Loader2 className="w-4 h-4 animate-spin" /> Generating&hellip;</>
+                        ) : (
+                          <><Wand2 className="w-4 h-4" /> Generate Deadlines</>  
+                        )}
+                      </button>
+                    </>
+                  ) : deadlinesGenerated ? (
+                    <>
+                      <p className="text-theme-accent font-medium">Filing deadlines generated!</p>
+                      <p className="text-theme-muted text-sm mt-1">Check back here or visit your calendar.</p>
+                    </>
+                  ) : (
+                    <>
+                      <p className="text-theme-muted">No upcoming deadlines</p>
+                      <p className="text-theme-muted text-sm mt-1">Configure your nexus states to see filing deadlines</p>
+                    </>
+                  )}
                 </div>
               ) : (
                 <div className="space-y-4">
