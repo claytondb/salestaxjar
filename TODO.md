@@ -1,6 +1,6 @@
 # Sails - Task List
 
-Last updated: 2026-03-12 (1:00 AM)
+Last updated: 2026-04-03
 
 ## 🎯 Strategic Focus
 
@@ -130,7 +130,7 @@ All items completed 2026-02-17.
 
 ### 9. Filing Calendar
 - [ ] Auto-generate filing deadlines per nexus state
-- [ ] Reminder emails (7 days, 1 day before)
+- [x] **Reminder emails** (2026-04-03) — 7-day + 1-day reminder emails via /api/filings/reminders; Resend + deduplication; 47 tests
 - [ ] "Mark as filed" with confirmation tracking
 
 ### 10. Filing Prep Reports
