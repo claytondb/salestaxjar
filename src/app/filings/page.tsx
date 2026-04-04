@@ -6,7 +6,137 @@ import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import { Calendar, ClipboardList, CheckCircle2, AlertTriangle, Check, List, Wand2, RefreshCw } from 'lucide-react';
+import { FilingDeadline } from '@/types';
+import { Calendar, ClipboardList, CheckCircle2, AlertTriangle, Check, List, Wand2, RefreshCw, X, DollarSign, Hash, FileText } from 'lucide-react';
+
+interface FilingModalProps {
+  deadline: FilingDeadline;
+  onClose: () => void;
+  onConfirm: (id: string, extras: { actualTax?: number; confirmationNumber?: string; notes?: string }) => Promise<void>;
+}
+
+function MarkFiledModal({ deadline, onClose, onConfirm }: FilingModalProps) {
+  const [actualTax, setActualTax] = useState(deadline.estimatedTax?.toString() ?? '');
+  const [confirmationNumber, setConfirmationNumber] = useState('');
+  const [notes, setNotes] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    await onConfirm(deadline.id, {
+      actualTax: actualTax ? parseFloat(actualTax) : undefined,
+      confirmationNumber: confirmationNumber.trim() || undefined,
+      notes: notes.trim() || undefined,
+    });
+    setIsSubmitting(false);
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
+      <div className="relative card-theme rounded-2xl border border-white/20 shadow-2xl w-full max-w-md">
+        {/* Header */}
+        <div className="flex items-center justify-between p-6 border-b border-white/10">
+          <div>
+            <h2 className="text-xl font-bold text-theme-primary">Mark as Filed</h2>
+            <p className="text-sm text-theme-muted mt-0.5">
+              {deadline.state} — {deadline.period.charAt(0).toUpperCase() + deadline.period.slice(1)} filing
+            </p>
+          </div>
+          <button
+            onClick={onClose}
+            className="p-2 hover:bg-white/10 rounded-lg transition"
+          >
+            <X className="w-5 h-5 text-theme-muted" />
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit} className="p-6 space-y-5">
+          {/* Actual Tax Amount */}
+          <div>
+            <label className="block text-sm font-medium text-theme-secondary mb-2">
+              <DollarSign className="w-4 h-4 inline mr-1.5 opacity-70" />
+              Actual Tax Paid
+              <span className="text-theme-muted font-normal ml-1">(optional)</span>
+            </label>
+            <div className="relative">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-theme-muted text-sm">$</span>
+              <input
+                type="number"
+                step="0.01"
+                min="0"
+                value={actualTax}
+                onChange={e => setActualTax(e.target.value)}
+                placeholder={deadline.estimatedTax ? `${deadline.estimatedTax.toFixed(2)} (estimated)` : '0.00'}
+                className="w-full bg-white/10 border border-white/20 rounded-lg pl-8 pr-4 py-2.5 text-theme-primary placeholder:text-theme-muted focus:outline-none focus:border-theme-accent/50 transition"
+              />
+            </div>
+            {deadline.estimatedTax && parseFloat(actualTax || '0') !== deadline.estimatedTax && actualTax && (
+              <p className="text-xs text-theme-muted mt-1.5">
+                Estimated was ${deadline.estimatedTax.toFixed(2)} — difference: ${(parseFloat(actualTax) - deadline.estimatedTax).toFixed(2)}
+              </p>
+            )}
+          </div>
+
+          {/* Confirmation Number */}
+          <div>
+            <label className="block text-sm font-medium text-theme-secondary mb-2">
+              <Hash className="w-4 h-4 inline mr-1.5 opacity-70" />
+              Confirmation Number
+              <span className="text-theme-muted font-normal ml-1">(optional)</span>
+            </label>
+            <input
+              type="text"
+              value={confirmationNumber}
+              onChange={e => setConfirmationNumber(e.target.value)}
+              placeholder="e.g. ST-2026-Q1-00123"
+              className="w-full bg-white/10 border border-white/20 rounded-lg px-4 py-2.5 text-theme-primary placeholder:text-theme-muted focus:outline-none focus:border-theme-accent/50 transition"
+            />
+          </div>
+
+          {/* Notes */}
+          <div>
+            <label className="block text-sm font-medium text-theme-secondary mb-2">
+              <FileText className="w-4 h-4 inline mr-1.5 opacity-70" />
+              Notes
+              <span className="text-theme-muted font-normal ml-1">(optional)</span>
+            </label>
+            <textarea
+              value={notes}
+              onChange={e => setNotes(e.target.value)}
+              placeholder="Any notes about this filing..."
+              rows={3}
+              className="w-full bg-white/10 border border-white/20 rounded-lg px-4 py-2.5 text-theme-primary placeholder:text-theme-muted focus:outline-none focus:border-theme-accent/50 transition resize-none"
+            />
+          </div>
+
+          {/* Actions */}
+          <div className="flex gap-3 pt-1">
+            <button
+              type="button"
+              onClick={onClose}
+              className="flex-1 bg-white/10 hover:bg-white/20 text-theme-secondary px-4 py-2.5 rounded-lg font-medium transition"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="flex-1 btn-theme-primary text-theme-primary px-4 py-2.5 rounded-lg font-medium transition flex items-center justify-center gap-2 disabled:opacity-60"
+            >
+              {isSubmitting ? (
+                <><RefreshCw className="w-4 h-4 animate-spin" /> Saving…</>
+              ) : (
+                <><Check className="w-4 h-4" /> Mark as Filed</>
+              )}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
 
 export default function FilingsPage() {
   const { user, filingDeadlines, nexusStates, updateFilingDeadline, refreshData, isLoading } = useAuth();
@@ -16,6 +146,7 @@ export default function FilingsPage() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [generateResult, setGenerateResult] = useState<{ created: number; skipped: number } | null>(null);
   const [generateError, setGenerateError] = useState<string | null>(null);
+  const [modalDeadline, setModalDeadline] = useState<FilingDeadline | null>(null);
   
   // Use state for current time to avoid calling Date.now() during render
   // Initialize with a function to avoid the impure call during render
@@ -73,6 +204,11 @@ export default function FilingsPage() {
     }
   };
 
+  const handleMarkFiled = async (id: string, extras: { actualTax?: number; confirmationNumber?: string; notes?: string }) => {
+    await updateFilingDeadline(id, 'filed', extras);
+    setModalDeadline(null);
+  };
+
   if (isLoading || !user) {
     return (
       <div className="min-h-screen bg-theme-gradient flex items-center justify-center">
@@ -85,6 +221,15 @@ export default function FilingsPage() {
     <div className="min-h-screen bg-theme-gradient">
       <Header />
       
+      {/* Mark as Filed Modal */}
+      {modalDeadline && (
+        <MarkFiledModal
+          deadline={modalDeadline}
+          onClose={() => setModalDeadline(null)}
+          onConfirm={handleMarkFiled}
+        />
+      )}
+
       <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
           <div>
@@ -257,9 +402,30 @@ export default function FilingsPage() {
                               <p className="text-theme-muted text-sm">
                                 {deadline.period.charAt(0).toUpperCase() + deadline.period.slice(1)} filing
                               </p>
-                              {deadline.estimatedTax && (
+                              {/* Show filed details */}
+                              {deadline.status === 'filed' && deadline.actualTax !== undefined && (
+                                <p className="text-theme-accent text-sm mt-1">
+                                  Paid: ${deadline.actualTax.toLocaleString()}
+                                  {deadline.estimatedTax && deadline.actualTax !== deadline.estimatedTax && (
+                                    <span className="text-theme-muted ml-1">
+                                      (est. ${deadline.estimatedTax.toLocaleString()})
+                                    </span>
+                                  )}
+                                </p>
+                              )}
+                              {deadline.status !== 'filed' && deadline.estimatedTax && (
                                 <p className="text-theme-accent text-sm mt-1">
                                   Estimated: ${deadline.estimatedTax.toLocaleString()}
+                                </p>
+                              )}
+                              {deadline.confirmationNumber && (
+                                <p className="text-theme-muted text-xs mt-0.5">
+                                  Conf# {deadline.confirmationNumber}
+                                </p>
+                              )}
+                              {deadline.notes && (
+                                <p className="text-theme-muted text-xs mt-0.5 italic">
+                                  {deadline.notes}
                                 </p>
                               )}
                             </div>
@@ -290,15 +456,19 @@ export default function FilingsPage() {
                                 }`}
                                 style={isPast ? { color: 'var(--error-text)' } : {}}
                               >
-                                {deadline.status === 'filed' ? 'Filed' :
-                                 isPast ? `${Math.abs(daysUntil)} days overdue` :
-                                 `${daysUntil} days left`}
+                                {deadline.status === 'filed'
+                                  ? deadline.filedAt
+                                    ? `Filed ${new Date(deadline.filedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`
+                                    : 'Filed'
+                                  : isPast
+                                  ? `${Math.abs(daysUntil)} days overdue`
+                                  : `${daysUntil} days left`}
                               </div>
                             </div>
 
                             {deadline.status !== 'filed' && (
                               <button
-                                onClick={() => updateFilingDeadline(deadline.id, 'filed')}
+                                onClick={() => setModalDeadline(deadline)}
                                 className="btn-theme-primary  text-theme-primary px-4 py-2 rounded-lg text-sm font-medium transition"
                               >
                                 Mark Filed
@@ -355,19 +525,27 @@ export default function FilingsPage() {
                                   {dueDate.getDate()}
                                 </span>
                               </div>
-                              <div className="text-sm text-theme-muted mb-3">
+                              <div className="text-sm text-theme-muted mb-1">
                                 {deadline.period.charAt(0).toUpperCase() + deadline.period.slice(1)}
                               </div>
+                              {deadline.status === 'filed' && deadline.confirmationNumber && (
+                                <div className="text-xs text-theme-muted mb-2">
+                                  Conf# {deadline.confirmationNumber}
+                                </div>
+                              )}
                               {deadline.status !== 'filed' ? (
                                 <button
-                                  onClick={() => updateFilingDeadline(deadline.id, 'filed')}
-                                  className="w-full btn-theme-primary/20 hover:btn-theme-primary/30 text-theme-accent py-1.5 rounded text-sm transition"
+                                  onClick={() => setModalDeadline(deadline)}
+                                  className="w-full btn-theme-primary/20 hover:btn-theme-primary/30 text-theme-accent py-1.5 rounded text-sm transition mt-2"
                                 >
                                   Mark Filed
                                 </button>
                               ) : (
-                                <div className="text-center text-theme-accent text-sm flex items-center justify-center gap-1">
+                                <div className="text-center text-theme-accent text-sm flex items-center justify-center gap-1 mt-2">
                                   <Check className="w-4 h-4" /> Filed
+                                  {deadline.actualTax !== undefined && (
+                                    <span className="text-theme-muted text-xs ml-1">(${deadline.actualTax.toLocaleString()})</span>
+                                  )}
                                 </div>
                               )}
                             </div>

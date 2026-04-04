@@ -89,6 +89,10 @@ export interface FilingDeadline {
   dueDate: string;
   status: 'pending' | 'filed' | 'overdue';
   estimatedTax?: number;
+  actualTax?: number;
+  confirmationNumber?: string;
+  filedAt?: string;
+  notes?: string;
 }
 
 export interface ConnectedPlatform {

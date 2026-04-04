@@ -49,7 +49,7 @@ interface AuthContextType {
   addCalculation: (calc: TaxCalculation) => void;
   addCalculations: (calcs: TaxCalculation[]) => void;
   clearCalculations: () => Promise<void>;
-  updateFilingDeadline: (id: string, status: FilingDeadline['status']) => Promise<{ success: boolean; error?: string }>;
+  updateFilingDeadline: (id: string, status: FilingDeadline['status'], extras?: { actualTax?: number; confirmationNumber?: string; notes?: string }) => Promise<{ success: boolean; error?: string }>;
   updateNotifications: (prefs: NotificationPreferences) => Promise<{ success: boolean; error?: string }>;
   updateBilling: (billing: BillingInfo) => void;
   updateUser: (user: Partial<User>) => void;
@@ -133,14 +133,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (filingsRes.status === 'fulfilled' && filingsRes.value.ok) {
         const data = await filingsRes.value.json();
         if (data.filings) {
-          setFilingDeadlines(data.filings.map((f: { id: string; state: string; stateCode: string; period: string; dueDate: string; status: string; estimatedTax: number | null }) => ({
+          setFilingDeadlines(data.filings.map((f: { id: string; state: string; stateCode: string; period: string; dueDate: string; status: string; estimatedTax: number | null; actualTax: number | null; confirmationNumber: string | null; filedAt: string | null; notes: string | null }) => ({
             id: f.id,
             state: f.state,
             stateCode: f.stateCode,
             period: f.period,
             dueDate: f.dueDate,
             status: f.status,
-            estimatedTax: f.estimatedTax,
+            estimatedTax: f.estimatedTax ?? undefined,
+            actualTax: f.actualTax ?? undefined,
+            confirmationNumber: f.confirmationNumber ?? undefined,
+            filedAt: f.filedAt ?? undefined,
+            notes: f.notes ?? undefined,
           })));
         }
       }
@@ -522,12 +526,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const updateFilingDeadline = async (id: string, status: FilingDeadline['status']): Promise<{ success: boolean; error?: string }> => {
+  const updateFilingDeadline = async (id: string, status: FilingDeadline['status'], extras?: { actualTax?: number; confirmationNumber?: string; notes?: string }): Promise<{ success: boolean; error?: string }> => {
     try {
       const response = await fetch('/api/filings', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id, status }),
+        body: JSON.stringify({ id, status, ...extras }),
       });
 
       const data = await response.json();
@@ -536,7 +540,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return { success: false, error: data.error || 'Failed to update filing' };
       }
 
-      setFilingDeadlines(prev => prev.map(d => d.id === id ? { ...d, status } : d));
+      setFilingDeadlines(prev => prev.map(d => d.id === id ? {
+        ...d,
+        status,
+        actualTax: extras?.actualTax ?? d.actualTax,
+        confirmationNumber: extras?.confirmationNumber ?? d.confirmationNumber,
+        notes: extras?.notes ?? d.notes,
+        filedAt: status === 'filed' ? (data.filing?.filedAt ?? new Date().toISOString()) : d.filedAt,
+      } : d));
 
       return { success: true };
     } catch (error) {
