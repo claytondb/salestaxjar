@@ -1,15 +1,16 @@
 /**
  * PrestaShop Connect API
- * 
+ *
  * POST /api/platforms/prestashop/connect
- * 
+ *
  * Validates credentials and saves connection to database.
  */
 
 import { NextRequest, NextResponse } from 'next/server';
 import { getCurrentUser } from '@/lib/auth';
 import { validateCredentials, saveConnection } from '@/lib/platforms/prestashop';
-import { userCanConnectPlatform, tierGateError } from '@/lib/plans';
+import { userCanConnectPlatform, tierGateError, checkPlatformLimit, platformLimitError } from '@/lib/plans';
+import { getUserConnections } from '@/lib/platforms';
 
 export async function POST(request: NextRequest) {
   try {
@@ -22,11 +23,22 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Tier gate: PrestaShop requires Pro or higher
+    // Tier gate (every tier may connect platforms; kept as defense-in-depth)
     const access = userCanConnectPlatform(user, 'prestashop');
     if (!access.allowed) {
       return NextResponse.json(
         tierGateError(access.userPlan, access.requiredPlan, 'platform_prestashop'),
+        { status: 403 }
+      );
+    }
+
+    // Platform-connection cap (count-based). Only blocks NEW connections once
+    // the user is at/over their tier's cap; never touches existing connections.
+    const connectionCount = (await getUserConnections(user.id)).length;
+    const capCheck = checkPlatformLimit(access.userPlan, connectionCount);
+    if (!capCheck.allowed) {
+      return NextResponse.json(
+        platformLimitError(access.userPlan, capCheck.limit, capCheck.currentCount, capCheck.upgradeNeeded),
         { status: 403 }
       );
     }
@@ -58,8 +70,8 @@ export async function POST(request: NextRequest) {
 
     if (!validation.valid) {
       return NextResponse.json(
-        { 
-          error: 'Invalid credentials', 
+        {
+          error: 'Invalid credentials',
           details: validation.error,
           hint: 'Make sure your store URL is correct and your API key has the required permissions. Go to Advanced Parameters → Webservice in your PrestaShop admin to verify your API key.'
         },

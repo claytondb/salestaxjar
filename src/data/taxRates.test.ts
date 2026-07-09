@@ -276,7 +276,7 @@ describe('taxRates data', () => {
     it('should have correct rate for New York', () => {
       const ny = getStateByCode('NY');
       expect(ny?.stateRate).toBe(4);
-      expect(ny?.combinedRate).toBe(8.52);
+      expect(ny?.combinedRate).toBe(8.54);
     });
 
     it('should have Hawaii marked as GET tax', () => {

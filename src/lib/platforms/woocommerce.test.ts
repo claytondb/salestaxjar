@@ -34,8 +34,10 @@ describe('normalizeStoreUrl', () => {
       expect(normalizeStoreUrl('https://example.com')).toBe('https://example.com');
     });
 
-    it('should keep http:// if already present', () => {
-      expect(normalizeStoreUrl('http://example.com')).toBe('http://example.com');
+    it('should upgrade http:// to https:// (credentials must not travel in cleartext)', () => {
+      // Changed from asserting http:// is preserved: the SSRF / credential-leak
+      // fix now forces https:// for all WooCommerce store URLs.
+      expect(normalizeStoreUrl('http://example.com')).toBe('https://example.com');
     });
 
     it('should handle uppercase protocols', () => {
@@ -104,12 +106,44 @@ describe('normalizeStoreUrl', () => {
       expect(normalizeStoreUrl('  https://WWW.MyStore.COM/shop/  ')).toBe('https://www.mystore.com/shop');
     });
 
-    it('should handle port numbers', () => {
-      expect(normalizeStoreUrl('localhost:8080')).toBe('https://localhost:8080');
+    it('should preserve port numbers on public hosts', () => {
+      expect(normalizeStoreUrl('example.com:8080')).toBe('https://example.com:8080');
     });
 
-    it('should handle IP addresses', () => {
-      expect(normalizeStoreUrl('192.168.1.100')).toBe('https://192.168.1.100');
+    it('should preserve public IP addresses', () => {
+      expect(normalizeStoreUrl('93.184.216.34')).toBe('https://93.184.216.34');
+    });
+  });
+
+  describe('SSRF guard', () => {
+    // Changed from asserting these are normalized: user-supplied store URLs
+    // become server-side fetch targets, so internal hosts must be rejected.
+    it('should reject localhost', () => {
+      expect(() => normalizeStoreUrl('localhost:8080')).toThrow('Invalid store URL');
+    });
+
+    it('should reject *.local hostnames', () => {
+      expect(() => normalizeStoreUrl('mystore.local')).toThrow('Invalid store URL');
+    });
+
+    it('should reject 127.0.0.0/8 loopback', () => {
+      expect(() => normalizeStoreUrl('127.0.0.1')).toThrow('Invalid store URL');
+    });
+
+    it('should reject 10.0.0.0/8 private range', () => {
+      expect(() => normalizeStoreUrl('10.1.2.3')).toThrow('Invalid store URL');
+    });
+
+    it('should reject 172.16.0.0/12 private range', () => {
+      expect(() => normalizeStoreUrl('172.16.5.4')).toThrow('Invalid store URL');
+    });
+
+    it('should reject 192.168.0.0/16 private range', () => {
+      expect(() => normalizeStoreUrl('192.168.1.100')).toThrow('Invalid store URL');
+    });
+
+    it('should reject the cloud metadata IP (169.254.169.254)', () => {
+      expect(() => normalizeStoreUrl('169.254.169.254')).toThrow('Invalid store URL');
     });
   });
 });

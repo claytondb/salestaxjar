@@ -16,6 +16,7 @@ const plans = [
     features: [
       { text: 'Nexus monitoring (all 50 states)', included: true },
       { text: 'Unlimited tax calculations', included: true },
+      { text: '1 platform integration', included: true },
       { text: 'Calculation history + CSV export', included: true },
       { text: 'Email support', included: true },
     ],
@@ -28,7 +29,7 @@ const plans = [
     description: 'For side hustlers who just hit nexus thresholds',
     features: [
       { text: 'Everything in Free, plus:', included: true, bold: true },
-      { text: 'All platform integrations', included: true },
+      { text: '2 platform integrations', included: true },
       { text: 'Up to 500 orders/month', included: true },
       { text: 'Automatic nexus exposure alerts', included: true },
       { text: 'Email deadline reminders', included: true },
@@ -43,6 +44,7 @@ const plans = [
     description: 'For growing sellers with multi-state sales',
     features: [
       { text: 'Everything in Starter, plus:', included: true, bold: true },
+      { text: '3 platform integrations', included: true },
       { text: 'Up to 5,000 orders/month', included: true },
       { text: 'Tax calculation API + API keys', included: true },
       { text: 'Priority email support', included: true },
@@ -52,11 +54,12 @@ const plans = [
     popular: true,
   },
   {
-    name: 'Business',
-    price: 59,
+    name: 'Enterprise',
+    price: 79,
     description: 'For high-volume sellers who want it all',
     features: [
       { text: 'Everything in Pro, plus:', included: true, bold: true },
+      { text: 'Unlimited platform integrations', included: true },
       { text: 'Unlimited orders', included: true },
       { text: 'Highest priority support', included: true },
       { text: 'Auto-filing', included: true, comingSoon: true },

@@ -1,10 +1,33 @@
 /**
  * State Economic Nexus Thresholds (2026)
- * 
+ *
  * Comprehensive data on economic nexus thresholds for all US states + DC.
  * States measure either on a rolling 12-month or calendar year basis.
  * Most states: $100,000 in sales OR 200 transactions.
  * Notable exceptions: CA, NY, TX use $500K thresholds.
+ *
+ * DATA REVIEWED: 2026-07-08.
+ * Sources (current-law verification for transaction-threshold repeals + AND-logic states):
+ *  - Avalara, "States eliminating economic nexus transaction thresholds" (updated Apr 21, 2026):
+ *    https://www.avalara.com/blog/en/north-america/2025/06/states-eliminating-economic-nexus-transaction-thresholds.html
+ *  - Sales Tax Institute, Economic Nexus State Guide:
+ *    https://www.salestaxinstitute.com/resources/economic-nexus-state-guide
+ *  - Louisiana (repealed 200-txn, eff. Aug 1 2023):
+ *    https://www.salestaxinstitute.com/resources/louisiana-removes-200-transaction-threshold-from-economic-nexus-rules
+ *  - Indiana & Wyoming (repealed, eff. 2024):
+ *    https://www.avalara.com/blog/en/north-america/2024/03/indiana-wyoming-drop-remote-seller-transaction-threshold.html
+ *  - North Carolina (repealed, eff. Jul 1 2024):
+ *    https://www.salestaxinstitute.com/resources/north-carolina-repeals-transaction-count-from-economic-nexus-threshold
+ *  - Illinois (repealed, eff. Jan 1 2026):
+ *    https://www.anrok.com/tax-news/illinois-to-eliminate-its-200-transaction-economic-nexus-threshold
+ *
+ * Transaction-count threshold REPEALED (now sales-dollar test only) -> transactionThreshold: null:
+ *  ME (2022), SD (Jul 2023), LA (Aug 2023), IN (Jan 2024), WY (Jul 2024),
+ *  NC (Jul 2024), UT (Jul 2025), IL (Jan 2026). All confirmed via sources above.
+ *
+ * AND-logic states (BOTH sales AND transaction thresholds must be met to establish nexus):
+ *  CT ($100K AND 200 txns) and NY ($500K AND 100 txns). These are the ONLY two AND states;
+ *  every other dual-threshold state uses OR logic. See `logic` field below.
  */
 
 export interface NexusThreshold {
@@ -14,6 +37,12 @@ export interface NexusThreshold {
   salesThreshold: number | null;
   /** Transaction count threshold (null = no transaction threshold) */
   transactionThreshold: number | null;
+  /**
+   * How the sales and transaction thresholds combine.
+   * 'or' (default): meeting EITHER threshold establishes nexus.
+   * 'and': BOTH thresholds must be met (currently only CT and NY).
+   */
+  logic?: 'and' | 'or';
   /** Whether the state has a general sales tax */
   hasSalesTax: boolean;
   /** Measurement period */
@@ -82,6 +111,7 @@ export const STATE_NEXUS_THRESHOLDS: NexusThreshold[] = [
     stateName: 'Connecticut',
     salesThreshold: 100000,
     transactionThreshold: 200,
+    logic: 'and',
     hasSalesTax: true,
     measurementPeriod: 'rolling_12_months',
     notes: '$100K in sales AND 200 transactions (both must be met).',
@@ -135,19 +165,19 @@ export const STATE_NEXUS_THRESHOLDS: NexusThreshold[] = [
     stateCode: 'IL',
     stateName: 'Illinois',
     salesThreshold: 100000,
-    transactionThreshold: 200,
+    transactionThreshold: null,
     hasSalesTax: true,
     measurementPeriod: 'rolling_12_months',
-    notes: '$100K in sales OR 200 transactions.',
+    notes: '$100K in sales only. 200-transaction threshold repealed effective Jan 1, 2026.',
   },
   {
     stateCode: 'IN',
     stateName: 'Indiana',
     salesThreshold: 100000,
-    transactionThreshold: 200,
+    transactionThreshold: null,
     hasSalesTax: true,
     measurementPeriod: 'previous_or_current_calendar_year',
-    notes: '$100K in sales OR 200 transactions.',
+    notes: '$100K in sales only. 200-transaction threshold repealed effective Jan 1, 2024.',
   },
   {
     stateCode: 'IA',
@@ -174,25 +204,25 @@ export const STATE_NEXUS_THRESHOLDS: NexusThreshold[] = [
     transactionThreshold: 200,
     hasSalesTax: true,
     measurementPeriod: 'previous_or_current_calendar_year',
-    notes: '$100K in sales OR 200 transactions.',
+    notes: '$100K in sales OR 200 transactions. (Transaction threshold scheduled for repeal Aug 1, 2026.)',
   },
   {
     stateCode: 'LA',
     stateName: 'Louisiana',
     salesThreshold: 100000,
-    transactionThreshold: 200,
+    transactionThreshold: null,
     hasSalesTax: true,
     measurementPeriod: 'previous_or_current_calendar_year',
-    notes: '$100K in sales OR 200 transactions.',
+    notes: '$100K in retail sales only. 200-transaction threshold repealed effective Aug 1, 2023.',
   },
   {
     stateCode: 'ME',
     stateName: 'Maine',
     salesThreshold: 100000,
-    transactionThreshold: 200,
+    transactionThreshold: null,
     hasSalesTax: true,
     measurementPeriod: 'previous_or_current_calendar_year',
-    notes: '$100K in sales OR 200 transactions.',
+    notes: '$100K in sales only. 200-transaction threshold repealed effective Jan 1, 2022.',
   },
   {
     stateCode: 'MD',
@@ -307,6 +337,7 @@ export const STATE_NEXUS_THRESHOLDS: NexusThreshold[] = [
     stateName: 'New York',
     salesThreshold: 500000,
     transactionThreshold: 100,
+    logic: 'and',
     hasSalesTax: true,
     measurementPeriod: 'previous_or_current_calendar_year',
     notes: '$500K in sales AND 100 transactions (both must be met).',
@@ -315,10 +346,10 @@ export const STATE_NEXUS_THRESHOLDS: NexusThreshold[] = [
     stateCode: 'NC',
     stateName: 'North Carolina',
     salesThreshold: 100000,
-    transactionThreshold: 200,
+    transactionThreshold: null,
     hasSalesTax: true,
     measurementPeriod: 'previous_or_current_calendar_year',
-    notes: '$100K in sales OR 200 transactions.',
+    notes: '$100K in sales only. 200-transaction threshold repealed effective Jul 1, 2024.',
   },
   {
     stateCode: 'ND',
@@ -387,10 +418,10 @@ export const STATE_NEXUS_THRESHOLDS: NexusThreshold[] = [
     stateCode: 'SD',
     stateName: 'South Dakota',
     salesThreshold: 100000,
-    transactionThreshold: 200,
+    transactionThreshold: null,
     hasSalesTax: true,
     measurementPeriod: 'previous_or_current_calendar_year',
-    notes: '$100K in sales OR 200 transactions. Wayfair v. South Dakota origin state.',
+    notes: '$100K in sales only. 200-transaction threshold repealed effective Jul 1, 2023. Wayfair v. South Dakota origin state.',
   },
   {
     stateCode: 'TN',
@@ -414,10 +445,10 @@ export const STATE_NEXUS_THRESHOLDS: NexusThreshold[] = [
     stateCode: 'UT',
     stateName: 'Utah',
     salesThreshold: 100000,
-    transactionThreshold: 200,
+    transactionThreshold: null,
     hasSalesTax: true,
     measurementPeriod: 'previous_or_current_calendar_year',
-    notes: '$100K in sales OR 200 transactions.',
+    notes: '$100K in sales only. 200-transaction threshold repealed effective Jul 1, 2025.',
   },
   {
     stateCode: 'VT',
@@ -468,10 +499,10 @@ export const STATE_NEXUS_THRESHOLDS: NexusThreshold[] = [
     stateCode: 'WY',
     stateName: 'Wyoming',
     salesThreshold: 100000,
-    transactionThreshold: 200,
+    transactionThreshold: null,
     hasSalesTax: true,
     measurementPeriod: 'previous_or_current_calendar_year',
-    notes: '$100K in sales OR 200 transactions.',
+    notes: '$100K in sales only. 200-transaction threshold repealed effective Jul 1, 2024.',
   },
   {
     stateCode: 'DC',
@@ -541,7 +572,17 @@ export function calculateExposureStatus(
     ? (transactionCount / threshold.transactionThreshold) * 100
     : 0;
 
-  const highestPercentage = Math.max(salesPercentage, transactionPercentage);
+  // Determine the percentage that governs the exposure status.
+  // 'or' states (the default): nexus is established by meeting EITHER threshold,
+  //   so the driving percentage is the HIGHER of the two (existing behavior).
+  // 'and' states (CT, NY): nexus requires BOTH thresholds to be met, so the state
+  //   is only "exceeded"/"approaching" once the LOWER of the two percentages crosses
+  //   the level. Using the minimum prevents false "must register" alerts when only
+  //   one of the two thresholds is met.
+  const useAndLogic = threshold.logic === 'and' && threshold.transactionThreshold != null;
+  const highestPercentage = useAndLogic
+    ? Math.min(salesPercentage, transactionPercentage)
+    : Math.max(salesPercentage, transactionPercentage);
 
   let status: ExposureStatus = 'safe';
   if (highestPercentage >= 100) {

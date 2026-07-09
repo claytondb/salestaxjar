@@ -20,8 +20,31 @@ import {
   isTaxJarConfigured,
   calculateTax,
   getAllStateRates,
+  getTaxJarProductTaxCode,
   type TaxCalculationRequest,
 } from './taxjar';
+
+// =============================================================================
+// getTaxJarProductTaxCode - ProductCategory -> TaxJar product_tax_code mapping
+// =============================================================================
+
+describe('getTaxJarProductTaxCode', () => {
+  it('maps categories to the correct TaxJar product tax codes', () => {
+    // Verified against the live TaxJar Categories API (2026-07).
+    expect(getTaxJarProductTaxCode('clothing')).toBe('20010');
+    expect(getTaxJarProductTaxCode('food_grocery')).toBe('40030');
+    expect(getTaxJarProductTaxCode('digital_goods')).toBe('31000');
+    expect(getTaxJarProductTaxCode('software')).toBe('30070');
+    expect(getTaxJarProductTaxCode('medical')).toBe('51010'); // OTC / non-prescription
+  });
+
+  it('returns undefined for general/fully-taxable categories', () => {
+    expect(getTaxJarProductTaxCode('general')).toBeUndefined();
+    expect(getTaxJarProductTaxCode('food_prepared')).toBeUndefined();
+    expect(getTaxJarProductTaxCode('electronics')).toBeUndefined();
+    expect(getTaxJarProductTaxCode(undefined)).toBeUndefined();
+  });
+});
 
 // =============================================================================
 // isTaxJarConfigured
@@ -371,30 +394,59 @@ describe('calculateTax - Local Calculation', () => {
       expect(generalResult.taxAmount).toBeGreaterThan(0);
     });
 
-    it('should apply reduced rate for groceries in IL', async () => {
-      const generalRequest: TaxCalculationRequest = {
+    it('should apply reduced (local-only ~1%) rate for groceries in IL', async () => {
+      // Illinois eliminated its 1% STATE grocery tax effective Jan 1, 2026;
+      // only an optional ~1% local grocery tax remains. Grocery tax should now be
+      // a small fraction of the general rate, NOT ~50% (the old, stale value).
+      const generalResult = await calculateTax({
         amount: 100,
         toAddress: { state: 'IL' },
         category: 'general',
-      };
-      
-      const groceryRequest: TaxCalculationRequest = {
+      });
+      const groceryResult = await calculateTax({
         amount: 100,
         toAddress: { state: 'IL' },
         category: 'food_grocery',
-      };
-      
-      const generalResult = await calculateTax(generalRequest);
-      const groceryResult = await calculateTax(groceryRequest);
-      
-      // IL has reduced rate for groceries (50% of normal)
-      // So grocery tax should be roughly half of general tax
+      });
+
       expect(groceryResult.taxAmount).toBeLessThan(generalResult.taxAmount);
       expect(groceryResult.taxAmount).toBeGreaterThan(0);
-      
-      // Check it's approximately half
+      // Effective grocery rate should be ~1% of the amount ($100 -> ~$1).
+      expect(groceryResult.taxAmount).toBeCloseTo(1.0, 0);
+      // And clearly well below half of the general tax.
       const ratio = groceryResult.taxAmount / generalResult.taxAmount;
-      expect(ratio).toBeCloseTo(0.5, 1);
+      expect(ratio).toBeLessThan(0.2);
+    });
+
+    it('should apply flat ~1% local rate for groceries in VA', async () => {
+      // Virginia removed the state grocery tax (2023); groceries are taxed at a
+      // flat 1% local rate statewide.
+      const groceryResult = await calculateTax({
+        amount: 100,
+        toAddress: { state: 'VA' },
+        category: 'food_grocery',
+      });
+      // ~1% of $100 -> ~$1.
+      expect(groceryResult.taxAmount).toBeCloseTo(1.0, 0);
+      expect(groceryResult.taxAmount).toBeGreaterThan(0);
+    });
+
+    it('should tax groceries at local-only rate in KS (0% state as of 2025)', async () => {
+      const generalResult = await calculateTax({
+        amount: 100,
+        toAddress: { state: 'KS' },
+        category: 'general',
+      });
+      const groceryResult = await calculateTax({
+        amount: 100,
+        toAddress: { state: 'KS' },
+        category: 'food_grocery',
+      });
+      // State food tax is 0%; only local (~2.19%) remains, so grocery tax is
+      // lower than general but not zero.
+      expect(groceryResult.taxAmount).toBeGreaterThan(0);
+      expect(groceryResult.taxAmount).toBeLessThan(generalResult.taxAmount);
+      expect(groceryResult.taxAmount).toBeCloseTo(2.19, 0);
     });
 
     it('should not apply category modifiers for states without exemptions', async () => {
@@ -428,8 +480,8 @@ describe('calculateTax - Local Calculation', () => {
       
       const result = await calculateTax(tnRequest);
       
-      // TN combined rate is 9.55%, so tax on $100 should be ~$9.55
-      expect(result.taxAmount).toBeCloseTo(9.55, 1);
+      // TN combined rate is 9.61%, so tax on $100 should be ~$9.61
+      expect(result.taxAmount).toBeCloseTo(9.61, 1);
     });
 
     it('should calculate correctly for low-tax states', async () => {

@@ -1,5 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { exchangeCodeForToken, saveShopifyConnection } from '@/lib/platforms/shopify';
+import {
+  exchangeCodeForToken,
+  saveShopifyConnection,
+  normalizeShopDomain,
+  isValidShopDomain,
+  verifyShopifyHmac,
+} from '@/lib/platforms/shopify';
 import { cookies } from 'next/headers';
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://sails.tax';
@@ -21,6 +27,22 @@ export async function GET(request: NextRequest) {
     if (!code || !shop || !state) {
       return NextResponse.redirect(
         `${APP_URL}/settings?error=missing_params&tab=platforms`
+      );
+    }
+
+    // Validate the shop domain format before trusting it anywhere.
+    const shopDomain = normalizeShopDomain(shop);
+    if (!isValidShopDomain(shopDomain)) {
+      return NextResponse.redirect(
+        `${APP_URL}/settings?error=invalid_shop&tab=platforms`
+      );
+    }
+
+    // Verify Shopify's HMAC signature over the query params. This proves the
+    // callback genuinely came from Shopify and was not forged/tampered.
+    if (!verifyShopifyHmac(searchParams)) {
+      return NextResponse.redirect(
+        `${APP_URL}/settings?error=invalid_hmac&tab=platforms`
       );
     }
 
@@ -50,11 +72,19 @@ export async function GET(request: NextRequest) {
       );
     }
 
+    // Ensure the shop returned by Shopify matches the one we started the flow
+    // with. Blocks an attacker from swapping in a different store.
+    if (normalizeShopDomain(oauthData.shop) !== shopDomain) {
+      return NextResponse.redirect(
+        `${APP_URL}/settings?error=shop_mismatch&tab=platforms`
+      );
+    }
+
     // Clear the OAuth state cookie
     cookieStore.delete('shopify_oauth_state');
 
     // Exchange code for access token
-    const { accessToken, error: tokenError } = await exchangeCodeForToken(shop, code);
+    const { accessToken, error: tokenError } = await exchangeCodeForToken(shopDomain, code);
     
     if (tokenError || !accessToken) {
       console.error('Shopify token exchange error:', tokenError);
@@ -66,7 +96,7 @@ export async function GET(request: NextRequest) {
     // Save the connection
     const { success, error: saveError } = await saveShopifyConnection(
       oauthData.userId,
-      shop,
+      shopDomain,
       accessToken
     );
 

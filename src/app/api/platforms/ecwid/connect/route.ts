@@ -1,15 +1,16 @@
 /**
  * Ecwid Connect API
- * 
+ *
  * POST /api/platforms/ecwid/connect
- * 
+ *
  * Validates credentials and saves connection to database.
  */
 
 import { NextRequest, NextResponse } from 'next/server';
 import { getCurrentUser } from '@/lib/auth';
 import { validateCredentials, saveConnection } from '@/lib/platforms/ecwid';
-import { userCanConnectPlatform, tierGateError } from '@/lib/plans';
+import { userCanConnectPlatform, tierGateError, checkPlatformLimit, platformLimitError } from '@/lib/plans';
+import { getUserConnections } from '@/lib/platforms';
 
 export async function POST(request: NextRequest) {
   try {
@@ -22,11 +23,22 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Tier gate: Ecwid requires Pro or higher
+    // Tier gate (every tier may connect platforms; kept as defense-in-depth)
     const access = userCanConnectPlatform(user, 'ecwid');
     if (!access.allowed) {
       return NextResponse.json(
         tierGateError(access.userPlan, access.requiredPlan, 'platform_ecwid'),
+        { status: 403 }
+      );
+    }
+
+    // Platform-connection cap (count-based). Only blocks NEW connections once
+    // the user is at/over their tier's cap; never touches existing connections.
+    const connectionCount = (await getUserConnections(user.id)).length;
+    const capCheck = checkPlatformLimit(access.userPlan, connectionCount);
+    if (!capCheck.allowed) {
+      return NextResponse.json(
+        platformLimitError(access.userPlan, capCheck.limit, capCheck.currentCount, capCheck.upgradeNeeded),
         { status: 403 }
       );
     }
@@ -58,8 +70,8 @@ export async function POST(request: NextRequest) {
 
     if (!validation.valid) {
       return NextResponse.json(
-        { 
-          error: 'Invalid credentials', 
+        {
+          error: 'Invalid credentials',
           details: validation.error,
           hint: 'Make sure your Store ID and API Token are correct. Find them in Ecwid Admin → Settings → API → Access tokens.'
         },
@@ -68,8 +80,8 @@ export async function POST(request: NextRequest) {
     }
 
     // Get store name from profile if not provided
-    const finalStoreName = storeName || 
-      validation.storeInfo?.settings?.storeName || 
+    const finalStoreName = storeName ||
+      validation.storeInfo?.settings?.storeName ||
       validation.storeInfo?.account?.accountName ||
       'Ecwid Store';
 

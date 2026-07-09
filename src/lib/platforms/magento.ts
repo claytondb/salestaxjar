@@ -10,6 +10,7 @@
  */
 
 import { prisma } from '../prisma';
+import { assertPublicStoreUrl } from './url-guard';
 
 // =============================================================================
 // Types
@@ -137,21 +138,31 @@ export interface MagentoStoreConfig {
 // =============================================================================
 
 /**
- * Normalize store URL to ensure proper format
+ * Normalize store URL to ensure proper format.
+ *
+ * SSRF guard: forces https and rejects internal hosts (localhost,
+ * private/loopback/link-local IPs, and the cloud metadata endpoint) via the
+ * shared assertPublicStoreUrl() helper, since this URL becomes a server-side
+ * fetch target.
  */
 function normalizeStoreUrl(url: string): string {
   let normalized = url.trim();
-  
+
   // Remove trailing slash
   if (normalized.endsWith('/')) {
     normalized = normalized.slice(0, -1);
   }
-  
-  // Ensure https
-  if (!normalized.startsWith('http://') && !normalized.startsWith('https://')) {
+
+  // Force https (upgrade http, add scheme when missing)
+  if (normalized.startsWith('http://')) {
+    normalized = 'https://' + normalized.slice('http://'.length);
+  } else if (!normalized.startsWith('https://')) {
     normalized = 'https://' + normalized;
   }
-  
+
+  // Reject internal / SSRF targets. Throws Error('Invalid store URL').
+  assertPublicStoreUrl(normalized);
+
   return normalized;
 }
 

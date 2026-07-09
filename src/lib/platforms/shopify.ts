@@ -4,6 +4,7 @@
  * Handles OAuth flow and API interactions with Shopify stores
  */
 
+import crypto from 'crypto';
 import { prisma } from '../prisma';
 
 // Shopify API Configuration
@@ -74,19 +75,65 @@ export async function exchangeCodeForToken(
 /**
  * Normalize shop domain (handle various input formats)
  */
-function normalizeShopDomain(shop: string): string {
+export function normalizeShopDomain(shop: string): string {
   // Remove protocol if present
   let domain = shop.replace(/^https?:\/\//, '');
-  
+
   // Remove trailing slash
   domain = domain.replace(/\/$/, '');
-  
+
+  // Lowercase for consistent comparison / validation
+  domain = domain.trim().toLowerCase();
+
   // Add .myshopify.com if not present
   if (!domain.includes('.')) {
     domain = `${domain}.myshopify.com`;
   }
-  
+
   return domain;
+}
+
+/**
+ * Validate that a (normalized) shop domain is a legitimate *.myshopify.com host.
+ * Prevents open-redirect / SSRF via an attacker-controlled `shop` param.
+ */
+export function isValidShopDomain(shop: string): boolean {
+  return /^[a-z0-9][a-z0-9-]*\.myshopify\.com$/.test(shop);
+}
+
+/**
+ * Verify the HMAC signature Shopify appends to OAuth callbacks.
+ *
+ * Shopify signs all query params (except `hmac` and `signature`) with the app
+ * secret. We rebuild the message (sorted `key=value` pairs joined by `&`),
+ * recompute HMAC-SHA256, and compare in constant time. Returns false if the
+ * secret is unconfigured, the hmac is missing, or verification fails.
+ */
+export function verifyShopifyHmac(searchParams: URLSearchParams): boolean {
+  if (!SHOPIFY_API_SECRET) return false;
+
+  const providedHmac = searchParams.get('hmac');
+  if (!providedHmac) return false;
+
+  const pairs: string[] = [];
+  for (const [key, value] of searchParams.entries()) {
+    if (key === 'hmac' || key === 'signature') continue;
+    pairs.push(`${key}=${value}`);
+  }
+  pairs.sort();
+  const message = pairs.join('&');
+
+  const computed = crypto
+    .createHmac('sha256', SHOPIFY_API_SECRET)
+    .update(message)
+    .digest('hex');
+
+  const computedBuf = Buffer.from(computed, 'utf8');
+  const providedBuf = Buffer.from(providedHmac, 'utf8');
+
+  if (computedBuf.length !== providedBuf.length) return false;
+
+  return crypto.timingSafeEqual(computedBuf, providedBuf);
 }
 
 // =============================================================================

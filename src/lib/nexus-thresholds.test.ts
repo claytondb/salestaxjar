@@ -134,5 +134,59 @@ describe('nexus-thresholds', () => {
       expect(result.status).toBe('approaching') // 80% > 75% threshold
       expect(result.highestPercentage).toBe(80)
     })
+
+    describe('AND-logic states (CT, NY)', () => {
+      // CT and NY require BOTH the sales AND transaction thresholds to be met.
+      // Source: Sales Tax Institute / Avalara -- CT and NY are the only two AND states.
+      const ctThreshold = THRESHOLD_BY_STATE['CT'] // $100K AND 200 transactions
+      const nyThreshold = THRESHOLD_BY_STATE['NY'] // $500K AND 100 transactions
+
+      it('should NOT be exceeded when only the sales threshold is met (NY)', () => {
+        // $600K sales (120%) but only 80 transactions (80%) -> both not met
+        const result = calculateExposureStatus(600000, 80, nyThreshold)
+        expect(result.salesPercentage).toBe(120)
+        expect(result.transactionPercentage).toBe(80)
+        // Driven by the LOWER percentage (80%) -> approaching, NOT exceeded
+        expect(result.highestPercentage).toBe(80)
+        expect(result.status).toBe('approaching')
+      })
+
+      it('should NOT be exceeded when only the transaction threshold is met (CT)', () => {
+        // 200 transactions (100%) but only $50K sales (50%) -> both not met
+        const result = calculateExposureStatus(50000, 200, ctThreshold)
+        expect(result.salesPercentage).toBe(50)
+        expect(result.transactionPercentage).toBe(100)
+        expect(result.highestPercentage).toBe(50)
+        expect(result.status).toBe('safe')
+      })
+
+      it('should be exceeded only when BOTH thresholds are met (CT)', () => {
+        const result = calculateExposureStatus(100000, 200, ctThreshold)
+        expect(result.salesPercentage).toBe(100)
+        expect(result.transactionPercentage).toBe(100)
+        expect(result.highestPercentage).toBe(100)
+        expect(result.status).toBe('exceeded')
+      })
+    })
+  })
+
+  describe('repealed transaction thresholds (sales-only states)', () => {
+    // These states repealed their 200-transaction threshold and now use a
+    // sales-dollar test only. Setting a high transaction count must NOT trigger nexus.
+    // Sources: Avalara "States eliminating economic nexus transaction thresholds";
+    // Sales Tax Institute state guides.
+    const repealed = ['ME', 'SD', 'LA', 'IN', 'WY', 'NC', 'IL', 'UT']
+
+    it.each(repealed)('%s should have a null transaction threshold', (code) => {
+      expect(THRESHOLD_BY_STATE[code].transactionThreshold).toBeNull()
+    })
+
+    it.each(repealed)('%s should not be exceeded on transactions alone', (code) => {
+      const threshold = THRESHOLD_BY_STATE[code]
+      // Well below the sales threshold, but a very high transaction count.
+      const result = calculateExposureStatus(10000, 1000, threshold)
+      expect(result.transactionPercentage).toBe(0)
+      expect(result.status).toBe('safe')
+    })
   })
 })

@@ -5,20 +5,21 @@ import { getCurrentUser } from '@/lib/auth';
 // Admin-only endpoint to add beta users
 // For now, we'll use a simple secret key check
 // In production, you'd want proper admin auth
-
-const ADMIN_SECRET = process.env.BETA_ADMIN_SECRET || 'sails-beta-2026';
+// NOTE: If BETA_ADMIN_SECRET is not configured, the secret path fails closed
+// (no request is ever authorized via the secret).
 
 export async function POST(request: NextRequest) {
   try {
     const authHeader = request.headers.get('Authorization');
     const providedSecret = authHeader?.replace('Bearer ', '');
+    const adminSecret = process.env.BETA_ADMIN_SECRET;
 
-    // Check admin secret
-    if (providedSecret !== ADMIN_SECRET) {
+    // Check admin secret (fail closed when the secret is not configured)
+    if (!adminSecret || providedSecret !== adminSecret) {
       // Also allow logged-in admin users (you as the owner)
       const user = await getCurrentUser();
       const adminEmails = ['ghwst.vr@gmail.com']; // Add your email(s)
-      
+
       if (!user?.email || !adminEmails.includes(user.email)) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
       }
@@ -72,11 +73,13 @@ export async function GET(request: NextRequest) {
   try {
     const authHeader = request.headers.get('Authorization');
     const providedSecret = authHeader?.replace('Bearer ', '');
+    const adminSecret = process.env.BETA_ADMIN_SECRET;
 
-    if (providedSecret !== ADMIN_SECRET) {
+    // Check admin secret (fail closed when the secret is not configured)
+    if (!adminSecret || providedSecret !== adminSecret) {
       const user = await getCurrentUser();
       const adminEmails = ['ghwst.vr@gmail.com'];
-      
+
       if (!user?.email || !adminEmails.includes(user.email)) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
       }

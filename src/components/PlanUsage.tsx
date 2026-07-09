@@ -76,7 +76,7 @@ export default function PlanUsage() {
     );
   }
 
-  // Unlimited plan (business)
+  // Unlimited plan (enterprise)
   if (usage.orders.limit === null) {
     return (
       <div className="card-theme rounded-xl p-6">

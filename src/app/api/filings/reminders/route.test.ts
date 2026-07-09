@@ -76,9 +76,9 @@ describe('GET /api/filings/reminders — auth', () => {
     expect(res.status).toBe(200);
   });
 
-  it('accepts authenticated user without cron secret', async () => {
+  it('accepts authenticated admin user without cron secret', async () => {
     vi.mocked(getCurrentUser).mockResolvedValue({
-      id: 'user-1', email: 'a@b.com', name: 'A', emailVerified: true,
+      id: 'user-1', email: 'david@sails.tax', name: 'A', emailVerified: true,
       createdAt: new Date(), updatedAt: new Date(),
       passwordHash: null, googleId: null, isBeta: false, subscriptionTier: 'free',
       subscriptionStatus: null, stripeCustomerId: null, stripeSubscriptionId: null,
@@ -87,6 +87,21 @@ describe('GET /api/filings/reminders — auth', () => {
     const req = makeRequest({});
     const res = await GET(req);
     expect(res.status).toBe(200);
+  });
+
+  it('returns 403 for authenticated non-admin user without cron secret', async () => {
+    vi.mocked(getCurrentUser).mockResolvedValue({
+      id: 'user-2', email: 'a@b.com', name: 'A', emailVerified: true,
+      createdAt: new Date(), updatedAt: new Date(),
+      passwordHash: null, googleId: null, isBeta: false, subscriptionTier: 'free',
+      subscriptionStatus: null, stripeCustomerId: null, stripeSubscriptionId: null,
+      currentPeriodEnd: null,
+    });
+    const req = makeRequest({});
+    const res = await GET(req);
+    expect(res.status).toBe(403);
+    const body = await res.json();
+    expect(body.error).toBe('Forbidden');
   });
 });
 
@@ -178,9 +193,9 @@ describe('GET /api/filings/reminders — missing CRON_SECRET env', () => {
     vi.mocked(processBatchReminders).mockResolvedValue(emptyResult());
   });
 
-  it('falls back to user auth when CRON_SECRET is not set', async () => {
+  it('falls back to admin user auth when CRON_SECRET is not set', async () => {
     vi.mocked(getCurrentUser).mockResolvedValue({
-      id: 'u1', email: 'a@b.com', name: 'A', emailVerified: true,
+      id: 'u1', email: 'david@sails.tax', name: 'A', emailVerified: true,
       createdAt: new Date(), updatedAt: new Date(),
       passwordHash: null, googleId: null, isBeta: false, subscriptionTier: 'free',
       subscriptionStatus: null, stripeCustomerId: null, stripeSubscriptionId: null,

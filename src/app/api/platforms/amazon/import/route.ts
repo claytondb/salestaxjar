@@ -147,7 +147,8 @@ export async function POST(request: NextRequest) {
       try {
         await prisma.importedOrder.upsert({
           where: {
-            platform_platformOrderId: {
+            userId_platform_platformOrderId: {
+              userId: user.id,
               platform: 'amazon',
               platformOrderId: order.orderId,
             },

@@ -14,6 +14,7 @@ import { validateApiKey } from '@/lib/apikeys';
 import { calculateTax } from '@/lib/taxjar';
 import { getStateByCode } from '@/data/taxRates';
 import { prisma } from '@/lib/prisma';
+import { checkTaxCalcRateLimit, rateLimitHeaders } from '@/lib/ratelimit';
 import type { ProductCategory } from '@/types';
 
 // Line item interface for tax calculation requests
@@ -67,7 +68,21 @@ export async function POST(request: NextRequest) {
         { status: 403, headers: corsHeaders }
       );
     }
-    
+
+    // Rate limit keyed on the API key id (fall back to IP if somehow unavailable)
+    const rateLimitKey =
+      validation.keyId ||
+      request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
+      request.headers.get('x-real-ip') ||
+      'anonymous';
+    const rateLimit = await checkTaxCalcRateLimit(rateLimitKey);
+    if (!rateLimit.success) {
+      return NextResponse.json(
+        { error: 'Rate limit exceeded. Please slow down and try again shortly.' },
+        { status: 429, headers: { ...corsHeaders, ...rateLimitHeaders(rateLimit) } }
+      );
+    }
+
     // Fetch user's business and nexus states for TaxJar
     let nexusAddresses: Array<{ state: string; zip?: string; city?: string }> = [];
     let businessAddress: { state: string; zip?: string; city?: string } | undefined;
@@ -132,6 +147,7 @@ export async function POST(request: NextRequest) {
       shipping,
       line_items,
       product_tax_code,
+      category,
       // From address (optional, for origin-based states)
       from_state: snakeFromState,
       fromState: camelFromState,
@@ -184,7 +200,21 @@ export async function POST(request: NextRequest) {
     if (assumeNexusEverywhere) {
       nexusAddresses.push({ state: to_state.toUpperCase() });
     }
-    
+
+    // Resolve the product taxability to pass through to TaxJar.
+    // An explicit TaxJar product_tax_code (top-level or on the first line item)
+    // wins; otherwise fall back to the app's product `category` enum, which
+    // src/lib/taxjar.ts maps to the correct TaxJar code. Passing `category`
+    // through also lets the local fallback apply category modifiers.
+    const firstLineItemCode = Array.isArray(line_items)
+      ? (line_items as TaxLineItem[])[0]?.product_tax_code
+      : undefined;
+    const explicitTaxCode =
+      (typeof product_tax_code === 'string' && product_tax_code.trim())
+        ? product_tax_code.trim()
+        : (firstLineItemCode || undefined);
+    const productCategory = (category as ProductCategory) || 'general';
+
     // Calculate tax
     const result = await calculateTax({
       amount,
@@ -196,7 +226,8 @@ export async function POST(request: NextRequest) {
         country: to_country || 'US',
       },
       fromAddress: effectiveFromAddress,
-      category: (product_tax_code as ProductCategory) || 'general',
+      category: productCategory,
+      productTaxCode: explicitTaxCode,
       nexusAddresses: nexusAddresses.length > 0 ? nexusAddresses : undefined,
     });
     
@@ -215,7 +246,9 @@ export async function POST(request: NextRequest) {
       amount_to_collect: result.taxAmount,
       rate: result.rate,
       has_nexus: true,
-      freight_taxable: false,
+      // Reflect the actual TaxJar determination of whether shipping is taxable
+      // in this jurisdiction (falls back to false for the local estimate path).
+      freight_taxable: result.freightTaxable ?? false,
       tax_source: result.source,
       jurisdictions: {
         state: to_state.toUpperCase(),

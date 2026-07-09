@@ -323,6 +323,50 @@ describe('POST /api/v1/tax/calculate - response format', () => {
 });
 
 // =============================================================================
+// POST /api/v1/tax/calculate - Product taxability & freight
+// =============================================================================
+
+describe('POST /api/v1/tax/calculate - product taxability & freight', () => {
+  it('passes an explicit product_tax_code through to calculateTax', async () => {
+    await POST(makeRequest({ to_state: 'CA', amount: 100, product_tax_code: '20010' }, 'Bearer stax_key'));
+    expect(mockCalculateTax).toHaveBeenCalledWith(
+      expect.objectContaining({ productTaxCode: '20010' })
+    );
+  });
+
+  it('derives the product tax code from the first line item', async () => {
+    await POST(makeRequest({
+      to_state: 'CA',
+      amount: 100,
+      line_items: [{ unit_price: 100, quantity: 1, product_tax_code: '40030' }],
+    }, 'Bearer stax_key'));
+    expect(mockCalculateTax).toHaveBeenCalledWith(
+      expect.objectContaining({ productTaxCode: '40030' })
+    );
+  });
+
+  it('passes the app category enum through when no explicit code is given', async () => {
+    await POST(makeRequest({ to_state: 'CA', amount: 100, category: 'clothing' }, 'Bearer stax_key'));
+    expect(mockCalculateTax).toHaveBeenCalledWith(
+      expect.objectContaining({ category: 'clothing' })
+    );
+  });
+
+  it('reflects freight_taxable from the calculateTax result', async () => {
+    mockCalculateTax.mockResolvedValueOnce({ ...mockTaxResult, freightTaxable: true });
+    const res = await POST(makeRequest({ to_state: 'CA', amount: 100 }, 'Bearer stax_key'));
+    const data = await res.json();
+    expect(data.tax.freight_taxable).toBe(true);
+  });
+
+  it('defaults freight_taxable to false when the result omits it', async () => {
+    const res = await POST(makeRequest({ to_state: 'CA', amount: 100 }, 'Bearer stax_key'));
+    const data = await res.json();
+    expect(data.tax.freight_taxable).toBe(false);
+  });
+});
+
+// =============================================================================
 // POST /api/v1/tax/calculate - Error Handling
 // =============================================================================
 

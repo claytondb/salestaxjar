@@ -6,6 +6,7 @@
  */
 
 import { prisma } from '../prisma';
+import { assertPublicStoreUrl } from './url-guard';
 
 // =============================================================================
 // Types
@@ -77,41 +78,57 @@ export interface WooCommerceStoreInfo {
  */
 export function normalizeStoreUrl(url: string): string {
   let normalized = url.trim().toLowerCase();
-  
-  // Add https if no protocol
-  if (!normalized.startsWith('http://') && !normalized.startsWith('https://')) {
+
+  // Force https. Upgrade insecure http:// and add the scheme when missing so
+  // credentials are never sent in cleartext.
+  if (normalized.startsWith('http://')) {
+    normalized = 'https://' + normalized.slice('http://'.length);
+  } else if (!normalized.startsWith('https://')) {
     normalized = 'https://' + normalized;
   }
-  
+
   // Remove trailing slash
   normalized = normalized.replace(/\/+$/, '');
-  
+
+  // SSRF guard: reject localhost, *.local, and private/loopback/link-local
+  // targets before this URL is ever used to build a fetch request.
+  assertPublicStoreUrl(normalized);
+
   return normalized;
 }
 
 /**
- * Build WooCommerce API URL with authentication
+ * Build WooCommerce API URL (non-credential query params only).
+ *
+ * Credentials are intentionally NOT placed in the query string — they are sent
+ * via an HTTP Basic Authorization header (see buildAuthHeader) so the live
+ * consumer secret never leaks into access logs, Sentry breadcrumbs, or referrers.
  */
 function buildApiUrl(
-  storeUrl: string, 
-  endpoint: string, 
-  consumerKey: string, 
-  consumerSecret: string,
+  storeUrl: string,
+  endpoint: string,
   params: Record<string, string> = {}
 ): string {
   const baseUrl = `${normalizeStoreUrl(storeUrl)}/wp-json/wc/v3/${endpoint}`;
   const url = new URL(baseUrl);
-  
-  // Add auth params (WooCommerce accepts query string auth for HTTPS)
-  url.searchParams.set('consumer_key', consumerKey);
-  url.searchParams.set('consumer_secret', consumerSecret);
-  
-  // Add additional params
+
+  // Add non-credential params (per_page, after, before, status, page, ...)
   for (const [key, value] of Object.entries(params)) {
     url.searchParams.set(key, value);
   }
-  
+
   return url.toString();
+}
+
+/**
+ * Build an HTTP Basic auth header from WooCommerce consumer credentials.
+ * WooCommerce supports Basic auth over HTTPS, which keeps the key/secret out
+ * of the URL. Runtime is Node (no `runtime = 'edge'` in the API routes), so
+ * Buffer is available.
+ */
+function buildAuthHeader(consumerKey: string, consumerSecret: string): string {
+  const token = Buffer.from(`${consumerKey}:${consumerSecret}`).toString('base64');
+  return `Basic ${token}`;
 }
 
 /**
@@ -124,13 +141,14 @@ async function wooRequest<T>(
   consumerSecret: string,
   params: Record<string, string> = {}
 ): Promise<T> {
-  const url = buildApiUrl(storeUrl, endpoint, consumerKey, consumerSecret, params);
-  
+  const url = buildApiUrl(storeUrl, endpoint, params);
+
   const response = await fetch(url, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
       'User-Agent': 'Sails/1.0',
+      'Authorization': buildAuthHeader(consumerKey, consumerSecret),
     },
   });
   

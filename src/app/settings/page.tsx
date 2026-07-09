@@ -42,34 +42,34 @@ const businessTypes = [
 ];
 
 const plans = [
-  { 
-    id: 'free', 
-    name: 'Free', 
-    price: 0, 
+  {
+    id: 'free',
+    name: 'Free',
+    price: 0,
     tier: 0,
-    features: ['Nexus monitoring (all 50 states)', 'Unlimited calculations', 'Calculation history + CSV export', 'Email support']
+    features: ['Nexus monitoring (all 50 states)', 'Unlimited calculations', '1 platform integration', 'Calculation history + CSV export', 'Email support']
   },
-  { 
-    id: 'starter', 
-    name: 'Starter', 
-    price: 9, 
+  {
+    id: 'starter',
+    name: 'Starter',
+    price: 9,
     tier: 1,
-    features: ['All platform integrations', '500 orders/month', 'Nexus exposure alerts', 'Email reminders']
+    features: ['2 platform integrations', '500 orders/month', 'Nexus exposure alerts', 'Email reminders']
   },
-  { 
-    id: 'pro', 
-    name: 'Pro', 
-    price: 29, 
+  {
+    id: 'pro',
+    name: 'Pro',
+    price: 29,
     tier: 2,
-    features: ['5,000 orders/month', 'Tax calculation API', 'Priority email support'],
+    features: ['3 platform integrations', '5,000 orders/month', 'Tax calculation API', 'Priority email support'],
     popular: true
   },
-  { 
-    id: 'business', 
-    name: 'Business', 
-    price: 59, 
+  {
+    id: 'enterprise',
+    name: 'Enterprise',
+    price: 79,
     tier: 3,
-    features: ['Unlimited orders', 'Highest priority support', 'Auto-filing (coming soon)']
+    features: ['Unlimited platform integrations', 'Unlimited orders', 'Highest priority support', 'Auto-filing (coming soon)']
   },
 ];
 
@@ -1021,8 +1021,8 @@ function SettingsPageContent() {
                   {user.isBetaUser ? (
                     <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-lg p-4 mb-6">
                       <p className="text-emerald-400 text-sm">
-                        Thank you for being part of our Beta test. You have lifetime use of the Sails Pro account. 
-                        Should you decide to upgrade to Business at any point, it will be offered at a discounted rate ($30/mo), 
+                        Thank you for being part of our Beta test. You have lifetime use of the Sails Pro account.
+                        Should you decide to upgrade to Enterprise at any point, it will be offered at a discounted rate ($30/mo),
                         and you can downgrade to the Pro account at any time (free for you).
                       </p>
                     </div>
@@ -1041,9 +1041,9 @@ function SettingsPageContent() {
                       
                       // Beta user logic
                       const isBetaUser = user.isBetaUser;
-                      const isBetaDisabled = isBetaUser && plan.id !== 'pro' && plan.id !== 'business';
+                      const isBetaDisabled = isBetaUser && plan.id !== 'pro' && plan.id !== 'enterprise';
                       const isBetaPro = isBetaUser && plan.id === 'pro';
-                      const isBetaBusinessUpgrade = isBetaUser && plan.id === 'business';
+                      const isBetaBusinessUpgrade = isBetaUser && plan.id === 'enterprise';
                       
                       return (
                         <div 

@@ -88,9 +88,9 @@ These services gracefully degrade if not configured:
 | `STRIPE_SECRET_KEY` | Stripe secret API key | Demo billing mode |
 | `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | Stripe publishable key | - |
 | `STRIPE_WEBHOOK_SECRET` | Stripe webhook signing secret | - |
-| `STRIPE_STARTER_PRICE_ID` | Stripe Price ID for Starter plan | - |
-| `STRIPE_GROWTH_PRICE_ID` | Stripe Price ID for Growth plan | - |
-| `STRIPE_ENTERPRISE_PRICE_ID` | Stripe Price ID for Enterprise plan | - |
+| `STRIPE_STARTER_PRICE_ID` | Stripe Price ID for Starter plan ($9/mo) | - |
+| `STRIPE_PRO_PRICE_ID` | Stripe Price ID for Pro plan ($29/mo) | - |
+| `STRIPE_ENTERPRISE_PRICE_ID` | Stripe Price ID for Enterprise plan ($79/mo). Falls back to legacy `STRIPE_BUSINESS_PRICE_ID` during transition | - |
 | `TAXJAR_API_KEY` | TaxJar API key | Local tax rates |
 | `TAXJAR_API_URL` | TaxJar API URL (sandbox or production) | Production URL |
 | `RESEND_API_KEY` | Resend API key for emails | Console logging |

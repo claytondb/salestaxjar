@@ -427,6 +427,26 @@ describe('POST /api/auth/signup - duplicate user handling', () => {
     expect(data.error).toBe('An account with this email already exists');
   });
 
+  it('should return 400 when create hits a unique-constraint race (P2002)', async () => {
+    // Pre-check passes (no existing user), but the DB create loses the race.
+    vi.mocked(prisma.user.findUnique).mockResolvedValue(null);
+    vi.mocked(prisma.user.create).mockRejectedValue(
+      Object.assign(new Error('Unique constraint failed'), { code: 'P2002' })
+    );
+
+    const request = createSignupRequest({
+      email: 'race@example.com',
+      password: 'SecurePass123!',
+      name: 'Race User',
+    });
+
+    const response = await POST(request);
+    const data = await response.json();
+
+    expect(response.status).toBe(400);
+    expect(data.error).toBe('An account with this email already exists');
+  });
+
   it('should not reveal if unverified account exists', async () => {
     vi.mocked(prisma.user.findUnique).mockResolvedValue({
       id: 'existing-user',

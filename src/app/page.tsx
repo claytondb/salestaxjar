@@ -574,8 +574,8 @@ export default function Home() {
               <div className="text-theme-muted text-sm">Pro — full-time sellers</div>
             </div>
             <div className="card-theme rounded-xl p-6">
-              <div className="text-theme-accent font-bold text-2xl mb-1">$59/mo</div>
-              <div className="text-theme-muted text-sm">Business — high volume</div>
+              <div className="text-theme-accent font-bold text-2xl mb-1">$79/mo</div>
+              <div className="text-theme-muted text-sm">Enterprise — high volume</div>
             </div>
           </div>
 

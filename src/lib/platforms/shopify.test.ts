@@ -113,6 +113,68 @@ describe('getAuthorizationUrl', () => {
   });
 });
 
+describe('isValidShopDomain', () => {
+  it('should accept a well-formed myshopify.com domain', async () => {
+    const { isValidShopDomain } = await import('./shopify');
+    expect(isValidShopDomain('mystore.myshopify.com')).toBe(true);
+    expect(isValidShopDomain('my-store-123.myshopify.com')).toBe(true);
+  });
+
+  it('should reject non-myshopify domains and spoofing attempts', async () => {
+    const { isValidShopDomain } = await import('./shopify');
+    expect(isValidShopDomain('evil.com')).toBe(false);
+    expect(isValidShopDomain('mystore.myshopify.com.evil.com')).toBe(false);
+    expect(isValidShopDomain('mystore.myshopify.com/admin')).toBe(false);
+    expect(isValidShopDomain('.myshopify.com')).toBe(false);
+    expect(isValidShopDomain('MyStore.myshopify.com')).toBe(false); // must be pre-normalized/lowercased
+    expect(isValidShopDomain('localhost')).toBe(false);
+  });
+});
+
+describe('verifyShopifyHmac', () => {
+  beforeEach(() => {
+    process.env.SHOPIFY_API_SECRET = 'test-secret';
+  });
+
+  async function signed(params: Record<string, string>, secret = 'test-secret') {
+    const crypto = await import('crypto');
+    const sorted = Object.entries(params)
+      .map(([k, v]) => `${k}=${v}`)
+      .sort()
+      .join('&');
+    const hmac = crypto
+      .createHmac('sha256', secret)
+      .update(sorted)
+      .digest('hex');
+    return new URLSearchParams({ ...params, hmac });
+  }
+
+  it('should accept a correctly signed callback', async () => {
+    const { verifyShopifyHmac } = await import('./shopify');
+    const sp = await signed({ code: 'abc', shop: 'mystore.myshopify.com', state: 'xyz', timestamp: '123' });
+    expect(verifyShopifyHmac(sp)).toBe(true);
+  });
+
+  it('should reject a tampered callback', async () => {
+    const { verifyShopifyHmac } = await import('./shopify');
+    const sp = await signed({ code: 'abc', shop: 'mystore.myshopify.com', state: 'xyz', timestamp: '123' });
+    sp.set('shop', 'attacker.myshopify.com'); // change a param after signing
+    expect(verifyShopifyHmac(sp)).toBe(false);
+  });
+
+  it('should reject when hmac is missing', async () => {
+    const { verifyShopifyHmac } = await import('./shopify');
+    expect(verifyShopifyHmac(new URLSearchParams({ code: 'abc', shop: 'mystore.myshopify.com' }))).toBe(false);
+  });
+
+  it('should reject when the secret is not configured', async () => {
+    delete process.env.SHOPIFY_API_SECRET;
+    const { verifyShopifyHmac } = await import('./shopify');
+    const sp = await signed({ code: 'abc' }, 'test-secret');
+    expect(verifyShopifyHmac(sp)).toBe(false);
+  });
+});
+
 describe('ShopifyOrder type', () => {
   it('should define required fields', () => {
     // Type check at compile time - just verify the types exist

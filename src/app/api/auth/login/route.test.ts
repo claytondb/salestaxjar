@@ -268,9 +268,10 @@ describe('POST /api/auth/login - user not found', () => {
     
     const response = await POST(request);
     const data = await response.json();
-    
+
     expect(response.status).toBe(401);
-    expect(data.error).toContain('No account found');
+    // Generic message to prevent user enumeration
+    expect(data.error).toBe('Invalid email or password');
   });
 });
 
@@ -289,12 +290,13 @@ describe('POST /api/auth/login - password verification', () => {
     
     const response = await POST(request);
     const data = await response.json();
-    
+
     expect(response.status).toBe(401);
-    expect(data.error).toContain('Incorrect password');
+    // Generic message to prevent user enumeration
+    expect(data.error).toBe('Invalid email or password');
   });
 
-  it('should include attempts remaining on wrong password', async () => {
+  it('should not leak attempts remaining on wrong password (no enumeration signal)', async () => {
     vi.mocked(checkAuthRateLimit).mockResolvedValue({
       success: true,
       limit: 10,
@@ -302,16 +304,18 @@ describe('POST /api/auth/login - password verification', () => {
       reset: Date.now() + 60000,
     });
     vi.mocked(verifyPassword).mockResolvedValue(false);
-    
+
     const request = createLoginRequest({
       email: 'test@example.com',
       password: 'wrongpassword',
     });
-    
+
     const response = await POST(request);
     const data = await response.json();
-    
-    expect(data.attemptsRemaining).toBe(7);
+
+    // Wrong-password and no-account responses must be identical
+    expect(data.error).toBe('Invalid email or password');
+    expect(data.attemptsRemaining).toBeUndefined();
   });
 
   it('should handle empty password', async () => {

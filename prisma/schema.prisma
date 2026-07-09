@@ -258,7 +258,7 @@ model PlatformConnection {
   platform     String   // shopify, amazon, etsy, woocommerce, bigcommerce, ebay, square
   platformId   String   // Store identifier (e.g., shop domain for Shopify)
   platformName String?  // Human-readable store name
-  accessToken  String   // Encrypted access token
+  accessToken  String   // Stored as-is (NOT encrypted) — see follow-up to add encryption at rest
   refreshToken String?  // For platforms that use refresh tokens
   tokenExpires DateTime?
   metadata     String?  // JSON string for additional platform-specific data
@@ -304,7 +304,7 @@ model ImportedOrder {
   createdAt            DateTime @default(now())
   updatedAt            DateTime @updatedAt
 
-  @@unique([platform, platformOrderId])
+  @@unique([userId, platform, platformOrderId])
   @@index([userId])
   @@index([platformConnectionId])
   @@index([orderDate])

@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getCurrentUser } from '@/lib/auth';
-import { getAuthorizationUrl, isShopifyConfigured } from '@/lib/platforms/shopify';
-import { userCanConnectPlatform, tierGateError } from '@/lib/plans';
+import { getAuthorizationUrl, isShopifyConfigured, normalizeShopDomain, isValidShopDomain } from '@/lib/platforms/shopify';
+import { userCanConnectPlatform, tierGateError, checkPlatformLimit, platformLimitError } from '@/lib/plans';
+import { getUserConnections } from '@/lib/platforms';
 import { v4 as uuidv4 } from 'uuid';
 import { cookies } from 'next/headers';
 
@@ -23,11 +24,22 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Tier gate: Shopify requires Starter or higher
+    // Tier gate (every tier may connect platforms; kept as defense-in-depth)
     const access = userCanConnectPlatform(user, 'shopify');
     if (!access.allowed) {
       return NextResponse.json(
         tierGateError(access.userPlan, access.requiredPlan, 'platform_shopify'),
+        { status: 403 }
+      );
+    }
+
+    // Platform-connection cap (count-based). Only blocks NEW connections once
+    // the user is at/over their tier's cap; never touches existing connections.
+    const connectionCount = (await getUserConnections(user.id)).length;
+    const capCheck = checkPlatformLimit(access.userPlan, connectionCount);
+    if (!capCheck.allowed) {
+      return NextResponse.json(
+        platformLimitError(access.userPlan, capCheck.limit, capCheck.currentCount, capCheck.upgradeNeeded),
         { status: 403 }
       );
     }
@@ -41,17 +53,26 @@ export async function GET(request: NextRequest) {
     }
 
     // Get shop from query params
-    const shop = request.nextUrl.searchParams.get('shop');
-    if (!shop) {
+    const rawShop = request.nextUrl.searchParams.get('shop');
+    if (!rawShop) {
       return NextResponse.json(
         { error: 'Missing shop parameter' },
         { status: 400 }
       );
     }
 
+    // Normalize and validate the shop domain before trusting it.
+    const shop = normalizeShopDomain(rawShop);
+    if (!isValidShopDomain(shop)) {
+      return NextResponse.json(
+        { error: 'Invalid shop domain' },
+        { status: 400 }
+      );
+    }
+
     // Generate state for CSRF protection
     const state = uuidv4();
-    
+
     // Store state and user ID in a cookie for verification in callback
     const cookieStore = await cookies();
     cookieStore.set('shopify_oauth_state', JSON.stringify({

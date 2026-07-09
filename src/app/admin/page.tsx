@@ -43,7 +43,7 @@ interface Stats {
     free: number;
     starter: number;
     pro: number;
-    business: number;
+    enterprise: number;
   };
 }
 
@@ -97,7 +97,7 @@ export default function AdminPage() {
     if (sortBy === 'newest') return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
     if (sortBy === 'oldest') return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
     if (sortBy === 'plan') {
-      const planOrder = { business: 0, pro: 1, starter: 2, free: 3 };
+      const planOrder = { enterprise: 0, pro: 1, starter: 2, free: 3 };
       return (planOrder[a.plan as keyof typeof planOrder] || 4) - (planOrder[b.plan as keyof typeof planOrder] || 4);
     }
     return 0;
@@ -105,7 +105,7 @@ export default function AdminPage() {
 
   const getPlanBadgeColor = (plan: string) => {
     switch (plan) {
-      case 'business': return 'bg-purple-500/20 text-purple-400';
+      case 'enterprise': return 'bg-purple-500/20 text-purple-400';
       case 'pro': return 'bg-blue-500/20 text-blue-400';
       case 'starter': return 'bg-green-500/20 text-green-400';
       default: return 'bg-gray-500/20 text-gray-400';
@@ -206,7 +206,7 @@ export default function AdminPage() {
                 <span className="px-2 py-1 rounded bg-gray-500/20 text-gray-400">F: {stats.planBreakdown.free}</span>
                 <span className="px-2 py-1 rounded bg-green-500/20 text-green-400">S: {stats.planBreakdown.starter}</span>
                 <span className="px-2 py-1 rounded bg-blue-500/20 text-blue-400">P: {stats.planBreakdown.pro}</span>
-                <span className="px-2 py-1 rounded bg-purple-500/20 text-purple-400">B: {stats.planBreakdown.business}</span>
+                <span className="px-2 py-1 rounded bg-purple-500/20 text-purple-400">E: {stats.planBreakdown.enterprise}</span>
               </div>
             </div>
           </div>

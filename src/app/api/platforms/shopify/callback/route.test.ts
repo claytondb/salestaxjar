@@ -19,6 +19,9 @@ import { NextRequest } from 'next/server';
 vi.mock('@/lib/platforms/shopify', () => ({
   exchangeCodeForToken: vi.fn(),
   saveShopifyConnection: vi.fn(),
+  normalizeShopDomain: vi.fn((s: string) => s.trim().toLowerCase()),
+  isValidShopDomain: vi.fn(() => true),
+  verifyShopifyHmac: vi.fn(() => true),
 }));
 
 const mockCookieGet = vi.fn();
@@ -34,7 +37,13 @@ vi.mock('next/headers', () => ({
 }));
 
 import { GET } from './route';
-import { exchangeCodeForToken, saveShopifyConnection } from '@/lib/platforms/shopify';
+import {
+  exchangeCodeForToken,
+  saveShopifyConnection,
+  normalizeShopDomain,
+  isValidShopDomain,
+  verifyShopifyHmac,
+} from '@/lib/platforms/shopify';
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
 
@@ -72,6 +81,10 @@ describe('GET /api/platforms/shopify/callback', () => {
   beforeEach(() => {
     vi.resetAllMocks();
     mockCookieGet.mockReturnValue(validCookieState());
+    // Re-establish default implementations wiped by resetAllMocks
+    vi.mocked(normalizeShopDomain).mockImplementation((s: string) => s.trim().toLowerCase());
+    vi.mocked(isValidShopDomain).mockReturnValue(true);
+    vi.mocked(verifyShopifyHmac).mockReturnValue(true);
     vi.mocked(exchangeCodeForToken).mockResolvedValue({
       accessToken: 'shpat_abc123',
       error: null,
@@ -149,6 +162,47 @@ describe('GET /api/platforms/shopify/callback', () => {
     expect(res.headers.get('location')).toBe(
       `${APP_URL}/settings?error=state_mismatch&tab=platforms`
     );
+  });
+
+  // ── Shop / HMAC validation (security) ────────────────────────────────────
+
+  it('redirects with invalid_shop when the shop domain is not a valid myshopify host', async () => {
+    vi.mocked(isValidShopDomain).mockReturnValue(false);
+
+    const res = await GET(getRequest({ ...validParams, shop: 'evil.com' }));
+
+    expect(res.status).toBe(307);
+    expect(res.headers.get('location')).toBe(
+      `${APP_URL}/settings?error=invalid_shop&tab=platforms`
+    );
+    // Must reject before ever exchanging the code (no secret leak to attacker host)
+    expect(exchangeCodeForToken).not.toHaveBeenCalled();
+  });
+
+  it('redirects with invalid_hmac when the Shopify signature does not verify', async () => {
+    vi.mocked(verifyShopifyHmac).mockReturnValue(false);
+
+    const res = await GET(getRequest(validParams));
+
+    expect(res.status).toBe(307);
+    expect(res.headers.get('location')).toBe(
+      `${APP_URL}/settings?error=invalid_hmac&tab=platforms`
+    );
+    expect(exchangeCodeForToken).not.toHaveBeenCalled();
+  });
+
+  it('redirects with shop_mismatch when the callback shop differs from the one that started the flow', async () => {
+    mockCookieGet.mockReturnValue(
+      validCookieState({ shop: 'otherstore.myshopify.com' })
+    );
+
+    const res = await GET(getRequest(validParams));
+
+    expect(res.status).toBe(307);
+    expect(res.headers.get('location')).toBe(
+      `${APP_URL}/settings?error=shop_mismatch&tab=platforms`
+    );
+    expect(exchangeCodeForToken).not.toHaveBeenCalled();
   });
 
   // ── Token exchange ───────────────────────────────────────────────────────

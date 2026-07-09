@@ -227,6 +227,54 @@ describe('POST /api/stripe/create-checkout-session - new customer', () => {
 });
 
 // =============================================================================
+// Duplicate Subscription Guard Tests
+// =============================================================================
+
+describe('POST /api/stripe/create-checkout-session - duplicate subscription guard', () => {
+  it.each(['active', 'trialing', 'past_due'])(
+    'returns 409 already_subscribed when user already has a %s subscription',
+    async (status) => {
+      vi.mocked(prisma.subscription.findUnique).mockResolvedValue({
+        ...mockSubscription,
+        stripeSubscriptionId: 'sub_existing123',
+        status,
+      } as never);
+
+      const request = createRequest({ planId: 'starter' });
+      const response = await POST(request);
+      const data = await response.json();
+
+      expect(response.status).toBe(409);
+      expect(data.code).toBe('already_subscribed');
+      expect(createCheckoutSession).not.toHaveBeenCalled();
+    }
+  );
+
+  it('still creates a session when a prior subscription was canceled', async () => {
+    vi.mocked(prisma.subscription.findUnique).mockResolvedValue({
+      ...mockSubscription,
+      stripeSubscriptionId: null,
+      status: 'canceled',
+    } as never);
+
+    const request = createRequest({ planId: 'starter' });
+    const response = await POST(request);
+
+    expect(response.status).toBe(200);
+    expect(createCheckoutSession).toHaveBeenCalled();
+  });
+
+  it('still creates a session when a customer exists but has no active subscription', async () => {
+    // Default mockSubscription has a customer ID but no stripeSubscriptionId.
+    const request = createRequest({ planId: 'starter' });
+    const response = await POST(request);
+
+    expect(response.status).toBe(200);
+    expect(createCheckoutSession).toHaveBeenCalled();
+  });
+});
+
+// =============================================================================
 // Authentication Tests
 // =============================================================================
 

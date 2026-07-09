@@ -18,12 +18,23 @@ export async function GET(request: NextRequest) {
   // Allow cron calls with secret header
   const cronSecret = request.headers.get('x-cron-secret');
   const expectedSecret = process.env.CRON_SECRET;
+  const hasValidCronSecret = !!expectedSecret && cronSecret === expectedSecret;
 
-  if (!cronSecret || !expectedSecret || cronSecret !== expectedSecret) {
-    // Fall back to user auth
+  if (!hasValidCronSecret) {
+    // Fall back to admin user auth. A plain authenticated user is NOT sufficient
+    // to trigger mass reminder emails — must be an admin.
     const user = await getCurrentUser();
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const adminEmails = (process.env.ADMIN_EMAILS || 'david@sails.tax,claytondb@gmail.com')
+      .split(',')
+      .map(s => s.trim().toLowerCase())
+      .filter(Boolean);
+
+    if (!user.email || !adminEmails.includes(user.email.toLowerCase())) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
   }
 

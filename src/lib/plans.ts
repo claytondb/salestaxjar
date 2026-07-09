@@ -1,29 +1,34 @@
 /**
  * Plan Features & Tier Gating
- * 
+ *
  * Centralized plan-checking utility for Sails.tax
- * 
+ *
  * Plan hierarchy:
- *   free → starter ($9) → pro ($29) → business ($59)
- * 
+ *   free → starter ($9) → pro ($29) → enterprise ($79)
+ *
+ * Platform-connection caps: free=1, starter=2, pro=3, enterprise=unlimited.
+ *
  * Free users get:
  *   - Nexus monitoring (all states)
  *   - Tax calculator
  *   - Calculation history + CSV export
- * 
+ *   - 1 platform connection
+ *
  * Starter adds:
- *   - ALL platform integrations
+ *   - ALL platform integrations (up to 2 connections)
  *   - Order import / sync (up to 500 orders/month)
  *   - Email deadline reminders
  *   - CSV order import
- * 
+ *
  * Pro adds:
  *   - Up to 5,000 orders/month
+ *   - Up to 3 platform connections
  *   - API key creation
  *   - Priority support
- * 
- * Business adds:
+ *
+ * Enterprise adds:
  *   - Unlimited orders
+ *   - Unlimited platform connections
  *   - Highest priority support
  *   - Early access to features
  */
@@ -32,7 +37,7 @@
 // Types
 // ---------------------------------------------------------------------------
 
-export type PlanTier = 'free' | 'starter' | 'pro' | 'business';
+export type PlanTier = 'free' | 'starter' | 'pro' | 'enterprise';
 
 export type Feature =
   // Free features
@@ -49,7 +54,7 @@ export type Feature =
   // Pro features
   | 'api_keys'
   | 'priority_support'
-  // Business features
+  // Enterprise features
   | 'auto_filing'
   | 'highest_priority_support'
   | 'early_access';
@@ -58,14 +63,26 @@ export type Feature =
 // Plan definitions
 // ---------------------------------------------------------------------------
 
-const PLAN_TIER_ORDER: PlanTier[] = ['free', 'starter', 'pro', 'business'];
+const PLAN_TIER_ORDER: PlanTier[] = ['free', 'starter', 'pro', 'enterprise'];
 
 /** Monthly order limits per plan */
 export const PLAN_ORDER_LIMITS: Record<PlanTier, number | null> = {
   free: 0,        // No order imports
   starter: 500,   // Up to 500 orders/month
   pro: 5000,      // Up to 5,000 orders/month
-  business: null,  // Unlimited
+  enterprise: null,  // Unlimited
+};
+
+/**
+ * Platform-connection caps per plan tier.
+ * `null` means unlimited. These are enforced (by connection COUNT) at every
+ * platform connect endpoint via checkPlatformLimit().
+ */
+export const PLAN_PLATFORM_LIMITS: Record<PlanTier, number | null> = {
+  free: 1,        // 1 platform connection
+  starter: 2,     // Up to 2 platform connections
+  pro: 3,         // Up to 3 platform connections
+  enterprise: null, // Unlimited
 };
 
 /** Minimum plan tier required for each feature */
@@ -87,10 +104,10 @@ const FEATURE_MINIMUM_TIER: Record<Feature, PlanTier> = {
   api_keys: 'pro',
   priority_support: 'pro',
 
-  // Business
-  auto_filing: 'business',
-  highest_priority_support: 'business',
-  early_access: 'business',
+  // Enterprise
+  auto_filing: 'enterprise',
+  highest_priority_support: 'enterprise',
+  early_access: 'enterprise',
 };
 
 // ---------------------------------------------------------------------------
@@ -104,27 +121,40 @@ export function getPlanLevel(tier: PlanTier): number {
 
 /**
  * Resolve a user's effective plan tier.
- * 
+ *
  * A user is on the free plan if:
  *   - They have no subscription record
- *   - Their subscription status is not 'active' (and not 'trialing')
+ *   - Their subscription status is one that revokes access
+ *     (canceled / unpaid / incomplete_expired / anything unrecognized)
+ *
+ * past_due GRACE PERIOD: a single failed payment (status 'past_due') does NOT
+ * strip paid features. Stripe keeps the subscription active during its
+ * smart-retry window, so we keep the paid plan until the subscription truly
+ * ends. Only definitively-dead statuses fall back to free.
  */
 export function resolveUserPlan(subscription: {
   plan?: string | null;
   status?: string | null;
 } | null | undefined): PlanTier {
   if (!subscription) return 'free';
-  
+
   const { plan, status } = subscription;
-  
-  // Only active or trialing subscriptions count
-  if (status !== 'active' && status !== 'trialing') return 'free';
-  
+
+  // Entitled statuses keep the paid plan. 'past_due' is included as a grace
+  // period; everything not listed here (canceled, unpaid, incomplete_expired,
+  // etc.) drops to free.
+  const ENTITLED_STATUSES = ['active', 'trialing', 'past_due'];
+  if (!status || !ENTITLED_STATUSES.includes(status)) return 'free';
+
+  // Backward-compat: a legacy stored plan of 'business' is the old name for the
+  // top tier and must still resolve to 'enterprise'.
+  if (plan === 'business') return 'enterprise';
+
   // Validate plan name
-  if (plan === 'starter' || plan === 'pro' || plan === 'business') {
+  if (plan === 'starter' || plan === 'pro' || plan === 'enterprise') {
     return plan;
   }
-  
+
   return 'free';
 }
 
@@ -133,7 +163,7 @@ export function resolveUserPlan(subscription: {
  */
 export function getPlanFeatures(tier: PlanTier): Feature[] {
   const tierLevel = getPlanLevel(tier);
-  
+
   return (Object.entries(FEATURE_MINIMUM_TIER) as [Feature, PlanTier][])
     .filter(([, minTier]) => getPlanLevel(minTier) <= tierLevel)
     .map(([feature]) => feature);
@@ -150,14 +180,57 @@ export function canAccessFeature(tier: PlanTier, feature: Feature): boolean {
 
 /**
  * Check whether a plan tier can connect ANY platform.
- * All platforms are available on Starter+.
+ *
+ * Every tier — including Free — can now connect at least one platform. The real
+ * gate is a per-tier connection CAP (free=1, starter=2, pro=3, enterprise=∞),
+ * enforced by connection COUNT via checkPlatformLimit() at the connect
+ * endpoints (which know how many connections the user already has). This
+ * function only answers "is this tier allowed to connect platforms at all",
+ * which is always true.
  */
 export function canConnectPlatform(
   tier: PlanTier,
   _platform?: string
 ): { allowed: boolean; requiredPlan: PlanTier } {
-  const allowed = getPlanLevel(tier) >= getPlanLevel('starter');
-  return { allowed, requiredPlan: 'starter' };
+  return { allowed: true, requiredPlan: 'free' };
+}
+
+/**
+ * Check whether a tier can add ANOTHER platform connection given how many it
+ * already has. This is the real cap gate.
+ *
+ * Returns { allowed, limit, currentCount, upgradeNeeded }. `limit === null`
+ * means unlimited. Only blocks NEW connections once at/over the cap — a user
+ * already over a (newly lowered) cap keeps existing connections and simply
+ * can't add more.
+ */
+export function checkPlatformLimit(
+  tier: PlanTier,
+  currentConnectionCount: number
+): {
+  allowed: boolean;
+  limit: number | null;
+  currentCount: number;
+  upgradeNeeded: PlanTier | null;
+} {
+  const limit = PLAN_PLATFORM_LIMITS[tier];
+
+  // Unlimited
+  if (limit === null) {
+    return { allowed: true, limit: null, currentCount: currentConnectionCount, upgradeNeeded: null };
+  }
+
+  const allowed = currentConnectionCount < limit;
+
+  // Suggest the next tier up when blocked
+  let upgradeNeeded: PlanTier | null = null;
+  if (!allowed) {
+    const idx = PLAN_TIER_ORDER.indexOf(tier);
+    upgradeNeeded =
+      idx >= 0 && idx < PLAN_TIER_ORDER.length - 1 ? PLAN_TIER_ORDER[idx + 1] : null;
+  }
+
+  return { allowed, limit, currentCount: currentConnectionCount, upgradeNeeded };
 }
 
 /**
@@ -175,35 +248,35 @@ export function getOrderLimit(tier: PlanTier): number | null {
 export function checkOrderLimit(
   tier: PlanTier,
   currentMonthOrderCount: number
-): { 
-  allowed: boolean; 
-  currentCount: number; 
-  limit: number | null; 
+): {
+  allowed: boolean;
+  currentCount: number;
+  limit: number | null;
   remaining: number | null;
   upgradeNeeded: PlanTier | null;
 } {
   const limit = PLAN_ORDER_LIMITS[tier];
-  
+
   // Unlimited
   if (limit === null) {
     return { allowed: true, currentCount: currentMonthOrderCount, limit: null, remaining: null, upgradeNeeded: null };
   }
-  
+
   // Free users can't import
   if (limit === 0) {
     return { allowed: false, currentCount: currentMonthOrderCount, limit: 0, remaining: 0, upgradeNeeded: 'starter' };
   }
-  
+
   const remaining = Math.max(0, limit - currentMonthOrderCount);
   const allowed = currentMonthOrderCount < limit;
-  
+
   // Suggest next tier if at limit
   let upgradeNeeded: PlanTier | null = null;
   if (!allowed) {
     if (tier === 'starter') upgradeNeeded = 'pro';
-    else if (tier === 'pro') upgradeNeeded = 'business';
+    else if (tier === 'pro') upgradeNeeded = 'enterprise';
   }
-  
+
   return { allowed, currentCount: currentMonthOrderCount, limit, remaining, upgradeNeeded };
 }
 
@@ -222,7 +295,7 @@ export function getPlanDisplayName(tier: PlanTier): string {
     case 'free': return 'Free';
     case 'starter': return 'Starter';
     case 'pro': return 'Pro';
-    case 'business': return 'Business';
+    case 'enterprise': return 'Enterprise';
   }
 }
 
@@ -251,16 +324,18 @@ export function userCanAccess(
 }
 
 /**
- * Convenience: resolve user plan and check platform access in one call.
- * All platforms available on Starter+.
+ * Convenience: resolve user plan and confirm the tier may connect platforms.
+ *
+ * Every tier (including Free) may connect platforms now; the per-tier CAP is
+ * enforced separately by connection count via checkPlatformLimit() at the
+ * connect endpoints. This returns the resolved plan for that follow-up check.
  */
 export function userCanConnectPlatform(
   user: { subscription?: { plan?: string | null; status?: string | null } | null } | null,
   _platform?: string
 ): { allowed: boolean; userPlan: PlanTier; requiredPlan: PlanTier } {
   const userPlan = resolveUserPlan(user?.subscription);
-  const allowed = getPlanLevel(userPlan) >= getPlanLevel('starter');
-  return { allowed, userPlan, requiredPlan: 'starter' };
+  return { allowed: true, userPlan, requiredPlan: 'free' };
 }
 
 /**
@@ -281,8 +356,8 @@ export function tierGateError(userPlan: PlanTier, requiredPlan: PlanTier, featur
  * Build a 403 error body for order limit exceeded.
  */
 export function orderLimitError(
-  userPlan: PlanTier, 
-  currentCount: number, 
+  userPlan: PlanTier,
+  currentCount: number,
   limit: number,
   upgradeNeeded: PlanTier | null
 ) {
@@ -294,5 +369,26 @@ export function orderLimitError(
     upgradeUrl: '/pricing',
     upgradeTo: upgradeNeeded,
     message: `You've reached your monthly limit of ${limit.toLocaleString()} orders on the ${getPlanDisplayName(userPlan)} plan.${upgradeNeeded ? ` Upgrade to ${getPlanDisplayName(upgradeNeeded)} for ${getOrderLimitDisplay(upgradeNeeded).toLowerCase()}.` : ''}`,
+  };
+}
+
+/**
+ * Build a 403 error body for the platform-connection cap being reached.
+ * Mirrors the tierGateError shape so clients can handle it the same way.
+ */
+export function platformLimitError(
+  userPlan: PlanTier,
+  limit: number | null,
+  currentCount: number,
+  upgradeNeeded: PlanTier | null
+) {
+  return {
+    error: 'Platform connection limit reached',
+    currentPlan: userPlan,
+    limit,
+    currentCount,
+    upgradeUrl: '/pricing',
+    upgradeTo: upgradeNeeded,
+    message: `You've reached your plan's limit of ${limit} connected ${limit === 1 ? 'platform' : 'platforms'} on the ${getPlanDisplayName(userPlan)} plan.${upgradeNeeded ? ` Upgrade to ${getPlanDisplayName(upgradeNeeded)} to connect more.` : ''}`,
   };
 }

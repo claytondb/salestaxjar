@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import bcrypt from 'bcryptjs';
 import { prisma } from '@/lib/prisma';
 import {
   verifyPassword,
@@ -8,6 +9,11 @@ import {
   setSessionCookie,
 } from '@/lib/auth';
 import { checkAuthRateLimit, rateLimitHeaders } from '@/lib/ratelimit';
+
+// Dummy hash used to run a bcrypt comparison when no account exists, so the
+// no-account path takes roughly the same time as the wrong-password path
+// (prevents a timing oracle for user enumeration).
+const DUMMY_PASSWORD_HASH = bcrypt.hashSync('timing-attack-mitigation-dummy', 12);
 
 export async function POST(request: NextRequest) {
   try {
@@ -19,7 +25,7 @@ export async function POST(request: NextRequest) {
     const rateLimit = await checkAuthRateLimit(email);
     if (!rateLimit.success) {
       return NextResponse.json(
-        { 
+        {
           error: 'Too many login attempts. Please try again later.',
           waitTime: Math.ceil((rateLimit.reset - Date.now()) / 1000 / 60),
         },
@@ -41,8 +47,11 @@ export async function POST(request: NextRequest) {
     });
 
     if (!user) {
+      // Run a dummy bcrypt compare so this path costs about the same as the
+      // wrong-password path, and return the same generic message (no enumeration).
+      await bcrypt.compare(password, DUMMY_PASSWORD_HASH);
       return NextResponse.json(
-        { error: 'No account found with this email' },
+        { error: 'Invalid email or password' },
         { status: 401 }
       );
     }
@@ -51,18 +60,15 @@ export async function POST(request: NextRequest) {
     const isValid = await verifyPassword(password, user.passwordHash);
     if (!isValid) {
       return NextResponse.json(
-        { 
-          error: 'Incorrect password',
-          attemptsRemaining: rateLimit.remaining,
-        },
+        { error: 'Invalid email or password' },
         { status: 401 }
       );
     }
 
     // Create session
     const userAgent = request.headers.get('user-agent') || undefined;
-    const ip = request.headers.get('x-forwarded-for')?.split(',')[0] || 
-               request.headers.get('x-real-ip') || 
+    const ip = request.headers.get('x-forwarded-for')?.split(',')[0] ||
+               request.headers.get('x-real-ip') ||
                undefined;
     const { token } = await createSession(user.id, userAgent, ip);
 

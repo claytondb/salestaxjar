@@ -29,12 +29,19 @@ vi.mock('@/lib/platforms/opencart', () => ({
 vi.mock('@/lib/plans', () => ({
   userCanConnectPlatform: vi.fn(),
   tierGateError: vi.fn(),
+  checkPlatformLimit: vi.fn(),
+  platformLimitError: vi.fn(),
+}));
+
+vi.mock('@/lib/platforms', () => ({
+  getUserConnections: vi.fn(),
 }));
 
 import { POST } from './route';
 import { getCurrentUser } from '@/lib/auth';
 import { validateCredentials, saveConnection } from '@/lib/platforms/opencart';
-import { userCanConnectPlatform, tierGateError } from '@/lib/plans';
+import { userCanConnectPlatform, tierGateError, checkPlatformLimit } from '@/lib/plans';
+import { getUserConnections } from '@/lib/platforms';
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
 
@@ -75,7 +82,9 @@ describe('POST /api/platforms/opencart/connect', () => {
   beforeEach(() => {
     vi.resetAllMocks();
     vi.mocked(getCurrentUser).mockResolvedValue(proUser as never);
-    vi.mocked(userCanConnectPlatform).mockReturnValue({ allowed: true, userPlan: 'pro', requiredPlan: 'pro' } as never);
+    vi.mocked(userCanConnectPlatform).mockReturnValue({ allowed: true, userPlan: 'pro', requiredPlan: 'free' } as never);
+    vi.mocked(getUserConnections).mockResolvedValue([] as never);
+    vi.mocked(checkPlatformLimit).mockReturnValue({ allowed: true, limit: 3, currentCount: 0, upgradeNeeded: null } as never);
     vi.mocked(validateCredentials).mockResolvedValue({ valid: true } as never);
     vi.mocked(saveConnection).mockResolvedValue({ success: true, connectionId: 'conn-oc-1' } as never);
   });

@@ -62,23 +62,56 @@ export const productCategories: { value: ProductCategory; label: string; descrip
   { value: 'electronics', label: 'Electronics', description: 'Computers, phones, gadgets' },
 ];
 
-// Category-based tax rate modifiers by state
+// Category-based tax rate modifiers by state (LOCAL FALLBACK ONLY).
+//
+// This table is only used when the TaxJar API is unconfigured or unreachable.
+// In production, TaxJar applies each state's real category rules via
+// product_tax_code (see src/lib/taxjar.ts). This fallback is a deliberate
+// SIMPLIFICATION and is intentionally CONSERVATIVE: a category is only given a
+// reduced/zero modifier when the exemption is well-documented and broadly
+// applicable. When a state's category rule is uncertain or highly location-
+// dependent, we leave the item taxed at the full combined rate (safe
+// over-collection) rather than guessing an exemption.
+//
+// `modifier` multiplies the state's combined rate. 0 = fully exempt.
+// Sources verified 2026-07 (Tax Foundation, state DORs, TaxJar). See notes per state.
 export const categoryModifiers: Record<string, Partial<Record<ProductCategory, number>>> = {
-  // States with clothing exemptions and grocery exemptions combined
-  NY: { clothing: 0, food_grocery: 0 }, // Clothing exempt under $110, groceries exempt
-  PA: { clothing: 0 },
-  NJ: { clothing: 0 },
-  MN: { clothing: 0 },
-  // States with grocery exemptions
-  TX: { food_grocery: 0 },
-  CA: { food_grocery: 0 },
-  FL: { food_grocery: 0, medical: 0 },
-  // States where digital goods are exempt (no sales tax states)
+  // --- Clothing exemptions ---
+  // NY: clothing/footwear under $110 exempt from the 4% state rate (many
+  // localities also exempt); groceries (unprepared food) exempt statewide.
+  // Simplified to full exemption for the fallback.
+  NY: { clothing: 0, food_grocery: 0 },
+  PA: { clothing: 0 }, // Most clothing exempt (PA DOR).
+  NJ: { clothing: 0 }, // Most clothing exempt (NJ Div. of Taxation).
+  MN: { clothing: 0 }, // Clothing exempt (MN DOR).
+
+  // --- Grocery (unprepared food) exemptions ---
+  TX: { food_grocery: 0 }, // Grocery food exempt (TX Comptroller).
+  CA: { food_grocery: 0 }, // Most grocery food exempt (CDTFA).
+  FL: { food_grocery: 0, medical: 0 }, // Grocery food + most drugs/medical exempt (FL DOR).
+
+  // --- No-sales-tax states: everything untaxed (kept for category display) ---
   MT: { digital_goods: 0, software: 0 },
   OR: { digital_goods: 0, software: 0 },
-  // Reduced rates
-  IL: { food_grocery: 0.5 }, // 50% of normal rate
-  VA: { food_grocery: 0.4 },
+
+  // --- Grocery reduced / local-only rates (CORRECTED 2026) ---
+  // IL: The 1% STATE grocery tax was ELIMINATED effective Jan 1, 2026. The state
+  // rate on groceries is now 0%; municipalities/counties may impose a local
+  // grocery tax of up to 1% (200+ had adopted one by mid-2025). Conservatively
+  // model groceries at ~1% (the local option) rather than 0. combinedRate 8.82%,
+  // so modifier ~= 1.0/8.82. (Old value 0.5 -> ~4.4% was stale/wrong.)
+  // Source: IL DOR Bulletin FY 2026-03; Avalara; WTTW (2025-12-26).
+  IL: { food_grocery: 0.113 }, // ~1.0% effective
+  // VA: State grocery tax removed Jan 1, 2023; groceries + essential hygiene
+  // products taxed at a flat 1% LOCAL rate statewide. combinedRate 5.75%, so
+  // modifier ~= 1.0/5.75. (Old value 0.4 -> ~2.3% was wrong.)
+  // Source: Virginia Tax "Grocery Tax" (tax.virginia.gov/grocery-tax).
+  VA: { food_grocery: 0.174 }, // ~1.0% effective
+  // KS: State food sales tax reached 0% on Jan 1, 2025 (phased down from 6.5%).
+  // Local sales taxes still apply to food, so groceries are taxed at the local
+  // rate only. combinedRate 8.69%, avgLocal 2.19%, so modifier ~= 2.19/8.69.
+  // Source: KS Dept. of Revenue Pub. KS-1223; Office of the Governor (2025).
+  KS: { food_grocery: 0.252 }, // ~2.19% effective (local only)
 };
 
 export interface FilingDeadline {

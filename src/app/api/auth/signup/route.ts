@@ -176,6 +176,20 @@ export async function POST(request: NextRequest) {
       },
     });
   } catch (error) {
+    // Handle the duplicate-email race: the unique-constraint violation (P2002)
+    // that slips past the pre-check should return the same 400 as the pre-check.
+    if (
+      error &&
+      typeof error === 'object' &&
+      'code' in error &&
+      (error as { code?: string }).code === 'P2002'
+    ) {
+      return NextResponse.json(
+        { error: 'An account with this email already exists' },
+        { status: 400 }
+      );
+    }
+
     console.error('Signup error:', error);
     return NextResponse.json(
       { error: 'An error occurred during signup' },

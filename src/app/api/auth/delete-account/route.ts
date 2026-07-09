@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { getCurrentUser } from '@/lib/auth';
+import { getCurrentUser, clearSessionCookie } from '@/lib/auth';
 
 export async function DELETE() {
   try {
@@ -43,11 +43,10 @@ export async function DELETE() {
       prisma.user.delete({ where: { id: userId } }),
     ]);
 
-    // Clear the session cookie
-    const response = NextResponse.json({ success: true });
-    response.cookies.delete('session_token');
-    
-    return response;
+    // Clear the session cookie (uses the correct cookie name via the shared helper)
+    await clearSessionCookie();
+
+    return NextResponse.json({ success: true });
   } catch (error) {
     console.error('Delete account error:', error);
     return NextResponse.json(

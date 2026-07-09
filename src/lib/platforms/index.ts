@@ -264,7 +264,8 @@ export async function saveImportedOrders(
     try {
       await prisma.importedOrder.upsert({
         where: {
-          platform_platformOrderId: {
+          userId_platform_platformOrderId: {
+            userId,
             platform: order.platform,
             platformOrderId: order.platformOrderId,
           },

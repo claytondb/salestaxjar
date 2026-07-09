@@ -277,7 +277,12 @@ describe('POST /api/stripe/webhook', () => {
       expect(call.data.plan).toBe('pro');
     });
 
-    it('falls back to starter plan when price ID is unknown', async () => {
+    it('leaves plan unchanged when price ID is unknown (no silent downgrade)', async () => {
+      // Previously this defaulted to 'starter', which could silently downgrade a
+      // pro/business customer on an unrecognized price. The corrected behavior
+      // omits `plan` from the update so the existing plan is preserved, and logs
+      // an error.
+      const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
       vi.mocked(constructWebhookEvent).mockReturnValue(
         makeEvent('customer.subscription.updated', mockSubscription) as ReturnType<typeof constructWebhookEvent>
       );
@@ -288,7 +293,11 @@ describe('POST /api/stripe/webhook', () => {
       await POST(createWebhookRequest('{}'));
 
       const call = vi.mocked(prisma.subscription.update).mock.calls[0][0];
-      expect(call.data.plan).toBe('starter');
+      expect(call.data.plan).toBeUndefined();
+      expect(errorSpy).toHaveBeenCalledWith(
+        expect.stringContaining('Unknown price ID price_starter_monthly')
+      );
+      errorSpy.mockRestore();
     });
   });
 
@@ -311,9 +320,21 @@ describe('POST /api/stripe/webhook', () => {
       expect(prisma.subscription.updateMany).toHaveBeenCalledWith(
         expect.objectContaining({
           where: { stripeCustomerId: 'cus_abc123' },
-          data: expect.objectContaining({ status: 'canceled' }),
+          data: expect.objectContaining({ status: 'canceled', plan: 'free' }),
         })
       );
+    });
+
+    it('resets plan to free on cancel so paid access is revoked', async () => {
+      vi.mocked(constructWebhookEvent).mockReturnValue(
+        makeEvent('customer.subscription.deleted', mockSubscription) as ReturnType<typeof constructWebhookEvent>
+      );
+      vi.mocked(prisma.subscription.updateMany).mockResolvedValue({ count: 1 });
+
+      await POST(createWebhookRequest('{}'));
+
+      const call = vi.mocked(prisma.subscription.updateMany).mock.calls[0][0];
+      expect(call.data.plan).toBe('free');
     });
 
     it('clears Stripe subscription and price IDs on cancel', async () => {
@@ -335,19 +356,20 @@ describe('POST /api/stripe/webhook', () => {
   // ---------------------------------------------------------------------------
 
   describe('invoice.payment_succeeded', () => {
-    it('sets subscription status to active on payment success', async () => {
+    it('sets subscription status to active on payment success (but not for canceled subs)', async () => {
+      // The update is guarded with `status: { not: 'canceled' }` so a late/final
+      // invoice.payment_succeeded cannot resurrect a canceled subscription.
       vi.mocked(constructWebhookEvent).mockReturnValue(
         makeEvent('invoice.payment_succeeded', mockInvoice) as ReturnType<typeof constructWebhookEvent>
       );
       vi.mocked(prisma.subscription.updateMany).mockResolvedValue({ count: 1 });
 
       const res = await POST(createWebhookRequest('{}'));
-      const data = await res.json();
 
       expect(res.status).toBe(200);
       expect(prisma.subscription.updateMany).toHaveBeenCalledWith(
         expect.objectContaining({
-          where: { stripeCustomerId: 'cus_abc123' },
+          where: { stripeCustomerId: 'cus_abc123', status: { not: 'canceled' } },
           data: { status: 'active' },
         })
       );

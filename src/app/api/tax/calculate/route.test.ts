@@ -254,6 +254,37 @@ describe('POST /api/tax/calculate - calculation saving', () => {
 });
 
 // =============================================================================
+// POST /api/tax/calculate - Category & nexus passthrough
+// =============================================================================
+
+describe('POST /api/tax/calculate - category & nexus passthrough', () => {
+  it('passes the product category through to calculateTax', async () => {
+    await POST(makeRequest({ amount: 100, stateCode: 'CA', category: 'food_grocery' }));
+    expect(mockCalculateTax).toHaveBeenCalledWith(
+      expect.objectContaining({ category: 'food_grocery' })
+    );
+  });
+
+  it('defaults the category to general when not provided', async () => {
+    await POST(makeRequest({ amount: 100, stateCode: 'CA' }));
+    expect(mockCalculateTax).toHaveBeenCalledWith(
+      expect.objectContaining({ category: 'general' })
+    );
+  });
+
+  it('adds the destination state as a nexus address so TaxJar returns tax', async () => {
+    await POST(makeRequest({ amount: 100, stateCode: 'ca' }));
+    expect(mockCalculateTax).toHaveBeenCalledWith(
+      expect.objectContaining({
+        nexusAddresses: expect.arrayContaining([
+          expect.objectContaining({ state: 'CA' }),
+        ]),
+      })
+    );
+  });
+});
+
+// =============================================================================
 // POST /api/tax/calculate - Error Handling
 // =============================================================================
 

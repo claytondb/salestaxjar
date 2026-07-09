@@ -95,9 +95,12 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ received: true });
   } catch (error) {
     console.error('Webhook error:', error);
-    // Return 200 to prevent Stripe from retrying on application errors
-    // (Stripe retries on 5xx, which can cause duplicate processing)
-    // Only return 500 for truly unexpected errors where we want a retry
+    // Return 500 so Stripe retries transient failures (e.g. a brief DB outage).
+    // The handlers above are written to be safe to re-run: canceled
+    // subscriptions are not resurrected, unknown price IDs never overwrite the
+    // plan, and cancellation resets to free. Because a retry can still re-invoke
+    // an already-applied handler, a proper idempotency table keyed on
+    // event.id is a recommended follow-up for full at-least-once safety.
     return NextResponse.json(
       { error: 'Webhook handler failed' },
       { status: 500 }
@@ -124,8 +127,11 @@ async function handleCheckoutComplete(session: Stripe.Checkout.Session) {
     return;
   }
 
-  // Fetch the full subscription to get price/plan details
-  let plan = 'starter';
+  // Fetch the full subscription to get price/plan details.
+  // `plan` stays undefined unless we positively recognize the price ID, so an
+  // unknown price never overwrites an existing plan (and relies on the schema
+  // default only when creating a brand-new record).
+  let plan: string | undefined;
   let priceId: string | undefined;
   let currentPeriodEnd: Date | null = null;
   let currentPeriodStart: Date | null = null;
@@ -143,7 +149,7 @@ async function handleCheckoutComplete(session: Stripe.Checkout.Session) {
           if (planInfo) {
             plan = planInfo.id;
           } else {
-            console.warn(`checkout.session.completed: Unknown price ID ${priceId}, defaulting to starter`);
+            console.error(`checkout.session.completed: Unknown price ID ${priceId}; leaving plan unchanged`);
           }
         }
         
@@ -173,7 +179,9 @@ async function handleCheckoutComplete(session: Stripe.Checkout.Session) {
       stripeCustomerId: customerId,
       stripeSubscriptionId: subscriptionId,
       stripePriceId: priceId,
-      plan,
+      // Only set plan when recognized; on create an omitted plan falls back to
+      // the Prisma schema default rather than a hard-coded 'starter' here.
+      ...(plan ? { plan } : {}),
       status: 'active',
       currentPeriodStart,
       currentPeriodEnd,
@@ -183,7 +191,8 @@ async function handleCheckoutComplete(session: Stripe.Checkout.Session) {
       stripeCustomerId: customerId,
       stripeSubscriptionId: subscriptionId,
       stripePriceId: priceId,
-      plan,
+      // Only set plan when recognized; otherwise leave the existing plan intact.
+      ...(plan ? { plan } : {}),
       status: 'active',
       currentPeriodStart,
       currentPeriodEnd,
@@ -221,13 +230,25 @@ async function handleSubscriptionUpdate(subscription: Stripe.Subscription) {
     ? new Date(subData.current_period_end * 1000) 
     : null;
 
+  // If the price ID is unrecognized, do NOT overwrite the user's plan with a
+  // wrong default (previously fell back to 'starter', which could silently
+  // downgrade a pro/business customer). Log it and leave `plan` unchanged while
+  // still updating status/period fields.
+  if (priceId && !planInfo) {
+    console.error(
+      `customer.subscription.updated: Unknown price ID ${priceId} for customer ${customerId}; leaving plan unchanged`
+    );
+  }
+
   await prisma.subscription.update({
     where: { stripeCustomerId: customerId },
     data: {
       stripeSubscriptionId: subscription.id,
       stripePriceId: priceId,
       status: subscription.status,
-      plan: planInfo?.id || 'starter',
+      // Only set plan when we recognize the price; otherwise omit it so the
+      // existing value is preserved.
+      ...(planInfo ? { plan: planInfo.id } : {}),
       currentPeriodStart: periodStart,
       currentPeriodEnd: periodEnd,
       cancelAtPeriodEnd: subscription.cancel_at_period_end ?? false,
@@ -242,6 +263,10 @@ async function handleSubscriptionCanceled(subscription: Stripe.Subscription) {
     where: { stripeCustomerId: customerId },
     data: {
       status: 'canceled',
+      // Drop the paid plan back to free — a canceled subscription must not
+      // retain paid-tier access. resolveUserPlan() also gates on status, but we
+      // clear the plan too so the stored record is consistent.
+      plan: 'free',
       stripeSubscriptionId: null,
       stripePriceId: null,
     },
@@ -250,10 +275,14 @@ async function handleSubscriptionCanceled(subscription: Stripe.Subscription) {
 
 async function handlePaymentSucceeded(invoice: Stripe.Invoice) {
   const customerId = invoice.customer as string;
-  
-  // Update subscription status to active
+
+  // Update subscription status to active on successful payment (normal renewal).
+  // Guard with `status: { not: 'canceled' }` so a late/final
+  // invoice.payment_succeeded (e.g. the closing invoice after cancellation)
+  // cannot flip a canceled account back to active + paid. Active/past_due
+  // subscriptions still transition to active as expected.
   await prisma.subscription.updateMany({
-    where: { stripeCustomerId: customerId },
+    where: { stripeCustomerId: customerId, status: { not: 'canceled' } },
     data: {
       status: 'active',
     },

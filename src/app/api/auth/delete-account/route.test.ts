@@ -29,6 +29,7 @@ vi.mock('@/lib/prisma', () => ({
 
 vi.mock('@/lib/auth', () => ({
   getCurrentUser: vi.fn(),
+  clearSessionCookie: vi.fn(),
 }));
 
 // Mock stripe module
@@ -41,7 +42,7 @@ vi.mock('@/lib/stripe', () => ({
 }));
 
 import { DELETE } from './route';
-import { getCurrentUser } from '@/lib/auth';
+import { getCurrentUser, clearSessionCookie } from '@/lib/auth';
 
 // =============================================================================
 // Mock Data
@@ -76,6 +77,7 @@ beforeEach(() => {
   
   // Default mock implementations
   vi.mocked(getCurrentUser).mockResolvedValue(mockUser);
+  vi.mocked(clearSessionCookie).mockResolvedValue();
   mockTransaction.mockResolvedValue([]);
   mockStripeCancel.mockResolvedValue({});
 });
@@ -128,13 +130,10 @@ describe('DELETE /api/auth/delete-account - successful deletion', () => {
   });
 
   it('should clear session cookie on deletion', async () => {
-    const response = await DELETE();
-    
-    // Check that the session_token cookie is deleted
-    const cookies = response.headers.get('set-cookie');
-    expect(cookies).toContain('session_token');
-    // Cookie deletion can use Max-Age=0 or Expires=1970 - both are valid
-    expect(cookies).toMatch(/Max-Age=0|Expires=.*1970/);
+    await DELETE();
+
+    // Cookie is cleared via the shared clearSessionCookie helper (correct cookie name)
+    expect(clearSessionCookie).toHaveBeenCalled();
   });
 });
 
@@ -285,20 +284,17 @@ describe('DELETE /api/auth/delete-account - response format', () => {
 // =============================================================================
 
 describe('DELETE /api/auth/delete-account - cookie handling', () => {
-  it('should delete session_token cookie', async () => {
-    const response = await DELETE();
-    
-    const cookies = response.headers.get('set-cookie');
-    expect(cookies).toBeDefined();
-    expect(cookies).toContain('session_token');
+  it('should clear the session cookie via the shared helper', async () => {
+    await DELETE();
+
+    // The helper uses the correct cookie name (salestaxjar_session)
+    expect(clearSessionCookie).toHaveBeenCalled();
   });
 
-  it('should expire the cookie immediately', async () => {
-    const response = await DELETE();
-    
-    const cookies = response.headers.get('set-cookie');
-    // Cookie should be expired (Max-Age=0 or past Expires date)
-    expect(cookies).toMatch(/Max-Age=0|Expires=.*1970/);
+  it('should clear the cookie exactly once', async () => {
+    await DELETE();
+
+    expect(clearSessionCookie).toHaveBeenCalledTimes(1);
   });
 });
 

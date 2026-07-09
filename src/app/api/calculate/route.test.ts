@@ -224,9 +224,9 @@ describe('GET /api/calculate', () => {
       const response = await GET(request);
       const data = await response.json();
 
-      // TN combined rate is 9.55%
-      expect(data.data.combinedRate).toBeCloseTo(9.55, 1);
-      expect(data.data.taxAmount).toBeCloseTo(9.55, 1);
+      // TN combined rate is 9.61% (7.00 state + 2.61 avg local)
+      expect(data.data.combinedRate).toBeCloseTo(9.61, 1);
+      expect(data.data.taxAmount).toBeCloseTo(9.61, 1);
     });
 
     it('should calculate correct rate for Indiana (state only, no local)', async () => {

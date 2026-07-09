@@ -66,6 +66,8 @@ const mockBetaUser = {
 
 beforeEach(() => {
   vi.clearAllMocks();
+  // The route reads BETA_ADMIN_SECRET at request time and fails closed when unset.
+  process.env.BETA_ADMIN_SECRET = ADMIN_SECRET;
   mockGetCurrentUser.mockResolvedValue(null);
   mockPrisma.betaUser.findUnique.mockResolvedValue(null);
   mockPrisma.betaUser.findMany.mockResolvedValue([]);
@@ -110,6 +112,15 @@ describe('POST /api/beta/add - authentication', () => {
   it('should reject wrong admin secret', async () => {
     const res = await POST(
       makePostRequest({ email: 'test@example.com' }, 'Bearer wrong-secret')
+    );
+    expect(res.status).toBe(401);
+  });
+
+  it('should fail closed (reject secret auth) when BETA_ADMIN_SECRET is not set', async () => {
+    delete process.env.BETA_ADMIN_SECRET;
+    // Even sending the old hardcoded fallback secret must not authorize.
+    const res = await POST(
+      makePostRequest({ email: 'test@example.com' }, `Bearer ${ADMIN_SECRET}`)
     );
     expect(res.status).toBe(401);
   });

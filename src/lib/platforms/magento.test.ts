@@ -1022,16 +1022,28 @@ describe('URL normalization (via saveConnection)', () => {
     );
   });
 
-  it('should preserve http protocol', async () => {
-    await saveConnection('user', { storeUrl: 'http://local.store.com', accessToken: 't' });
-    
+  it('should upgrade http to https (SSRF guard)', async () => {
+    await saveConnection('user', { storeUrl: 'http://store.example.com', accessToken: 't' });
+
     expect(prisma.platformConnection.create).toHaveBeenCalledWith(
       expect.objectContaining({
         data: expect.objectContaining({
-          refreshToken: 'http://local.store.com',
+          refreshToken: 'https://store.example.com',
         }),
       })
     );
+  });
+
+  it('should reject internal/SSRF store URLs', async () => {
+    const metadata = await saveConnection('user', { storeUrl: 'http://169.254.169.254', accessToken: 't' });
+    expect(metadata.success).toBe(false);
+    expect(metadata.error).toContain('Invalid store URL');
+
+    const local = await saveConnection('user', { storeUrl: 'http://localhost:8080', accessToken: 't' });
+    expect(local.success).toBe(false);
+    expect(local.error).toContain('Invalid store URL');
+
+    expect(prisma.platformConnection.create).not.toHaveBeenCalled();
   });
 
   it('should handle URL with whitespace', async () => {

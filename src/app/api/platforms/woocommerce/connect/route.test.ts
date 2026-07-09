@@ -33,12 +33,19 @@ vi.mock('@/lib/platforms/woocommerce', () => ({
 vi.mock('@/lib/plans', () => ({
   userCanConnectPlatform: vi.fn(),
   tierGateError: vi.fn(),
+  checkPlatformLimit: vi.fn(),
+  platformLimitError: vi.fn(),
+}));
+
+vi.mock('@/lib/platforms', () => ({
+  getUserConnections: vi.fn(),
 }));
 
 import { POST } from './route';
 import { getCurrentUser } from '@/lib/auth';
 import { validateCredentials, saveConnection, normalizeStoreUrl } from '@/lib/platforms/woocommerce';
-import { userCanConnectPlatform, tierGateError } from '@/lib/plans';
+import { userCanConnectPlatform, tierGateError, checkPlatformLimit, platformLimitError } from '@/lib/plans';
+import { getUserConnections } from '@/lib/platforms';
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
 
@@ -79,7 +86,10 @@ describe('POST /api/platforms/woocommerce/connect', () => {
   beforeEach(() => {
     vi.resetAllMocks();
     vi.mocked(getCurrentUser).mockResolvedValue(starterUser as never);
-    vi.mocked(userCanConnectPlatform).mockReturnValue({ allowed: true, userPlan: 'starter', requiredPlan: 'starter' } as never);
+    vi.mocked(userCanConnectPlatform).mockReturnValue({ allowed: true, userPlan: 'starter', requiredPlan: 'free' } as never);
+    // Under cap by default: no existing connections, cap check allows.
+    vi.mocked(getUserConnections).mockResolvedValue([] as never);
+    vi.mocked(checkPlatformLimit).mockReturnValue({ allowed: true, limit: 2, currentCount: 0, upgradeNeeded: null } as never);
     vi.mocked(validateCredentials).mockResolvedValue({
       valid: true,
       storeInfo: { name: 'My Shop', wc_version: '8.0.0', currency: 'USD' },
@@ -97,16 +107,31 @@ describe('POST /api/platforms/woocommerce/connect', () => {
     expect(body.error).toBe('Unauthorized');
   });
 
-  // ── Tier gate ─────────────────────────────────────────────────────────────
+  // ── Platform connection cap (count-based) ───────────────────────────────────
 
-  it('returns 403 for free plan user', async () => {
+  it('allows a Free user to connect their FIRST platform (under cap)', async () => {
     vi.mocked(getCurrentUser).mockResolvedValue(freeUser as never);
-    vi.mocked(userCanConnectPlatform).mockReturnValue({ allowed: false, userPlan: 'free', requiredPlan: 'starter' } as never);
-    vi.mocked(tierGateError).mockReturnValue({ error: 'Upgrade required', code: 'TIER_GATE' } as never);
+    vi.mocked(userCanConnectPlatform).mockReturnValue({ allowed: true, userPlan: 'free', requiredPlan: 'free' } as never);
+    vi.mocked(getUserConnections).mockResolvedValue([] as never); // 0 existing
+    vi.mocked(checkPlatformLimit).mockReturnValue({ allowed: true, limit: 1, currentCount: 0, upgradeNeeded: null } as never);
+
+    const res = await POST(postRequest(validBody));
+    expect(res.status).toBe(200);
+    expect(checkPlatformLimit).toHaveBeenCalledWith('free', 0);
+  });
+
+  it('returns 403 when a Free user is at their platform cap (blocks the 2nd)', async () => {
+    vi.mocked(getCurrentUser).mockResolvedValue(freeUser as never);
+    vi.mocked(userCanConnectPlatform).mockReturnValue({ allowed: true, userPlan: 'free', requiredPlan: 'free' } as never);
+    vi.mocked(getUserConnections).mockResolvedValue([{ id: 'c1' }] as never); // 1 existing (at cap)
+    vi.mocked(checkPlatformLimit).mockReturnValue({ allowed: false, limit: 1, currentCount: 1, upgradeNeeded: 'starter' } as never);
+    vi.mocked(platformLimitError).mockReturnValue({ error: 'Platform connection limit reached', upgradeTo: 'starter' } as never);
+
     const res = await POST(postRequest(validBody));
     expect(res.status).toBe(403);
     const body = await res.json();
-    expect(body.error).toContain('Upgrade');
+    expect(body.error).toContain('limit');
+    expect(saveConnection).not.toHaveBeenCalled();
   });
 
   it('calls userCanConnectPlatform with woocommerce platform', async () => {

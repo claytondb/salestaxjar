@@ -45,11 +45,41 @@ export async function POST(request: NextRequest) {
 
     const plan = PLANS[planId as keyof typeof PLANS];
 
+    // Degrade gracefully when a plan has no configured Stripe price (e.g.
+    // Enterprise before STRIPE_ENTERPRISE_PRICE_ID is set). Better a clear
+    // message than sending an invalid/empty price to Stripe.
+    if (!plan.priceId) {
+      return NextResponse.json(
+        { error: `The ${plan.name} plan is not yet available for self-serve checkout. Please contact support.` },
+        { status: 400 }
+      );
+    }
+
     // Get or create Stripe customer
     let customerId: string | undefined;
     const subscription = await prisma.subscription.findUnique({
       where: { userId: user.id },
     });
+
+    // Guard against duplicate subscriptions. This route creates a new
+    // subscription-mode Checkout, so if the user already has an active Stripe
+    // subscription, proceeding would create a SECOND subscription and
+    // double-bill them. Plan changes must go through the billing portal /
+    // change-plan (update-subscription) flow instead.
+    const ACTIVE_SUB_STATUSES = ['active', 'trialing', 'past_due'];
+    if (
+      subscription?.stripeSubscriptionId &&
+      subscription.status &&
+      ACTIVE_SUB_STATUSES.includes(subscription.status)
+    ) {
+      return NextResponse.json(
+        {
+          error: 'You already have an active subscription. Use the billing portal or change-plan flow.',
+          code: 'already_subscribed',
+        },
+        { status: 409 }
+      );
+    }
 
     if (subscription?.stripeCustomerId) {
       customerId = subscription.stripeCustomerId;

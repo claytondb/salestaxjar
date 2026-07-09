@@ -27,7 +27,54 @@ export interface TaxCalculationRequest {
   toAddress: TaxAddress;
   fromAddress?: TaxAddress;
   category?: ProductCategory;
+  /**
+   * Explicit TaxJar product tax code (e.g. "20010"). Takes precedence over
+   * `category` when provided (e.g. an API client that already speaks TaxJar codes).
+   */
+  productTaxCode?: string;
   nexusAddresses?: TaxAddress[];
+}
+
+// =============================================================================
+// Product tax code mapping (app ProductCategory -> TaxJar product_tax_code)
+// =============================================================================
+//
+// Source: TaxJar Categories API (GET /v2/categories) / Product Category Library
+//   https://developers.taxjar.com/api/reference/#get-list-tax-categories
+//   https://support.taxjar.com/article/1054-product-category-library
+// Verified: 2026-07 against the live category list.
+//
+//   20010 = Clothing (human wearing apparel suitable for general use)
+//   40030 = Food & Groceries (food for human consumption, unprepared)
+//   31000 = Digital Goods (products transferred electronically)
+//   30070 = Software as a Service (SaaS)
+//   51010 = Non-Prescription drugs (OTC, human use)
+//   51020 = Prescription drugs (human use)
+//
+// NOTE: TaxJar has no distinct "prepared food" or "electronics" code — those are
+// ordinary taxable tangible goods, so we omit a code (TaxJar taxes them normally).
+// Sending no product_tax_code = fully taxable general merchandise (TaxJar's default).
+const CATEGORY_TAX_CODES: Partial<Record<ProductCategory, string>> = {
+  clothing: '20010',
+  food_grocery: '40030',
+  digital_goods: '31000',
+  software: '30070', // SaaS
+  // App "medical" is described as "OTC drugs, medical equipment". Map to the
+  // OTC/non-prescription drug code so TaxJar applies each state's OTC-drug rule.
+  // (Prescription-only sellers should send productTaxCode '51020' explicitly.)
+  medical: '51010',
+  // general / food_prepared / electronics -> undefined (ordinary taxable goods).
+};
+
+/**
+ * Map an app ProductCategory to the corresponding TaxJar product tax code.
+ * Returns undefined for fully-taxable/general merchandise (no code needed).
+ */
+export function getTaxJarProductTaxCode(
+  category?: ProductCategory
+): string | undefined {
+  if (!category) return undefined;
+  return CATEGORY_TAX_CODES[category];
 }
 
 export interface TaxCalculationResult {
@@ -41,6 +88,8 @@ export interface TaxCalculationResult {
     cityRate: number;
     specialRate: number;
   };
+  /** Whether shipping/freight was taxed in this jurisdiction (from TaxJar). */
+  freightTaxable?: boolean;
   source: 'taxjar' | 'local' | 'cache';
 }
 
@@ -81,33 +130,58 @@ export async function calculateTax(
 async function calculateTaxWithTaxJar(
   request: TaxCalculationRequest
 ): Promise<TaxCalculationResult> {
+  // Resolve the TaxJar product tax code. An explicit code wins; otherwise map
+  // from the app's product category. When a code is present we send the order as
+  // a single line item so TaxJar applies the correct category taxability rules
+  // for the destination state (e.g. exempt groceries, exempt clothing, reduced
+  // rates). Without this, every order is treated as fully taxable general goods.
+  const productTaxCode =
+    request.productTaxCode ?? getTaxJarProductTaxCode(request.category);
+
+  const requestBody: Record<string, unknown> = {
+    to_country: request.toAddress.country || 'US',
+    to_zip: request.toAddress.zip,
+    to_state: request.toAddress.state,
+    to_city: request.toAddress.city,
+    to_street: request.toAddress.street,
+    from_country: request.fromAddress?.country || 'US',
+    from_zip: request.fromAddress?.zip,
+    from_state: request.fromAddress?.state,
+    from_city: request.fromAddress?.city,
+    from_street: request.fromAddress?.street,
+    shipping: request.shipping || 0,
+    nexus_addresses: request.nexusAddresses?.map(addr => ({
+      country: addr.country || 'US',
+      state: addr.state,
+      zip: addr.zip,
+      city: addr.city,
+      street: addr.street,
+    })),
+  };
+
+  if (productTaxCode) {
+    // TaxJar only honors product_tax_code at the line-item level, so express the
+    // order amount as one line item. (When line_items are present, TaxJar derives
+    // the taxable base from them, so we do not also send a top-level `amount`.)
+    requestBody.line_items = [
+      {
+        id: '1',
+        quantity: 1,
+        unit_price: request.amount,
+        product_tax_code: productTaxCode,
+      },
+    ];
+  } else {
+    requestBody.amount = request.amount;
+  }
+
   const response = await fetch(`${TAXJAR_API_URL}/taxes`, {
     method: 'POST',
     headers: {
       'Authorization': `Bearer ${TAXJAR_API_KEY}`,
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({
-      to_country: request.toAddress.country || 'US',
-      to_zip: request.toAddress.zip,
-      to_state: request.toAddress.state,
-      to_city: request.toAddress.city,
-      to_street: request.toAddress.street,
-      from_country: request.fromAddress?.country || 'US',
-      from_zip: request.fromAddress?.zip,
-      from_state: request.fromAddress?.state,
-      from_city: request.fromAddress?.city,
-      from_street: request.fromAddress?.street,
-      amount: request.amount,
-      shipping: request.shipping || 0,
-      nexus_addresses: request.nexusAddresses?.map(addr => ({
-        country: addr.country || 'US',
-        state: addr.state,
-        zip: addr.zip,
-        city: addr.city,
-        street: addr.street,
-      })),
-    }),
+    body: JSON.stringify(requestBody),
   });
 
   if (!response.ok) {
@@ -129,6 +203,9 @@ async function calculateTaxWithTaxJar(
       cityRate: tax.breakdown.city_tax_rate || 0,
       specialRate: tax.breakdown.special_tax_rate || 0,
     } : undefined,
+    freightTaxable: typeof tax.freight_taxable === 'boolean'
+      ? tax.freight_taxable
+      : undefined,
     source: 'taxjar',
   };
 }

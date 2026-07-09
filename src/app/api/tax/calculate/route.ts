@@ -48,16 +48,24 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Calculate tax
+    // Calculate tax.
+    // NOTE: this endpoint does not collect a from/origin address, so TaxJar uses
+    // destination-based sourcing. We pass the destination state as a nexus
+    // address so TaxJar returns tax for that state instead of silently returning
+    // zero (TaxJar only collects tax where nexus is asserted). `category` is
+    // passed through so both the TaxJar product_tax_code path and the local
+    // fallback's category modifiers are applied.
+    const destState = stateCode.toUpperCase();
     const result = await calculateTax({
       amount,
       shipping: shipping || 0,
       toAddress: {
-        state: stateCode.toUpperCase(),
+        state: destState,
         zip: zipCode,
         city,
       },
       category: (category as ProductCategory) || 'general',
+      nexusAddresses: [{ state: destState, zip: zipCode, city }],
     });
 
     // Save calculation if user is authenticated

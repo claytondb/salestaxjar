@@ -21,11 +21,25 @@ vi.mock('@/lib/auth', () => ({
 vi.mock('@/lib/platforms/shopify', () => ({
   getAuthorizationUrl: vi.fn(),
   isShopifyConfigured: vi.fn(),
+  // Real-ish implementations: normalize appends .myshopify.com when no dot present,
+  // and validation matches the *.myshopify.com format enforced by the route.
+  normalizeShopDomain: vi.fn((shop: string) => {
+    let d = shop.replace(/^https?:\/\//, '').replace(/\/$/, '').trim().toLowerCase();
+    if (!d.includes('.')) d = `${d}.myshopify.com`;
+    return d;
+  }),
+  isValidShopDomain: vi.fn((shop: string) => /^[a-z0-9][a-z0-9-]*\.myshopify\.com$/.test(shop)),
 }));
 
 vi.mock('@/lib/plans', () => ({
   userCanConnectPlatform: vi.fn(),
   tierGateError: vi.fn(),
+  checkPlatformLimit: vi.fn(),
+  platformLimitError: vi.fn(),
+}));
+
+vi.mock('@/lib/platforms', () => ({
+  getUserConnections: vi.fn(),
 }));
 
 // Mock uuid
@@ -47,8 +61,14 @@ vi.mock('next/headers', () => ({
 
 import { GET } from './route';
 import { getCurrentUser } from '@/lib/auth';
-import { getAuthorizationUrl, isShopifyConfigured } from '@/lib/platforms/shopify';
-import { userCanConnectPlatform, tierGateError } from '@/lib/plans';
+import {
+  getAuthorizationUrl,
+  isShopifyConfigured,
+  normalizeShopDomain,
+  isValidShopDomain,
+} from '@/lib/platforms/shopify';
+import { userCanConnectPlatform, tierGateError, checkPlatformLimit } from '@/lib/plans';
+import { getUserConnections } from '@/lib/platforms';
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
 
@@ -87,9 +107,20 @@ describe('GET /api/platforms/shopify/auth', () => {
     vi.mocked(userCanConnectPlatform).mockReturnValue({
       allowed: true,
       userPlan: 'starter',
-      requiredPlan: 'starter',
+      requiredPlan: 'free',
     } as never);
+    vi.mocked(getUserConnections).mockResolvedValue([] as never);
+    vi.mocked(checkPlatformLimit).mockReturnValue({ allowed: true, limit: 2, currentCount: 0, upgradeNeeded: null } as never);
     vi.mocked(isShopifyConfigured).mockReturnValue(true);
+    // Re-establish default implementations wiped by resetAllMocks
+    vi.mocked(normalizeShopDomain).mockImplementation((shop: string) => {
+      let d = shop.replace(/^https?:\/\//, '').replace(/\/$/, '').trim().toLowerCase();
+      if (!d.includes('.')) d = `${d}.myshopify.com`;
+      return d;
+    });
+    vi.mocked(isValidShopDomain).mockImplementation((shop: string) =>
+      /^[a-z0-9][a-z0-9-]*\.myshopify\.com$/.test(shop)
+    );
     vi.mocked(getAuthorizationUrl).mockReturnValue(
       'https://mystore.myshopify.com/admin/oauth/authorize?client_id=test&scope=read_orders&redirect_uri=https://sails.tax/api/platforms/shopify/callback&state=test-uuid-1234'
     );
@@ -156,13 +187,23 @@ describe('GET /api/platforms/shopify/auth', () => {
     expect(res.headers.get('location')).toBe(shopifyAuthUrl);
   });
 
-  it('calls getAuthorizationUrl with correct shop and state', async () => {
+  it('calls getAuthorizationUrl with the normalized shop and state', async () => {
     await GET(getRequest({ shop: 'testshop' }));
 
-    expect(getAuthorizationUrl).toHaveBeenCalledWith('testshop', 'test-uuid-1234');
+    // Bare handle is normalized to the full myshopify.com domain before use
+    expect(getAuthorizationUrl).toHaveBeenCalledWith('testshop.myshopify.com', 'test-uuid-1234');
   });
 
-  it('stores oauth state cookie with user id and shop', async () => {
+  it('rejects an invalid (non-myshopify) shop domain with 400', async () => {
+    const res = await GET(getRequest({ shop: 'evil.com' }));
+    const body = await res.json();
+
+    expect(res.status).toBe(400);
+    expect(body.error).toBe('Invalid shop domain');
+    expect(getAuthorizationUrl).not.toHaveBeenCalled();
+  });
+
+  it('stores oauth state cookie with user id and normalized shop', async () => {
     await GET(getRequest({ shop: 'mystore' }));
 
     expect(mockCookieSet).toHaveBeenCalledWith(
@@ -170,7 +211,7 @@ describe('GET /api/platforms/shopify/auth', () => {
       JSON.stringify({
         state: 'test-uuid-1234',
         userId: starterUser.id,
-        shop: 'mystore',
+        shop: 'mystore.myshopify.com',
       }),
       expect.objectContaining({
         httpOnly: true,

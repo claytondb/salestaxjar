@@ -16,18 +16,22 @@ export function isStripeConfigured(): boolean {
   return !!stripe;
 }
 
-// Sails Plan configuration (updated 2026-01-31)
+// Sails Plan configuration (updated 2026-07-08)
 // Env vars needed:
 // - STRIPE_STARTER_PRICE_ID (Sails Starter $9/mo)
 // - STRIPE_PRO_PRICE_ID (Sails Pro $29/mo)
-// - STRIPE_BUSINESS_PRICE_ID (Sails Business $59/mo)
+// - STRIPE_ENTERPRISE_PRICE_ID (Sails Enterprise $79/mo)
+//   NOTE: falls back to the legacy STRIPE_BUSINESS_PRICE_ID during the
+//   business→enterprise transition. If NEITHER is set, enterprise.priceId is
+//   an empty string and checkout returns a clear "not yet available" error
+//   instead of sending an invalid price to Stripe (which would 500).
 export const PLANS = {
   starter: {
     name: 'Starter',
     priceId: process.env.STRIPE_STARTER_PRICE_ID || 'price_starter',
     price: 9,
     features: [
-      'All platform integrations',
+      '2 platform integrations',
       'Up to 500 orders/month',
       'Automatic nexus exposure alerts',
       'Email deadline reminders',
@@ -41,17 +45,20 @@ export const PLANS = {
     popular: true,
     features: [
       'Up to 5,000 orders/month',
+      '3 platform integrations',
       'Tax calculation API + API keys',
       'Priority email support',
       'Filing assistance (coming soon)',
     ],
   },
-  business: {
-    name: 'Business',
-    priceId: process.env.STRIPE_BUSINESS_PRICE_ID || 'price_business',
-    price: 59,
+  enterprise: {
+    name: 'Enterprise',
+    // No fake fallback: if unset, priceId is '' and checkout degrades gracefully.
+    priceId: process.env.STRIPE_ENTERPRISE_PRICE_ID || process.env.STRIPE_BUSINESS_PRICE_ID || '',
+    price: 79,
     features: [
       'Unlimited orders',
+      'Unlimited platform integrations',
       'Highest priority support',
       'Auto-filing (coming soon)',
     ],
@@ -73,6 +80,13 @@ export async function createCheckoutSession(params: {
     return { error: 'Stripe is not configured' };
   }
 
+  // Guard against a missing/empty price ID (e.g. Enterprise before its Stripe
+  // price is configured). Sending an empty price to Stripe would 500; return a
+  // clear, actionable error instead.
+  if (!params.priceId) {
+    return { error: 'This plan is not yet available for self-serve checkout. Please contact support.' };
+  }
+
   try {
     const sessionParams: Stripe.Checkout.SessionCreateParams = {
       mode: 'subscription',
@@ -83,6 +97,13 @@ export async function createCheckoutSession(params: {
           quantity: 1,
         },
       ],
+      // 14-day free trial, no card required up front (matches the pricing page).
+      // payment_method_collection: 'if_required' lets the trial start without
+      // collecting a card; Stripe collects payment before the trial converts.
+      subscription_data: {
+        trial_period_days: 14,
+      },
+      payment_method_collection: 'if_required',
       success_url: params.successUrl,
       cancel_url: params.cancelUrl,
       client_reference_id: params.userId,
@@ -231,15 +252,23 @@ export function constructWebhookEvent(
 // Get plan by price ID
 export function getPlanByPriceId(priceId: string): { id: PlanId; plan: typeof PLANS[PlanId] } | null {
   for (const [id, plan] of Object.entries(PLANS)) {
-    if (plan.priceId === priceId) {
+    // Skip empty price IDs (e.g. Enterprise before its price is configured) so
+    // an empty lookup can never accidentally match.
+    if (plan.priceId && plan.priceId === priceId) {
       return { id: id as PlanId, plan };
     }
+  }
+  // Backward-compat: the legacy business price id maps to the enterprise tier,
+  // even when a separate (new) enterprise price id is also configured.
+  const legacyBusinessPriceId = process.env.STRIPE_BUSINESS_PRICE_ID;
+  if (legacyBusinessPriceId && priceId === legacyBusinessPriceId) {
+    return { id: 'enterprise', plan: PLANS.enterprise };
   }
   return null;
 }
 
 // Plan tier order for determining upgrades vs downgrades
-const PLAN_TIER_ORDER: PlanId[] = ['starter', 'pro', 'business'];
+const PLAN_TIER_ORDER: PlanId[] = ['starter', 'pro', 'enterprise'];
 
 export function getPlanTier(planId: PlanId): number {
   return PLAN_TIER_ORDER.indexOf(planId);
