@@ -1,6 +1,7 @@
 ---
 title: "Sales Tax on Digital Products: What Online Sellers Need to Know"
 date: "2026-02-25"
+lastReviewed: "2026-09-25"
 excerpt: "Digital products like ebooks, software, and online courses have complex sales tax rules. Learn which states tax digital goods and how to stay compliant."
 author: "Sails Team"
 category: "Tax Rules"
@@ -27,7 +28,7 @@ Here's where it gets complicated. **Each state decides independently** whether t
 
 ### States That Tax Digital Products
 
-As of 2026, these states generally tax digital goods:
+As of 2026, these states generally tax digital goods (rules change often, so verify with each state before relying on this list):
 
 - **Always taxed**: Texas, Washington, Pennsylvania, Connecticut, Louisiana, Tennessee, Utah, Wisconsin, and others
 - **Most digital goods taxed**: Colorado, Indiana, Kentucky, New York, Ohio, South Carolina
@@ -58,7 +59,7 @@ This creates situations where:
 
 ## Special Case: SaaS and Cloud Services
 
-Software as a Service (SaaS) has become its own tax category. Rules are changing rapidly:
+Software as a Service (SaaS) has become its own tax category. Rules are changing rapidly, so verify with each state:
 
 ### States That Tax SaaS
 
@@ -76,7 +77,7 @@ More states are moving toward taxing SaaS and cloud services. If you sell subscr
 
 For each digital product you sell, you need to answer:
 
-1. **Where is the customer located?** Digital product taxes are destination-based.
+1. **Where is the customer located?** Digital product taxes are generally destination-based.
 2. **Does that state tax digital products?** Check the state's current rules.
 3. **What type of digital product is it?** The specific category matters in many states.
 4. **Are there any exemptions?** Some buyers (businesses, nonprofits) may be exempt.
@@ -94,7 +95,7 @@ Best practice: use the customer's billing address as the sourcing location.
 
 ## Economic Nexus for Digital Sellers
 
-Selling digital products doesn't exempt you from economic nexus rules. If you sell over $100,000 (or 200 transactions) into a state, you likely have nexus and need to collect tax, even if you're purely digital with no physical presence.
+Selling digital products doesn't exempt you from economic nexus rules. If your sales into a state pass its threshold — usually $100,000, though some states also count 200 transactions and a few set a higher dollar amount — you likely have nexus and need to collect tax, even if you're purely digital with no physical presence.
 
 This catches many digital sellers off guard. Selling ebooks from your home in Florida? Once you pass the threshold in Pennsylvania, you need to register and collect Pennsylvania sales tax on applicable digital sales.
 
@@ -120,7 +121,7 @@ For each state where you have significant sales:
 
 ### Step 4: Track Nexus Thresholds
 
-Monitor your sales by state. When you approach $100,000 or 200 transactions, you likely need to register.
+Monitor your sales by state. When you approach a state's threshold (usually $100,000 in sales; some states also count 200 transactions), you likely need to register.
 
 ### Step 5: Register and Collect
 
@@ -141,11 +142,11 @@ For digital products, don't source to a warehouse or office address. Use the cus
 
 ### Ignoring Subscriptions
 
-Recurring digital subscriptions create ongoing nexus exposure. A monthly SaaS fee means twelve taxable transactions per customer per year.
+Recurring digital subscriptions create ongoing nexus exposure. A monthly SaaS fee means twelve transactions per customer per year — which adds up fast in states that still count 200 transactions toward nexus.
 
 ### Forgetting Marketplace Facilitation
 
-If you sell through platforms like Amazon, Apple, or Google, check if they collect tax on your behalf. Many marketplaces now handle sales tax as the marketplace facilitator.
+If you sell through platforms like Amazon, Apple, or Google, check if they collect tax on your behalf. Many marketplaces now handle sales tax as the marketplace facilitator. Even then, those sales may still count toward your own nexus threshold, depending on the state.
 
 ## When to Get Help
 
@@ -156,7 +157,7 @@ Digital product taxation is genuinely complex. Consider professional help when:
 - You receive a notice from a state tax authority
 - Your business model changes significantly
 
-Tools like Sails can help track your nexus exposure and identify which sales are taxable, but complex situations may need a tax advisor.
+Tools like Sails can help track your sales by state and your nexus exposure, but complex situations may need a tax advisor.
 
 ## The Future of Digital Taxation
 
@@ -169,4 +170,4 @@ Stay informed by:
 
 ---
 
-*Selling digital products and unsure about your tax obligations? [Try Sails](/signup) to track your sales by state and monitor nexus thresholds automatically.*
+*Selling digital products and unsure about your tax obligations? [Try Sails](/signup) to track your sales by state and get an email when you approach a nexus threshold.*

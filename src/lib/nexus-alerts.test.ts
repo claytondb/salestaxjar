@@ -78,7 +78,8 @@ describe('nexus-alerts', () => {
         
         expect(message).toContain('California');
         expect(message).toContain('$600,000');
-        expect(message).toContain('exceeding');
+        expect(message).toContain('over the');
+        expect(message).toContain('register with');
         expect(message).toContain('$500,000');
         expect(message).toContain('register');
       });

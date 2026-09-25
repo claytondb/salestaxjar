@@ -1,7 +1,7 @@
 ---
 title: "Sales Tax Filing Deadlines by State: 2026 Complete Calendar"
 date: "2026-03-11"
-excerpt: "Missing a sales tax filing deadline means penalties and interest. This complete 2026 calendar breaks down monthly, quarterly, and annual deadlines by state so you know exactly when to file."
+excerpt: "Missing a sales tax filing deadline means penalties and interest. This complete 2026 calendar breaks down monthly, quarterly, and annual deadlines by state — confirm your assigned due dates with each state before you file."
 author: "Sails Team"
 category: "Reference"
 readTime: "10 min read"
@@ -12,7 +12,7 @@ Sales tax compliance isn't just about collecting the right amount — it's about
 
 The tricky part? Every state sets its own deadlines. Your filing frequency depends on how much sales tax you collect. And the due date isn't always the last day of the month.
 
-This guide breaks down how filing frequencies work, when the most important deadlines fall, and what happens if you're late.
+This guide breaks down how filing frequencies work, when the most important deadlines fall, and what happens if you're late. Use it as a starting point: each state assigns your filing frequency and due dates, so confirm them with every state where you're registered.
 
 ## How Sales Tax Filing Frequency Works
 
@@ -150,9 +150,9 @@ If you're registered in 10 states and filing monthly in half of them, you're man
 
 ### Option 2: Use a tool that handles it for you
 
-[Sails](https://sails.tax) tracks your filing schedule across every state you're registered in and sends you deadline reminders automatically. You know exactly when each return is due, with enough lead time to actually prepare.
+[Sails](https://sails.tax) keeps a filing deadline calendar for the states you're registered in and emails you reminders 7 days and 1 day before each due date, so you have lead time to actually prepare — just confirm your assigned filing frequency and due dates with each state.
 
-Connect your Shopify, WooCommerce, or BigCommerce store and Sails pulls your sales data automatically — so when the deadline reminder arrives, you already have the numbers ready.
+Connect your Shopify or WooCommerce store (BigCommerce is in beta) and Sails imports your orders — so when the deadline reminder arrives, your sales-by-state report is ready to export.
 
 ## Key Takeaways
 
@@ -165,7 +165,7 @@ Connect your Shopify, WooCommerce, or BigCommerce store and Sails pulls your sal
 
 ---
 
-*Stop tracking deadlines manually. [Sails](https://sails.tax) sends you filing deadline reminders automatically for every state you're registered in — so you never miss a due date. [Start free →](https://sails.tax/signup)*
+*Stop tracking deadlines manually. [Sails](https://sails.tax) emails you filing deadline reminders 7 days and 1 day before each due date for the states you're registered in. [Start free →](https://sails.tax/signup)*
 
 ---
 

@@ -450,4 +450,39 @@ describe('POST /api/stripe/create-checkout-session - checkout errors', () => {
 
     expect(response.status).toBe(500);
   });
+
+  describe('free trial eligibility', () => {
+    it('offers the 14-day trial to someone who has never subscribed', async () => {
+      vi.mocked(prisma.subscription.findUnique).mockResolvedValue({
+        ...mockSubscription,
+        stripeSubscriptionId: null,
+        status: 'inactive',
+      } as never);
+
+      await POST(createRequest({ planId: 'starter' }));
+
+      expect(createCheckoutSession).toHaveBeenCalledWith(expect.objectContaining({ trialDays: 14 }));
+    });
+
+    it('does not offer another trial after a canceled subscription or trial', async () => {
+      vi.mocked(prisma.subscription.findUnique).mockResolvedValue({
+        ...mockSubscription,
+        stripeSubscriptionId: null,
+        status: 'canceled',
+      } as never);
+
+      await POST(createRequest({ planId: 'starter' }));
+
+      expect(createCheckoutSession).toHaveBeenCalledWith(expect.objectContaining({ trialDays: 0 }));
+    });
+
+    it('does not leak internal IDs in error responses', async () => {
+      vi.mocked(createCheckoutSession).mockResolvedValue({ error: 'No such price' });
+
+      const response = await POST(createRequest({ planId: 'starter' }));
+      const data = await response.json();
+
+      expect(data.debug).toBeUndefined();
+    });
+  });
 });

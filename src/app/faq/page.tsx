@@ -27,7 +27,7 @@ const faqs: FAQItem[] = [
   },
   {
     question: "Which states don't have sales tax?",
-    answer: "Five states have no state-level sales tax: Alaska, Delaware, Montana, New Hampshire, and Oregon. However, Alaska allows local jurisdictions to impose sales taxes, so some areas in Alaska do have local sales tax. Delaware and Montana also have some gross receipts taxes that function similarly to sales tax for certain transactions.",
+    answer: "Five states have no state-level sales tax: Alaska, Delaware, Montana, New Hampshire, and Oregon. However, Alaska allows local jurisdictions to impose sales taxes, so some areas in Alaska do have local sales tax. Delaware taxes businesses' gross receipts instead, and some Montana resort towns charge a local resort tax.",
     category: "Basics"
   },
   {
@@ -45,17 +45,17 @@ const faqs: FAQItem[] = [
   },
   {
     question: "What is economic nexus?",
-    answer: "Economic nexus is established when your sales into a state exceed certain thresholds, even without physical presence. Most states use a threshold of $100,000 in sales OR 200 transactions per year. After the 2018 South Dakota v. Wayfair Supreme Court decision, states can require remote sellers to collect sales tax based on economic activity alone.",
+    answer: "Economic nexus is established when your sales into a state exceed certain thresholds, even without physical presence. Most states use $100,000 in sales a year. About a third also count 200 separate transactions, and a few use a higher amount ($250,000 in Alabama and Mississippi; $500,000 in California, New York and Texas). After the 2018 South Dakota v. Wayfair Supreme Court decision, states can require remote sellers to collect sales tax based on economic activity alone.",
     category: "Nexus"
   },
   {
     question: "How do I know if I have nexus in a state?",
-    answer: "You have nexus if you have: physical presence (office, warehouse, employees, inventory, trade show attendance), exceeded economic thresholds (typically $100K sales or 200 transactions), affiliates or partners marketing your products, or click-through arrangements with in-state websites. Each state has its own rules, so it's important to check each state where you sell.",
+    answer: "You have nexus if you have: physical presence (office, warehouse, employees, inventory, trade show attendance), passed a state's economic threshold (usually $100,000 in sales into that state), affiliates or partners marketing your products, or click-through arrangements with in-state websites. Each state has its own rules, so it's important to check each state where you sell.",
     category: "Nexus"
   },
   {
     question: "What triggers marketplace nexus?",
-    answer: "Marketplace nexus is created when you sell through a marketplace like Amazon, Etsy, or eBay. In most states, the marketplace facilitator is responsible for collecting and remitting sales tax on your behalf. However, you may still need to register in states where you have direct sales or other nexus-creating activities.",
+    answer: "When you sell through a marketplace like Amazon, Etsy or eBay, the marketplace collects and remits the sales tax on those sales in every state that has a sales tax. But states differ on whether those marketplace sales count toward YOUR economic nexus threshold: most states (including California, New York and Texas) count them, while others (like Florida, Georgia and Colorado) don't. If your combined sales pass a state's threshold, you may need to register there and collect tax on your direct (non-marketplace) sales.",
     category: "Nexus"
   },
   
@@ -125,12 +125,12 @@ const faqs: FAQItem[] = [
   // E-commerce Specific
   {
     question: "Do I need to collect sales tax for online sales?",
-    answer: "Yes, if you have nexus in the customer's state. After the 2018 Wayfair decision, states can require online sellers to collect sales tax based on economic nexus (typically $100K in sales or 200 transactions). If you exceed these thresholds in a state, you must register, collect, and remit sales tax there.",
+    answer: "Yes, if you have nexus in the customer's state. After the 2018 Wayfair decision, states can require online sellers to collect sales tax based on economic nexus (usually $100,000 in sales into the state; some states also count 200 transactions). If you exceed these thresholds in a state, you must register, collect, and remit sales tax there.",
     category: "E-commerce"
   },
   {
     question: "Does Shopify/WooCommerce/Etsy handle my sales tax?",
-    answer: "Marketplaces like Etsy and Amazon collect and remit sales tax on your behalf in most states under marketplace facilitator laws. However, platforms like Shopify and WooCommerce are just e-commerce tools—you're responsible for collecting and remitting sales tax yourself, though they can help calculate rates.",
+    answer: "Marketplaces like Etsy and Amazon collect and remit sales tax on your behalf under marketplace facilitator laws, which every state with a sales tax now has. However, platforms like Shopify and WooCommerce are just e-commerce tools—you're responsible for collecting and remitting sales tax yourself, though they can help calculate rates.",
     category: "E-commerce",
     relatedLink: { text: "Shopify sales tax guide", href: "/blog/shopify-sales-tax-guide" }
   },

@@ -117,14 +117,13 @@ export async function POST(request: NextRequest) {
     const protocol = process.env.NODE_ENV === 'production' ? 'https' : 'http';
     const baseUrl = `${protocol}://${host}`;
 
-    // Debug logging
-    console.log('Creating checkout session with:', {
-      planId,
-      priceId: plan.priceId,
-      customerId,
-      host,
-      baseUrl,
-    });
+    // One free trial per customer: anyone who has had a subscription before
+    // (including a finished trial) checks out without another trial.
+    // (A row is created with status 'inactive' when the Stripe customer is made;
+    // any other status means they've subscribed or trialed before.)
+    const hasHadSubscription =
+      !!subscription &&
+      (!!subscription.stripeSubscriptionId || (subscription.status ?? 'inactive') !== 'inactive');
 
     // Create checkout session
     const result = await createCheckoutSession({
@@ -134,12 +133,13 @@ export async function POST(request: NextRequest) {
       customerId,
       successUrl: `${baseUrl}/settings?tab=billing&success=true`,
       cancelUrl: `${baseUrl}/settings?tab=billing&canceled=true`,
+      trialDays: hasHadSubscription ? 0 : 14,
     });
 
     if (result.error) {
-      console.error('Checkout session error:', result.error);
+      console.error('Checkout session error:', result.error, { planId });
       return NextResponse.json(
-        { error: result.error, debug: { planId, priceId: plan.priceId, customerId } },
+        { error: result.error },
         { status: 500 }
       );
     }

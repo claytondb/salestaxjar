@@ -1,6 +1,7 @@
 ---
 title: "What is Sales Tax Nexus? A Guide for Small Sellers"
 date: "2025-02-22"
+lastReviewed: "2026-09-25"
 excerpt: "Confused about sales tax nexus? Learn what it means, how economic nexus works, and how to know if you need to collect sales tax in different states."
 author: "Sails Team"
 category: "Basics"
@@ -32,7 +33,7 @@ This is the traditional type. You have physical nexus in a state if you have:
 
 This is the newer type, and it catches many online sellers off guard. After the 2018 Supreme Court case *South Dakota v. Wayfair*, states can require you to collect sales tax even without any physical presence, as long as you exceed certain sales thresholds.
 
-**Example:** If you're based in Texas but sell over $100,000 worth of products to customers in Florida, Florida says you have economic nexus and must collect their sales tax.
+**Example:** If you're based in Texas but sold over $100,000 worth of products to Florida customers through your own website last calendar year, Florida says you have economic nexus and must collect their sales tax. (Florida doesn't count your marketplace sales toward that $100,000.)
 
 ## Economic Nexus Thresholds by State
 
@@ -40,14 +41,14 @@ Every state sets its own threshold. Here are some common ones:
 
 | State | Threshold |
 |-------|-----------|
-| California | $500,000 in sales |
-| Texas | $500,000 in sales |
-| New York | $500,000 AND 100 transactions |
-| Florida | $100,000 in sales |
-| Pennsylvania | $100,000 in sales |
+| California | $500,000 in sales (prior or current calendar year) |
+| Texas | $500,000 in sales (prior 12 months) |
+| New York | $500,000 AND more than 100 transactions (prior 4 sales tax quarters) |
+| Florida | $100,000 in sales (prior calendar year) |
+| Pennsylvania | $100,000 in sales (prior calendar year) |
 | Most other states | $100,000 in sales |
 
-**Note:** Many states originally had a 200-transaction threshold as an alternative to the dollar amount, but most have removed it. New York and Connecticut still require both a dollar amount AND a transaction count. Always verify current rules with the state.
+**Note:** Many states originally had a 200-transaction threshold as an alternative to the dollar amount, and many have since removed it — today only about a third of states with a sales tax still count transactions. New York and Connecticut still require both a dollar amount AND a transaction count. Always verify current rules with the state.
 
 ## States Without Sales Tax
 
@@ -78,7 +79,7 @@ Once you have nexus in a state, you need to:
 3. **File sales tax returns** on schedule (monthly, quarterly, or annually depending on the state)
 4. **Remit the tax** you've collected to the state
 
-It sounds like a lot, but tools like Sails can automate most of this for you.
+It sounds like a lot, but tools like Sails can help you keep track of where you have nexus and when your returns are due.
 
 ## Common Nexus Mistakes to Avoid
 
@@ -98,8 +99,8 @@ Some states have lookback provisions and may charge penalties and interest for p
 
 Nexus rules determine where you need to collect sales tax. Physical nexus comes from having a presence in a state. Economic nexus comes from exceeding sales thresholds. As a small seller, start by collecting in your home state and expand as you grow.
 
-The rules can feel overwhelming, but the good news is you don't have to figure it all out alone. Sails tracks your nexus exposure automatically and alerts you when you're approaching thresholds in new states.
+The rules can feel overwhelming, but the good news is you don't have to figure it all out alone. Sails imports your orders, checks your sales against each state's nexus rules, and emails you threshold alerts.
 
 ---
 
-*Ready to stop worrying about nexus? [Try Sails free](/signup) and let us handle the complexity.*
+*Ready to stop worrying about nexus? [Try Sails free](/signup) and let us track the thresholds for you.*

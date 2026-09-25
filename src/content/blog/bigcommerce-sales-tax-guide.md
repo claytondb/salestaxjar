@@ -1,6 +1,7 @@
 ---
 title: "BigCommerce Sales Tax: Complete Setup Guide for Store Owners"
 date: "2026-02-26"
+lastReviewed: "2026-09-25"
 excerpt: "Learn how to set up sales tax on BigCommerce, from basic configuration to multi-state compliance. A practical guide for ecommerce store owners."
 author: "Sails Team"
 category: "Integrations"
@@ -14,7 +15,7 @@ BigCommerce offers powerful built-in tax features, but understanding how to conf
 You need to collect sales tax if you have **nexus** in a state. Nexus means a significant connection to that state:
 
 - **Physical presence**: An office, warehouse, employee, or inventory in the state
-- **Economic nexus**: Exceeding a state's sales threshold (typically $100,000 in sales or 200 transactions per year)
+- **Economic nexus**: Exceeding a state's sales threshold (typically $100,000 in sales per year; some states also count 200 transactions)
 
 If you ship from your home, you definitely have nexus in your home state. As your store grows, you'll trigger economic nexus in additional states where customers are located.
 
@@ -36,7 +37,7 @@ BigCommerce calculates rates automatically based on customer addresses. Availabl
 
 ### Option 3: Third-Party Tax Services
 
-Connect services like Avalara, TaxJar, or Sails for the most accurate real-time calculations and reporting.
+Connect services like Avalara or TaxJar for the most accurate real-time calculations, or Sails for nexus tracking and reporting (its BigCommerce connection is in beta).
 
 **Best for**: High-volume stores or complex product mixes
 
@@ -86,7 +87,7 @@ If you're on BigCommerce Plus or higher:
 
 ## Product Taxability in BigCommerce
 
-Not all products are taxed the same way. Common exemptions include:
+Not all products are taxed the same way. Common exemptions include (rules vary, so verify with each state):
 
 - **Clothing**: Exempt in some states (PA, NJ, MN, NY for items under $110)
 - **Food/groceries**: Exempt in many states
@@ -120,7 +121,7 @@ Once you exceed a state's threshold:
 
 ### Step 3: Consider Automation
 
-Manual tracking becomes impossible at scale. Tools like Sails pull your BigCommerce orders and calculate your sales by state automatically.
+Manual tracking becomes impossible at scale. Tools like Sails import your BigCommerce orders and total your sales by state (Sails' BigCommerce connection is in beta).
 
 ## BigCommerce Tax Reports
 
@@ -156,19 +157,19 @@ State rates are just the start. Many states have county and city taxes that can 
 For more accurate calculations and reporting:
 
 ### Avalara Integration
-BigCommerce has a native Avalara integration. Good for large stores but expensive.
+BigCommerce has a native Avalara integration. Built for larger businesses.
 
 ### TaxJar Integration
-Connects via app for automatic calculations. Mid-range pricing.
+Connects via app for automatic calculations. Plans from $39/month (as of September 2026).
 
 ### Sails Integration
-Pull BigCommerce orders automatically and get state-by-state breakdowns. [Connect your store →](/signup)
+Import your BigCommerce orders (beta) and get state-by-state breakdowns. [Connect your store →](/signup)
 
 ## Best Practices for BigCommerce Tax Compliance
 
 1. **Start simple**: Just collect in your home state until you grow
 2. **Monitor thresholds**: Watch your sales per state monthly
-3. **Register promptly**: When you hit a threshold, register within 30 days
+3. **Register promptly**: When you hit a threshold, register right away — when you must start collecting varies by state
 4. **Automate early**: The sooner you set up automatic tax, the fewer errors you'll make
 5. **Keep records**: Export your BigCommerce tax reports monthly
 6. **File on time**: Most states have monthly or quarterly filing deadlines
@@ -188,4 +189,4 @@ The cost of a tax solution quickly pays for itself in time saved and penalties a
 
 BigCommerce provides solid tax tools out of the box. For most new stores, enabling automatic tax and registering in your home state gets you started. As you grow into multiple states, the complexity increases, but the fundamentals stay the same: know where you have nexus, collect the right amount, and file on time.
 
-Need help tracking your BigCommerce sales tax? [Try Sails free](/signup) - we'll connect to your store and show you exactly where you stand.
+Need help tracking your BigCommerce sales tax? [Try Sails free](/signup) - we'll connect to your store (our BigCommerce connection is in beta) and show you where you stand.

@@ -2,6 +2,7 @@
 title: "eBay Sales Tax Guide for Sellers: Complete 2026 Guide"
 description: "Learn how eBay handles sales tax collection, what sellers need to know about marketplace facilitator laws, and how to stay compliant as an eBay seller."
 date: "2026-02-27"
+lastReviewed: "2026-09-25"
 author: "Sails Team"
 tags: ["ebay", "marketplace", "sales tax", "ecommerce"]
 image: "/blog/images/06-ebay-seller-sales-tax-illustration.jpg"
@@ -20,7 +21,7 @@ As a marketplace facilitator, **eBay collects and remits sales tax on your behal
 - eBay sends the tax directly to state authorities
 - You receive the item price (minus eBay fees) without sales tax included
 
-**The bottom line:** You don't need to collect, track, or remit sales tax for eBay sales in these states.
+**The bottom line:** You don't need to collect or remit sales tax for eBay sales in these states.
 
 ## What Shows Up in Your eBay Payments
 
@@ -41,7 +42,7 @@ eBay collects sales tax in all states with a general sales tax:
 
 **States with sales tax collection:** Alabama, Arizona, Arkansas, California, Colorado, Connecticut, Florida, Georgia, Hawaii, Idaho, Illinois, Indiana, Iowa, Kansas, Kentucky, Louisiana, Maine, Maryland, Massachusetts, Michigan, Minnesota, Mississippi, Missouri, Nebraska, Nevada, New Jersey, New Mexico, New York, North Carolina, North Dakota, Ohio, Oklahoma, Pennsylvania, Rhode Island, South Carolina, South Dakota, Tennessee, Texas, Utah, Vermont, Virginia, Washington, West Virginia, Wisconsin, Wyoming, and Washington D.C.
 
-**No sales tax:** Alaska, Delaware, Montana, New Hampshire, Oregon (eBay doesn't collect tax for these states)
+**No statewide sales tax:** Alaska, Delaware, Montana, New Hampshire, Oregon (Alaska does have local sales taxes, many collected through the Alaska Remote Seller Sales Tax Commission)
 
 ## Do You Need a Sales Tax Permit?
 
@@ -64,8 +65,9 @@ If you're selling regularly as a business, you may still need:
 If you sell on eBay AND through your own website or other platforms:
 
 - eBay handles eBay sales
-- You must handle sales tax for other channels
-- Consider a sales tax automation tool like Sails
+- You must handle sales tax for your own website and any other channel that doesn't collect it for you
+- Some states count your eBay sales toward the threshold for those direct sales
+- Consider a nexus-tracking tool like Sails
 
 ## eBay and Sales Tax Nexus
 
@@ -74,11 +76,11 @@ If you sell on eBay AND through your own website or other platforms:
 Unlike Amazon FBA, eBay sellers typically don't store inventory in eBay warehouses. Your nexus footprint is usually smaller:
 
 - **Physical nexus:** Your home state and any states where you have inventory, employees, or offices
-- **Economic nexus:** States where you exceed sales thresholds ($100K in sales or 200 transactions, typically)
+- **Economic nexus:** States where you exceed sales thresholds (typically $100K in sales; some states also count 200 transactions)
 
 ### Does eBay Create Nexus for Me?
 
-No. Selling on eBay itself doesn't create nexus in states where you have no physical presence. eBay's marketplace facilitator status means they handle tax collection regardless of your nexus status.
+Not physical nexus—but it can count toward economic nexus. Some states (such as California, New York and Texas) count your eBay sales toward your own threshold, while others (such as Florida, Georgia and Illinois) leave them out. That matters if you also sell direct. Either way, eBay's marketplace facilitator status means they handle tax collection on eBay sales regardless of your nexus status.
 
 ## Tax Reporting for eBay Sellers
 
@@ -86,7 +88,7 @@ No. Selling on eBay itself doesn't create nexus in states where you have no phys
 
 eBay will send a 1099-K if you meet IRS thresholds:
 
-- **2026 threshold:** $600 in annual sales
+- **Threshold:** set by the IRS—check its current 1099-K reporting threshold for the tax year
 - Reports your gross merchandise value
 - Does NOT include sales tax (eBay reports that separately)
 
@@ -120,7 +122,7 @@ No—eBay automatically adds the appropriate sales tax at checkout. Listing pric
 
 ### "What about shipping—is it taxed?"
 
-In most states, shipping is taxable when sold alongside taxable goods. eBay calculates this automatically based on the destination state's rules.
+In most states, shipping is taxable when sold alongside taxable goods (rules vary, so verify with the state). eBay calculates this automatically based on the destination state's rules.
 
 ### "I sold to someone overseas. Is there sales tax?"
 
@@ -167,7 +169,7 @@ Download monthly reports from Seller Hub to maintain your records.
 - Keep transaction records for at least 3-4 years
 - Download annual tax documents from eBay
 - Track your off-eBay sales separately
-- Register for sales tax if you sell through other channels
+- Register for sales tax where you have nexus if you sell through other channels
 
 ### ❌ Avoid This
 
@@ -195,7 +197,7 @@ Consider a sales tax solution when:
 
 ## Need Help With Multi-Channel Sales Tax?
 
-If you sell on eBay plus other platforms, managing sales tax gets complicated. [Sails](/) automates sales tax calculation and filing for your direct sales channels, so you can focus on growing your business.
+If you sell on eBay plus other platforms, managing sales tax gets complicated. [Sails](/) imports orders from your direct sales channels, checks them against each state's nexus rules and emails you before filing deadlines, so you can focus on growing your business.
 
 ---
 

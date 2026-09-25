@@ -21,7 +21,6 @@ import {
   MapPin, 
   Bell, 
   LayoutDashboard, 
-  Link2, 
   ClipboardList,
   Check,
   Calendar,
@@ -31,11 +30,18 @@ import {
   X,
   ChevronDown,
   ChevronUp,
-  ShieldCheck,
-  Star,
 } from 'lucide-react';
 
 const ICON_CLASS = "w-8 h-8 text-theme-accent";
+
+const FEATURE_ICONS: Record<string, React.ReactNode> = {
+  calculator: <Calculator className={ICON_CLASS} />,
+  nexus_tracking: <MapPin className={ICON_CLASS} />,
+  threshold_alerts: <AlertTriangle className={ICON_CLASS} />,
+  deadline_reminders: <Bell className={ICON_CLASS} />,
+  reports: <LayoutDashboard className={ICON_CLASS} />,
+  filing_summaries: <ClipboardList className={ICON_CLASS} />,
+};
 
 export default function Home() {
   const { user, isLoading } = useAuth();
@@ -218,7 +224,7 @@ export default function Home() {
 
           {/* Trust Signals */}
           <div className="flex flex-wrap justify-center gap-3 mb-8">
-            {["Free plan, no credit card", "No accounting degree needed", `State rules reviewed ${NEXUS_RULES_REVIEWED_LABEL}`, "Read-only store access"].map((text, i) => (
+            {["Free plan, no credit card", "No accounting degree needed", `State rules reviewed ${NEXUS_RULES_REVIEWED_MONTH}`, "Read-only store access"].map((text, i) => (
               <div key={i} className="px-3 py-1.5 rounded-full flex items-center text-sm" style={{ backgroundColor: 'var(--bg-card)', opacity: 0.8 }}>
                 <Check className="w-3.5 h-3.5 text-theme-muted" />
                 <span className="text-theme-muted ml-1.5">{text}</span>
@@ -360,46 +366,25 @@ export default function Home() {
             Works With Your Platform
           </h2>
           <p className="text-theme-muted text-center mb-12 max-w-2xl mx-auto">
-            Connect your store in minutes. No developer needed.
+            Connect your store in minutes. Sails only asks for read access to your orders.
           </p>
           <div className="grid sm:grid-cols-3 gap-8">
-            {[
-              {
-                color: '#96bf48',
-                letter: 'S',
-                platform: 'Shopify',
-                desc: 'Connect via OAuth in one click. We sync your orders automatically and track nexus across all your Shopify sales.',
-                badge: 'Direct Integration',
-              },
-              {
-                color: '#7f54b3',
-                letter: 'W',
-                platform: 'WooCommerce',
-                desc: 'Install our lightweight plugin and we pull in your order history. Works with any WooCommerce store on any host.',
-                badge: 'Free Plugin',
-              },
-              {
-                color: '#34313f',
-                letter: 'B',
-                platform: 'BigCommerce',
-                desc: 'BigCommerce integration connects to your store API. Import historical orders and track new sales in real time.',
-                badge: 'Coming Soon',
-              },
-            ].map((p, i) => (
-              <div key={i} className="card-theme rounded-xl p-6 text-center">
+            {INTEGRATIONS.filter((p) => p.status === 'live').map((p) => (
+              <div key={p.id} className="card-theme rounded-xl p-6 text-center">
                 <div className="w-16 h-16 rounded-2xl flex items-center justify-center text-white font-bold text-2xl mx-auto mb-4" style={{ backgroundColor: p.color }}>
-                  {p.letter}
+                  {p.name.charAt(0)}
                 </div>
-                <h3 className="text-xl font-semibold text-theme-primary mb-2">{p.platform}</h3>
+                <h3 className="text-xl font-semibold text-theme-primary mb-2">{p.name}</h3>
                 <span className="inline-block text-xs px-2 py-1 rounded-full font-medium mb-3" style={{ backgroundColor: 'var(--accent-subtle)', color: 'var(--accent-primary)' }}>
-                  {p.badge}
+                  {STATUS_LABEL[p.status]} · {p.connection}
                 </span>
-                <p className="text-theme-muted text-sm">{p.desc}</p>
+                <p className="text-theme-muted text-sm">{p.summary}</p>
               </div>
             ))}
           </div>
-          <p className="text-center text-theme-muted text-sm mt-8">
-            Also supports manual CSV import for Amazon, Etsy, eBay, and more.
+          <p className="text-center text-theme-muted text-sm mt-8 max-w-2xl mx-auto">
+            <span className="font-medium text-theme-secondary">In beta:</span> {betaIntegrationNames()}.
+            Beta connections work, but haven&apos;t been tested with many real stores yet — please double-check the numbers they produce.
           </p>
         </div>
       </section>
@@ -504,43 +489,36 @@ export default function Home() {
           </p>
           
           <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8">
-            {[
-              { icon: <Calculator className={ICON_CLASS} />, title: "Tax Calculator", desc: "Know exactly how much tax to collect, instantly", comingSoon: false },
-              { icon: <MapPin className={ICON_CLASS} />, title: "Nexus Tracking", desc: "See which states you owe tax in (and which you don't)", comingSoon: false },
-              { icon: <Bell className={ICON_CLASS} />, title: "Deadline Alerts", desc: "Get reminded before every filing deadline", comingSoon: false },
-              { icon: <Link2 className={ICON_CLASS} />, title: "Store Integrations", desc: "Connect Shopify, WooCommerce, or BigCommerce in minutes.", comingSoon: false },
-              { icon: <LayoutDashboard className={ICON_CLASS} />, title: "Simple Dashboard", desc: "Built for makers, not accountants", comingSoon: false },
-              { icon: <ClipboardList className={ICON_CLASS} />, title: "Filing Assistance", desc: "Know exactly what to file and when", comingSoon: true }
-            ].map((feature, i) => (
-              <div key={i} className="card-theme rounded-xl p-6 hover:border-theme-accent transition relative">
-                {feature.comingSoon && (
+            {FEATURES.filter((f) => f.id !== 'auto_filing').map((feature) => (
+              <div key={feature.id} className="card-theme rounded-xl p-6 hover:border-theme-accent transition relative">
+                {feature.status !== 'live' && (
                   <span className="absolute top-3 right-3 text-xs px-2 py-1 rounded-full font-medium" style={{ backgroundColor: 'rgba(234, 179, 8, 0.2)', color: 'var(--warning)' }}>
-                    Coming Soon
+                    {STATUS_LABEL[feature.status]}
                   </span>
                 )}
-                <div className="mb-4">{feature.icon}</div>
-                <h3 className="text-lg sm:text-xl font-semibold text-theme-primary mb-2">{feature.title}</h3>
-                <p className="text-theme-muted text-sm sm:text-base">{feature.desc}</p>
+                <div className="mb-4">{FEATURE_ICONS[feature.id] ?? <ClipboardList className={ICON_CLASS} />}</div>
+                <h3 className="text-lg sm:text-xl font-semibold text-theme-primary mb-2">{feature.name}</h3>
+                <p className="text-theme-muted text-sm sm:text-base">{feature.summary}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Pricing Preview + Avalara Comparison */}
+      {/* Pricing Preview */}
       <section id="pricing" className="py-12 sm:py-20 px-4">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-theme-primary mb-4">
             Pricing Built for Real Sellers
           </h2>
           <p className="text-theme-muted mb-8">
-            Not enterprise budgets. Not VC-backed growth plans. Just honest pricing for small businesses.
+            Start free. Pay when you want Sails watching more orders and more stores for you.
           </p>
           
           <div className="grid sm:grid-cols-4 gap-4 max-w-3xl mx-auto mb-8">
             <div className="card-theme rounded-xl p-6">
               <div className="text-theme-accent font-bold text-2xl mb-1">Free</div>
-              <div className="text-theme-muted text-sm">Nexus monitoring</div>
+              <div className="text-theme-muted text-sm">Nexus monitoring + 50 orders/mo</div>
             </div>
             <div className="card-theme rounded-xl p-6 border-2 border-theme-accent">
               <div className="text-theme-accent font-bold text-2xl mb-1">$9/mo</div>
@@ -556,31 +534,11 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Avalara comparison callout */}
-          <div className="card-theme rounded-xl p-6 max-w-2xl mx-auto mb-8 border border-theme-primary">
-            <div className="flex items-center gap-2 justify-center mb-4">
-              <ShieldCheck className="w-5 h-5 text-theme-accent" />
-              <span className="font-semibold text-theme-primary">How Sails compares</span>
-            </div>
-            <div className="grid grid-cols-3 gap-4 text-center text-sm">
-              <div>
-                <div className="font-bold text-theme-primary mb-1">Sails</div>
-                <div className="text-2xl font-bold text-theme-accent">$9/mo</div>
-                <div className="text-theme-muted text-xs mt-1">Starter plan</div>
-              </div>
-              <div>
-                <div className="font-bold text-theme-primary mb-1">TaxJar</div>
-                <div className="text-2xl font-bold text-theme-secondary">$99/mo</div>
-                <div className="text-theme-muted text-xs mt-1">Entry plan</div>
-              </div>
-              <div>
-                <div className="font-bold text-theme-primary mb-1">Avalara</div>
-                <div className="text-2xl font-bold text-theme-secondary">$15K+/yr</div>
-                <div className="text-theme-muted text-xs mt-1">Average contract</div>
-              </div>
-            </div>
-            <p className="text-theme-muted text-xs mt-4">Same core compliance features. No enterprise pricing. No surprise fees.</p>
-          </div>
+          <p className="text-theme-muted text-sm max-w-2xl mx-auto mb-8">
+            For comparison, TaxJar&apos;s Starter plan is listed at $39/month (checked {COMPETITOR_FACTS_CHECKED_LABEL}).
+            TaxJar and similar tools also calculate tax at checkout and can file returns for you — Sails focuses on
+            telling you where you need to register and what to do next.
+          </p>
           
           <Link href="/pricing" className="inline-block btn-theme-primary px-8 py-3 rounded-lg font-semibold transition">
             See All Plans
@@ -647,13 +605,13 @@ export default function Home() {
             Get Back to Making Things
           </h2>
           <p className="text-theme-muted mb-8 text-lg">
-            Sales tax compliance for $9/month — not $19,000/year. Free forever tier available.
+            See where you stand in every state. Free plan available — no credit card needed.
           </p>
           <Link href="/signup" className="inline-block btn-theme-primary px-8 py-4 rounded-xl font-semibold text-lg transition transform hover:scale-105">
             Start Free — No Credit Card
           </Link>
           <p className="text-theme-muted text-sm mt-4">
-            Join small business owners who finally understand their sales tax obligations
+            Questions first? Email support@sails.tax — a real person answers.
           </p>
         </div>
       </section>

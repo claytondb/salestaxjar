@@ -1,7 +1,7 @@
 ---
 title: "2026 Sales Tax Deadlines Every Online Seller Should Know"
 date: "2026-02-20"
-excerpt: "Never miss a sales tax filing deadline again. Here's your complete guide to 2026 filing schedules, due dates, and tips for staying compliant."
+excerpt: "Stay ahead of your sales tax filing deadlines. Here's your complete guide to 2026 filing schedules, due dates, and tips for staying compliant."
 author: "Sails Team"
 category: "Compliance"
 readTime: "5 min read"
@@ -44,6 +44,8 @@ Some states (like Texas) use the 20th, while others might use the last day of th
 
 ## State-Specific Notes
 
+Use these notes as a starting point, and confirm your assigned filing frequency and due dates with each state — they can differ by seller and change over time.
+
 ### California
 - Due date: Last day of the month following the reporting period
 - Electronic filing required for most sellers
@@ -80,7 +82,7 @@ Pick a "tax day" (like the 15th) and always prepare your filings that day. Consi
 
 ### 3. Automate Where Possible
 
-Many states allow automatic payments. Even if you review the return manually, setting up autopay ensures you never accidentally miss the payment.
+Many states allow automatic payments. Even if you review the return manually, setting up autopay helps make sure you don't accidentally miss the payment.
 
 ### 4. File Even When You Owe Nothing
 
@@ -88,7 +90,7 @@ In most states, you must file a "zero return" even if you had no sales. Missing 
 
 ### 5. Keep Records Organized
 
-Maintain clean records throughout the month instead of scrambling at filing time. Your e-commerce platform and Sails can help with automated record-keeping.
+Maintain clean records throughout the month instead of scrambling at filing time. Your e-commerce platform and Sails can help: Sails imports your orders and gives you sales-by-state reports.
 
 ## What Happens If You Miss a Deadline?
 
@@ -108,7 +110,7 @@ Repeated late filings can put your sales tax permit at risk and may affect your 
 
 Sales tax deadlines aren't complicated once you know your schedule. The key is setting up systems that remind you ahead of time and keep your data organized throughout the month.
 
-Sails automatically tracks all your deadlines and sends reminders before each due date. You'll never be surprised by a filing deadline again.
+Sails keeps a filing deadline calendar and emails you reminders 7 days and 1 day before each due date — just confirm your assigned filing frequency and due dates with each state.
 
 ---
 

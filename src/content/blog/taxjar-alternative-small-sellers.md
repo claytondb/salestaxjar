@@ -1,7 +1,8 @@
 ---
 title: "Looking for a TaxJar Alternative? Here's What Small Sellers Should Know"
 date: "2026-03-11"
-excerpt: "TaxJar was acquired by Stripe and is pivoting toward enterprise. Their $99/mo plan is overpriced for sellers doing under $1M. Here's what to look for instead."
+lastReviewed: "2026-09-25"
+excerpt: "TaxJar was acquired by Stripe in 2021 and starts at $39/mo with no free plan (as of September 2026). If you mainly need nexus monitoring, here's what to look for instead."
 author: "Sails Team"
 category: "Guides"
 readTime: "7 min read"
@@ -14,18 +15,15 @@ Here's what's going on, what to look for in a replacement, and why small sellers
 
 ## What Happened to TaxJar?
 
-In 2021, Stripe acquired TaxJar for a reported $175 million. At the time, Stripe described it as a way to build out Stripe Tax, their native tax calculation product baked into the Stripe payment stack.
+In 2021, Stripe acquired TaxJar, and it has been part of Stripe ever since.
 
-Since the acquisition, TaxJar has been steadily integrating into the Stripe ecosystem. The product roadmap, the marketing, and the feature development have all shifted toward Stripe Tax — which is a fundamentally different product designed for companies processing payments through Stripe.
+**What TaxJar costs today (as of September 2026):**
 
-**What this means for independent sellers:**
+- There's no free plan — just a 30-day free trial
+- **Starter** starts at **$39/month** (up to 200 orders a month); **Professional** starts at **$99/month**
+- Filing through AutoFile costs extra: $50 per return on Starter, $55 per return on Professional
 
-- TaxJar's entry plan now starts at **$99/month** (with limited features)
-- The product is increasingly complex and enterprise-focused
-- Customer support response times have declined for lower-tier accounts
-- If you're not deeply embedded in the Stripe ecosystem, you're paying for infrastructure you don't need
-
-For a Shopify seller doing $80K/year or a WooCommerce store with $300K in revenue, $99/month ($1,188/year) is a significant expense for a tool that's mostly built for companies with dedicated finance teams.
+For a Shopify seller doing $80K/year or a WooCommerce store with $300K in revenue, $39–$99/month ($468–$1,188/year) is a significant expense if what you mainly need is to know where you have nexus.
 
 ## What You Actually Need as a Small Seller
 
@@ -43,24 +41,23 @@ Before comparing alternatives, it helps to define what sales tax compliance actu
 - Filing-ready reports you can hand to your accountant
 
 **What most small sellers don't need:**
-- Real-time tax calculation at checkout (your platform handles this)
-- Automated filing in all 50 states (you can file quarterly in most states)
+- Real-time tax calculation at checkout (Shopify has it built in; WooCommerce needs a plugin)
+- Automated filing in every state (many small sellers file quarterly — confirm the frequency each state assigns you)
 - Enterprise audit trails and compliance documentation
 - Cross-border international tax management
 
-The problem with TaxJar's current pricing is that you're paying for a lot of the "enterprise" bucket even if you only need the basics.
+The problem with TaxJar's current pricing is that you may be paying for features you don't use if you only need the basics.
 
 ## TaxJar vs. Alternatives: A Comparison
 
 | Feature | TaxJar | Avalara | Sails |
 |---|---|---|---|
-| Starting price | $99/mo | ~$1,500/yr+ | $9/mo |
-| Small seller focus | ❌ Pivoting away | ❌ Enterprise | ✅ Built for it |
-| Shopify integration | ✅ | ✅ | ✅ |
-| WooCommerce | ✅ | ✅ | ✅ |
-| Nexus monitoring | ✅ | ✅ | ✅ |
-| Filing automation | ✅ (extra cost) | ✅ (expensive) | Roadmap |
-| Setup time | ~30 min | Days/weeks | 5 min |
+| Starting price | $39/mo (as of September 2026) | Check with Avalara | Free / $9/mo |
+| Small seller focus | Starter plan up to 200 orders/mo | Built for larger businesses | ✅ Built for it |
+| Checkout tax calculation | ✅ | ✅ | Estimates only (WooCommerce plugin, Pro plan) |
+| Filing automation | ✅ ($50–$55 per return, as of September 2026) | ✅ | ❌ |
+
+*TaxJar and Avalara details as of September 2026.*
 
 ## What to Look for in a TaxJar Alternative
 
@@ -68,7 +65,7 @@ The problem with TaxJar's current pricing is that you're paying for a lot of the
 
 If you're doing under $1M/year in sales, you should not be paying $99–$200/month for sales tax software. Look for tools with transparent, low-cost entry tiers that match your actual revenue.
 
-TaxJar's pricing made sense when small sellers could access it for $19/month. At $99/month, you're subsidizing features built for their enterprise pivot.
+As of September 2026, TaxJar starts at $39/month (Starter, up to 200 orders/month) or $99/month (Professional), with AutoFile billed per return on top. If you mainly need nexus monitoring, that's more than you need to spend.
 
 ### 2. Platform integrations that actually work
 
@@ -88,24 +85,24 @@ Your accountant or tax preparer will need to see your tax collected by state. Th
 
 ## Sails: Built for Sellers Under $1M
 
-[Sails](https://sails.tax) is designed specifically for small online sellers — the kind TaxJar has been leaving behind.
+[Sails](https://sails.tax) is designed specifically for small online sellers.
 
 **Here's how it works:**
-1. Connect your Shopify or WooCommerce store (5-minute setup)
-2. We monitor your nexus across all 50 states
-3. You see exactly what you owe, when it's due, and get filing-ready reports
+1. Connect your Shopify or WooCommerce store
+2. Sails checks your sales against every state's economic nexus rules
+3. You get email alerts as you approach thresholds, reminders before filing deadlines, and sales-by-state reports you can export to CSV
 
 **Pricing:**
-- **Free**: Nexus monitoring for sellers just getting started
-- **Starter ($9/mo)**: Full nexus tracking, deadline alerts, filing reports — for side hustlers and small stores
-- **Pro ($29/mo)**: Multi-platform support, more connections, priority alerts
-- **Business ($59/mo)**: High-volume sellers with complex needs
+- **Free**: Nexus monitoring, alerts, reminders and reports — 1 store connection, up to 50 orders/month
+- **Starter ($9/mo)**: 2 store connections, up to 500 orders/month — for side hustlers and small stores
+- **Pro ($29/mo)**: 3 store connections, up to 5,000 orders/month, API access
+- **Enterprise ($79/mo)**: Unlimited — for high-volume sellers
 
-At $9/month vs. TaxJar's $99/month, Sails saves a typical small seller over $1,000/year — for the same core compliance features.
+At $9/month vs. TaxJar's $39/month Starter plan (as of September 2026), Sails costs about $360 less per year — but it's not the same product: TaxJar calculates tax at checkout and can file returns for you, while Sails focuses on nexus monitoring, deadline reminders and reports.
 
 ## The Bottom Line
 
-TaxJar was a great product for small sellers. After the Stripe acquisition, it's become something different: an enterprise-adjacent platform priced for companies with real finance teams.
+TaxJar is a solid product, especially if you want checkout calculation and filing in one place. But with no free plan and plans starting at $39/month (as of September 2026), it can be more than a small seller needs.
 
 If you're doing under $1M/year in e-commerce sales and you're shopping for a TaxJar alternative, look for:
 - Honest pricing (under $30/month for your tier)
@@ -113,8 +110,8 @@ If you're doing under $1M/year in e-commerce sales and you're shopping for a Tax
 - Nexus monitoring (not just calculation)
 - Simple, accountant-friendly reports
 
-You don't need $19,000/year software. You need something built for how you actually sell.
+You don't need enterprise software. You need something built for how you actually sell.
 
 ---
 
-*Ready to switch? [Try Sails free](https://sails.tax/signup) — no credit card required. Get nexus monitoring and deadline alerts in under 5 minutes.*
+*Ready to switch? [Try Sails free](https://sails.tax/signup) — no credit card required. Get nexus monitoring and deadline alerts by email.*

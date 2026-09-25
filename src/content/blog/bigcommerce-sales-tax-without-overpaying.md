@@ -1,7 +1,7 @@
 ---
 title: "How to Set Up Sales Tax on BigCommerce (Without Overpaying)"
 date: "2026-03-11"
-excerpt: "BigCommerce's native tax features won't cut it for multi-state compliance. Most merchants default to Avalara and overpay. Here's a better way."
+excerpt: "BigCommerce's native tax features won't cut it for multi-state compliance. Many merchants default to Avalara without checking whether it fits their size. Here's what to know."
 author: "Sails Team"
 category: "Integrations"
 readTime: "5 min read"
@@ -23,14 +23,9 @@ That second option sounds convenient — and it is. The problem is what it costs
 
 ## The Hidden Cost of BigCommerce's "Automatic Tax"
 
-Avalara is the engine behind BigCommerce's automatic tax feature. To use it at any serious volume, you need an Avalara account — and Avalara's pricing isn't cheap.
+Avalara is the engine behind BigCommerce's automatic tax feature. To use it at any serious volume, you need an Avalara account — and Avalara is built for larger businesses.
 
-For small and mid-size BigCommerce merchants, common scenarios:
-- Avalara's entry-level plans start around **$3,000–$5,000/year**
-- Mid-range plans often run **$10,000–$20,000/year**
-- Per-transaction fees stack on top of base pricing
-
-If your BigCommerce store is doing $200K–$500K in revenue, you could easily be spending 1–5% of your revenue just on tax calculation software. That's a real margin hit.
+For small and mid-size BigCommerce merchants, cost matters. We don't have verified current Avalara pricing, so get a quote and check it against your size before you commit.
 
 The merchants who feel this most are the ones who grew quickly, enabled Avalara because it was the default, and never questioned whether it was the right fit for their size.
 
@@ -39,7 +34,7 @@ The merchants who feel this most are the ones who grew quickly, enabled Avalara 
 For sales tax to work correctly on a multi-state BigCommerce store, you need:
 
 ### Rooftop-Level Accuracy
-Tax jurisdictions don't follow ZIP codes. A single ZIP code can span multiple tax districts with different rates. "Rooftop accuracy" means the calculation is based on the exact delivery address — down to the street level. This is what Avalara provides, and it's also what Sails provides.
+Tax jurisdictions don't follow ZIP codes. A single ZIP code can span multiple tax districts with different rates. "Rooftop accuracy" means the calculation is based on the exact delivery address — down to the street level. This is what Avalara provides.
 
 ### Real-Time Rate Updates
 Tax rates change constantly. Cities add taxes, counties adjust rates, states pass new laws. A good tax integration pulls current rates at checkout, not from a cached table.
@@ -52,7 +47,7 @@ This one seems obvious, but it's where a lot of BigCommerce merchants go wrong.
 
 ## Setting Up Sails for BigCommerce
 
-Sails gives you the same rooftop-accurate, real-time tax calculation as Avalara — at a fraction of the price. Here's how to connect it:
+Sails' BigCommerce connection is in beta. It imports your BigCommerce orders and checks your sales against every state's nexus rules; keep your checkout tax calculation in place alongside it. Here's how to connect it:
 
 ### Step 1: Create Your Sails Account
 
@@ -65,17 +60,16 @@ Go to [sails.tax](https://sails.tax) and sign up for a free account. No credit c
 3. Enter your BigCommerce store URL and API credentials
 4. Authorize the connection
 
-The integration uses BigCommerce's API to hook into your checkout flow. Tax gets calculated at the moment a customer enters their shipping address.
+The integration uses BigCommerce's API to import your orders.
 
 ### Step 3: Configure Your Settings
 
-- Set your **business address** (used for origin-based calculations where applicable)
-- Choose your **tax display preferences** (tax included in price vs. added at checkout)
+- Set your **business address**
 - Configure **nexus states** — the states where you're already registered to collect tax
 
 ### Step 4: Test It
 
-Place a test order with addresses in a few different states. Verify the tax rates look correct. Sails' dashboard shows you each calculation so you can see exactly what rate was applied and why.
+Place a test order and check that it shows up in your Sails dashboard.
 
 ### Step 5: Monitor Your Nexus Dashboard
 
@@ -85,14 +79,14 @@ Once connected, Sails starts tracking your sales by state. Your dashboard shows 
 
 Let's be concrete. Here's what you'd pay annually at different order volumes:
 
-| Monthly Orders | Avalara (est.) | Sails |
+| Monthly Orders | Avalara | Sails |
 |---------------|----------------|-------|
-| 100 | ~$3,000–$5,000/yr | Free |
-| 500 | ~$3,000–$5,000/yr | $108/yr (Starter) |
-| 2,000 | ~$5,000–$10,000/yr | $348/yr (Pro) |
-| 10,000 | ~$10,000–$20,000/yr | $708/yr (Business) |
+| 100 | Not verified | $108/yr (Starter) |
+| 500 | Not verified | $108/yr (Starter) |
+| 2,000 | Not verified | $348/yr (Pro) |
+| 10,000 | Not verified | $948/yr (Enterprise) |
 
-The gap is significant at every volume. For a small-to-mid-size BigCommerce store, switching from Avalara to Sails typically saves **$3,000–$15,000/year**.
+Get a quote from Avalara to compare. Keep in mind that Sails tracks nexus alongside your checkout tax calculation, so it isn't a like-for-like swap.
 
 ## Common BigCommerce Sales Tax Questions
 
@@ -106,20 +100,20 @@ Sails is currently focused on US sales tax. For international VAT and GST compli
 
 ### What happens to my existing Avalara setup if I switch?
 
-Your BigCommerce store will keep charging the rates Avalara calculated until you swap integrations. Once you switch to Sails, Sails handles the calculation going forward. You'll want to disable the Avalara connection in BigCommerce settings to avoid double-charging.
+Nothing changes at checkout. Sails' BigCommerce connection imports your orders for nexus tracking and reporting, so keep Avalara (or whatever calculates tax at your checkout) turned on.
 
 ### Can I use Sails if I also sell on Shopify or WooCommerce?
 
-Yes. If you run multiple storefronts, you can connect all of them to a single Sails account. Your nexus monitoring and reporting will consolidate across all channels.
+Yes. If you run multiple storefronts, you can connect them to a single Sails account (the number of stores depends on your plan). Your nexus monitoring and reporting will consolidate across your connected stores.
 
 ## When BigCommerce + Avalara Does Make Sense
 
-If you're doing $2M+ in annual revenue, selling complex taxable products across many industries, or need deep integration with an enterprise ERP system — Avalara might genuinely be the right tool. We're not here to tell you the most expensive option is always wrong.
+If you're doing $2M+ in annual revenue, selling complex taxable products across many industries, or need deep integration with an enterprise ERP system — Avalara might genuinely be the right tool. We're not here to tell you the enterprise option is always wrong.
 
 But if you're a growing BigCommerce store trying to get compliant without bleeding margin, you don't need enterprise software. You need something built for your size.
 
 ## Ready to Make the Switch?
 
-Setting up Sails takes about 15 minutes. You'll get real-time accuracy, nexus monitoring, and clean reporting — for a price that actually makes sense for your business.
+Setting up Sails takes about 15 minutes. You'll get nexus monitoring, deadline reminders, and clean reporting — for a price that actually makes sense for your business.
 
 **[Connect BigCommerce to Sails](https://sails.tax/signup)** — free to start, no contracts.

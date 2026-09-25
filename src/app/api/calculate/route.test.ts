@@ -214,9 +214,9 @@ describe('GET /api/calculate', () => {
       const response = await GET(request);
       const data = await response.json();
 
-      // CA combined rate is 8.82%
-      expect(data.data.combinedRate).toBeCloseTo(8.82, 1);
-      expect(data.data.taxAmount).toBeCloseTo(8.82, 1);
+      // CA combined rate is 9.03% (Tax Foundation, Jul 1 2026)
+      expect(data.data.combinedRate).toBeCloseTo(9.03, 1);
+      expect(data.data.taxAmount).toBeCloseTo(9.03, 1);
     });
 
     it('should calculate correct rate for Tennessee (highest tax)', async () => {

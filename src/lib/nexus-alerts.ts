@@ -235,7 +235,7 @@ export function generateAlertMessage(
 
   switch (level) {
     case 'exceeded':
-      return `Your sales in ${stateName} have reached ${salesFormatted}, exceeding the ${thresholdFormatted} economic nexus threshold. You need to register and start collecting sales tax.`;
+      return `Your sales in ${stateName} have reached ${salesFormatted}, over the ${thresholdFormatted} economic nexus threshold. You'll likely need to register with ${stateName} before you start collecting sales tax there.`;
     case 'warning':
       return `Your sales in ${stateName} have reached ${salesFormatted} — that's ${Math.round(percentage)}% of the ${thresholdFormatted} nexus threshold. You may need to register soon.`;
     case 'approaching':

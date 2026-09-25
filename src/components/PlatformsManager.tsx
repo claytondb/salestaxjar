@@ -36,6 +36,8 @@ interface PlatformConfig {
   features: string[];
   setupUrl?: string;
   comingSoon?: boolean;
+  /** 'live' | 'beta' — beta platforms haven't been tested with many real stores yet */
+  status?: 'live' | 'beta' | 'planned';
   connections: PlatformConnection[];
   connectedCount: number;
 }
@@ -623,6 +625,15 @@ export default function PlatformsManager() {
                 <div>
                   <h3 className="font-medium text-theme-primary flex items-center gap-2">
                     {platform.name}
+                    {platform.status === 'beta' && (
+                      <span
+                        className="px-2 py-0.5 text-xs rounded-full font-medium"
+                        style={{ backgroundColor: 'rgba(234, 179, 8, 0.15)', color: 'var(--warning)' }}
+                        title="Beta: this connection works but hasn't been tested with many real stores yet. Please double-check the orders it imports."
+                      >
+                        Beta
+                      </span>
+                    )}
                     {platform.connectedCount > 0 && (
                       <span className="px-2 py-0.5 btn-theme-primary/20 text-theme-accent text-xs rounded-full">
                         {platform.connectedCount} connected

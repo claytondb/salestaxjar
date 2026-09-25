@@ -140,6 +140,8 @@ export interface ConnectedPlatform {
 
 export interface NotificationPreferences {
   emailDeadlineReminders: boolean;
+  /** Threshold (economic nexus) alert emails */
+  emailNexusAlerts?: boolean;
   emailWeeklyDigest: boolean;
   emailNewRates: boolean;
   pushDeadlines: boolean;

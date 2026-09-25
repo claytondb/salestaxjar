@@ -22,7 +22,7 @@ Yes! As of 2026, Gumroad acts as a **marketplace facilitator** and handles sales
 
 ## What About Digital Products?
 
-This is where it gets interesting. Whether your digital products are even taxable depends on the state:
+This is where it gets interesting. Whether your digital products are even taxable depends on the state (and the rules change, so verify with each state):
 
 ### States That Tax Digital Products
 Many states now tax digital goods, including:
@@ -60,7 +60,7 @@ A handful of states require sellers to file returns showing marketplace sales, e
 
 ### 3. Track Your Overall Nexus
 
-If you sell on multiple platforms or have your own website, you need to track your total sales by state. You might create economic nexus in states where your combined sales exceed thresholds (typically $100,000/year or 200 transactions).
+If you sell on multiple platforms or have your own website, you need to track your total sales by state. You might create economic nexus in states where your combined sales exceed thresholds (typically $100,000/year in sales; some states also count 200 transactions, and some leave out sales made through marketplaces).
 
 ### 4. Keep Records
 
@@ -117,7 +117,7 @@ If you sell on Gumroad AND your own website AND Patreon, each platform handles t
 
 ### Ignoring State Registration Requirements
 
-Some states require registration even when a marketplace handles everything. Your home state almost certainly requires a business license and/or sales tax permit.
+Some states require registration even when a marketplace handles everything. Your home state may require a business license and/or sales tax permit—check with your state.
 
 ### Mixing Physical and Digital Products
 
@@ -138,8 +138,7 @@ Consider using a tool like Sails if you:
 
 - Sell on multiple platforms (Gumroad + website + others)
 - Are approaching economic nexus thresholds in multiple states
-- Sell a mix of digital and physical products
-- Want to track your overall tax exposure across channels
+- Want to track tax exposure from your own store (Sails imports Shopify and WooCommerce orders; it doesn't connect to Gumroad)
 - Need filing reminders for states that require returns
 
 ## The Bottom Line
@@ -155,4 +154,4 @@ For most small creators, Gumroad's marketplace facilitator status means you can 
 
 ---
 
-*Selling across multiple platforms and losing track of your tax obligations? [Try Sails free](/signup) to monitor your nexus and stay compliant.*
+*Selling across multiple platforms and losing track of your tax obligations? [Try Sails free](/signup) to monitor your nexus and get filing deadline reminders.*

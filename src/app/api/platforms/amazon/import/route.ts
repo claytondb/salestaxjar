@@ -174,7 +174,7 @@ export async function POST(request: NextRequest) {
             shippingCity: order.city,
             shippingZip: order.zip,
             shippingCountry: 'US',
-            rawData: JSON.stringify(order.raw),
+            rawData: null, // don't store the raw report row (buyer details)
           },
           update: {
             subtotal: order.totalAmount - order.taxAmount,
@@ -183,7 +183,7 @@ export async function POST(request: NextRequest) {
             shippingState: order.state,
             shippingCity: order.city,
             shippingZip: order.zip,
-            rawData: JSON.stringify(order.raw),
+            rawData: null, // don't store the raw report row (buyer details)
             updatedAt: new Date(),
           },
         });

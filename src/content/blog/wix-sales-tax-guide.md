@@ -1,6 +1,7 @@
 ---
 title: "Wix Sales Tax: Complete Guide for Store Owners"
 date: "2026-02-27"
+lastReviewed: "2026-09-25"
 excerpt: "Everything you need to know about collecting and managing sales tax on your Wix store. From setup to compliance, we cover it all."
 author: "Sails Team"
 category: "Integrations"
@@ -15,7 +16,7 @@ Running an online store on Wix means you'll eventually face the sales tax questi
 You need to collect sales tax if you have **nexus** in a state. Nexus means a significant connection to that state through:
 
 - **Physical presence**: A home office, warehouse, employee, or inventory in the state
-- **Economic nexus**: Exceeding a state's sales threshold (typically $100,000 in sales or 200 transactions per year)
+- **Economic nexus**: Exceeding a state's sales threshold (typically $100,000 in sales per year; some states also count 200 transactions)
 
 Most Wix store owners start with nexus only in their home state. As sales grow, you'll likely trigger economic nexus in additional states.
 
@@ -100,14 +101,13 @@ Wix's built-in tax features work well for simple setups. You might need addition
 
 ### How Sails Helps Wix Sellers
 
-Sails connects to your Wix store to import order data, then provides:
+Sails doesn't connect to Wix, so it can't import your Wix orders. If you also sell through a store Sails does connect to (such as Shopify or WooCommerce), it provides:
 
 - Nexus exposure tracking across all states
 - Alerts when you approach economic nexus thresholds
-- Filing-ready reports that match state requirements
-- A clear picture of your multi-state tax obligations
+- Sales-by-state reports with CSV export
 
-This doesn't replace Wix's tax calculation—it adds reporting and compliance tools on top.
+This doesn't replace Wix's tax calculation, and it won't include your Wix sales.
 
 ## Filing Sales Tax Returns
 
@@ -128,7 +128,7 @@ State returns typically require:
 - Tax collected
 - Tax due (may differ from collected if you over/under-collected)
 
-Keep good records of all transactions. Wix's order export helps, but dedicated tools like Sails organize this data specifically for filing.
+Keep good records of all transactions. Wix's order export helps.
 
 ## Common Wix Sales Tax Mistakes
 
@@ -138,7 +138,7 @@ Never collect sales tax in a state until you're registered there. Register first
 
 ### Mistake 2: Ignoring Economic Nexus
 
-Even without physical presence, selling $100,000+ in a state (or 200+ transactions in some states) creates nexus. Track your sales by state and register when you approach thresholds.
+Even without physical presence, selling $100,000+ into most states (or 200+ transactions in some states) creates nexus. Track your sales by state and register when you approach thresholds.
 
 ### Mistake 3: Incorrect Business Address
 
@@ -160,7 +160,7 @@ Wix provides order reports that include tax information:
 2. Export your sales data
 3. Filter or pivot by state to see tax collected per region
 
-For state filing, you'll likely need to reformat this data. Tools like Sails automate this process.
+For state filing, you'll likely need to reformat this data.
 
 ## Multi-State Selling Tips
 
@@ -170,7 +170,7 @@ As your Wix store grows, you'll deal with more states. Here's how to stay organi
 2. **Register promptly**: Don't delay registration once you have nexus
 3. **Keep a calendar**: Note all filing deadlines across states
 4. **Document everything**: Save order exports and filing confirmations
-5. **Use automation**: Tools like Sails reduce manual tracking
+5. **Use automation**: Tools that import your orders reduce manual tracking
 
 ## Getting Help
 
@@ -182,4 +182,4 @@ Sales tax rules change frequently, and each state has unique requirements. If yo
 
 ---
 
-*Questions about Wix sales tax? [Sign up for Sails](/signup) to track your multi-state obligations and simplify compliance.*
+*Questions about Wix sales tax? Sails doesn't connect to Wix, but if you also sell on Shopify or WooCommerce, [sign up for Sails](/signup) to track your multi-state obligations.*

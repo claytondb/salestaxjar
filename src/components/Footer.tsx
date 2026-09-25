@@ -29,7 +29,7 @@ export default function Footer() {
             <ul className="space-y-2 text-theme-muted text-sm">
               <li><Link href="/calculator" className="hover:text-theme-primary transition">Tax Calculator</Link></li>
               <li><Link href="/nexus" className="hover:text-theme-primary transition">Nexus Tracker</Link></li>
-              <li><Link href="/filings" className="hover:text-theme-primary transition">Filing Management</Link></li>
+              <li><Link href="/filings" className="hover:text-theme-primary transition">Filing Calendar</Link></li>
               <li><Link href="/#pricing" className="hover:text-theme-primary transition">Pricing</Link></li>
               <li><Link href="/#features" className="hover:text-theme-primary transition">Features</Link></li>
             </ul>
@@ -85,13 +85,13 @@ export default function Footer() {
         {/* Compliance Badges */}
         <div className="flex justify-center gap-4 mt-8 text-theme-muted text-xs">
           <span className="px-2 py-1 border border-theme-secondary rounded flex items-center gap-1">
-            <Lock className="w-3 h-3" /> SSL Secured
+            <Lock className="w-3 h-3" /> Encrypted connections
           </span>
           <span className="px-2 py-1 border border-theme-secondary rounded flex items-center gap-1">
-            <Shield className="w-3 h-3" /> GDPR Compliant
+            <Shield className="w-3 h-3" /> Read-only store access
           </span>
           <span className="px-2 py-1 border border-theme-secondary rounded flex items-center gap-1">
-            <Shield className="w-3 h-3" /> CCPA Compliant
+            <Shield className="w-3 h-3" /> No tracking cookies
           </span>
         </div>
       </div>

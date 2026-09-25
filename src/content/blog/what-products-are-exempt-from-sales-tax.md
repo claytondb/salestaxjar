@@ -12,7 +12,7 @@ One of the most confusing parts of sales tax for sellers is figuring out which p
 
 A jar of peanut butter might be tax-free in Ohio but taxable in Arkansas. A winter coat might be exempt in Pennsylvania but taxed in California. Software might be taxable in one state and treated as a non-taxable service in another.
 
-This guide covers the most common product exemption categories, explains why the rules vary, and helps you figure out how to handle your specific product mix.
+This guide covers the most common product exemption categories, explains why the rules vary, and helps you figure out how to handle your specific product mix. Rules change often, so verify any state's current rules with its department of revenue before relying on the lists below.
 
 ---
 
@@ -36,12 +36,9 @@ Food is one of the most complex exemption categories because the definition of "
 ### Generally Exempt States
 Most states that exempt food define it as unprepared food items intended for home consumption — basically, what you'd buy at a grocery store.
 
-States that fully exempt groceries include: Alabama, California, Colorado, Georgia, Idaho, Illinois (mostly), Iowa, Kansas (partially), Louisiana, Maine, Michigan, Minnesota, Mississippi, Missouri, Nebraska, Nevada, New Jersey, New Mexico, New York, North Dakota, Ohio, Oklahoma, Oregon, Pennsylvania, South Carolina, Tennessee, Texas, Utah, Vermont, Virginia, West Virginia, Wisconsin, Wyoming.
+Most states exempt groceries from their state sales tax. A handful still tax groceries at the full rate, and several tax them at a reduced rate. These rules have changed often in the last few years — for example, Illinois dropped its 1% state grocery tax on January 1, 2026, while letting local governments add their own.
 
-### Taxed States
-A handful of states tax groceries at the full rate or a reduced rate:
-- **Hawaii, Idaho, Kansas, Oklahoma, South Dakota** — Tax groceries at the full rate
-- **Arkansas, Illinois, Missouri, Tennessee, Utah, Virginia** — Tax groceries at a reduced rate (1–4%)
+*Because grocery rules change frequently, check each state's current treatment before you sell food into it.*
 
 ### The "Prepared Food" Exception
 
@@ -209,7 +206,7 @@ Even with good tooling, periodic review helps catch products that may have been 
 
 ---
 
-*Exemption rules are complex, but you don't have to manage them manually. [Sails](https://sails.tax) automatically applies the right exemption rules when calculating sales tax at checkout — so you collect the right amount (and don't over-collect on exempt products). [Start free →](https://sails.tax/signup)*
+*Exemption rules are complex. [Sails](https://sails.tax) doesn't apply exemptions at checkout, but it does check your sales against every state's nexus rules and email you threshold alerts and filing reminders — so you know where you need to collect. [Start free →](https://sails.tax/signup)*
 
 ---
 

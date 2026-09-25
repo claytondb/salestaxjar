@@ -1,7 +1,8 @@
 ---
 title: "WooCommerce vs Shopify: Which Is Better for Sales Tax Compliance?"
 date: "2026-03-11"
-excerpt: "Shopify has built-in sales tax tools free under $100K. WooCommerce needs a plugin. Here's a complete comparison of how both platforms handle sales tax — and where each one falls short."
+lastReviewed: "2026-09-25"
+excerpt: "Shopify has built-in sales tax tools that are free for your first $100K in U.S. sales. WooCommerce needs a plugin. Here's a complete comparison of how both platforms handle sales tax — and where each one falls short."
 author: "Sails Team"
 category: "Platform Guides"
 readTime: "10 min read"
@@ -18,36 +19,27 @@ Shopify and WooCommerce approach sales tax very differently. One has compliance 
 
 Shopify includes basic sales tax calculation for free on every plan. No third-party plugin required.
 
-### Shopify Tax (Free Tier)
+### Shopify Tax
 
-Shopify's built-in tax system automatically:
-- Calculates the correct state and local tax rates for U.S. customers based on ship-to address
+Shopify's built-in tax system:
+- Calculates state and local tax for U.S. customers based on the ship-to address
 - Updates rates when states change them
 - Applies product exemptions for common categories
-- Generates basic sales tax reports
+- Generates sales tax reports
+- Shows **tax liability insights** — where your Shopify sales may have crossed a state's economic nexus threshold (it only counts sales processed through Shopify)
 
-For stores doing **under $100,000 in annual revenue**, Shopify Tax is included with no additional fee. This covers the majority of small sellers.
-
-### Shopify Tax (Paid: $0.35% of revenue over $100K)
-
-Once you cross $100,000 in annual U.S. sales, Shopify charges a fee for their enhanced tax features. The fee is assessed on revenue above $100K at 0.35% per year ($350 per $100K over the threshold).
-
-In exchange, you get:
-- Rooftop-level accuracy (calculations down to street-level addresses, not just zip code)
-- Economic nexus tracking across all 50 states
-- Automatic jurisdiction updates
-- Liability insights
+**Pricing (as of September 2026):** Shopify Tax is free for your first $100,000 in U.S. sales — per calendar year for stores created before May 13, 2026, or as a one-time allowance for stores created after that. After that, Shopify charges 0.35% per U.S. order on Basic, Grow and Advanced plans (0.25% on Plus), capped at $0.99 per order.
 
 ### What Shopify Tax Doesn't Do
 
-Shopify Tax calculates sales tax — it doesn't file returns for you. You still need to:
+Shopify Tax calculates sales tax, but it only files returns for you as a paid add-on ($75 per generated return on Basic, Grow and Advanced; $50 on Plus, as of September 2026). You still need to:
 - Register for sales tax permits in each nexus state
-- File periodic returns with each state
+- File periodic returns with each state (unless you pay for automated filing)
 - Remit the tax you've collected
 
-Shopify will tell you how much you collected in each state, but you have to do the paperwork yourself (or use a third-party integration).
+Shopify will tell you how much you collected in each state, but you have to do the paperwork yourself (or pay for Shopify's automated filing or a third-party integration).
 
-**Another gap:** Economic nexus monitoring in the free tier is limited. If you're approaching a threshold in a new state, Shopify may not alert you proactively.
+**Another gap:** Shopify's nexus insights only see sales processed through Shopify. If you also sell on Amazon, Etsy or another store, you need to add those sales yourself — and states differ on whether marketplace sales count.
 
 ---
 
@@ -74,16 +66,16 @@ To handle sales tax accurately in WooCommerce, you need a plugin. Your main opti
 
 **WooCommerce > TaxJar**
 - Direct integration with TaxJar
-- Starts at $19/month (varies)
-- Automatic calculations, filing automation available at higher tiers
+- Starts at $39/month (as of September 2026)
+- Automatic calculations; AutoFile filing costs $50–$55 per return extra (as of September 2026)
 - Good accuracy and reliable rate updates
 
 **Third-party plugins (Sails, etc.)**
 - [Sails](https://sails.tax) integrates directly with WooCommerce via plugin
-- Automatically calculates sales tax at checkout
-- Tracks economic nexus thresholds in real time
+- Calculates sales tax at checkout
+- Checks your sales against every state's nexus thresholds
 - Works alongside your existing WooCommerce setup
-- Plans starting at $9/month
+- Free plan; paid plans from $9/month
 
 ### WooCommerce's Flexibility (The Double-Edged Sword)
 
@@ -99,11 +91,11 @@ The downside: that flexibility requires setup and maintenance. When tax rates ch
 |---|---|---|
 | **Built-in tax calculation** | ✅ Yes, automatic | ⚠️ Manual only (plugin required for automatic) |
 | **Automatic rate updates** | ✅ Yes | ⚠️ Depends on plugin |
-| **Economic nexus tracking** | ⚠️ Paid tier only | ⚠️ Plugin required |
+| **Economic nexus tracking** | ✅ For Shopify sales only | ⚠️ Plugin required |
 | **Product exemptions** | ✅ Common categories built in | ⚠️ Plugin dependent |
-| **Filing automation** | ❌ Not included | ❌ Plugin required (extra cost) |
-| **Cost for basic compliance** | Free under $100K/year | Free plugin available (basic) |
-| **Cost for full compliance** | 0.35% of revenue over $100K | ~$9–$19+/month depending on plugin |
+| **Filing automation** | ⚠️ Paid add-on ($50–$75 per return, as of September 2026) | ❌ Plugin required (extra cost) |
+| **Cost for basic compliance** | Free for first $100K in U.S. sales | Free plugin available (basic) |
+| **Cost for full compliance** | 0.35% per order after $100K (max $0.99) | Varies by plugin |
 | **Setup complexity** | Low | Medium–High |
 | **Customization** | Limited | Extensive |
 | **Best for** | Sellers who want simplicity | Sellers who need custom flexibility |
@@ -118,7 +110,7 @@ The downside: that flexibility requires setup and maintenance. When tax rates ch
 
 ### Scenario 2: Established seller at $200K/year, multi-state nexus
 
-**Both require third-party help.** Shopify's built-in tool handles calculation but not filing. WooCommerce's plugin ecosystem has more filing automation options. At this level, the platform matters less than the compliance layer you add on top — which is where tools like Sails come in.
+**Both require third-party help.** Shopify's built-in tool handles calculation, but filing is a paid per-return add-on. WooCommerce's plugin ecosystem has more filing automation options. At this level, the platform matters less than the compliance layer you add on top — which is where tools like Sails come in.
 
 ### Scenario 3: B2B seller with exemption certificates
 
@@ -130,13 +122,13 @@ The downside: that flexibility requires setup and maintenance. When tax rates ch
 
 ---
 
-## The Filing Problem Neither Platform Solves
+## The Filing Problem Neither Platform Solves for Free
 
-Here's something worth being clear about: **both Shopify and WooCommerce handle sales tax collection. Neither handles sales tax filing.**
+Here's something worth being clear about: **both Shopify and WooCommerce handle sales tax collection. Shopify only files returns for a per-return fee, and WooCommerce doesn't file at all without a paid plugin.**
 
 Collecting the right amount at checkout is step one. Step two is taking what you collected, calculating the correct amount owed per state, filing returns on time, and remitting the funds. That's a separate workflow that neither platform's built-in tools fully automate.
 
-This is where a purpose-built compliance tool matters most. The platforms handle the customer-facing calculation. A tool like Sails handles the back-end compliance: nexus monitoring, deadline reminders, and filing support — across both platforms.
+This is where a purpose-built compliance tool matters most. The platforms handle the customer-facing calculation. A tool like Sails helps with the back-end compliance: nexus monitoring, deadline reminders, and sales-by-state reports — across both platforms.
 
 ---
 
@@ -150,8 +142,8 @@ Either way, once you're past basic calculation — once you need to track nexus,
 
 ---
 
-*[Sails](https://sails.tax) integrates with both Shopify and WooCommerce (plus BigCommerce). Connect your store, and Sails handles sales tax calculation, nexus tracking, and filing reminders — whether you're on Shopify or WordPress. Plans start free. [See how it works →](https://sails.tax)*
+*[Sails](https://sails.tax) integrates with both Shopify and WooCommerce (plus BigCommerce, in beta). Connect your store, and Sails imports your orders, tracks nexus, and emails filing reminders — whether you're on Shopify or WordPress. Plans start free. [See how it works →](https://sails.tax)*
 
 ---
 
-*Last updated: March 2026. Platform features and pricing change frequently. Verify current Shopify Tax and WooCommerce plugin pricing before making decisions. This is not legal or tax advice.*
+*Last reviewed: September 25, 2026. Platform features and pricing change frequently. Verify current Shopify Tax and WooCommerce plugin pricing before making decisions. This is not legal or tax advice.*

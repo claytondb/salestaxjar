@@ -54,7 +54,7 @@ export function getAlertConfig(level: ExposureStatus): {
         bgColor: '#fef2f2',
         borderColor: '#ef4444',
         textColor: '#dc2626',
-        actionText: 'You need to register for sales tax collection in this state.',
+        actionText: "You've likely passed this state's economic nexus threshold. That usually means registering for a sales tax permit before you start collecting there — the timing varies by state, so check the state's rules or ask a tax professional.",
       };
     case 'warning':
       return {
@@ -63,7 +63,7 @@ export function getAlertConfig(level: ExposureStatus): {
         bgColor: '#fff7ed',
         borderColor: '#f97316',
         textColor: '#ea580c',
-        actionText: 'You should prepare to register for sales tax collection.',
+        actionText: "You're close to this state's threshold. Now is a good time to look at how registration works there.",
       };
     case 'approaching':
       return {

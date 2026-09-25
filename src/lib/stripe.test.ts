@@ -99,7 +99,7 @@ describe('PLANS', () => {
   });
 
   test('starter plan should include platform integrations feature', () => {
-    expect(PLANS.starter.features).toContain('2 platform integrations');
+    expect(PLANS.starter.features).toContain('2 store connections');
   });
 
   test('starter plan should include order limit feature', () => {

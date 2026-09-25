@@ -9,7 +9,6 @@ import {
 } from '@/lib/platforms';
 import { userCanConnectPlatform, tierGateError, resolveUserPlan, checkOrderLimit, orderLimitError, getOrderLimitDisplay, getPlanDisplayName } from '@/lib/plans';
 import { applyMonthlyOrderCap, getCurrentMonthOrderCount } from '@/lib/usage';
-import { prisma } from '@/lib/prisma';
 import { fetchOrders as fetchShopifyOrders, ShopifyOrder } from '@/lib/platforms/shopify';
 import { 
   getCredentials as getWooCredentials,

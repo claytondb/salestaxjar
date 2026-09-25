@@ -60,6 +60,7 @@ interface AuthContextType {
 
 const defaultNotifications: NotificationPreferences = {
   emailDeadlineReminders: true,
+  emailNexusAlerts: true,
   emailWeeklyDigest: true,
   emailNewRates: false,
   pushDeadlines: true,

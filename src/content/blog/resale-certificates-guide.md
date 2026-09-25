@@ -61,7 +61,7 @@ Most states have their own resale certificate forms:
 | Florida | DR-13 |
 | Pennsylvania | REV-1220 |
 
-Some suppliers accept the **Multistate Tax Commission (MTC) Uniform Sales and Use Tax Certificate**, which is valid in about 38 states.
+Some suppliers accept the **Multistate Tax Commission (MTC) Uniform Sales and Use Tax Certificate**, which is valid in many states (check the current list before relying on it).
 
 ### Step 3: Provide Certificate to Suppliers
 
@@ -113,7 +113,7 @@ Always verify current requirements with each state's tax authority.
 
 ## How Long Are Resale Certificates Valid?
 
-Certificate validity varies by state:
+Certificate validity varies by state (confirm with each state):
 
 | Validity | States |
 |----------|--------|
@@ -223,7 +223,7 @@ If you can't prove items were resold, you may owe:
 
 ## Need Help Managing Your Sales Tax?
 
-Sails helps e-commerce sellers track their sales tax obligations across all states. We calculate what you owe and when it's due, so you can focus on growing your business.
+Sails helps e-commerce sellers track their sales tax obligations across all states. We check your sales against each state's nexus rules and email you before filing deadlines, so you can focus on growing your business.
 
 [Get Started Free →](/signup)
 

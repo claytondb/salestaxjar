@@ -2,6 +2,7 @@
 title: "How to Register for a Sales Tax Permit in Every State (2026 Guide)"
 excerpt: "Step-by-step instructions for registering for a sales tax permit in all 45 states that require sales tax collection. Free registration links and timelines included."
 date: "2026-02-28"
+lastReviewed: "2026-09-25"
 category: "Getting Started"
 image: "/blog/sales-tax-registration.jpg"
 ---
@@ -45,6 +46,8 @@ Most states offer **free registration** for sales tax permits. However, some cha
 | Nevada | $15 | Annual |
 | Some states | Bond required | If poor credit or new business |
 
+*Fees can change. Verify current fees with each state before you register.*
+
 ## State-by-State Registration Links
 
 ### No Sales Tax (No Registration Needed)
@@ -65,7 +68,7 @@ Most states offer **free registration** for sales tax permits. However, some cha
 | Colorado | [colorado.gov/tax](https://tax.colorado.gov/sales-tax-registration) | 1-3 business days |
 | Connecticut | [portal.ct.gov/drs](https://portal.ct.gov/DRS/Businesses/New-Business-Portal/Sales-and-Use-Tax-Registration) | 1-2 business days |
 | Florida | [floridarevenue.com](https://floridarevenue.com/taxes/registration) | 1-3 business days |
-| Georgia | [gtc.dor.ga.gov](https://gtc.dor.ga.gov/)) | Same day - 1 week |
+| Georgia | [gtc.dor.ga.gov](https://gtc.dor.ga.gov/) | Same day - 1 week |
 | Hawaii | [hitax.hawaii.gov](https://hitax.hawaii.gov/) | 1-2 weeks |
 | Idaho | [tax.idaho.gov](https://tax.idaho.gov/taxes/sales-use-tax/register/) | 1-3 business days |
 | Illinois | [mytax.illinois.gov](https://mytax.illinois.gov/) | 1-2 business days |
@@ -149,18 +152,17 @@ If you have a physical presence (office, inventory, employees) in a state with s
 
 ### What if I'm selling through Amazon/Etsy/eBay?
 
-For marketplace sales, the **marketplace facilitator** (Amazon, etc.) typically handles tax collection in most states. However, you may still need to register if you:
+For marketplace sales, the **marketplace facilitator** (Amazon, etc.) handles tax collection in every state with a sales tax. However, you may still need to register if you:
 - Sell on your own website
 - Have direct sales outside the marketplace
-- The marketplace doesn't collect tax in certain states
 
 ### Can I register for multiple states at once?
 
-Yes! The **Streamlined Sales Tax Registration System (SSTRS)** lets you register in up to 24 member states with a single application:
+Yes! The **Streamlined Sales Tax Registration System (SSTRS)** lets you register in about two dozen member states with a single application:
 
 [streamlinedsalestax.org](https://www.streamlinedsalestax.org/Marketplace/Marketplace)
 
-**SSTRS Member States:**
+**SSTRS Member States** (check the Streamlined Sales Tax site for the current list):
 Arkansas, Georgia, Indiana, Iowa, Kansas, Kentucky, Michigan, Minnesota, Nebraska, Nevada, New Jersey, North Carolina, North Dakota, Ohio, Oklahoma, Rhode Island, South Dakota, Tennessee, Utah, Vermont, Washington, West Virginia, Wisconsin, Wyoming
 
 ### How long does registration take?
@@ -238,10 +240,10 @@ Missing deadlines results in:
 
 ## Need Help Tracking Your Obligations?
 
-Registering is just the first step. Sails helps you track what you owe, when it's due, and imports your orders automatically from Shopify, WooCommerce, and more.
+Registering is just the first step. Sails helps you track where you have nexus and when returns are due, and imports your orders from Shopify, WooCommerce and Amazon order reports (more platforms are in beta).
 
 [Start Your Free Trial →](/signup)
 
 ---
 
-*Last updated: February 2026. Registration requirements and links may change. Verify with state websites for current information.*
+*Last reviewed: September 25, 2026. Registration requirements and links may change. Verify with state websites for current information.*

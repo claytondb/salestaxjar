@@ -1,6 +1,7 @@
 ---
 title: "PrestaShop Sales Tax: Complete US Compliance Guide for 2026"
 date: "2026-04-04"
+lastReviewed: "2026-09-25"
 excerpt: "PrestaShop's tax rules give you manual control, but US sales tax is complex. Here's how to set up taxes correctly in PrestaShop — and when to use an automated service instead."
 author: "Sails Team"
 category: "Platform Guides"
@@ -16,7 +17,7 @@ This guide explains how PrestaShop handles taxes, how to configure it correctly 
 
 ## Why US Sales Tax Is Hard
 
-US sales tax isn't a single national rate — it's a patchwork of over 12,000 state, county, city, and special district rates. On top of that:
+US sales tax isn't a single national rate — it's a patchwork of thousands of state, county, city, and special district rates. On top of that:
 
 - **Economic nexus rules** (post-Wayfair) mean you can owe tax in a state just by selling there, even without a physical presence
 - Rates change frequently — states and localities adjust rates throughout the year
@@ -55,7 +56,7 @@ For every US state where you need to collect, create a tax rate:
 4. Set the rate (e.g., 7.25 for California)
 5. Save
 
-**The catch:** This is the state rate only. Most states have city/county surtaxes. California's state rate is 7.25%, but customers in Los Angeles pay 10.25% total. To be fully accurate, you'd need separate rules by zip code — which is why automation tools exist.
+**The catch:** This is the state rate only. Most states have city/county surtaxes. California's state rate is 7.25%, but with local taxes the average combined rate is 9.03% (Tax Foundation, July 2026), and some cities are higher. To be fully accurate, you'd need separate rules by zip code — which is why automation tools exist.
 
 ### Step 2: Create Tax Rules Groups
 
@@ -71,7 +72,7 @@ For every US state where you need to collect, create a tax rate:
 2. Toggle **Enable Tax** to Yes
 3. Set the tax address: "Delivery address" (standard for destination-based states), "Invoice address," or your store address (for origin-based states)
 
-Most US states are destination-based (tax is based on where the customer is). A few — like Missouri and Illinois — are origin-based. If you're only in an origin-based state, set the tax address to your store.
+Most US states are destination-based (tax is based on where the customer is). A few — like Missouri and Illinois — are origin-based. If you're only in an origin-based state, set the tax address to your store. Sourcing rules vary and can change, so confirm with your state before you choose.
 
 ### Step 4: Assign Tax Rules to Products
 
@@ -109,12 +110,12 @@ Once you're registered in a state, you have filing deadlines. PrestaShop doesn't
 
 ## Automating PrestaShop Sales Tax with Sails
 
-For sellers who need accurate, up-to-date sales tax without manually maintaining rates, Sails connects directly to PrestaShop via the Webservice API:
+For sellers who want help tracking where they have nexus and when returns are due, Sails connects directly to PrestaShop via the Webservice API (the PrestaShop connection is currently in beta):
 
-- **Real-time address-level tax calculation** for every order
-- **Nexus exposure dashboard** — see which states you're close to thresholds in
+- **Rate estimates** — a tax calculator that uses state and average local rates (not exact address-level rates), so you'll still maintain your actual rates in PrestaShop
+- **Nexus exposure dashboard** — see which states you're close to thresholds in, with email alerts
 - **Filing deadline reminders** — 7-day and 1-day email reminders for every state
-- **Order sync** — all PrestaShop orders flow into one compliance dashboard
+- **Order import** — Sails imports your PrestaShop orders into one dashboard
 
 ### How to Connect PrestaShop to Sails
 
@@ -129,23 +130,23 @@ For sellers who need accurate, up-to-date sales tax without manually maintaining
    - Enter your store URL and API key
    - Sails will import your order history
 
-From there, your nexus exposure is automatically tracked, and you'll get alerts when you're approaching thresholds in new states.
+From there, Sails checks your sales against each state's nexus rules and emails you when you're approaching thresholds in new states.
 
 ## PrestaShop Modules for Sales Tax
 
-Beyond Sails, several PrestaShop modules address tax calculation:
+Beyond Sails (which tracks nexus and deadlines rather than calculating tax at checkout), several PrestaShop modules address tax calculation:
 
-**TaxJar for PrestaShop** — well-known but expensive for small sellers ($19+/month for basic tier)
+**TaxJar for PrestaShop** — well-known but expensive for small sellers (from $39/month, as of September 2026)
 
-**Avalara AvaTax** — enterprise-grade, overkill for most small sellers; pricing starts high
+**Avalara AvaTax** — built for larger businesses; overkill for most small sellers
 
 **Manual configuration** — works for very simple setups (one state, predictable products)
 
-**Sails** — designed specifically for small sellers; free for up to 50 orders/month, $9/month for Starter
+**Sails** — designed specifically for small sellers; free for up to 50 orders/month, $9/month for Starter (PrestaShop connection in beta)
 
 ## Handling Product Exemptions in PrestaShop
 
-Some products may be tax-exempt in certain states:
+Some products may be tax-exempt in certain states (rules change, so verify with each state):
 - **Groceries**: Exempt in ~30 states, partially exempt in others
 - **Prescription drugs**: Exempt in almost all states
 - **Clothing**: Exempt in Pennsylvania, New York (under $110/item), and others
@@ -153,7 +154,7 @@ Some products may be tax-exempt in certain states:
 
 In PrestaShop, handle exemptions by creating a separate tax rules group (e.g., "Clothing — NY Exempt") and applying it to the relevant products. You'd need one set of rules for states where the product is taxable and another for states where it's exempt.
 
-This gets complex quickly. Automated tools handle exemptions automatically based on product category codes (usually NAICS or TaxJar categories).
+This gets complex quickly. Automated tax calculation tools can handle exemptions based on product category codes.
 
 ## Economic Nexus Quick Reference
 
@@ -161,13 +162,13 @@ This gets complex quickly. Automated tools handle exemptions automatically based
 |-------|----------------|----------------------|
 | California | $500,000 | No transaction threshold |
 | Texas | $500,000 | No transaction threshold |
-| New York | $500,000 | 100 transactions |
+| New York | $500,000 | More than 100 transactions (both tests must be met) |
 | Florida | $100,000 | No transaction threshold |
-| Most states | $100,000 | 200 transactions |
+| Most states | $100,000 | Some also count 200 transactions |
 
 *Check your state's Department of Revenue for current thresholds.*
 
-Once you cross a threshold, you typically have 30-90 days to register before you're required to collect.
+Once you cross a threshold, when you must register and start collecting varies by state — immediately in some, from the first day of the next month in others, or from the next calendar year in states that measure the previous year's sales.
 
 ## Filing Sales Tax Returns
 
@@ -179,7 +180,7 @@ After you register and start collecting, you need to file returns and remit the 
 
 **What:** A return showing total sales, taxable sales, tax collected, and tax owed. Some states require a breakdown by county or city.
 
-Sails tracks your filing deadlines and sends reminders so you don't miss dates. The [sales tax filing deadlines by state](/blog/sales-tax-filing-deadlines-by-state) guide has state-specific details.
+Sails tracks your filing deadlines and emails you reminders 7 days and 1 day before each one. The [sales tax filing deadlines by state](/blog/sales-tax-filing-deadlines-by-state) guide has state-specific details.
 
 ## Summary
 
@@ -193,4 +194,4 @@ PrestaShop's built-in tax system gives you complete control but requires ongoing
 5. Monitor economic nexus thresholds as you grow
 6. File returns on time
 
-**Want to automate?** [Connect PrestaShop to Sails](https://sails.tax/signup) for real-time tax calculation and nexus monitoring — free for up to 50 orders per month.
+**Want to automate?** [Connect PrestaShop to Sails](https://sails.tax/signup) (beta) for nexus monitoring and filing deadline reminders — free for up to 50 orders per month.

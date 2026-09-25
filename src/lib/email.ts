@@ -685,17 +685,17 @@ function dripDay1Template(params: { name: string; platformsUrl: string }): Email
             <td style="padding: 40px;">
               <h2 style="margin: 0 0 20px; color: #0f172a; font-size: 24px;">Hey ${params.name} 👋</h2>
               <p style="margin: 0 0 20px; color: #475569; font-size: 16px; line-height: 1.6;">
-                You're one step away from seeing exactly where you have sales tax obligations.
+                You're one step away from seeing where you may have sales tax obligations.
               </p>
               <p style="margin: 0 0 20px; color: #475569; font-size: 16px; line-height: 1.6;">
-                Connect your store and Sails will automatically import your orders, calculate your nexus exposure, and flag any states where you may owe taxes.
+                Connect your store and Sails will import your orders, check them against each state's nexus rules, and flag any states where you may need to register.
               </p>
 
               <!-- Platform list -->
               <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f8fafc; border-radius: 8px; padding: 0; margin: 0 0 30px; overflow: hidden;">
                 <tr><td style="padding: 16px 20px; border-bottom: 1px solid #e2e8f0; color: #0f172a; font-size: 15px;">🛍️ <strong>Shopify</strong> — OAuth connect in seconds</td></tr>
                 <tr><td style="padding: 16px 20px; border-bottom: 1px solid #e2e8f0; color: #0f172a; font-size: 15px;">🔌 <strong>WooCommerce</strong> — Install our free plugin, paste an API key</td></tr>
-                <tr><td style="padding: 16px 20px; color: #0f172a; font-size: 15px;">🏪 <strong>BigCommerce</strong> — Connect with your store credentials</td></tr>
+                <tr><td style="padding: 16px 20px; color: #0f172a; font-size: 15px;">🏪 <strong>BigCommerce</strong> (beta) — Connect with your store credentials</td></tr>
               </table>
 
               <!-- CTA -->
@@ -733,12 +733,12 @@ function dripDay1Template(params: { name: string; platformsUrl: string }): Email
 
 You're one step away from knowing your sales tax exposure.
 
-Connect your store and Sails will automatically import your orders, calculate your nexus exposure, and flag any states where you may owe taxes.
+Connect your store and Sails will import your orders, check them against each state's nexus rules, and flag any states where you may need to register.
 
 Supported platforms:
 • Shopify — OAuth connect in seconds
 • WooCommerce — Install our free plugin, paste an API key
-• BigCommerce — Connect with your store credentials
+• BigCommerce (beta) — Connect with your store credentials
 
 Connect My Store: ${params.platformsUrl}
 
@@ -795,7 +795,7 @@ function dripDay3Template(params: { name: string; dashboardUrl: string }): Email
 
               <h3 style="margin: 0 0 12px; color: #0f172a; font-size: 18px;">How Sails helps</h3>
               <p style="margin: 0 0 30px; color: #475569; font-size: 16px; line-height: 1.6;">
-                Sails tracks your sales by state and automatically alerts you when you're approaching economic nexus thresholds. Connect your store and we'll show you exactly where you stand — before it becomes a problem.
+                Sails tracks your sales by state and emails you when you're approaching economic nexus thresholds. Connect your store and we'll show you where you stand — before it becomes a problem.
               </p>
 
               <!-- CTA -->
@@ -833,7 +833,7 @@ Here's a fact that surprises most online sellers: you may owe sales tax in state
 
 In 2018, the Supreme Court's South Dakota v. Wayfair decision changed everything. States can now require out-of-state sellers to collect sales tax once they cross certain thresholds — even with zero physical presence.
 
-Sails tracks your sales by state and automatically alerts you when you're approaching economic nexus thresholds. Connect your store and we'll show you exactly where you stand.
+Sails tracks your sales by state and emails you when you're approaching economic nexus thresholds. Connect your store and we'll show you where you stand.
 
 Check My Nexus Exposure: ${params.dashboardUrl}`,
   };
@@ -1002,7 +1002,7 @@ function dripDay14Template(params: { name: string; woocommerceUrl: string }): Em
                 Are you running into any friction getting set up? Have questions about nexus, filing deadlines, or how Sails works? Just hit reply — I read every response and will get back to you directly.
               </p>
               <p style="margin: 0 0 30px; color: #475569; font-size: 16px; line-height: 1.6;">
-                If you're running a WooCommerce store, you might also want to check out our free plugin — it's the easiest way to get your orders into Sails and start tracking your tax exposure automatically.
+                If you're running a WooCommerce store, connect it with a read-only WooCommerce API key (Settings → Platforms) to import your orders and start tracking your tax exposure.
               </p>
 
               <!-- CTA -->
@@ -1045,7 +1045,7 @@ It's been two weeks since you signed up for Sails, and I wanted to check in pers
 
 Are you running into any friction getting set up? Have questions about nexus, filing deadlines, or how Sails works? Just hit reply — I read every response and will get back to you directly.
 
-If you're running a WooCommerce store, check out our free plugin — it's the easiest way to get your orders into Sails and start tracking your tax exposure automatically.
+If you're running a WooCommerce store, connect it with a read-only WooCommerce API key (Settings → Platforms) to import your orders and start tracking your tax exposure.
 
 WooCommerce plugin: ${params.woocommerceUrl}
 

@@ -6,106 +6,51 @@ import { useAuth } from '@/context/AuthContext';
 import Footer from '@/components/Footer';
 import SailsLogo from '@/components/SailsLogo';
 import ThemeToggle from '@/components/ThemeToggle';
-import { Check, Clock, Sparkles, Heart, Zap, Shield } from 'lucide-react';
+import { Check, Sparkles, Heart, Zap, Shield } from 'lucide-react';
+import { TAXJAR, COMPETITOR_FACTS_CHECKED_LABEL } from '@/lib/competitors';
+import { PLAN_MARKETING } from '@/lib/plan-features';
 
-const plans = [
-  {
-    name: 'Free',
-    price: 0,
-    description: 'See if you even need to worry about sales tax',
-    features: [
-      { text: 'Nexus monitoring (all 50 states)', included: true },
-      { text: 'Unlimited tax calculations', included: true },
-      { text: '1 platform integration', included: true },
-      { text: 'Calculation history + CSV export', included: true },
-      { text: 'Email support', included: true },
-    ],
-    cta: 'Get Started Free',
-    popular: false,
-  },
-  {
-    name: 'Starter',
-    price: 9,
-    description: 'For side hustlers who just hit nexus thresholds',
-    features: [
-      { text: 'Everything in Free, plus:', included: true, bold: true },
-      { text: '2 platform integrations', included: true },
-      { text: 'Up to 500 orders/month', included: true },
-      { text: 'Automatic nexus exposure alerts', included: true },
-      { text: 'Email deadline reminders', included: true },
-      { text: 'CSV order import', included: true },
-    ],
-    cta: 'Start Free Trial',
-    popular: false,
-  },
-  {
-    name: 'Pro',
-    price: 29,
-    description: 'For growing sellers with multi-state sales',
-    features: [
-      { text: 'Everything in Starter, plus:', included: true, bold: true },
-      { text: '3 platform integrations', included: true },
-      { text: 'Up to 5,000 orders/month', included: true },
-      { text: 'Tax calculation API + API keys', included: true },
-      { text: 'Priority email support', included: true },
-      { text: 'Filing assistance', included: true, comingSoon: true },
-    ],
-    cta: 'Start Free Trial',
-    popular: true,
-  },
-  {
-    name: 'Enterprise',
-    price: 79,
-    description: 'For high-volume sellers who want it all',
-    features: [
-      { text: 'Everything in Pro, plus:', included: true, bold: true },
-      { text: 'Unlimited platform integrations', included: true },
-      { text: 'Unlimited orders', included: true },
-      { text: 'Highest priority support', included: true },
-      { text: 'Auto-filing', included: true, comingSoon: true },
-    ],
-    cta: 'Start Free Trial',
-    popular: false,
-  },
-];
+const plans = (['free', 'starter', 'pro', 'enterprise'] as const).map((tier) => ({
+  ...PLAN_MARKETING[tier],
+  cta: tier === 'free' ? 'Get Started Free' : 'Start Free Trial',
+  popular: tier === 'pro',
+}));
 
 const faqs = [
   {
-    q: 'Why is Sails so much cheaper than TaxJar?',
-    a: 'We built Sails specifically for small online store owners — not enterprise businesses. We don\'t need a giant sales team or fancy offices. We pass those savings to you.',
+    q: 'How is Sails different from TaxJar?',
+    a: `TaxJar calculates tax at checkout and can file returns for you (AutoFile is billed per return). Sails focuses on the step before that: showing a small seller which states they're likely required to register in, and what to do next. Sails has a free plan; TaxJar's Starter plan is listed at $39/month with a 30-day free trial (checked ${COMPETITOR_FACTS_CHECKED_LABEL}).`,
   },
   {
     q: 'What happens after my free trial?',
-    a: 'After 14 days, you can pick a paid plan or stay on Free forever. The Free plan lets you monitor nexus and calculate taxes — you only pay when you need store integrations.',
+    a: 'Paid plans start with a 14-day free trial and no credit card. If you add a card, your plan continues after the trial. If you don\'t, you move to the Free plan automatically — nothing is charged.',
   },
   {
     q: 'Can I change plans later?',
-    a: 'Yes! Upgrade or downgrade anytime. Changes take effect on your next billing cycle.',
+    a: 'Yes. Upgrade or downgrade anytime from Settings → Billing.',
   },
   {
     q: 'What does the free plan include?',
-    a: 'Nexus monitoring across all 50 states + DC, unlimited tax calculations, calculation history with CSV export, and email support. No time limit, no credit card.',
+    a: 'Nexus monitoring across all 50 states + DC, threshold alerts, deadline reminders, unlimited tax calculations, and one store connection with up to 50 orders a month. Importing your older order history doesn\'t count toward the monthly limit. No time limit, no credit card.',
   },
   {
     q: 'Do you file my sales tax returns for me?',
-    a: 'Not yet — filing assistance is coming soon. Right now Sails helps you track where you owe, calculate how much, and reminds you of deadlines so you can file yourself.',
+    a: 'No. Sails shows you where you\'re likely required to collect, your deadlines, and your sales and tax collected by state, and you (or your accountant) file with each state. We\'ll only offer filing once the process has been reviewed by licensed tax professionals.',
   },
   {
     q: 'I\'m just a hobby seller. Do I even need this?',
-    a: 'Maybe not yet! Use our free nexus monitoring to see if you\'ve crossed any state thresholds. Many states require collection at $100K in sales or 200 transactions.',
+    a: 'Maybe not yet! Most states only require you to register once your sales into that state pass $100,000 a year (a few use a higher amount, and some also count 200 transactions). The free plan will tell you if you get close.',
   },
   {
     q: 'Is Sails a CPA or tax advisor?',
-    a: 'No — we\'re software that helps you track and calculate sales tax. You review and submit returns yourself. For complex situations, we recommend consulting a tax professional.',
+    a: 'No — we\'re software that helps you track and estimate sales tax. You review and submit returns yourself. For complex situations, we recommend consulting a tax professional.',
   },
 ];
 
 const comparisons = [
-  { feature: 'Free tier', sails: '✓ Yes', taxjar: '✗ No', taxcloud: '✗ No' },
-  { feature: 'Starting price', sails: '$9/mo', taxjar: '$19/mo', taxcloud: '$19/mo' },
-  { feature: 'Nexus monitoring', sails: '✓ Free', taxjar: 'Paid only', taxcloud: 'Paid only' },
-  { feature: 'Shopify + WooCommerce', sails: '✓', taxjar: '✓', taxcloud: '✓' },
-  { feature: 'Made for small sellers', sails: '✓', taxjar: 'Enterprise focus', taxcloud: 'Mixed' },
+  { feature: 'Free plan', sails: 'Yes', taxjar: TAXJAR.freePlan.value, source: TAXJAR.freePlan.sourceUrl },
+  { feature: 'Starting price', sails: '$9/mo (Starter)', taxjar: TAXJAR.starterPrice.value, source: TAXJAR.starterPrice.sourceUrl },
+  { feature: 'Filing returns for you', sails: 'Not offered — you file', taxjar: TAXJAR.filing.value, source: TAXJAR.filing.sourceUrl },
 ];
 
 export default function PricingPage() {
@@ -169,9 +114,9 @@ export default function PricingPage() {
             Built for small online store owners
           </div>
           <h1 className="text-4xl sm:text-5xl font-bold text-theme-primary mb-4">
-            Half the price of TaxJar.
+            Simple pricing for small sellers.
             <br />
-            <span className="text-theme-accent">All the features you need.</span>
+            <span className="text-theme-accent">Start free.</span>
           </h1>
           <p className="text-xl text-theme-secondary mb-2">
             Sales tax software that doesn&apos;t assume you have an accounting department.
@@ -215,16 +160,9 @@ export default function PricingPage() {
                 <ul className="space-y-2 mb-6 min-h-[200px]">
                   {plan.features.map((feature, i) => (
                     <li key={i} className="flex items-start gap-2">
-                      {feature.comingSoon ? (
-                        <Clock className="w-4 h-4 text-theme-muted mt-0.5 flex-shrink-0" />
-                      ) : (
-                        <Check className="w-4 h-4 text-theme-accent mt-0.5 flex-shrink-0" />
-                      )}
+                      <Check className="w-4 h-4 text-theme-accent mt-0.5 flex-shrink-0" />
                       <span className={`text-sm ${feature.bold ? 'font-semibold text-theme-primary' : 'text-theme-secondary'}`}>
                         {feature.text}
-                        {feature.comingSoon && (
-                          <span className="text-theme-muted text-xs ml-1">(Soon)</span>
-                        )}
                       </span>
                     </li>
                   ))}
@@ -247,7 +185,7 @@ export default function PricingPage() {
           </div>
           
           <p className="text-center text-theme-muted text-sm mt-6">
-            All paid plans include a 14-day free trial. No credit card required.
+            Paid plans start with a 14-day free trial — no credit card required. Skip the card and you&apos;ll simply move to Free when the trial ends.
           </p>
         </div>
       </section>
@@ -258,14 +196,16 @@ export default function PricingPage() {
           <h2 className="text-2xl font-bold text-theme-primary text-center mb-8">
             How we compare
           </h2>
+          <p className="text-center text-theme-muted text-sm -mt-4 mb-6">
+            Different tools do different jobs. Here are the facts we can point to.
+          </p>
           <div className="card-theme rounded-xl overflow-hidden">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-theme-primary">
-                  <th className="text-left py-3 px-4 text-theme-muted font-medium">Feature</th>
+                  <th className="text-left py-3 px-4 text-theme-muted font-medium"></th>
                   <th className="text-center py-3 px-4 text-theme-accent font-bold">Sails</th>
                   <th className="text-center py-3 px-4 text-theme-muted font-medium">TaxJar</th>
-                  <th className="text-center py-3 px-4 text-theme-muted font-medium">TaxCloud</th>
                 </tr>
               </thead>
               <tbody>
@@ -273,13 +213,17 @@ export default function PricingPage() {
                   <tr key={i} className="border-b border-theme-primary/50">
                     <td className="py-3 px-4 text-theme-secondary">{row.feature}</td>
                     <td className="py-3 px-4 text-center text-theme-accent font-medium">{row.sails}</td>
-                    <td className="py-3 px-4 text-center text-theme-muted">{row.taxjar}</td>
-                    <td className="py-3 px-4 text-center text-theme-muted">{row.taxcloud}</td>
+                    <td className="py-3 px-4 text-center text-theme-muted">
+                      <a href={row.source} target="_blank" rel="noopener noreferrer" className="hover:underline">{row.taxjar}</a>
+                    </td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
+          <p className="text-center text-theme-muted text-xs mt-3">
+            TaxJar details are from TaxJar&apos;s public pricing pages, checked {COMPETITOR_FACTS_CHECKED_LABEL}. Prices change — click a value to see the source.
+          </p>
         </div>
       </section>
 

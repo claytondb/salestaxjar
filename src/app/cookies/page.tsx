@@ -12,9 +12,9 @@ export default function CookiePolicyPage() {
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="card-theme rounded-2xl p-8">
           <h1 className="text-3xl font-bold text-theme-primary mb-2">Cookie Policy</h1>
-          <p className="text-theme-muted mb-8">Last updated: January 27, 2025</p>
+          <p className="text-theme-muted mb-8">Last updated: September 25, 2026</p>
 
-          <div className="prose prose-invert max-w-none space-y-8 text-theme-secondary">
+          <div className="prose legal-prose max-w-none space-y-8 text-theme-secondary">
             <section>
               <h2 className="text-xl font-semibold text-theme-primary mb-4">1. What Are Cookies?</h2>
               <p>
@@ -26,14 +26,16 @@ export default function CookiePolicyPage() {
 
             <section>
               <h2 className="text-xl font-semibold text-theme-primary mb-4">2. How We Use Cookies</h2>
-              <p>Sails uses cookies for the following purposes:</p>
+              <p>
+                Sails uses one cookie, and only to keep you signed in. We don&apos;t use advertising cookies, cross-site
+                tracking, Google Analytics or the Facebook pixel.
+              </p>
               
               <div className="mt-4 space-y-4">
                 <div className="bg-white/5 rounded-lg p-4">
-                  <h3 className="text-lg font-medium text-theme-accent mb-2">Necessary Cookies</h3>
+                  <h3 className="text-lg font-medium text-theme-accent mb-2">Necessary Cookie</h3>
                   <p className="text-sm">
-                    Essential for the website to function properly. These cookies enable core functionality such as 
-                    security, authentication, and session management. Without these cookies, the site cannot function correctly.
+                    Required for signing in. Without it, you can browse the site but can&apos;t use your account.
                   </p>
                   <table className="mt-3 w-full text-sm">
                     <thead>
@@ -44,97 +46,10 @@ export default function CookiePolicyPage() {
                       </tr>
                     </thead>
                     <tbody>
-                      <tr className="border-b border-white/5">
+                      <tr>
                         <td className="py-2 font-mono text-theme-accent">salestaxjar_session</td>
-                        <td className="py-2">Maintains your logged-in state</td>
-                        <td className="py-2">24 hours</td>
-                      </tr>
-                      <tr className="border-b border-white/5">
-                        <td className="py-2 font-mono text-theme-accent">salestaxjar_state</td>
-                        <td className="py-2">Stores app preferences and data</td>
-                        <td className="py-2">Persistent</td>
-                      </tr>
-                      <tr>
-                        <td className="py-2 font-mono text-theme-accent">salestaxjar_cookie_consent</td>
-                        <td className="py-2">Remembers your cookie preferences</td>
-                        <td className="py-2">1 year</td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-
-                <div className="bg-white/5 rounded-lg p-4">
-                  <h3 className="text-lg font-medium text-theme-accent mb-2">Analytics Cookies</h3>
-                  <p className="text-sm">
-                    Help us understand how visitors interact with our website. This data is anonymized and aggregated, 
-                    and is used to improve our services.
-                  </p>
-                  <table className="mt-3 w-full text-sm">
-                    <thead>
-                      <tr className="border-b border-theme-primary">
-                        <th className="text-left py-2 text-theme-muted">Cookie</th>
-                        <th className="text-left py-2 text-theme-muted">Purpose</th>
-                        <th className="text-left py-2 text-theme-muted">Duration</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr className="border-b border-white/5">
-                        <td className="py-2 font-mono text-theme-accent">_ga</td>
-                        <td className="py-2">Google Analytics - distinguishes users</td>
-                        <td className="py-2">2 years</td>
-                      </tr>
-                      <tr>
-                        <td className="py-2 font-mono text-theme-accent">_gid</td>
-                        <td className="py-2">Google Analytics - distinguishes users</td>
-                        <td className="py-2">24 hours</td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-
-                <div className="bg-white/5 rounded-lg p-4">
-                  <h3 className="text-lg font-medium text-theme-accent mb-2">Preference Cookies</h3>
-                  <p className="text-sm">
-                    Allow the website to remember choices you make (such as your preferred language or region) and 
-                    provide enhanced, personalized features.
-                  </p>
-                  <table className="mt-3 w-full text-sm">
-                    <thead>
-                      <tr className="border-b border-theme-primary">
-                        <th className="text-left py-2 text-theme-muted">Cookie</th>
-                        <th className="text-left py-2 text-theme-muted">Purpose</th>
-                        <th className="text-left py-2 text-theme-muted">Duration</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr>
-                        <td className="py-2 font-mono text-theme-accent">theme_preference</td>
-                        <td className="py-2">Remembers your display preferences</td>
-                        <td className="py-2">1 year</td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-
-                <div className="bg-white/5 rounded-lg p-4">
-                  <h3 className="text-lg font-medium text-theme-accent mb-2">Marketing Cookies</h3>
-                  <p className="text-sm">
-                    Used to track visitors across websites to display relevant advertisements. These are only set 
-                    if you provide consent.
-                  </p>
-                  <table className="mt-3 w-full text-sm">
-                    <thead>
-                      <tr className="border-b border-theme-primary">
-                        <th className="text-left py-2 text-theme-muted">Cookie</th>
-                        <th className="text-left py-2 text-theme-muted">Purpose</th>
-                        <th className="text-left py-2 text-theme-muted">Duration</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr>
-                        <td className="py-2 font-mono text-theme-accent">_fbp</td>
-                        <td className="py-2">Facebook pixel for ad targeting</td>
-                        <td className="py-2">3 months</td>
+                        <td className="py-2">Keeps you signed in (HTTP-only, not readable by scripts)</td>
+                        <td className="py-2">7 days</td>
                       </tr>
                     </tbody>
                   </table>
@@ -146,10 +61,10 @@ export default function CookiePolicyPage() {
               <h2 className="text-xl font-semibold text-theme-primary mb-4">3. Managing Cookies</h2>
               <p>You have several options for managing cookies:</p>
               
-              <h3 className="text-lg font-medium text-theme-accent mt-4 mb-2">Cookie Consent Tool</h3>
+              <h3 className="text-lg font-medium text-theme-accent mt-4 mb-2">Cookie Notice</h3>
               <p>
-                When you first visit our site, you&apos;ll see a cookie consent banner. You can customize your preferences 
-                at any time by clicking the &quot;Customize&quot; button.
+                The first time you visit, you&apos;ll see a short notice explaining that Sails uses one sign-in cookie.
+                Because we don&apos;t use optional cookies, there&apos;s nothing to opt out of.
               </p>
 
               <h3 className="text-lg font-medium text-theme-accent mt-4 mb-2">Browser Settings</h3>
@@ -178,27 +93,22 @@ export default function CookiePolicyPage() {
             <section>
               <h2 className="text-xl font-semibold text-theme-primary mb-4">4. Local Storage</h2>
               <p>
-                In addition to cookies, we use browser local storage and session storage to store data locally 
-                on your device. This includes:
+                Sails also saves two small settings in your browser&apos;s local storage. They never leave your device:
               </p>
               <ul className="list-disc pl-6 space-y-2 mt-2">
-                <li><strong>Application state:</strong> Your calculations, settings, and preferences</li>
-                <li><strong>Authentication data:</strong> Session tokens for logged-in users</li>
-                <li><strong>User data:</strong> Account information (demo mode only)</li>
+                <li><strong>sails-theme:</strong> whether you chose the light or dark theme</li>
+                <li><strong>salestaxjar_cookie_consent:</strong> your choice on the cookie banner</li>
               </ul>
-              <div className="rounded-lg p-4 mt-4" style={{ backgroundColor: 'var(--warning-bg)', border: '1px solid var(--warning-border)' }}>
-                <p className="text-sm" style={{ color: 'var(--warning-text)' }}>
-                  <strong>Demo Mode:</strong> This application uses localStorage for data persistence as a demonstration. 
-                  In production, sensitive data would be stored securely on our servers.
-                </p>
-              </div>
+              <p className="mt-2">
+                Your account data (businesses, orders, filings and calculations) is stored on our servers, not in your browser.
+              </p>
             </section>
 
             <section>
               <h2 className="text-xl font-semibold text-theme-primary mb-4">5. Do Not Track</h2>
               <p>
-                Some browsers include a &quot;Do Not Track&quot; (DNT) feature. We currently do not respond to DNT signals, 
-                but you can opt out of analytics and marketing cookies using our consent tool.
+                Some browsers include a &quot;Do Not Track&quot; (DNT) feature. Sails doesn&apos;t use tracking or advertising
+                cookies, so there is nothing for Do Not Track to switch off.
               </p>
             </section>
 

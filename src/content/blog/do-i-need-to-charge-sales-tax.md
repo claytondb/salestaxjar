@@ -1,6 +1,7 @@
 ---
 title: "Do I Need to Charge Sales Tax? A Simple Guide for Online Sellers"
 date: "2026-02-21"
+lastReviewed: "2026-09-25"
 excerpt: "Not sure if you need to collect sales tax? This simple guide walks you through the key questions to figure out your obligations."
 author: "Sails Team"
 category: "Basics"
@@ -51,9 +52,9 @@ You have physical nexus if you have:
 ### Economic Nexus
 You have economic nexus if you exceed the state's sales threshold, typically:
 - $100,000 in sales, OR
-- 200 transactions
+- 200 transactions (only in some states)
 
-Most states have eliminated the transaction threshold, so it's usually just about dollar volume now.
+Only about a third of states with a sales tax still count transactions, so it's usually just about dollar volume now.
 
 **Start with your home state.** If you live in a state with sales tax, you almost certainly need to collect it on sales to customers in that state.
 
@@ -64,11 +65,10 @@ If you sell on these platforms, they handle sales tax collection for you:
 - Amazon
 - eBay
 - Walmart Marketplace
-- Shopify (with their tax service enabled)
 
 This doesn't mean you have zero obligations (you may still need permits and filing), but the collection and remittance is done for you.
 
-If you sell on your own website, you're responsible for everything.
+If you sell on your own website (including a Shopify store), you're responsible for everything.
 
 ## Quick Decision Tree
 
@@ -77,7 +77,7 @@ Do you sell physical products?
 ├── No → Probably no sales tax (but check your state for digital goods)
 └── Yes → Continue...
 
-Do you sell on Etsy/Amazon/eBay?
+Do you sell only on Etsy/Amazon/eBay?
 ├── Yes → They collect for you (but you may need permits)
 └── No → Continue...
 
@@ -128,8 +128,8 @@ No state sales tax means no state sales tax obligations.
 
 Most online sellers need to charge sales tax somewhere, even if it's just their home state. The key is understanding where you have nexus and making sure you're collecting in those states.
 
-Tools like Sails can automate most of this: calculating the right rates, tracking your nexus, and reminding you when to file.
+Tools like Sails can help with much of this: tracking your nexus, estimating rates, and reminding you when to file.
 
 ---
 
-*Still not sure about your sales tax obligations? [Try Sails free](/signup) and we'll help you figure it out.*
+*Still not sure about your sales tax obligations? [Try Sails free](/signup) and see where your sales stand in each state.*

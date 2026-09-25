@@ -2,6 +2,7 @@
 title: "Dropshipping Sales Tax Guide: What Sellers Need to Know"
 excerpt: "Understand your sales tax obligations as a dropshipper. Learn about nexus, marketplace facilitator laws, and when you need to collect sales tax."
 date: "2026-02-27"
+lastReviewed: "2026-09-25"
 author: "Sails Team"
 category: "Platform Guides"
 readTime: "8 min read"
@@ -48,25 +49,19 @@ Even without inventory or a physical location, you can still have sales tax nexu
 
 ### Economic Nexus
 
-Most states have **economic nexus** thresholds—typically $100,000 in sales or 200 transactions per year in the state. Once you exceed these thresholds, you must collect sales tax in that state.
+Most states have **economic nexus** thresholds—typically $100,000 in sales per year in the state (some states also count 200 transactions). Once you exceed these thresholds, you must collect sales tax in that state.
 
 Common thresholds:
 - **California**: $500,000 in sales
 - **Texas**: $500,000 in sales
-- **New York**: $500,000 in sales AND 100 transactions
-- **Most other states**: $100,000 in sales OR 200 transactions
+- **New York**: $500,000 in sales AND more than 100 transactions
+- **Most other states**: $100,000 in sales (some also count 200 transactions)
 
 ### Where Your Supplier Ships From
 
-Here's the tricky part: in some states, your supplier's location can create nexus for **you**.
+Here's the tricky part: in some states, your supplier's location can create sales tax obligations for **you**.
 
-Some states consider the supplier's warehouse as creating nexus for the retailer (you). This is called "drop shipment nexus" and applies in states like:
-
-- California
-- Florida
-- Texas
-- Pennsylvania
-- Others
+Some states have special rules for drop shipments, and they vary a lot from state to state. If your supplier ships from a warehouse in a state, check that state's drop shipment rules.
 
 **Bottom line**: If your supplier has a warehouse in a state, you may need to collect sales tax on orders shipped to that state—even if you've never set foot there.
 
@@ -76,13 +71,13 @@ If you dropship through a **marketplace** like Amazon, eBay, or Etsy, the rules 
 
 ### Marketplace Facilitator Laws
 
-In all 50 states with sales tax, **marketplace facilitators** (Amazon, eBay, Etsy, etc.) are required to collect and remit sales tax on your behalf.
+In all 45 states with a sales tax (plus D.C.), **marketplace facilitators** (Amazon, eBay, Etsy, etc.) are required to collect and remit sales tax on your behalf.
 
 This means:
 - **On Amazon/eBay/Etsy**: The marketplace handles sales tax collection
 - **On your Shopify/WooCommerce store**: YOU handle sales tax collection
 
-If you sell through both channels, you need to track nexus and collect tax only for your direct sales—not marketplace sales.
+If you sell through both channels, you need to collect tax only on your direct sales—not marketplace sales. But when you track nexus, many states (such as California, New York and Texas) still count your marketplace sales toward the threshold.
 
 ## Resale Certificates: Your Key Tool
 
@@ -114,7 +109,7 @@ Ask yourself:
 
 Register in every state where you have nexus. You can:
 - Register directly with each state
-- Use the **Streamlined Sales Tax Registration System** (24 states) for bulk registration
+- Use the **Streamlined Sales Tax Registration System** (about two dozen states) for bulk registration
 
 ### Step 3: Get Resale Certificates
 
@@ -124,7 +119,7 @@ Obtain resale certificates and provide them to all suppliers.
 
 Set up your e-commerce platform to collect the correct sales tax:
 - **Shopify**: Built-in sales tax collection
-- **WooCommerce**: Use a tax plugin or service like Sails
+- **WooCommerce**: Use a tax plugin or service
 - **BigCommerce**: Automatic tax calculation available
 
 ### Step 5: Track and Remit
@@ -137,7 +132,7 @@ Set up your e-commerce platform to collect the correct sales tax:
 
 ### Mistake 1: Not Collecting Tax Because "I Don't Have Inventory"
 
-**Wrong**. Nexus isn't just about physical presence—economic nexus and drop shipment nexus can apply.
+**Wrong**. Nexus isn't just about physical presence—economic nexus and drop shipment rules can apply.
 
 ### Mistake 2: Using Personal Purchases as Resale
 
@@ -159,13 +154,13 @@ Even if you collected $0 in sales tax, many states require you to file a "zero r
 
 If your supplier is based overseas (common with AliExpress or Alibaba dropshipping):
 
-- **Imports under $800**: Duty-free for the customer under *de minimis* rules
-- **Sales tax still applies**: Even though no import duty is charged, you're still responsible for collecting sales tax on the retail sale
+- **Import duties**: *De minimis* rules for low-value imports can change—check current U.S. Customs rules
+- **Sales tax still applies**: Whatever import duty is or isn't charged, you're still responsible for collecting sales tax on the retail sale
 - **No resale certificate needed**: Since the supplier is overseas, no U.S. sales tax applies to your wholesale purchase
 
 ## Working With Multiple Suppliers
 
-Many dropshippers work with several suppliers across different states. This can create nexus in multiple states.
+Many dropshippers work with several suppliers across different states. This can create sales tax obligations in multiple states.
 
 **Best practice**: Maintain a list of all supplier warehouse locations and check each one against your nexus obligations.
 
@@ -173,10 +168,10 @@ Many dropshippers work with several suppliers across different states. This can 
 
 Managing sales tax across multiple states and suppliers is complex. Sails simplifies it by:
 
-- **Automatic calculations**: We determine the correct tax rate for every order
+- **Tax estimates**: Our calculator estimates tax using state and average local rates
 - **Nexus tracking**: We alert you when you're approaching thresholds
 - **Multi-platform support**: Connect your Shopify, WooCommerce, or other stores
-- **Filing reminders**: Never miss a deadline
+- **Filing reminders**: Email reminders 7 days and 1 day before each deadline
 
 [Start your free trial →](/pricing)
 
@@ -185,8 +180,8 @@ Managing sales tax across multiple states and suppliers is complex. Sails simpli
 1. **You're responsible** for collecting sales tax on retail sales—not your supplier
 2. **Use resale certificates** to avoid paying sales tax on wholesale purchases
 3. **Economic nexus** means you may owe tax in states where you've never been
-4. **Supplier locations** can create nexus for you in some states
-5. **Marketplace sales** are handled by the marketplace—but still count for nexus
+4. **Supplier locations** can create tax obligations for you in some states
+5. **Marketplace sales** are handled by the marketplace—but still count for nexus in many states
 6. **Track everything** and file returns on time, even if they're zero
 
 ## FAQs
@@ -205,4 +200,4 @@ A: No—you must be registered in a state before you can legally collect sales t
 
 ---
 
-*Sales tax is complex, but it doesn't have to be overwhelming. Sails makes compliance simple for small e-commerce sellers. [Get started free →](/pricing)*
+*Sales tax is complex, but it doesn't have to be overwhelming. Sails helps small e-commerce sellers keep track of nexus and filing deadlines. [Get started free →](/pricing)*

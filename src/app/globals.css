@@ -410,3 +410,24 @@ article tbody tr:hover {
 .theme-emerald article tbody tr:hover {
   background: rgba(0, 0, 0, 0.02);
 }
+
+/* =============================================================================
+   Legal pages (privacy, terms, cookies)
+   Bold text follows the active theme so it's readable in light AND dark mode.
+   (These pages previously used prose-invert, which made <strong> white on the
+   light theme — invisible.)
+   ============================================================================= */
+.legal-prose {
+  color: var(--text-secondary);
+}
+.legal-prose strong,
+.legal-prose b {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+.legal-prose a {
+  color: var(--accent-primary);
+}
+.legal-prose li::marker {
+  color: var(--text-muted);
+}

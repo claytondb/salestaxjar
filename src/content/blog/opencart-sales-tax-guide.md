@@ -1,6 +1,7 @@
 ---
 title: "OpenCart Sales Tax: Complete Setup Guide for 2026"
 date: "2026-04-04"
+lastReviewed: "2026-09-25"
 excerpt: "Learn how to configure OpenCart sales tax correctly — from built-in tax classes to nexus rules and the tools that automate US compliance for small sellers."
 author: "Sails Team"
 category: "Platform Guides"
@@ -17,7 +18,7 @@ OpenCart gives you fine-grained control over taxes — which is great in theory,
 Before touching a single OpenCart setting, it helps to understand why US sales tax is complicated:
 
 - **Each state sets its own rules.** Rates, product exemptions, and filing schedules all vary by state.
-- **Economic nexus changed everything.** After the 2018 *South Dakota v. Wayfair* Supreme Court decision, you don't need a physical presence to owe sales tax in a state. Most states require you to collect once you hit $100,000 in sales or 200 transactions.
+- **Economic nexus changed everything.** After the 2018 *South Dakota v. Wayfair* Supreme Court decision, you don't need a physical presence to owe sales tax in a state. Most states require you to collect once you hit $100,000 in sales; some also count 200 transactions.
 - **Origin vs. destination sourcing.** Some states tax based on where you ship *from*; others base it on where the customer is.
 
 The good news: if you're a small seller just getting started, you probably only owe tax in your home state. The complexity scales with your revenue.
@@ -104,18 +105,18 @@ OpenCart doesn't watch your transaction counts or revenue for you. If you cross 
 
 ### Mistake 4: Missing Product Exemptions
 
-Clothing is tax-exempt in some states (Pennsylvania, New York). Groceries are often exempt. Digital goods have wildly different rules. OpenCart's tax classes can handle this, but you have to set them up correctly.
+Clothing is tax-exempt in some states (Pennsylvania, New York). Groceries are often exempt. Digital goods have wildly different rules. OpenCart's tax classes can handle this, but you have to set them up correctly — verify each state's current rules before you do.
 
 ## Automating OpenCart Sales Tax with Sails
 
 Managing tax rates manually in OpenCart works when you're small and only selling in one or two states. As you grow, it becomes a significant burden — and the risk of errors grows with it.
 
-Sails connects directly to your OpenCart store via the Session API and automates the process:
+Sails connects directly to your OpenCart store via the Session API (the OpenCart connection is currently in beta) and helps you keep track:
 
-- **Real-time rate calculation** based on the customer's exact address (not just state average)
-- **Automatic nexus tracking** — see when you're approaching thresholds in new states
-- **Filing deadline reminders** for every state where you collect
-- **Order sync** — all your transactions flow into one dashboard
+- **Rate estimates** — a tax calculator that uses state and average local rates (not exact address-level rates), so you'll still maintain your actual rates in OpenCart
+- **Nexus tracking** — Sails checks your sales against every state's economic nexus rules and emails you when you're approaching a threshold
+- **Filing deadline reminders** by email, 7 days and 1 day before each deadline, for every state where you collect
+- **Order import** — Sails imports your orders into one dashboard
 
 ### Connecting OpenCart to Sails
 
@@ -125,7 +126,7 @@ Sails connects directly to your OpenCart store via the Session API and automates
 4. Enter your store URL, API username, and API key
 5. Sails will import your order history and start tracking
 
-From there, you can see your nexus exposure across all states, get email reminders before filing deadlines, and export reports ready for filing.
+From there, you can see your nexus exposure across all states, get email reminders before filing deadlines, and export sales-by-state reports to CSV.
 
 ## OpenCart vs. WooCommerce for Tax Compliance
 
@@ -139,7 +140,7 @@ Both platforms support tax configuration, but they differ:
 | Nexus tracking | No | No |
 | Extensibility | Plugin ecosystem | Plugin ecosystem |
 
-If you're already on OpenCart and it works for your store, there's no reason to switch just for tax reasons — Sails or another tax service handles the complexity for you.
+If you're already on OpenCart and it works for your store, there's no reason to switch just for tax reasons — Sails or another tax service can help you manage the complexity.
 
 ## When Do You Need to Register for Sales Tax?
 
@@ -147,7 +148,7 @@ You need to register for a sales tax permit in a state **before** you start coll
 
 Register when:
 - You have a physical presence (office, warehouse, employees) in a state, **or**
-- You've exceeded the economic nexus threshold (typically $100K in sales or 200 transactions in a calendar year)
+- You've exceeded the economic nexus threshold (typically $100K in sales, with some states also counting 200 transactions; the measurement period varies by state)
 
 Most states let you register online through their Department of Revenue website. Once registered, you'll get a permit number and a filing frequency (monthly, quarterly, or annually depending on your volume).
 
@@ -160,9 +161,9 @@ Collecting tax is only half the job — you also have to send the money to each 
 - Medium-volume: quarterly
 - Low-volume: annually
 
-**Missing a deadline** typically results in penalties and interest. Most states have a grace period of a few days, but some have zero tolerance.
+**Missing a deadline** typically results in penalties and interest. Grace periods vary by state, and some have zero tolerance — don't count on one.
 
-Tools like Sails track your filing deadlines and send reminders 7 days and 1 day before each due date, so nothing slips through.
+Tools like Sails track your filing deadlines and email you reminders 7 days and 1 day before each due date.
 
 ## Summary
 
@@ -175,4 +176,4 @@ The key steps:
 4. Keep up with rate changes and nexus threshold changes
 5. File and remit on time
 
-**Ready to automate?** [Connect your OpenCart store to Sails](https://sails.tax/signup) — it's free for up to 50 orders per month.
+**Ready to automate?** [Connect your OpenCart store to Sails](https://sails.tax/signup) — the OpenCart connection is in beta, and it's free for up to 50 orders per month.

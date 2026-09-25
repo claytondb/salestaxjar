@@ -1,6 +1,7 @@
 ---
 title: "What Is Sales Tax Nexus? A Plain-English Guide for Online Sellers"
 date: "2026-03-11"
+lastReviewed: "2026-09-25"
 excerpt: "After South Dakota v. Wayfair (2018), every state can require you to collect sales tax — even if you've never set foot there. Here's what nexus means and when it applies to you."
 author: "Sails Team"
 category: "Basics"
@@ -25,9 +26,9 @@ Then everything changed.
 
 In June 2018, the US Supreme Court ruled 5-4 in *South Dakota v. Wayfair* that states can require out-of-state sellers to collect sales tax even without physical presence — as long as the seller has a significant *economic* presence.
 
-South Dakota had passed a law saying that if you made more than $100,000 in sales to South Dakota customers, or completed more than 200 transactions with South Dakota customers, you had nexus. Wayfair (and Overstock, and Newegg) challenged it. The Supreme Court sided with South Dakota.
+South Dakota had passed a law saying that if you made more than $100,000 in sales to South Dakota customers, or completed 200 or more separate transactions with South Dakota customers, you had nexus. Wayfair (and Overstock, and Newegg) challenged it. The Supreme Court sided with South Dakota.
 
-Within two years, all 45 states that have sales tax passed their own economic nexus laws. The landscape for online sellers fundamentally changed.
+Since then, all 45 states that have a sales tax have passed their own economic nexus laws. The landscape for online sellers fundamentally changed.
 
 **The bottom line:** You can now owe sales tax in states you've never visited, never had employees in, and never stored inventory in — simply because you sold enough products to customers there.
 
@@ -55,50 +56,50 @@ The most common threshold is **$100,000 in sales** to customers in that state in
 
 Here's where the thresholds stand for the states with the most ecommerce activity. Note: these can change — always verify current rules with the state or a tax professional.
 
-| State | Sales Threshold | Transaction Threshold | Notes |
+| State | Sales Threshold | Transaction Threshold | Measured Over / Notes |
 |-------|----------------|----------------------|-------|
-| Alabama | $250,000 | None | |
-| Alaska | Varies by city | Varies | No state tax; some cities/boroughs do |
-| Arizona | $100,000 | None | |
-| Arkansas | $100,000 | 200 | |
-| California | $500,000 | None | Higher threshold than most states |
-| Colorado | $100,000 | None | |
-| Connecticut | $100,000 | 200 | Both must be met |
-| Florida | $100,000 | None | |
-| Georgia | $100,000 | 200 | |
-| Illinois | $100,000 | 200 | |
-| Indiana | $100,000 | 200 | |
-| Kansas | $100,000 | None | |
-| Kentucky | $100,000 | 200 | |
-| Louisiana | $100,000 | 200 | |
-| Maryland | $100,000 | 200 | |
-| Massachusetts | $100,000 | None | |
-| Michigan | $100,000 | 200 | |
-| Minnesota | $100,000 | 200 | |
-| Mississippi | $250,000 | None | |
-| Missouri | $100,000 | None | |
-| Nebraska | $100,000 | 200 | |
-| Nevada | $100,000 | 200 | |
-| New Jersey | $100,000 | 200 | |
-| New Mexico | $100,000 | None | |
-| New York | $500,000 | 100 | Both must be met |
-| North Carolina | $100,000 | 200 | |
-| North Dakota | $100,000 | None | |
-| Ohio | $100,000 | 200 | |
-| Oklahoma | $100,000 | None | |
-| Pennsylvania | $100,000 | None | |
-| Rhode Island | $100,000 | 200 | |
-| South Carolina | $100,000 | None | |
-| South Dakota | $100,000 | None | The original |
-| Tennessee | $100,000 | None | |
-| Texas | $500,000 | None | Higher threshold |
-| Utah | $100,000 | 200 | |
-| Vermont | $100,000 | 200 | |
-| Virginia | $100,000 | 200 | |
-| Washington | $100,000 | None | |
-| West Virginia | $100,000 | None | |
-| Wisconsin | $100,000 | None | |
-| Wyoming | $100,000 | None | |
+| Alabama | $250,000 | None | Prior calendar year |
+| Alaska | Varies by locality | Varies | No state tax; many local taxes are collected through the Alaska Remote Seller Sales Tax Commission ($100,000 threshold) |
+| Arizona | $100,000 | None | Prior or current calendar year |
+| Arkansas | $100,000 | 200 | Prior or current calendar year |
+| California | $500,000 | None | Prior or current calendar year. Higher threshold than most states |
+| Colorado | $100,000 | None | Prior or current calendar year |
+| Connecticut | $100,000 | 200 | 12 months ending Sept 30. Both must be met |
+| Florida | $100,000 | None | Prior calendar year |
+| Georgia | $100,000 | 200 | Prior or current calendar year |
+| Illinois | $100,000 | None | Prior 12 months |
+| Indiana | $100,000 | None | Prior or current calendar year |
+| Kansas | $100,000 | None | Prior or current calendar year |
+| Kentucky | $100,000 | None | Prior or current calendar year |
+| Louisiana | $100,000 | None | Prior or current calendar year |
+| Maryland | $100,000 | 200 | Prior or current calendar year |
+| Massachusetts | $100,000 | None | Prior or current calendar year |
+| Michigan | $100,000 | 200 | Prior calendar year |
+| Minnesota | $100,000 | 200 | 12 months ending with the last full quarter |
+| Mississippi | More than $250,000 | None | Prior 12 months |
+| Missouri | $100,000 | None | Prior 12 months (checked quarterly) |
+| Nebraska | $100,000 | 200 | Prior or current calendar year |
+| Nevada | $100,000 | 200 | Prior or current calendar year |
+| New Jersey | $100,000 | 200 | Prior or current calendar year |
+| New Mexico | $100,000 | None | Prior calendar year |
+| New York | $500,000 | More than 100 | Prior 4 sales tax quarters. Both must be met |
+| North Carolina | $100,000 | None | Prior or current calendar year |
+| North Dakota | $100,000 | None | Prior or current calendar year |
+| Ohio | $100,000 | 200 | Prior or current calendar year |
+| Oklahoma | $100,000 | None | Prior or current calendar year |
+| Pennsylvania | $100,000 | None | Prior calendar year |
+| Rhode Island | $100,000 | 200 | Prior calendar year |
+| South Carolina | $100,000 | None | Prior or current calendar year |
+| South Dakota | $100,000 | None | Prior or current calendar year. The original |
+| Tennessee | $100,000 | None | Prior 12 months |
+| Texas | $500,000 | None | Prior 12 months. Higher threshold |
+| Utah | $100,000 | None | Prior or current calendar year |
+| Vermont | $100,000 | 200 | Prior 4 calendar quarters |
+| Virginia | $100,000 | 200 | Prior or current calendar year |
+| Washington | $100,000 | None | Prior or current calendar year |
+| West Virginia | $100,000 | 200 | Prior or current calendar year |
+| Wisconsin | $100,000 | None | Prior or current calendar year |
+| Wyoming | $100,000 | None | Prior or current calendar year |
 
 **States with no sales tax:** Alaska (no state tax, but local taxes exist), Delaware, Montana, New Hampshire, Oregon. If you're selling to customers in these states, you generally don't owe state sales tax.
 
@@ -114,7 +115,7 @@ Work through this checklist:
 
 **Step 4: Consider your transaction count.** In states that count both dollars and transactions, you might hit 200 transactions before hitting $100,000 in sales if your average order value is low.
 
-**Step 5: Account for all channels.** If you sell on Shopify AND Amazon AND Etsy, sales from all channels count toward your nexus thresholds. It's your total sales to customers in that state, not just one channel.
+**Step 5: Account for all channels.** If you sell on Shopify AND Amazon AND Etsy, don't look at just one channel. Many states (including California, New York, Texas and Washington) count your marketplace sales toward your threshold, even though the marketplace collects the tax on them; others (including Florida, Georgia, Illinois and Virginia) leave marketplace sales out. Check each state's rule.
 
 ## What Happens After You Have Nexus?
 
@@ -140,7 +141,7 @@ Keep records of your sales by state, the tax you collected, and your returns. Mo
 
 **Ignoring Amazon FBA.** If you use Fulfillment by Amazon, your inventory is stored in warehouses across the country. Each warehouse location potentially creates physical nexus. This is one of the biggest surprises for newer Amazon sellers.
 
-**Not counting all sales channels.** Sales from Shopify, Amazon, Etsy, eBay, and any other channel all count toward your state thresholds. You can't look at just one platform.
+**Not counting all sales channels.** Sales from Shopify, Amazon, Etsy, eBay, and any other channel can all count toward your state thresholds — marketplace sales count in many states, though not in others like Florida and Illinois. You can't look at just one platform.
 
 **Registering late.** If you cross a threshold and don't register for months, some states can assess back taxes, interest, and penalties for the period when you should have been collecting. Don't wait.
 
@@ -156,12 +157,12 @@ Once you're doing consistent six-figure revenue, monitoring nexus should be auto
 
 ## Track Your Nexus With Sails
 
-Manually tracking sales thresholds across 45 states is tedious and error-prone. Sails monitors your sales by state automatically and alerts you as you approach nexus thresholds — before you cross them and become non-compliant.
+Manually tracking sales thresholds across 45 states is tedious and error-prone. Sails checks your sales by state against each state's economic nexus rules — including measurement periods and whether marketplace sales count — and emails you threshold alerts.
 
-Connect your Shopify, WooCommerce, or BigCommerce store, and Sails handles the tracking in the background. When you're getting close to a threshold in a new state, you'll know with enough lead time to register and get compliant.
+Connect your Shopify or WooCommerce store (BigCommerce is in beta), and Sails imports your orders and tracks your sales by state for you.
 
-**[Start tracking your nexus free with Sails](https://sails.tax/signup)** — it takes about 5 minutes to connect your store, and the free plan covers most small sellers.
+**[Start tracking your nexus free with Sails](https://sails.tax/signup)** — the free plan includes nexus monitoring and alerts for 1 store connection with up to 50 orders a month.
 
 ---
 
-*Sales tax law changes frequently. This post reflects rules as of early 2026. Always verify current thresholds with the state or a qualified tax professional before making compliance decisions.*
+*Sales tax law changes frequently. This post reflects rules as of September 2026. Always verify current thresholds with the state or a qualified tax professional before making compliance decisions.*

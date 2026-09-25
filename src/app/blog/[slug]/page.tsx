@@ -6,7 +6,7 @@ import Footer from '@/components/Footer';
 import SailsLogo from '@/components/SailsLogo';
 import ThemeToggle from '@/components/ThemeToggle';
 import ShareButtons from '@/components/ShareButtons';
-import { Calendar, Clock, ArrowLeft, User } from 'lucide-react';
+import { Calendar, Clock, ArrowLeft, User, CheckCircle2 } from 'lucide-react';
 import type { Metadata } from 'next';
 
 interface Props {
@@ -81,7 +81,7 @@ export default async function BlogPostPage({ params }: Props) {
       },
     },
     datePublished: post.date,
-    dateModified: post.date,
+    dateModified: post.lastReviewed || post.date,
     mainEntityOfPage: {
       '@type': 'WebPage',
       '@id': `https://sails.tax/blog/${slug}`,
@@ -169,12 +169,25 @@ export default async function BlogPostPage({ params }: Props) {
                   month: 'long',
                   day: 'numeric',
                   year: 'numeric',
+                  timeZone: 'UTC',
                 })}
               </span>
               <span className="flex items-center gap-2">
                 <Clock className="w-4 h-4" />
                 {post.readTime}
               </span>
+              {post.lastReviewed && (
+                <span className="flex items-center gap-2 text-theme-accent" title="Facts in this article were re-checked against current sources on this date">
+                  <CheckCircle2 className="w-4 h-4" />
+                  Facts last reviewed{' '}
+                  {new Date(post.lastReviewed).toLocaleDateString('en-US', {
+                    month: 'long',
+                    day: 'numeric',
+                    year: 'numeric',
+                    timeZone: 'UTC',
+                  })}
+                </span>
+              )}
             </div>
             
             {/* Share Buttons */}

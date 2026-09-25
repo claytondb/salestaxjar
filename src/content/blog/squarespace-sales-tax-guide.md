@@ -1,6 +1,7 @@
 ---
 title: "Squarespace Sales Tax Setup: Complete Guide for Online Sellers"
 date: "2026-02-26"
+lastReviewed: "2026-09-25"
 excerpt: "Learn how to configure sales tax on your Squarespace store, understand when to charge tax, and stay compliant with state regulations as a small seller."
 author: "Sails Team"
 category: "Platform Guides"
@@ -86,10 +87,10 @@ You have physical nexus if you:
 Most states now have economic nexus thresholds. If you sell over a certain amount into a state, you must collect tax even with no physical presence.
 
 **Common thresholds**:
-- $100,000 in sales, OR
-- 200 transactions
+- $100,000 in sales (most states)
+- 200 transactions (some states also count these)
 
-Each state sets its own rules. Some use only dollar amounts; others use only transaction counts; most use both.
+Each state sets its own rules. Most use only a dollar amount; about a third also count transactions.
 
 ### What This Means for Squarespace Sellers
 
@@ -128,7 +129,7 @@ Squarespace's automatic tax handles this for you, but understanding the concept 
 
 **Colorado**: Home rule cities can set their own rates and rules, creating compliance complexity.
 
-**New York**: Clothing under $110 is exempt, requiring product-level settings.
+**New York**: Clothing under $110 is exempt, requiring product-level settings (verify current rules with the state).
 
 ## Filing and Remitting Sales Tax
 
@@ -152,7 +153,7 @@ Generate tax reports to prepare your filings:
 
 ### Filing Deadlines
 
-Most states follow predictable schedules:
+Most states follow predictable schedules (but verify each state's due dates):
 - Monthly: Due around the 20th of the following month
 - Quarterly: Due by the end of the month following the quarter
 - Annual: Due by January 31
@@ -187,7 +188,7 @@ Many states tax shipping charges. Squarespace's automatic tax should handle this
 
 Your Squarespace store can trigger economic nexus in multiple states quickly, especially if you sell higher-priced items.
 
-**Solution**: Review your sales by state quarterly. Tools like Sails can track this automatically.
+**Solution**: Review your sales by state quarterly. Tools like Sails can track this for you (Sails' Squarespace connection is in beta).
 
 ## Squarespace Tax Settings Checklist
 
@@ -241,7 +242,7 @@ In Squarespace, you can set products as digital and configure their tax treatmen
 
 ### Track Carefully
 
-Digital sales still count toward economic nexus thresholds, even if the products aren't taxable in that state.
+Digital sales may still count toward economic nexus thresholds, even if the products aren't taxable in that state — it varies by state.
 
 ## When to Get Additional Help
 
@@ -262,4 +263,4 @@ Squarespace handles the basics well, but consider additional tools or profession
 
 ---
 
-*Selling on Squarespace and want to track your nexus exposure automatically? [Try Sails](/signup) to monitor your sales across states and know exactly when you need to act.*
+*Selling on Squarespace and want to track your nexus exposure? [Try Sails](/signup) (our Squarespace connection is in beta) to monitor your sales across states and know when you need to act.*

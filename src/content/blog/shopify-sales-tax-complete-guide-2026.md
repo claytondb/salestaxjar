@@ -1,7 +1,8 @@
 ---
 title: "Shopify Sales Tax: What Every Store Owner Needs to Know in 2026"
 date: "2026-03-11"
-excerpt: "Shopify Tax handles calculation at checkout — but not filing, nexus tracking, or multi-platform compliance. Here's the full picture every Shopify store owner needs."
+lastReviewed: "2026-09-25"
+excerpt: "Shopify Tax handles calculation at checkout and shows nexus insights for your Shopify sales — but filing costs extra, and it can't see your other sales channels. Here's the full picture every Shopify store owner needs."
 author: "Sails Team"
 category: "Integrations"
 readTime: "9 min read"
@@ -24,8 +25,8 @@ Shopify Tax is Shopify's native tax calculation engine. When enabled, it automat
 For the moment a customer checks out, Shopify Tax is genuinely excellent. It pulls live rate data, applies it correctly, and collects the right amount.
 
 **What Shopify Tax costs:**
-- Free for stores with up to $100K in US sales
-- 0.35% of US sales above $100K (capped at $0.99 per transaction for Shopify Plus)
+- Free for your first $100,000 in US sales (per calendar year for stores created before May 13, 2026; a one-time lifetime allowance for newer stores)
+- After that, 0.35% per US transaction on Basic, Grow and Advanced (0.25% on Plus), capped at $0.99 per order (as of September 2026)
 
 For most small sellers, Shopify Tax is effectively free and handles checkout calculation reliably.
 
@@ -33,17 +34,17 @@ For most small sellers, Shopify Tax is effectively free and handles checkout cal
 
 Here's the gap — and it's a big one.
 
-### ❌ Shopify Tax doesn't monitor economic nexus
+### ⚠️ Shopify's nexus insights only see Shopify sales
 
-Shopify Tax knows your registered states and calculates tax accordingly. But it doesn't proactively monitor whether you've crossed economic nexus thresholds in new states.
+Shopify's tax liability insights show where your Shopify sales may have crossed a state's economic nexus threshold. But they only count sales processed through Shopify — Shopify's own help center tells merchants to review sales that weren't processed by Shopify themselves.
 
-**What is economic nexus?** Post-*Wayfair* (2018), every state can require you to collect sales tax if you exceed their threshold — typically $100,000 in sales or 200 transactions per year in that state. You don't need a physical presence. Just customers.
+**What is economic nexus?** Post-*Wayfair* (2018), every state can require you to collect sales tax if you exceed their threshold — typically $100,000 in sales per year in that state (some states also count 200 transactions). You don't need a physical presence. Just customers.
 
 Shopify can't tell you: "Hey, you're approaching the Texas threshold and might need to register." You'd need to monitor this yourself — or use a tool built for it.
 
-### ❌ Shopify Tax doesn't file your returns
+### ❌ Shopify Tax doesn't file your returns for free
 
-Shopify Tax collects the tax. You still have to file returns in every state where you're registered. That means:
+Shopify Tax collects the tax. Its automated filing costs $75 per generated return on Basic, Grow and Advanced plans, or $50 on Plus (as of September 2026). Without it, you still have to file returns in every state where you're registered. That means:
 - Logging into each state's tax portal (or using a third-party filer)
 - Submitting your collected tax amounts
 - Meeting each state's filing deadline (quarterly, monthly, or annually depending on your volume)
@@ -52,13 +53,13 @@ Miss a deadline and you'll face penalties and interest. File in the wrong period
 
 ### ❌ Shopify Tax only covers your Shopify sales
 
-If you sell anywhere else — Amazon, Etsy, eBay, your own WooCommerce site, at craft fairs — Shopify Tax has no visibility into those sales. But for nexus purposes, all your sales in a state count together.
+If you sell anywhere else — Amazon, Etsy, eBay, your own WooCommerce site, at craft fairs — Shopify Tax has no visibility into those sales. But for nexus purposes, your sales in a state are added together — although some states exclude marketplace sales (like Amazon or Etsy) from your threshold.
 
-A seller doing $60K on Shopify and $50K on Amazon might think they don't have nexus anywhere except their home state. But combined, they've crossed the threshold in multiple states. Shopify Tax can't catch that.
+A seller doing $60K on Shopify and $50K on Amazon might think they don't have nexus anywhere except their home state. But combined, they may have crossed a threshold in states that count marketplace sales. Shopify Tax can't catch that.
 
 ### ❌ Shopify Tax doesn't tell you what you owe
 
-You can see collected tax in Shopify reports, but there's no dashboard showing "you collected $847 in California this quarter, which is due by April 30." That gap is where sellers get in trouble.
+You can see collected tax in Shopify reports, but you still have to match those numbers to each state's filing calendar yourself. That gap is where sellers get in trouble.
 
 ## The Full Shopify Sales Tax Picture
 
@@ -76,21 +77,21 @@ In your Shopify admin, go to Settings → Taxes and Duties. Enable Shopify Tax. 
 
 This is the step most sellers miss. You need to know how much you're selling into each state — across all your platforms — and whether you're approaching any thresholds.
 
-Most states use the $100,000 / 200 transaction threshold established by *South Dakota v. Wayfair*. Some states are lower ($50K in a few states). A handful have no sales tax at all.
+Most states use a $100,000 sales threshold; some also count 200 transactions, as South Dakota did at the time of *South Dakota v. Wayfair*. Some states are higher (Alabama and Mississippi use $250,000; California, New York and Texas use $500,000). A handful have no sales tax at all.
 
 **Tools for monitoring:**
 - **Manually**: Download your Shopify orders, sort by state, and calculate. Time-consuming and error-prone.
-- **Automatically**: Use a nexus monitoring tool like [Sails](https://sails.tax) that pulls your Shopify data and watches all 50 states for you.
+- **With a tool**: Use a nexus monitoring tool like [Sails](https://sails.tax) that imports your Shopify orders and checks your sales against every state's nexus rules.
 
 ### Step 4: Register in new states when you hit thresholds
 
-When you exceed a state's threshold, you have a legal obligation to register and collect tax. Do this promptly — most states have a grace period of 30-60 days from when you cross the threshold.
+When you exceed a state's threshold, you have a legal obligation to register and collect tax. Do this promptly — when you must start collecting varies by state (immediately, the first day of the next month, or the next calendar year in some states).
 
 Registration is free (or low cost) in most states. You'll get a permit number that you add to Shopify Tax for that state.
 
 ### Step 5: File and remit on schedule
 
-Most states require quarterly filing for small sellers. A few require monthly filing once your volume is high enough. Know your filing frequency for each state and set reminders — or use a tool that tracks deadlines for you.
+Most states require quarterly filing for small sellers. A few require monthly filing once your volume is high enough. Know your filing frequency for each state (verify it with the state) and set reminders — or use a tool that tracks deadlines for you.
 
 When you file, you're remitting the tax you collected in that period. Your Shopify Tax reports will show you this by state.
 
@@ -100,35 +101,35 @@ When you file, you're remitting the tax you collected in that period. Your Shopi
 You need to register everywhere you have nexus — physical or economic. Shopify Tax will collect tax in those states once you're registered, but it won't tell you where else you should be registered.
 
 **2. Ignoring sales from other platforms**
-If you sell anywhere besides Shopify, those sales count toward your nexus thresholds in every state. Track your total sales volume across all channels.
+If you sell anywhere besides Shopify, those sales can count toward your nexus thresholds too (though some states exclude marketplace sales). Track your total sales volume across all channels.
 
 **3. Forgetting marketplace sales**
 Amazon, Etsy, and other marketplaces typically collect and remit tax for you (marketplace facilitator laws). But those sales still count toward your economic nexus totals in some states. The rules vary by state.
 
 **4. Missing filing deadlines**
-States assess penalties of 5-25% for late filings, plus interest. In some states, repeat late filing can trigger an audit. Set calendar reminders — or use a tool that tracks deadlines automatically.
+States charge penalties and interest for late filings (the amounts vary by state). In some states, repeat late filing can trigger an audit. Set calendar reminders — or use a tool that tracks deadlines and emails you reminders.
 
 **5. Not tracking historical sales**
-Economic nexus looks at the prior 12 months (for most states) or the current calendar year. If you're new to tracking, you need to look back at your historical sales data to see if you've already crossed thresholds you weren't aware of.
+Economic nexus looks at the prior or current calendar year in most states; some use the prior 12 months or another period. If you're new to tracking, you need to look back at your historical sales data to see if you've already crossed thresholds you weren't aware of.
 
 ## Shopify Tax vs. Third-Party Tools
 
 | | Shopify Tax | Sails |
 |---|---|---|
 | Tax calculation at checkout | ✅ Excellent | N/A |
-| Economic nexus monitoring | ❌ | ✅ |
+| Economic nexus monitoring | Shopify sales only | ✅ All connected channels |
 | Multi-platform tracking | ❌ | ✅ |
 | Filing deadline reminders | ❌ | ✅ |
-| "What do I owe?" dashboard | ❌ | ✅ |
-| Cost | Free (up to $100K) | $9/mo |
+| Sales-by-state reports for filing | Tax reports | ✅ |
+| Cost | Free for first $100K in US sales, then 0.35%/order (max $0.99) | Free plan; paid from $9/mo |
 
 Shopify Tax and a nexus monitoring tool aren't competing products — they're complementary. Shopify Tax handles calculation at checkout (and does it well). A tool like Sails fills the gaps: nexus monitoring, multi-platform aggregation, and deadline tracking.
 
 ## What About Shopify Plus?
 
-Shopify Plus users get access to Shopify Tax with the same feature set, but with a lower per-transaction cap ($0.99) and access to more advanced integrations like Avalara and TaxJar via the Shopify app store.
+Shopify Plus stores get Shopify Tax at a lower rate (0.25% per transaction, capped at $0.99 per order and $5,000 a year for US fees, as of September 2026), and can also use third-party tax apps from the Shopify App Store.
 
-Shopify Plus doesn't change the fundamental gap: you still need nexus monitoring and filing assistance outside the Shopify ecosystem.
+Shopify Plus doesn't change the fundamental gap: you still need to track sales outside the Shopify ecosystem, and automated filing is still charged per return ($50 on Plus, as of September 2026).
 
 ## The Bottom Line
 
@@ -138,11 +139,11 @@ To be fully compliant as a Shopify seller in 2026, you need:
 1. ✅ **Shopify Tax** — for accurate calculation at checkout
 2. ✅ **Nexus monitoring** — to know when you need to register in new states
 3. ✅ **Multi-platform tracking** — if you sell beyond Shopify
-4. ✅ **Filing reminders** — so you never miss a deadline
+4. ✅ **Filing reminders** — so you don't miss a deadline
 5. ✅ **Clear reporting** — to know what you owe and when
 
 Shopify gives you #1. Everything else requires a separate tool or a lot of manual work.
 
 ---
 
-*[Sails](https://sails.tax) fills the gap for $9/month. Connect your Shopify store in 5 minutes and get nexus monitoring, deadline alerts, and filing-ready reports — all in one place. [Start free →](https://sails.tax/signup)*
+*[Sails](https://sails.tax) fills the gap, with a free plan and paid plans from $9/month. Connect your Shopify store and get nexus monitoring across your channels, deadline reminders, and sales-by-state reports in one place. [Start free →](https://sails.tax/signup)*
