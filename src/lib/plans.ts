@@ -107,7 +107,7 @@ const FEATURE_MINIMUM_TIER: Record<Feature, PlanTier> = {
   platform_connect: 'starter',
   order_import: 'starter',
   order_sync: 'starter',
-  email_deadline_reminders: 'starter',
+  email_deadline_reminders: 'free',
   csv_order_import: 'starter',
 
   // Pro

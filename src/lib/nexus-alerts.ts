@@ -176,10 +176,11 @@ async function sendNexusAlertEmails(
   // Get user info
   const user = await prisma.user.findUnique({
     where: { id: userId },
-    select: { email: true, name: true },
+    select: { email: true, name: true, emailVerified: true },
   });
 
-  if (!user) return;
+  // Only email addresses the person has confirmed
+  if (!user || !user.emailVerified) return;
 
   for (const alert of alerts) {
     try {

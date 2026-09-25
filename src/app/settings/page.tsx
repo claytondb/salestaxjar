@@ -747,8 +747,8 @@ function SettingsPageContent() {
                         },
                         {
                           key: 'emailDeadlineReminders',
-                          label: 'Filing deadline reminders (coming soon)',
-                          help: 'An email a week and a day before each filing deadline you track. Leave this on to get them when they launch.',
+                          label: 'Filing deadline reminders',
+                          help: 'An email a week and a day before each filing deadline you track.',
                         },
                         {
                           // Stored in emailWeeklyDigest; the onboarding emails check it.

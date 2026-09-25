@@ -272,8 +272,16 @@ describe('checkAndCreateAlerts (uses the nexus engine)', () => {
     vi.mocked(prisma.nexusAlert.create).mockResolvedValue({} as never);
     vi.mocked(prisma.nexusAlert.updateMany).mockResolvedValue({ count: 1 } as never);
     vi.mocked(prisma.notificationPreference.findUnique).mockResolvedValue(null as never);
-    vi.mocked(prisma.user.findUnique).mockResolvedValue({ email: 'seller@example.com', name: 'Sam' } as never);
+    vi.mocked(prisma.user.findUnique).mockResolvedValue({ email: 'seller@example.com', name: 'Sam', emailVerified: true } as never);
     vi.mocked(sendNexusAlertEmail).mockResolvedValue({ success: true } as never);
+  });
+
+  it('creates alerts but emails only confirmed addresses', async () => {
+    vi.mocked(prisma.user.findUnique).mockResolvedValue({ email: 'typo@example.com', name: 'Sam', emailVerified: false } as never);
+    withSales({ WA: [['2026-01', '2026-06', 150_000, 700]] });
+    const alerts = await checkAndCreateAlerts('user-1', NOW);
+    expect(alerts).toHaveLength(1);
+    expect(sendNexusAlertEmail).not.toHaveBeenCalled();
   });
 
   it('creates the exceeded alert plus the lower levels, and emails only the highest', async () => {

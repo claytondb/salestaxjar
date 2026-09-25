@@ -44,14 +44,14 @@ const FEATURE_ICONS: Record<string, React.ReactNode> = {
   filing_summaries: <ClipboardList className={ICON_CLASS} />,
 };
 
-// Six cards (a full 3×2 grid). Live features first, then one planned feature.
+// Six cards (a full 3×2 grid), all live.
 const HOMEPAGE_FEATURE_IDS = [
   'nexus_tracking',
   'threshold_alerts',
   'filing_calendar',
+  'deadline_reminders',
   'reports',
   'calculator',
-  'filing_summaries',
 ];
 
 export default function Home() {

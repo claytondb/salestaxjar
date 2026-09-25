@@ -213,10 +213,10 @@ describe('buildFilingReminderEmail', () => {
   });
 
   describe('CTA and footer', () => {
-    it('includes a link to the filings dashboard', () => {
+    it('links to the filing calendar', () => {
       const { html, text } = buildFilingReminderEmail(makeParams());
-      expect(html).toContain('/dashboard?tab=filings');
-      expect(text).toContain('/dashboard?tab=filings');
+      expect(html).toContain('https://sails.tax/filings');
+      expect(text).toContain('https://sails.tax/filings');
     });
 
     it('includes the Sails branding', () => {
