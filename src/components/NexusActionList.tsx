@@ -1,7 +1,19 @@
 'use client';
 
 import Link from 'next/link';
-import { CalendarClock, ExternalLink, Eye, History, ShieldAlert, Store, Upload } from 'lucide-react';
+import {
+  CalendarClock,
+  ExternalLink,
+  Eye,
+  History,
+  Info,
+  Receipt,
+  RefreshCw,
+  ShieldAlert,
+  Store,
+  TrendingUp,
+  Upload,
+} from 'lucide-react';
 import { getStateRegistrationUrl } from '@/lib/state-registration-urls';
 import type { TopAction } from '@/lib/nexus-engine';
 
@@ -12,6 +24,14 @@ export function ActionIcon({ kind }: { kind: TopAction['kind'] }) {
       return <ShieldAlert className={`${cls} text-red-500`} aria-hidden />;
     case 'plan':
       return <CalendarClock className={`${cls} text-purple-500`} aria-hidden />;
+    case 'past':
+      return <Receipt className={`${cls} text-orange-500`} aria-hidden />;
+    case 'review':
+      return <Info className={`${cls} text-blue-500`} aria-hidden />;
+    case 'upgrade':
+      return <TrendingUp className={`${cls} text-theme-accent`} aria-hidden />;
+    case 'sync':
+      return <RefreshCw className={`${cls} text-theme-accent`} aria-hidden />;
     case 'import_history':
       return <History className={`${cls} text-theme-accent`} aria-hidden />;
     case 'watch':
@@ -36,28 +56,37 @@ export function ActionLink({ action }: { action: TopAction }) {
       );
     }
   }
-  if (action.kind === 'watch' && action.stateCode) {
+  if ((action.kind === 'watch' || action.kind === 'review' || action.kind === 'past') && action.stateCode) {
     return (
       <a href={`#state-${action.stateCode}`} className={linkClass}>
-        See why
+        See details
       </a>
     );
   }
-  if (action.kind === 'import_history' || action.kind === 'connect_store') {
-    return (
-      <Link href="/settings#platforms" className={linkClass}>
-        {action.kind === 'connect_store' ? 'Connect a store' : 'Import more orders'}
-      </Link>
-    );
+  switch (action.kind) {
+    case 'upgrade':
+      return (
+        <Link href="/pricing" className={linkClass}>
+          Compare plans
+        </Link>
+      );
+    case 'sync':
+    case 'import_history':
+    case 'connect_store':
+      return (
+        <Link href="/settings#platforms" className={linkClass}>
+          {action.kind === 'connect_store' ? 'Connect a store' : action.kind === 'sync' ? 'Go to your connections' : 'Add older orders'}
+        </Link>
+      );
+    case 'add_marketplace':
+      return (
+        <Link href="/settings#amazon" className={linkClass}>
+          Upload an Amazon report
+        </Link>
+      );
+    default:
+      return null;
   }
-  if (action.kind === 'add_marketplace') {
-    return (
-      <Link href="/settings#platforms" className={linkClass}>
-        Upload an Amazon report
-      </Link>
-    );
-  }
-  return null;
 }
 
 /** Numbered list of the top actions from the nexus engine. */

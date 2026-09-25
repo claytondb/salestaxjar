@@ -43,7 +43,7 @@ import {
   NexusAlertResult,
 } from './nexus-alerts';
 import { loadNexusInputs } from './nexus-data';
-import { emptyWindows } from './nexus-engine';
+import { emptyChannels, emptyCoverage, monthRange, type Registration, type StateMonths } from './nexus-engine';
 import { prisma } from './prisma';
 import { sendNexusAlertEmail } from './email-alerts';
 
@@ -241,21 +241,29 @@ describe('nexus-alerts', () => {
 describe('checkAndCreateAlerts (uses the nexus engine)', () => {
   const NOW = new Date('2026-07-01T12:00:00Z');
   const coverage = {
-    earliestOrder: new Date('2024-06-01T00:00:00Z'),
+    ...emptyCoverage(),
+    earliestOrder: new Date('2024-01-02T00:00:00Z'),
     latestOrder: new Date('2026-06-30T00:00:00Z'),
-    hasMarketplaceData: false,
+    direct: { earliest: new Date('2024-01-02T00:00:00Z'), latest: new Date('2026-06-30T00:00:00Z') },
   };
 
-  function withSales(entries: Record<string, { prev?: number; cur?: number; roll?: number; orders?: number }>) {
-    const byState = new Map();
-    for (const [code, v] of Object.entries(entries)) {
-      const w = emptyWindows();
-      w.previousYear.direct = { sales: v.prev ?? 0, orders: v.orders ?? 1 };
-      w.currentYear.direct = { sales: v.cur ?? 0, orders: v.orders ?? 1 };
-      w.rolling12.direct = { sales: v.roll ?? 0, orders: v.orders ?? 1 };
-      byState.set(code, w);
+  /** state → list of [firstMonth, lastMonth, totalSales, totalOrders] spread evenly */
+  function withSales(entries: Record<string, Array<[string, string, number, number]>>, registrations = new Map<string, Registration>()) {
+    const byState = new Map<string, StateMonths>();
+    for (const [code, ranges] of Object.entries(entries)) {
+      const months: StateMonths = new Map();
+      for (const [a, b, sales, orders] of ranges) {
+        const keys = monthRange(a, b);
+        for (const k of keys) {
+          const bucket = months.get(k) ?? emptyChannels();
+          bucket.direct.sales += sales / keys.length;
+          bucket.direct.orders += Math.round(orders / keys.length);
+          months.set(k, bucket);
+        }
+      }
+      byState.set(code, months);
     }
-    vi.mocked(loadNexusInputs).mockResolvedValue({ byState, coverage });
+    vi.mocked(loadNexusInputs).mockResolvedValue({ byState, coverage, registrations });
   }
 
   beforeEach(() => {
@@ -269,7 +277,7 @@ describe('checkAndCreateAlerts (uses the nexus engine)', () => {
   });
 
   it('creates the exceeded alert plus the lower levels, and emails only the highest', async () => {
-    withSales({ WA: { cur: 150_000 } });
+    withSales({ WA: [['2026-01', '2026-06', 150_000, 700]] });
     const alerts = await checkAndCreateAlerts('user-1', NOW);
     expect(alerts).toHaveLength(1);
     expect(alerts[0]).toMatchObject({ stateCode: 'WA', alertLevel: 'exceeded', salesAmount: 150_000 });
@@ -277,26 +285,45 @@ describe('checkAndCreateAlerts (uses the nexus engine)', () => {
     expect(sendNexusAlertEmail).toHaveBeenCalledTimes(1);
     expect(vi.mocked(sendNexusAlertEmail).mock.calls[0][0]).toMatchObject({
       stateCode: 'WA',
+      summary: expect.stringContaining('$150,000'),
       detail: expect.stringContaining('Register for a sales tax permit in Washington'),
     });
   });
 
-  it("uses each state's own window: last year's sales don't trigger Texas (last 12 months)", async () => {
-    withSales({ TX: { prev: 900_000, roll: 100_000 } });
+  it("uses each state's own window: sales outside Texas's last 12 months don't count as over now", async () => {
+    withSales({ TX: [['2024-01', '2024-06', 100_000, 400], ['2025-07', '2026-06', 100_000, 400]] });
     const alerts = await checkAndCreateAlerts('user-1', NOW);
     expect(alerts).toEqual([]);
     expect(prisma.nexusAlert.create).not.toHaveBeenCalled();
   });
 
-  it('explains next-year registration for previous-year states crossed this year', async () => {
-    withSales({ FL: { prev: 20_000, cur: 120_000 } });
+  it('gives next-year registration its own alert, even after a 90% warning', async () => {
+    withSales({ FL: [['2025-01', '2025-12', 20_000, 100], ['2026-01', '2026-06', 120_000, 600]] });
+    vi.mocked(prisma.nexusAlert.findMany).mockResolvedValue([
+      { id: 'a1', stateCode: 'FL', alertLevel: 'warning' },
+      { id: 'a2', stateCode: 'FL', alertLevel: 'approaching' },
+    ] as never);
     const alerts = await checkAndCreateAlerts('user-1', NOW);
-    expect(alerts[0].alertLevel).toBe('warning');
-    expect(alerts[0].message).toContain('register by January 1, 2027');
+    expect(alerts).toHaveLength(1);
+    expect(alerts[0].alertLevel).toBe('next_year');
+    expect(alerts[0].message).toContain('January 1, 2027');
+  });
+
+  it('skips states the seller marked as registered', async () => {
+    withSales({ WA: [['2026-01', '2026-06', 150_000, 700]] }, new Map([['WA', 'registered' as Registration]]));
+    const alerts = await checkAndCreateAlerts('user-1', NOW);
+    expect(alerts).toEqual([]);
+  });
+
+  it('describes order-count crossings in orders, not dollars', async () => {
+    withSales({ AR: [['2026-01', '2026-06', 20_000, 210]] });
+    const alerts = await checkAndCreateAlerts('user-1', NOW);
+    expect(alerts[0].message).toContain('210 orders');
+    expect(alerts[0].message).not.toContain('over the $100,000');
   });
 
   it('does not repeat alerts that already exist', async () => {
-    withSales({ WA: { cur: 150_000 } });
+    withSales({ WA: [['2026-01', '2026-06', 150_000, 700]] });
     vi.mocked(prisma.nexusAlert.findMany).mockResolvedValue([
       { id: 'a1', stateCode: 'WA', alertLevel: 'exceeded' },
       { id: 'a2', stateCode: 'WA', alertLevel: 'warning' },
@@ -308,7 +335,7 @@ describe('checkAndCreateAlerts (uses the nexus engine)', () => {
   });
 
   it('respects the email preference', async () => {
-    withSales({ WA: { cur: 150_000 } });
+    withSales({ WA: [['2026-01', '2026-06', 150_000, 700]] });
     vi.mocked(prisma.notificationPreference.findUnique).mockResolvedValue({ emailNexusAlerts: false } as never);
     const alerts = await checkAndCreateAlerts('user-1', NOW);
     expect(alerts).toHaveLength(1);

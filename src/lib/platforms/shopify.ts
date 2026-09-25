@@ -10,7 +10,10 @@ import { prisma } from '../prisma';
 // Shopify API Configuration
 const SHOPIFY_API_KEY = process.env.SHOPIFY_API_KEY;
 const SHOPIFY_API_SECRET = process.env.SHOPIFY_API_SECRET;
-const SHOPIFY_SCOPES = 'read_orders,read_products,read_customers,read_locations';
+// Only what nexus needs: orders and store locations. Add read_all_orders (after
+// Shopify approves it for the app) via SHOPIFY_SCOPES to import more than the
+// last 60 days of order history.
+const SHOPIFY_SCOPES = process.env.SHOPIFY_SCOPES || 'read_orders,read_locations';
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://sails.tax';
 
 export function isShopifyConfigured(): boolean {
@@ -285,6 +288,54 @@ export async function fetchOrders(
     return { orders: data.orders };
   } catch (error) {
     return { error: error instanceof Error ? error.message : 'Failed to fetch orders' };
+  }
+}
+
+/**
+ * Fetch every order created since `createdAtMin`, oldest first, following
+ * Shopify's `since_id` pagination (order IDs only go up, so this walks forward
+ * in time). Stops at `maxPages` or when `deadline` (ms timestamp) passes and
+ * reports `complete: false`, so the next sync can continue from the newest
+ * order it has.
+ *
+ * Note: without the read_all_orders scope Shopify only returns the last 60
+ * days of orders, whatever createdAtMin says.
+ */
+export async function fetchOrdersSince(
+  shop: string,
+  accessToken: string,
+  options: { createdAtMin?: string; maxPages?: number; deadline?: number; fetchImpl?: typeof fetch } = {}
+): Promise<{ orders?: ShopifyOrder[]; complete: boolean; error?: string }> {
+  const doFetch = options.fetchImpl ?? fetch;
+  const maxPages = options.maxPages ?? 40;
+  const all: ShopifyOrder[] = [];
+  let sinceId: string | null = null;
+
+  try {
+    for (let page = 0; page < maxPages; page++) {
+      if (options.deadline && Date.now() > options.deadline) {
+        return { orders: all, complete: false };
+      }
+      const query = new URLSearchParams({ status: 'any', limit: '250' });
+      if (options.createdAtMin) query.append('created_at_min', options.createdAtMin);
+      query.append('since_id', sinceId ?? '0');
+
+      const response = await doFetch(`https://${shop}/admin/api/2024-01/orders.json?${query}`, {
+        headers: { 'X-Shopify-Access-Token': accessToken },
+      });
+      if (!response.ok) {
+        const text = await response.text();
+        return { orders: all, complete: false, error: `Shopify API error: ${text.slice(0, 300)}` };
+      }
+      const data = (await response.json()) as { orders?: ShopifyOrder[] };
+      const batch = data.orders ?? [];
+      all.push(...batch);
+      if (batch.length < 250) return { orders: all, complete: true };
+      sinceId = String(batch.reduce((max, o) => (Number(o.id) > max ? Number(o.id) : max), 0));
+    }
+    return { orders: all, complete: false };
+  } catch (error) {
+    return { orders: all, complete: false, error: error instanceof Error ? error.message : 'Failed to fetch orders' };
   }
 }
 

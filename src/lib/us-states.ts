@@ -48,3 +48,12 @@ export function toStateCode(value: string | null | undefined): string | null {
 export function isUsStateCode(code: string): boolean {
   return CODES.has(code.toUpperCase());
 }
+
+const US_COUNTRY_NAMES = new Set(['US', 'USA', 'UNITEDSTATES', 'UNITEDSTATESOFAMERICA']);
+
+/** "United States", "USA", "us" → "US"; anything else is returned trimmed. */
+export function toCountryCode(value: string | null | undefined): string {
+  const trimmed = (value ?? '').trim();
+  if (US_COUNTRY_NAMES.has(trimmed.toUpperCase().replace(/[^A-Z]/g, ''))) return 'US';
+  return trimmed;
+}

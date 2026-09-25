@@ -15,6 +15,7 @@
 
 import { prisma } from '../prisma';
 import { assertPublicStoreUrl } from './url-guard';
+import { toCountryCode } from '../us-states';
 
 // =============================================================================
 // Types
@@ -538,7 +539,8 @@ export function mapOrderToImport(order: OpenCartOrder) {
     shippingState: order.shipping_zone,
     shippingCity: order.shipping_city,
     shippingZip: order.shipping_postcode,
-    shippingCountry: order.shipping_country || 'US',
+    // OpenCart returns the country name ("United States"), not a code
+    shippingCountry: toCountryCode(order.shipping_country) || 'US',
     billingState: order.payment_zone,
     lineItems: order.products?.map(item => ({
       productId: item.product_id,

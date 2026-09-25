@@ -746,7 +746,8 @@ describe('mapOrderToImport', () => {
       expect(result.shippingState).toBe('Illinois');
       expect(result.shippingCity).toBe('Chicago');
       expect(result.shippingZip).toBe('60601');
-      expect(result.shippingCountry).toBe('United States');
+      // OpenCart sends the country name; it's stored as the code the nexus math filters on
+      expect(result.shippingCountry).toBe('US');
     });
 
     it('should map billing state', () => {

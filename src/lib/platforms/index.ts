@@ -269,57 +269,68 @@ export async function saveImportedOrders(
   const errors: string[] = [];
   let imported = 0;
 
-  for (const order of orders) {
-    try {
-      await prisma.importedOrder.upsert({
-        where: {
-          userId_platform_platformOrderId: {
-            userId,
-            platform: order.platform,
-            platformOrderId: order.platformOrderId,
-          },
-        },
-        create: {
-          userId,
-          platformConnectionId,
-          platform: order.platform,
-          platformOrderId: order.platformOrderId,
-          orderNumber: order.orderNumber,
-          orderDate: order.orderDate,
-          subtotal: order.subtotal,
-          shippingAmount: order.shippingAmount,
-          taxAmount: order.taxAmount,
-          totalAmount: order.totalAmount,
-          currency: order.currency,
-          status: order.status,
-          customerEmail: null,
-          shippingState: order.shippingState,
-          shippingCity: order.shippingCity,
-          shippingZip: order.shippingZip,
-          shippingCountry: order.shippingCountry,
-          billingState: order.billingState,
-          lineItems: order.lineItems ? JSON.stringify(order.lineItems) : null,
-          taxBreakdown: order.taxBreakdown ? JSON.stringify(order.taxBreakdown) : null,
-          rawData: null,
-        },
-        update: {
-          orderNumber: order.orderNumber,
-          subtotal: order.subtotal,
-          shippingAmount: order.shippingAmount,
-          taxAmount: order.taxAmount,
-          totalAmount: order.totalAmount,
-          status: order.status,
-          lineItems: order.lineItems ? JSON.stringify(order.lineItems) : null,
-          taxBreakdown: order.taxBreakdown ? JSON.stringify(order.taxBreakdown) : null,
-          customerEmail: null,
-          rawData: null,
-          updatedAt: new Date(),
-        },
-      });
-      imported++;
-    } catch (error) {
-      errors.push(`Order ${order.platformOrderId}: ${error instanceof Error ? error.message : 'Unknown error'}`);
-    }
+  // Save in small parallel batches: history imports can be thousands of
+  // orders, and one-at-a-time round trips to the database are too slow.
+  const BATCH = 20;
+  for (let start = 0; start < orders.length; start += BATCH) {
+    const batch = orders.slice(start, start + BATCH);
+    const results = await Promise.allSettled(
+      batch.map((order) =>
+        prisma.importedOrder.upsert({
+            where: {
+              userId_platform_platformOrderId: {
+                userId,
+                platform: order.platform,
+                platformOrderId: order.platformOrderId,
+              },
+            },
+            create: {
+              userId,
+              platformConnectionId,
+              platform: order.platform,
+              platformOrderId: order.platformOrderId,
+              orderNumber: order.orderNumber,
+              orderDate: order.orderDate,
+              subtotal: order.subtotal,
+              shippingAmount: order.shippingAmount,
+              taxAmount: order.taxAmount,
+              totalAmount: order.totalAmount,
+              currency: order.currency,
+              status: order.status,
+              customerEmail: null,
+              shippingState: order.shippingState,
+              shippingCity: order.shippingCity,
+              shippingZip: order.shippingZip,
+              shippingCountry: order.shippingCountry,
+              billingState: order.billingState,
+              lineItems: order.lineItems ? JSON.stringify(order.lineItems) : null,
+              taxBreakdown: order.taxBreakdown ? JSON.stringify(order.taxBreakdown) : null,
+              rawData: null,
+            },
+            update: {
+              orderNumber: order.orderNumber,
+              subtotal: order.subtotal,
+              shippingAmount: order.shippingAmount,
+              taxAmount: order.taxAmount,
+              totalAmount: order.totalAmount,
+              status: order.status,
+              lineItems: order.lineItems ? JSON.stringify(order.lineItems) : null,
+              taxBreakdown: order.taxBreakdown ? JSON.stringify(order.taxBreakdown) : null,
+              customerEmail: null,
+              rawData: null,
+              updatedAt: new Date(),
+            },
+          })
+      )
+    );
+    results.forEach((result, j) => {
+      if (result.status === 'fulfilled') {
+        imported++;
+      } else {
+        const reason = result.reason;
+        errors.push(`Order ${batch[j].platformOrderId}: ${reason instanceof Error ? reason.message : 'Unknown error'}`);
+      }
+    });
   }
 
   return { imported, errors };

@@ -35,3 +35,14 @@ describe('toStateCode', () => {
     expect(isUsStateCode('GU')).toBe(false)
   })
 })
+
+describe('toCountryCode', () => {
+  it('normalizes United States spellings to US', async () => {
+    const { toCountryCode } = await import('./us-states')
+    expect(toCountryCode('United States')).toBe('US')
+    expect(toCountryCode('usa')).toBe('US')
+    expect(toCountryCode('United States of America')).toBe('US')
+    expect(toCountryCode(' CA ')).toBe('CA')
+    expect(toCountryCode(null)).toBe('')
+  })
+})

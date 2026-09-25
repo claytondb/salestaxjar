@@ -153,6 +153,10 @@ function SettingsPageContent() {
     const hash = window.location.hash.replace('#', '');
     if (hash && ['profile', 'account', 'notifications', 'platforms', 'apikeys', 'billing', 'privacy'].includes(hash)) {
       setActiveTab(hash);
+    } else if (hash === 'amazon') {
+      // The Amazon upload lives on the Platforms tab
+      setActiveTab('platforms');
+      setTimeout(() => document.getElementById('amazon')?.scrollIntoView({ behavior: 'smooth' }), 300);
     }
   }, []);
 

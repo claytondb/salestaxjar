@@ -31,6 +31,7 @@ vi.mock('@/lib/prisma', () => ({
   prisma: {
     importedOrder: {
       count: vi.fn(),
+      aggregate: vi.fn(async () => ({ _max: { orderDate: null } })),
     },
   },
 }));
@@ -54,6 +55,7 @@ vi.mock('@/lib/plans', () => ({
 
 vi.mock('@/lib/platforms/shopify', () => ({
   fetchOrders: vi.fn(),
+  fetchOrdersSince: vi.fn(),
 }));
 
 vi.mock('@/lib/platforms/woocommerce', () => ({
@@ -138,7 +140,7 @@ import {
   getOrderLimitDisplay,
   getPlanDisplayName,
 } from '@/lib/plans';
-import { fetchOrders as fetchShopifyOrders } from '@/lib/platforms/shopify';
+import { fetchOrdersSince as fetchShopifyOrders } from '@/lib/platforms/shopify';
 import { getCredentials as getWooCredentials, fetchAllOrders as fetchWooOrders, mapOrderToImport as mapWooOrder } from '@/lib/platforms/woocommerce';
 import { getCredentials as getSquarespaceCredentials, fetchAllOrders as fetchSquarespaceOrders, mapOrderToImport as mapSquarespaceOrder } from '@/lib/platforms/squarespace';
 import { getCredentials as getBigCommerceCredentials, fetchAllOrders as fetchBigCommerceOrders, fetchOrderShippingAddresses as fetchBigCommerceShippingAddresses, mapOrderToImport as mapBigCommerceOrder } from '@/lib/platforms/bigcommerce';
@@ -393,6 +395,52 @@ describe('Ecwid sync', () => {
     const call = vi.mocked(fetchEcwidOrders).mock.calls[0][1] as { createdFrom: string; createdTo: string };
     expect(call.createdFrom).toBeDefined();
     expect(call.createdTo).toBeDefined();
+  });
+});
+
+// ─── History import (WooCommerce) ─────────────────────────────────────────────
+
+describe('history import', () => {
+  const wooCreds = { storeUrl: 'https://shop.example', consumerKey: 'ck', consumerSecret: 'cs' };
+
+  beforeEach(() => {
+    vi.mocked(getWooCredentials).mockResolvedValue(wooCreds as never);
+    vi.mocked(fetchWooOrders).mockResolvedValue([] as never);
+    vi.mocked(mapWooOrder).mockReturnValue(mappedOrder as never);
+  });
+
+  it('first sync reaches back to January 1 of last year, oldest first', async () => {
+    await POST(postRequest({ platform: 'woocommerce', platformId: 'https://shop.example' }));
+    const opts = vi.mocked(fetchWooOrders).mock.calls[0][1] as { after: string; order: string };
+    const lastYear = new Date().getUTCFullYear() - 1;
+    expect(opts.after).toBe(`${lastYear}-01-01T00:00:00.000Z`);
+    expect(opts.order).toBe('asc');
+  });
+
+  it('later syncs start a week before the newest imported order', async () => {
+    vi.mocked(prisma.importedOrder.aggregate).mockResolvedValueOnce({ _max: { orderDate: new Date('2026-06-10T00:00:00Z') } } as never);
+    await POST(postRequest({ platform: 'woocommerce', platformId: 'https://shop.example' }));
+    const opts = vi.mocked(fetchWooOrders).mock.calls[0][1] as { after: string };
+    expect(opts.after).toBe('2026-06-03T00:00:00.000Z');
+  });
+
+  it('an explicit dateRange still wins', async () => {
+    await POST(postRequest({ platform: 'woocommerce', platformId: 'https://shop.example', dateRange: { start: '2025-05-01T00:00:00Z' } }));
+    const opts = vi.mocked(fetchWooOrders).mock.calls[0][1] as { after: string };
+    expect(opts.after).toBe('2025-05-01T00:00:00Z');
+  });
+
+  it('says when there is more history to bring in', async () => {
+    vi.mocked(fetchWooOrders).mockResolvedValue(Array.from({ length: 5000 }, () => ({})) as never);
+    const res = await POST(postRequest({ platform: 'woocommerce', platformId: 'https://shop.example' }));
+    const body = await res.json();
+    expect(body.moreToImport?.message).toMatch(/Sync again/);
+  });
+
+  it('is complete when everything fit', async () => {
+    const res = await POST(postRequest({ platform: 'woocommerce', platformId: 'https://shop.example' }));
+    const body = await res.json();
+    expect(body.moreToImport).toBeUndefined();
   });
 });
 

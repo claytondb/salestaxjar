@@ -68,6 +68,11 @@ export interface NexusThreshold {
   marketplaceSales: 'included' | 'excluded';
   /** Extra detail about marketplace treatment */
   marketplaceNote?: string;
+  /**
+   * A local (not statewide) remote-seller threshold — Alaska has no state
+   * sales tax, but many towns collect through the ARSSTC.
+   */
+  localNexus?: { salesThreshold: number; body: string; url: string };
   /** Additional notes about the state's nexus rules */
   notes: string;
 }
@@ -124,7 +129,12 @@ export const STATE_NEXUS_THRESHOLDS: NexusThreshold[] = [
     measurementPeriod: 'previous_or_current_calendar_year',
     countedSales: 'gross',
     marketplaceSales: 'included',
-    notes: 'No statewide sales tax. Many local governments collect through the Alaska Remote Seller Sales Tax Commission (ARSSTC), which uses a $100K threshold.',
+    localNexus: {
+      salesThreshold: 100000,
+      body: 'Alaska Remote Seller Sales Tax Commission (ARSSTC)',
+      url: 'https://arsstc.org/',
+    },
+    notes: 'Many local governments collect through the Alaska Remote Seller Sales Tax Commission (ARSSTC), which uses a $100K threshold.',
   },
   {
     stateCode: 'AZ',

@@ -8,7 +8,8 @@ import {
 } from '@/lib/platforms';
 import { userCanConnectPlatform, tierGateError, resolveUserPlan, checkOrderLimit, orderLimitError, getOrderLimitDisplay, getPlanDisplayName } from '@/lib/plans';
 import { applyMonthlyOrderCap, getCurrentMonthOrderCount } from '@/lib/usage';
-import { fetchOrders as fetchShopifyOrders, ShopifyOrder } from '@/lib/platforms/shopify';
+import { fetchOrdersSince as fetchShopifyOrdersSince, ShopifyOrder } from '@/lib/platforms/shopify';
+import { prisma } from '@/lib/prisma';
 import { 
   getCredentials as getWooCredentials,
   fetchAllOrders as fetchWooOrders, 
@@ -46,6 +47,27 @@ import {
   mapOrderToImport as mapOpenCartOrder,
 } from '@/lib/platforms/opencart';
 import { checkAndCreateAlerts } from '@/lib/nexus-alerts';
+
+// History imports can take a while; fetching stops after FETCH_BUDGET_MS and
+// the next sync continues from the newest order already imported.
+export const maxDuration = 120;
+const FETCH_BUDGET_MS = 60_000;
+const DAY_MS = 86_400_000;
+
+/**
+ * Where a sync starts: January 1 of last year the first time (nexus rules look
+ * back that far), then a week before the newest order already imported from
+ * this connection (to pick up late refunds and cancellations).
+ */
+async function syncStartFor(connectionId: string, now: Date = new Date()): Promise<Date> {
+  const latest = await prisma.importedOrder.aggregate({
+    where: { platformConnectionId: connectionId },
+    _max: { orderDate: true },
+  });
+  const newest = latest?._max?.orderDate;
+  if (!newest) return new Date(Date.UTC(now.getUTCFullYear() - 1, 0, 1));
+  return new Date(new Date(newest).getTime() - 7 * DAY_MS);
+}
 
 /**
  * POST /api/platforms/sync
@@ -107,32 +129,37 @@ export async function POST(request: NextRequest) {
 
     try {
       let orders: ImportedOrderData[] = [];
+      const range: DateRange = {
+        start: dateRange?.start ?? (await syncStartFor(connection.id)).toISOString(),
+        end: dateRange?.end,
+      };
+      const progress: SyncProgress = { complete: true, deadline: Date.now() + FETCH_BUDGET_MS };
       
       // Fetch orders based on platform
       switch (platform) {
         case 'shopify':
-          orders = await syncShopifyOrders(connection, dateRange);
+          orders = await syncShopifyOrders(connection, range, progress);
           break;
         case 'woocommerce':
-          orders = await syncWooCommerceOrders(user.id, connection, dateRange);
+          orders = await syncWooCommerceOrders(user.id, connection, range, progress);
           break;
         case 'squarespace':
-          orders = await syncSquarespaceOrders(user.id, connection, dateRange);
+          orders = await syncSquarespaceOrders(user.id, connection, range);
           break;
         case 'bigcommerce':
-          orders = await syncBigCommerceOrders(user.id, connection, dateRange);
+          orders = await syncBigCommerceOrders(user.id, connection, range);
           break;
         case 'ecwid':
-          orders = await syncEcwidOrders(user.id, connection, dateRange);
+          orders = await syncEcwidOrders(user.id, connection, range);
           break;
         case 'magento':
-          orders = await syncMagentoOrders(user.id, connection, dateRange);
+          orders = await syncMagentoOrders(user.id, connection, range);
           break;
         case 'prestashop':
-          orders = await syncPrestaShopOrders(user.id, connection, dateRange);
+          orders = await syncPrestaShopOrders(user.id, connection, range);
           break;
         case 'opencart':
-          orders = await syncOpenCartOrders(user.id, connection, dateRange);
+          orders = await syncOpenCartOrders(user.id, connection, range);
           break;
         // Future: wix
         default:
@@ -231,6 +258,10 @@ export async function POST(request: NextRequest) {
         affectedStates: affectedStateArray,
         newAlerts: newAlerts.length > 0 ? newAlerts.length : undefined,
         usageWarning,
+        historyFrom: range.start,
+        moreToImport: progress.complete
+          ? undefined
+          : { message: 'There are more orders to bring in. Click Sync again to continue importing your history.' },
       });
     } catch (syncError) {
       // Update sync status with error
@@ -261,6 +292,13 @@ interface DateRange {
   end?: string;
 }
 
+interface SyncProgress {
+  /** False when fetching stopped early (time or page limit) */
+  complete: boolean;
+  /** Stop starting new API pages after this time (ms timestamp) */
+  deadline: number;
+}
+
 interface PlatformConnection {
   id: string;
   platform: string;
@@ -271,30 +309,21 @@ interface PlatformConnection {
 
 async function syncShopifyOrders(
   connection: PlatformConnection,
-  dateRange?: DateRange
+  dateRange: DateRange,
+  progress: SyncProgress
 ): Promise<ImportedOrderData[]> {
-  const params: {
-    createdAtMin?: string;
-    createdAtMax?: string;
-    status?: 'any' | 'open' | 'closed' | 'cancelled';
-    limit?: number;
-  } = {
-    status: 'any',
-    limit: 250,
-  };
+  const result = await fetchShopifyOrdersSince(connection.platformId, connection.accessToken, {
+    createdAtMin: dateRange.start,
+    deadline: progress.deadline,
+  });
 
-  if (dateRange?.start) params.createdAtMin = dateRange.start;
-  if (dateRange?.end) params.createdAtMax = dateRange.end;
-
-  const { orders, error } = await fetchShopifyOrders(
-    connection.platformId,
-    connection.accessToken,
-    params
-  );
-
-  if (error || !orders) {
-    throw new Error(error || 'Failed to fetch Shopify orders');
+  if (result.error && (!result.orders || result.orders.length === 0)) {
+    throw new Error(result.error);
   }
+  if (!result.complete) progress.complete = false;
+
+  const end = dateRange.end ? new Date(dateRange.end).getTime() : Infinity;
+  const orders = (result.orders ?? []).filter((o) => new Date(o.created_at).getTime() <= end);
 
   return orders.map((order: ShopifyOrder) => ({
     platform: 'shopify',
@@ -324,7 +353,8 @@ async function syncShopifyOrders(
 async function syncWooCommerceOrders(
   userId: string,
   connection: PlatformConnection,
-  dateRange?: DateRange
+  dateRange: DateRange,
+  progress: SyncProgress
 ): Promise<ImportedOrderData[]> {
   // Get credentials from database
   const credentials = await getWooCredentials(userId, connection.platformId);
@@ -333,19 +363,28 @@ async function syncWooCommerceOrders(
   }
 
   // Build fetch options
+  const WOO_MAX_PAGES = 50;
   const options: {
     after?: string;
     before?: string;
     status?: string[];
+    order: 'asc';
+    maxPages: number;
+    deadline: number;
   } = {
     status: ['processing', 'completed', 'on-hold'],
+    // Oldest first, so an import that stops early can continue next time
+    order: 'asc',
+    maxPages: WOO_MAX_PAGES,
+    deadline: progress.deadline,
   };
 
-  if (dateRange?.start) options.after = dateRange.start;
-  if (dateRange?.end) options.before = dateRange.end;
+  if (dateRange.start) options.after = dateRange.start;
+  if (dateRange.end) options.before = dateRange.end;
 
   // Fetch orders
   const orders = await fetchWooOrders(credentials, options);
+  if (orders.length >= WOO_MAX_PAGES * 100 || Date.now() > progress.deadline) progress.complete = false;
 
   // Map to our format
   return orders.map(order => mapWooOrder(order, connection.platformId));
