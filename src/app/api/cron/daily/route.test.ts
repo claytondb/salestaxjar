@@ -13,12 +13,21 @@ vi.mock('@/lib/drip', () => ({
 vi.mock('@/lib/prisma', () => ({
   prisma: { importedOrder: { updateMany: vi.fn() } },
 }))
+vi.mock('@/lib/filing-schedule', () => ({
+  ensureCurrentFilingsForAll: vi.fn(),
+  correctPendingDueDates: vi.fn(),
+}))
+vi.mock('@/lib/auto-sync', () => ({
+  autoSyncConnections: vi.fn(),
+}))
 
 import { GET } from './route'
 import { encryptLegacyPlatformTokens } from '@/lib/platform-token-migration'
 import { processBatchReminders } from '@/lib/filing-reminders'
 import { runDripCampaign } from '@/lib/drip'
 import { prisma } from '@/lib/prisma'
+import { ensureCurrentFilingsForAll, correctPendingDueDates } from '@/lib/filing-schedule'
+import { autoSyncConnections } from '@/lib/auto-sync'
 
 const ORIGINAL_ENV = { ...process.env }
 
@@ -43,6 +52,9 @@ describe('GET /api/cron/daily', () => {
       day7: { processed: 0, sent: 0, skipped: 0, errors: 0 },
       day14: { processed: 0, sent: 0, skipped: 0, errors: 0 },
     })
+    vi.mocked(ensureCurrentFilingsForAll).mockResolvedValue({ businesses: 0, created: 0 })
+    vi.mocked(correctPendingDueDates).mockResolvedValue({ checked: 0, corrected: 0 })
+    vi.mocked(autoSyncConnections).mockResolvedValue({ due: 0, synced: 0, failed: 0, skipped: 0, deferred: 0, imported: 0, alerts: 0 })
   })
 
   afterEach(() => {
@@ -105,6 +117,27 @@ describe('GET /api/cron/daily', () => {
     process.env.ONBOARDING_EMAILS_ENABLED = 'true'
     await GET(request({ authorization: 'Bearer test-cron-secret' }))
     expect(runDripCampaign).toHaveBeenCalledTimes(1)
+  })
+
+  it('keeps the filing calendar current before any reminders go out', async () => {
+    process.env.DEADLINE_REMINDERS_ENABLED = 'true'
+    await GET(request({ authorization: 'Bearer test-cron-secret' }))
+    expect(correctPendingDueDates).toHaveBeenCalledTimes(1)
+    expect(ensureCurrentFilingsForAll).toHaveBeenCalledTimes(1)
+    const order = (fn: unknown) => vi.mocked(fn as () => void).mock.invocationCallOrder[0]
+    expect(order(correctPendingDueDates)).toBeLessThan(order(processBatchReminders))
+    expect(order(ensureCurrentFilingsForAll)).toBeLessThan(order(processBatchReminders))
+  })
+
+  it('syncs connected stores last, with a time budget', async () => {
+    const before = Date.now()
+    const res = await GET(request({ authorization: 'Bearer test-cron-secret' }))
+    const body = await res.json()
+    expect(autoSyncConnections).toHaveBeenCalledTimes(1)
+    const { deadline } = vi.mocked(autoSyncConnections).mock.calls[0][0]
+    expect(deadline).toBeGreaterThan(before)
+    expect(deadline).toBeLessThanOrEqual(before + 120_000)
+    expect(body.tasks.storeSync.ok).toBe(true)
   })
 
   it('keeps going when one task fails and reports 207', async () => {

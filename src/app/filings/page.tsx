@@ -236,8 +236,9 @@ export default function FilingsPage() {
             <h1 className="text-3xl font-bold text-theme-primary mb-2">Filing Calendar</h1>
             <p className="text-theme-muted">Track and manage your sales tax filing deadlines</p>
             <p className="text-theme-muted text-sm mt-1 max-w-xl">
-              Due dates are estimates based on each state&apos;s usual schedule. Your state assigns your filing
-              frequency when you register, so check your registration notice and adjust if it differs.
+              Due dates follow each state&apos;s published schedule (checked September 2026) for the filing frequency
+              Sails assumes — usually quarterly. Your state assigns your frequency when you register, so check your
+              registration notice, and remember a due date on a weekend or holiday usually moves to the next business day.
             </p>
           </div>
           {hasNexus && (

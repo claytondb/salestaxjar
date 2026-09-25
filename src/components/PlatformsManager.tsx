@@ -15,6 +15,7 @@ import {
   Download
 } from 'lucide-react';
 import { platformLogos } from './PlatformLogos';
+import { AUTO_SYNC_PLATFORMS } from '@/lib/capabilities';
 // Platform integrations focused on own-website sellers (not marketplace facilitators)
 
 interface PlatformConnection {
@@ -718,7 +719,9 @@ export default function PlatformsManager() {
                           ) : conn.syncStatus === 'error' ? (
                             <span style={{ color: 'var(--error-text)' }}>{conn.syncError || 'Sync error'}</span>
                           ) : conn.lastSyncAt ? (
-                            `Last sync: ${new Date(conn.lastSyncAt).toLocaleDateString()} at ${new Date(conn.lastSyncAt).toLocaleTimeString()}`
+                            `Last sync: ${new Date(conn.lastSyncAt).toLocaleDateString()} at ${new Date(conn.lastSyncAt).toLocaleTimeString()}${
+                              AUTO_SYNC_PLATFORMS.includes(conn.platform) ? ' · syncs automatically each day' : ''
+                            }`
                           ) : (
                             'Never synced'
                           )}

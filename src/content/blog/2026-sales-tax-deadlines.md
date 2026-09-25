@@ -30,7 +30,7 @@ If you file quarterly, mark these dates:
 | Q3 | Jul 1 - Sep 30 | October 20, 2026 |
 | Q4 | Oct 1 - Dec 31 | January 20, 2027 |
 
-Most states use the 20th, but some vary. Always confirm with your specific state.
+Most states use the 20th, but many don't — California, Washington and several others use the last day of the month, and New York's quarters don't follow the calendar at all. See our [due dates for every state](/blog/sales-tax-filing-deadlines-by-state), and confirm with each state.
 
 ## Monthly Filing Due Dates
 
@@ -53,17 +53,17 @@ Use these notes as a starting point, and confirm your assigned filing frequency 
 
 ### Texas
 - Due date: 20th of the month following the reporting period
-- Timely filing discount: 0.5% of tax due (up to $2,000/month)
+- Timely filing discount: 0.5% of the tax due when you file and pay on time (plus a 1.25% discount if you prepay)
 - E-file at comptroller.texas.gov
 
 ### New York
 - Due date: 20th of the month following the reporting period
-- Quarterly filers file by March 20, June 20, Sept 20, Dec 20
+- New York's quarters run March–May, June–August, September–November and December–February, so quarterly filers file by June 20, September 20, December 20 and March 20
 - File through NY Tax Department portal
 
 ### Florida
-- Due date: 1st through 20th of the month following
-- Electronic filing required if you owe $1,000+ in tax
+- Due date: 1st through 20th of the month following (late after the 20th)
+- Electronic payments must be started by 5 p.m. Eastern on the business day before the 20th
 - File through Florida Department of Revenue
 
 ### Pennsylvania

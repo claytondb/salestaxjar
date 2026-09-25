@@ -375,8 +375,8 @@ export default function FreeScanPage() {
               <ShieldCheck className="w-10 h-10 text-theme-accent mx-auto mb-3" aria-hidden />
               <h2 className="text-2xl font-bold text-theme-primary mb-2">Keep this up to date</h2>
               <p className="text-theme-secondary max-w-xl mx-auto mb-2">
-                Connect your store and Sails brings in new orders each time you sync, re-checks every state, and alerts you when
-                one gets close to its threshold.
+                Connect your Shopify or WooCommerce store and Sails brings in new orders every day, so your state-by-state
+                results stay current — with each state&apos;s filing due dates in one calendar.
               </p>
               <p className="text-theme-muted text-sm max-w-xl mx-auto mb-5">
                 {scan?.hint ?? `The free plan has no time limit and counts up to ${PLAN_ORDER_LIMITS.free} orders a month. No credit card needed.`}

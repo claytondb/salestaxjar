@@ -127,6 +127,9 @@ export const INTEGRATIONS: IntegrationCapability[] = [
   },
 ];
 
+/** Store platforms that sync automatically once a day (see src/lib/auto-sync.ts). */
+export const AUTO_SYNC_PLATFORMS = ['shopify', 'woocommerce'];
+
 export interface FeatureCapability {
   id: string;
   name: string;
@@ -154,14 +157,21 @@ export const FEATURES: FeatureCapability[] = [
     summary: "Get an email when your sales approach or pass a state's threshold.",
   },
   {
+    id: 'daily_sync',
+    name: 'Daily store sync',
+    status: 'live',
+    summary: 'Connected Shopify and WooCommerce stores bring in new orders automatically once a day.',
+  },
+  {
     id: 'filing_calendar',
     name: 'Filing calendar',
     status: 'live',
-    summary: 'See upcoming filing due dates for the states you track, in one place.',
+    summary: "See upcoming filing due dates for the states you track, using each state's own schedule.",
   },
   {
-    // Built, but switched off (DEADLINE_REMINDERS_ENABLED) until due dates
-    // follow each state's own schedule. Flip to 'live' when that env flag is on.
+    // Built, and due dates now follow each state's own schedule, but the emails
+    // stay off (DEADLINE_REMINDERS_ENABLED) until the owner decides to send them.
+    // Flip to 'live' when that env flag is on.
     id: 'deadline_reminders',
     name: 'Deadline reminder emails',
     status: 'planned',

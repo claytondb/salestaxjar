@@ -49,7 +49,9 @@ export default function PrivacyPage() {
               </p>
               <p className="mt-2">
                 Store connections only ask for read access. The keys that let Sails read your orders are encrypted
-                (AES-256) before they are saved, and you can disconnect a store at any time.
+                (AES-256) before they are saved, and you can disconnect a store at any time. While a Shopify or
+                WooCommerce store is connected, Sails checks it for new orders once a day, as well as whenever you
+                click Sync.
               </p>
 
               <h3 className="text-lg font-medium text-theme-accent mt-4 mb-2">2.3 Information Collected Automatically</h3>

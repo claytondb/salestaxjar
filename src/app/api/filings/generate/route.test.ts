@@ -45,12 +45,14 @@ vi.mock('@/lib/prisma', () => ({
 vi.mock('@/lib/filing-deadlines', () => ({
   getFilingDeadlines: vi.fn(),
   getStateFilingConfig: vi.fn(),
+  getCurrentDeadlines: vi.fn(() => []),
+  resolveFilingPeriod: vi.fn((_state: string, period?: string) => period ?? 'quarterly'),
 }));
 
 import { GET, POST } from './route';
 import { getCurrentUser } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
-import { getFilingDeadlines, getStateFilingConfig } from '@/lib/filing-deadlines';
+import { getFilingDeadlines, getStateFilingConfig, getCurrentDeadlines, resolveFilingPeriod } from '@/lib/filing-deadlines';
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
 
@@ -158,6 +160,8 @@ describe('POST /api/filings/generate', () => {
     vi.mocked(prisma.business.findFirst).mockResolvedValue(mockBusiness as never);
     vi.mocked(getFilingDeadlines).mockReturnValue(mockDeadlines as never);
     vi.mocked(getStateFilingConfig).mockReturnValue(mockFilingConfig as never);
+    vi.mocked(getCurrentDeadlines).mockReturnValue([]);
+    vi.mocked(resolveFilingPeriod).mockImplementation((_state, period) => period ?? 'quarterly');
     vi.mocked(prisma.filing.findFirst).mockResolvedValue(null);
     vi.mocked(prisma.filing.create).mockResolvedValue(mockCreatedFiling as never);
   });
@@ -325,6 +329,8 @@ describe('GET /api/filings/generate', () => {
     vi.mocked(prisma.business.findFirst).mockResolvedValue(mockBusiness as never);
     vi.mocked(getFilingDeadlines).mockReturnValue(mockDeadlines as never);
     vi.mocked(getStateFilingConfig).mockReturnValue(mockFilingConfig as never);
+    vi.mocked(getCurrentDeadlines).mockReturnValue([]);
+    vi.mocked(resolveFilingPeriod).mockImplementation((_state, period) => period ?? 'quarterly');
     vi.mocked(prisma.filing.findFirst).mockResolvedValue(null);
   });
 

@@ -374,6 +374,25 @@ article tbody tr:hover {
   -webkit-overflow-scrolling: touch;
 }
 
+/* On phones, wide tables scroll sideways inside themselves instead of
+   widening the page (overflow only works on a block box, not display: table). */
+@media (max-width: 640px) {
+  .prose table,
+  article table {
+    display: block !important;
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .prose th,
+  article th,
+  .prose td,
+  article td {
+    padding: 0.5rem 0.75rem !important;
+  }
+}
+
 /* Light theme table adjustments */
 .theme-nautical .prose table,
 .theme-nautical article table,

@@ -9,6 +9,9 @@
  *   ONBOARDING_EMAILS_ENABLED   — the 4-step onboarding (drip) sequence. Goes to
  *       verified addresses only; honors the "Getting-started tips" toggle.
  *   WEEKLY_DIGEST_ENABLED       — the weekly summary email (not built yet)
+ *   AUTO_SYNC_ALERTS_ENABLED    — let the daily automatic store sync create
+ *       threshold alerts and send their emails. While off, alerts (and their
+ *       emails) only come from syncs the seller starts.
  * Each user can turn these off in Settings → Notifications.
  */
 
@@ -26,4 +29,8 @@ export function onboardingEmailsEnabled(): boolean {
 
 export function weeklyDigestEnabled(): boolean {
   return envFlag('WEEKLY_DIGEST_ENABLED');
+}
+
+export function autoSyncAlertsEnabled(): boolean {
+  return envFlag('AUTO_SYNC_ALERTS_ENABLED');
 }
