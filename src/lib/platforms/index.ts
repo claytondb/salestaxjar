@@ -5,6 +5,7 @@
  */
 
 import { prisma } from '../prisma';
+import { getIntegrationStatus, type CapabilityStatus } from '../capabilities';
 
 // Re-export platform modules with namespaces to avoid conflicts
 export * as shopify from './shopify';
@@ -12,8 +13,6 @@ export * as shopify from './shopify';
 // Export commonly used functions with platform prefix
 export { isShopifyConfigured, saveShopifyConnection, removeShopifyConnection, fetchOrders as fetchShopifyOrders } from './shopify';
 
-// Note: WooCommerce, Squarespace, BigCommerce, Wix integrations coming soon
-// These platforms require sellers to handle their own tax (unlike marketplace facilitators)
 
 // Platform configuration status
 export interface PlatformConfig {
@@ -24,80 +23,85 @@ export interface PlatformConfig {
   features: string[];
   setupUrl?: string;
   comingSoon?: boolean;
+  /** Live or beta — from the capability registry (src/lib/capabilities.ts) */
+  status: CapabilityStatus;
 }
 
 /**
- * Get configuration status for all platforms
- * 
- * Priority platforms (own-website sellers who need tax help):
- * - Shopify, WooCommerce, BigCommerce
- * 
- * Not supported (already have built-in tax solutions):
- * - Squarespace (has built-in automated tax)
- * - Wix (has built-in Avalara integration)
- * 
- * Not prioritized (marketplace facilitators handle tax):
- * - Etsy, Amazon, eBay, Gumroad
+ * Get configuration status for all store platforms Sails can connect to.
+ *
+ * Descriptions say only what Sails does with each platform today: import
+ * orders (read-only) so nexus can be measured. Live/Beta status comes from the
+ * capability registry so the app and the marketing site always agree.
  */
 export function getPlatformConfigurations(): PlatformConfig[] {
+  const status = (id: string): CapabilityStatus => getIntegrationStatus(id) ?? 'beta';
   return [
     {
       platform: 'shopify',
       name: 'Shopify',
       configured: !!(process.env.SHOPIFY_API_KEY && process.env.SHOPIFY_API_SECRET),
-      description: 'Connect your Shopify store to automatically import orders and calculate sales tax.',
-      features: ['Order sync', 'Product categories', 'Location-based nexus', 'Real-time calculations'],
+      description: 'Connect your Shopify store in one click to import your recent orders (read-only).',
+      features: ['Order import', 'Read-only access', 'Nexus tracking'],
       setupUrl: 'https://partners.shopify.com',
+      status: status('shopify'),
     },
     {
       platform: 'woocommerce',
       name: 'WooCommerce',
       configured: true, // WooCommerce uses REST API keys per store (stored in DB)
-      description: 'Connect your WooCommerce store using REST API keys. No more tax headaches!',
-      features: ['Order sync', 'Checkout tax calc', 'WordPress plugin', 'Self-hosted friendly'],
+      description: 'Connect your WooCommerce store with a read-only REST API key to import your orders.',
+      features: ['Order import', 'Read-only API key', 'Self-hosted friendly'],
       setupUrl: '/dashboard/integrations/woocommerce',
+      status: status('woocommerce'),
     },
     {
       platform: 'bigcommerce',
       name: 'BigCommerce',
       configured: true, // BigCommerce uses API credentials per store (stored in DB)
-      description: 'Integrate your BigCommerce store for automated tax compliance.',
-      features: ['Order import', 'Customer data', 'Tax settings sync'],
+      description: 'Connect your BigCommerce store with a store API token to import your orders.',
+      features: ['Order import', 'Read-only token'],
+      status: status('bigcommerce'),
     },
     {
       platform: 'magento',
       name: 'Magento / Adobe Commerce',
       configured: true, // Uses access token per store (stored in DB)
-      description: 'Connect your Magento or Adobe Commerce store for enterprise-grade tax compliance.',
-      features: ['Order import', 'REST API', 'Multi-store support'],
+      description: 'Connect your Magento or Adobe Commerce store with an integration access token to import your orders.',
+      features: ['Order import', 'REST API'],
+      status: status('magento'),
     },
     {
       platform: 'prestashop',
       name: 'PrestaShop',
       configured: true, // Uses Webservice API key per store
-      description: 'Automate US sales tax for your PrestaShop store.',
-      features: ['Order sync', 'Webservice API', 'Multi-language'],
+      description: 'Connect your PrestaShop store with a Webservice API key to import your orders.',
+      features: ['Order import', 'Webservice API'],
+      status: status('prestashop'),
     },
     {
       platform: 'opencart',
       name: 'OpenCart',
       configured: true, // Uses API username + key per store
-      description: 'Sales tax automation for your OpenCart store.',
-      features: ['Order import', 'Session API', 'Self-hosted'],
+      description: 'Connect your OpenCart store with an API username and key to import your orders.',
+      features: ['Order import', 'Self-hosted friendly'],
+      status: status('opencart'),
     },
     {
       platform: 'ecwid',
       name: 'Ecwid',
       configured: true, // Uses Store ID + API token
-      description: 'Add automated tax calculations to your Ecwid store.',
-      features: ['Order sync', 'REST API', 'Real-time rates'],
+      description: 'Connect your Ecwid store with your store ID and API token to import your orders.',
+      features: ['Order import', 'REST API'],
+      status: status('ecwid'),
     },
     {
       platform: 'squarespace',
       name: 'Squarespace',
       configured: true, // Uses API Key (requires Commerce Advanced plan)
-      description: 'Automate US sales tax for your Squarespace Commerce store.',
-      features: ['Order sync', 'REST API', 'Commerce Advanced'],
+      description: 'Connect your Squarespace store with a Commerce API key (Commerce Advanced plan) to import your orders.',
+      features: ['Order import', 'Commerce Advanced'],
+      status: status('squarespace'),
     },
   ];
 }
@@ -250,7 +254,12 @@ export interface ImportedOrderData {
 }
 
 /**
- * Save imported orders to database
+ * Save imported orders to database.
+ *
+ * Data minimization: Sails only needs what sales tax needs — dates, amounts,
+ * tax collected, status and the ship-to location. Buyer emails and the full
+ * raw order payload (names, phone numbers, street addresses) are NOT stored,
+ * even though platform mappers may provide them.
  */
 export async function saveImportedOrders(
   userId: string,
@@ -260,56 +269,68 @@ export async function saveImportedOrders(
   const errors: string[] = [];
   let imported = 0;
 
-  for (const order of orders) {
-    try {
-      await prisma.importedOrder.upsert({
-        where: {
-          userId_platform_platformOrderId: {
-            userId,
-            platform: order.platform,
-            platformOrderId: order.platformOrderId,
-          },
-        },
-        create: {
-          userId,
-          platformConnectionId,
-          platform: order.platform,
-          platformOrderId: order.platformOrderId,
-          orderNumber: order.orderNumber,
-          orderDate: order.orderDate,
-          subtotal: order.subtotal,
-          shippingAmount: order.shippingAmount,
-          taxAmount: order.taxAmount,
-          totalAmount: order.totalAmount,
-          currency: order.currency,
-          status: order.status,
-          customerEmail: order.customerEmail,
-          shippingState: order.shippingState,
-          shippingCity: order.shippingCity,
-          shippingZip: order.shippingZip,
-          shippingCountry: order.shippingCountry,
-          billingState: order.billingState,
-          lineItems: order.lineItems ? JSON.stringify(order.lineItems) : null,
-          taxBreakdown: order.taxBreakdown ? JSON.stringify(order.taxBreakdown) : null,
-          rawData: order.rawData ? JSON.stringify(order.rawData) : null,
-        },
-        update: {
-          orderNumber: order.orderNumber,
-          subtotal: order.subtotal,
-          shippingAmount: order.shippingAmount,
-          taxAmount: order.taxAmount,
-          totalAmount: order.totalAmount,
-          status: order.status,
-          lineItems: order.lineItems ? JSON.stringify(order.lineItems) : null,
-          taxBreakdown: order.taxBreakdown ? JSON.stringify(order.taxBreakdown) : null,
-          rawData: order.rawData ? JSON.stringify(order.rawData) : null,
-          updatedAt: new Date(),
-        },
-      });
-      imported++;
-    } catch (error) {
-      errors.push(`Order ${order.platformOrderId}: ${error instanceof Error ? error.message : 'Unknown error'}`);
-    }
+  // Save in small parallel batches: history imports can be thousands of
+  // orders, and one-at-a-time round trips to the database are too slow.
+  const BATCH = 20;
+  for (let start = 0; start < orders.length; start += BATCH) {
+    const batch = orders.slice(start, start + BATCH);
+    const results = await Promise.allSettled(
+      batch.map((order) =>
+        prisma.importedOrder.upsert({
+            where: {
+              userId_platform_platformOrderId: {
+                userId,
+                platform: order.platform,
+                platformOrderId: order.platformOrderId,
+              },
+            },
+            create: {
+              userId,
+              platformConnectionId,
+              platform: order.platform,
+              platformOrderId: order.platformOrderId,
+              orderNumber: order.orderNumber,
+              orderDate: order.orderDate,
+              subtotal: order.subtotal,
+              shippingAmount: order.shippingAmount,
+              taxAmount: order.taxAmount,
+              totalAmount: order.totalAmount,
+              currency: order.currency,
+              status: order.status,
+              customerEmail: null,
+              shippingState: order.shippingState,
+              shippingCity: order.shippingCity,
+              shippingZip: order.shippingZip,
+              shippingCountry: order.shippingCountry,
+              billingState: order.billingState,
+              lineItems: order.lineItems ? JSON.stringify(order.lineItems) : null,
+              taxBreakdown: order.taxBreakdown ? JSON.stringify(order.taxBreakdown) : null,
+              rawData: null,
+            },
+            update: {
+              orderNumber: order.orderNumber,
+              subtotal: order.subtotal,
+              shippingAmount: order.shippingAmount,
+              taxAmount: order.taxAmount,
+              totalAmount: order.totalAmount,
+              status: order.status,
+              lineItems: order.lineItems ? JSON.stringify(order.lineItems) : null,
+              taxBreakdown: order.taxBreakdown ? JSON.stringify(order.taxBreakdown) : null,
+              customerEmail: null,
+              rawData: null,
+              updatedAt: new Date(),
+            },
+          })
+      )
+    );
+    results.forEach((result, j) => {
+      if (result.status === 'fulfilled') {
+        imported++;
+      } else {
+        const reason = result.reason;
+        errors.push(`Order ${batch[j].platformOrderId}: ${reason instanceof Error ? reason.message : 'Unknown error'}`);
+      }
+    });
   }
 
   return { imported, errors };

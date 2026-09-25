@@ -1,13 +1,14 @@
 ---
 title: "Home-Based Business Sales Tax: What You Need to Know"
 date: "2026-02-24"
+lastReviewed: "2026-09-25"
 excerpt: "Running a business from home doesn't exempt you from sales tax. Learn when home-based sellers need to collect, how to register, and common pitfalls to avoid."
 author: "Sails Team"
 category: "Getting Started"
 readTime: "4 min read"
 ---
 
-Working from your kitchen table or spare bedroom? You're not alone. Millions of Americans run businesses from home. But here's what catches many by surprise: the IRS and state tax agencies don't care where your desk is located. If you're selling taxable products, you likely need to collect and remit sales tax.
+Working from your kitchen table or spare bedroom? You're not alone. Millions of Americans run businesses from home. But here's what catches many by surprise: state tax agencies don't care where your desk is located. If you're selling taxable products, you likely need to collect and remit sales tax.
 
 ## Do Home-Based Businesses Need to Collect Sales Tax?
 
@@ -55,7 +56,7 @@ You need a permit before you can legally collect sales tax. This is free in most
 Once registered, configure your sales platform to collect tax:
 - Shopify: Settings > Taxes and duties
 - Etsy: Automatic for marketplace sellers
-- WooCommerce: Use a plugin like Sails Tax
+- WooCommerce: Use a sales tax calculation plugin
 - Square/PayPal: Enable in payment settings
 
 ### Step 4: File and Remit
@@ -66,23 +67,23 @@ After your first filing period ends, submit your return and pay what you collect
 
 Economic nexus rules mean you might need to collect sales tax in states you've never visited. The typical threshold is:
 
-- $100,000 in sales **OR**
-- 200 transactions in the state
+- $100,000 in sales in the state
+- In some states, **OR** 200 transactions
 
 Some states have different thresholds (California is $500,000, for example), and a few states have no sales tax at all (Oregon, Montana, Delaware, New Hampshire, Alaska partially).
 
 ### Tracking Your Exposure
 
-As a home-based seller, you probably don't have time to manually track sales by state. Tools like Sails automatically calculate where you're approaching nexus thresholds and alert you before you cross them.
+As a home-based seller, you probably don't have time to manually track sales by state. Tools like Sails import your orders, check your sales against each state's thresholds, and email you threshold alerts.
 
 ## The Marketplace Facilitator Rule
 
 Here's some good news: if you sell on major marketplaces, they handle sales tax for you.
 
-**Marketplace facilitators** like Amazon, Etsy, and eBay are required to collect and remit sales tax on your behalf for sales to most states. This means:
+**Marketplace facilitators** like Amazon, Etsy, and eBay are required to collect and remit sales tax on your behalf in every state with a sales tax. This means:
 
 - Etsy collects tax on your Etsy sales
-- Amazon collects tax on your FBA sales
+- Amazon collects tax on your Amazon sales
 - eBay collects tax on your eBay sales
 
 You're still responsible for sales through your own website, at craft fairs, or through other direct channels.
@@ -130,4 +131,4 @@ The time you spend on sales tax compliance is time not spent growing your busine
 
 ---
 
-*Running a home business shouldn't mean drowning in tax paperwork. [Try Sails free](/signup) to automate your sales tax compliance.*
+*Running a home business shouldn't mean drowning in tax paperwork. [Try Sails free](/signup) to keep track of your nexus and filing deadlines.*

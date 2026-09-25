@@ -10,22 +10,33 @@
  */
 
 import { prisma } from './prisma';
-import { getExposureTotals } from './sales-aggregation';
-import {
-  STATE_NEXUS_THRESHOLDS,
-  calculateExposureStatus,
-  ExposureStatus,
-} from './nexus-thresholds';
+import { loadNexusInputs } from './nexus-data';
+import { evaluateAllStates, type StateEvaluation } from './nexus-engine';
+import type { ExposureStatus } from './nexus-thresholds';
 import { sendNexusAlertEmail } from './email-alerts';
+
+/**
+ * Alert levels. The first four follow the exposure status; the rest are
+ * situations the engine explains separately:
+ *  next_year   — a previous-year state crossed this year (register by Jan 1)
+ *  past        — an earlier crossing means tax may be owed for a past period
+ *  marketplace — over only through marketplaces that already collect the tax
+ *  local       — over Alaska's local (ARSSTC) threshold
+ */
+export type AlertLevel = ExposureStatus | 'next_year' | 'past' | 'marketplace' | 'local';
 
 export interface NexusAlertResult {
   stateCode: string;
   stateName: string;
-  alertLevel: ExposureStatus;
+  alertLevel: AlertLevel;
   salesAmount: number;
   threshold: number;
   percentage: number;
   message: string;
+  /** The numbers that decided the result, in one sentence */
+  summary?: string;
+  /** What to do next, in plain words (from the nexus engine) */
+  detail?: string;
 }
 
 /**
@@ -38,12 +49,43 @@ export const ALERT_LEVEL_ORDER: Record<string, number> = {
   exceeded: 3,
 };
 
+/** Which alert levels a state's current result calls for (highest first). */
+export function alertLevelsFor(e: StateEvaluation): AlertLevel[] {
+  if (e.registration !== 'none') return [];
+  if (e.localNexusOver) return ['local'];
+  if (!e.hasSalesTax || !e.salesThreshold) return [];
+  if (e.marketplaceOnly) return ['marketplace'];
+  if (e.overNow) return ['exceeded', 'warning', 'approaching'];
+  if (e.startsNextYear) return ['next_year'];
+  if (e.pastExposure) return ['past'];
+  if (e.status === 'warning') return ['warning', 'approaching'];
+  if (e.status === 'approaching') return ['approaching'];
+  return [];
+}
+
+/** The in-app alert text for a state at a given level. */
+export function alertMessageFor(e: StateEvaluation, level: AlertLevel): string {
+  switch (level) {
+    case 'exceeded':
+      return `${e.summaryLine} You'll likely need to register with ${e.stateName} before you start collecting sales tax there.`;
+    case 'warning':
+      return `${e.summaryLine} You may need to register soon.`;
+    case 'approaching':
+      return `${e.summaryLine} Keep an eye on this.`;
+    default:
+      return `${e.summaryLine} ${e.nextStep.text}`;
+  }
+}
+
 /**
  * Check all states for a user and create new alerts as needed.
+ * Uses the nexus engine, so each state's own measurement window and
+ * marketplace rule apply. States the seller marked as registered are skipped.
  * Returns the list of newly created alerts.
  */
-export async function checkAndCreateAlerts(userId: string): Promise<NexusAlertResult[]> {
-  const exposureTotals = await getExposureTotals(userId);
+export async function checkAndCreateAlerts(userId: string, now: Date = new Date()): Promise<NexusAlertResult[]> {
+  const { byState, coverage, registrations } = await loadNexusInputs(userId, now);
+  const evaluations = evaluateAllStates(byState, { now, coverage, registrations });
   const newAlerts: NexusAlertResult[] = [];
 
   // Get existing alerts so we don't duplicate
@@ -56,80 +98,41 @@ export async function checkAndCreateAlerts(userId: string): Promise<NexusAlertRe
     existingAlertMap.set(`${alert.stateCode}:${alert.alertLevel}`, alert.id);
   }
 
-  for (const threshold of STATE_NEXUS_THRESHOLDS) {
-    if (!threshold.hasSalesTax || !threshold.salesThreshold) continue;
-
-    const totals = exposureTotals.get(threshold.stateCode);
-    if (!totals) continue;
-
-    // Pick the right measurement period
-    let sales: number;
-    let transactions: number;
-
-    if (
-      threshold.measurementPeriod === 'rolling_12_months'
-    ) {
-      sales = totals.rolling12MonthSales;
-      transactions = totals.rolling12MonthTransactions;
-    } else {
-      // calendar_year or previous_or_current_calendar_year
-      // Use the higher of rolling 12-month or calendar year
-      sales = Math.max(totals.rolling12MonthSales, totals.calendarYearSales);
-      transactions = Math.max(
-        totals.rolling12MonthTransactions,
-        totals.calendarYearTransactions
-      );
-    }
-
-    const exposure = calculateExposureStatus(sales, transactions, threshold);
-
-    if (exposure.status === 'safe') continue;
-
-    // Determine which alert levels to create
-    const levelsToCreate: ExposureStatus[] = [];
-    
-    if (exposure.status === 'exceeded') {
-      levelsToCreate.push('exceeded', 'warning', 'approaching');
-    } else if (exposure.status === 'warning') {
-      levelsToCreate.push('warning', 'approaching');
-    } else if (exposure.status === 'approaching') {
-      levelsToCreate.push('approaching');
-    }
+  for (const evaluation of evaluations) {
+    const levelsToCreate = alertLevelsFor(evaluation);
+    if (levelsToCreate.length === 0) continue;
+    const threshold = evaluation.salesThreshold ?? evaluation.rule.localNexus?.salesThreshold ?? 0;
 
     for (const level of levelsToCreate) {
-      const key = `${threshold.stateCode}:${level}`;
-      
+      const key = `${evaluation.stateCode}:${level}`;
+
       // Skip if alert already exists at this level
       if (existingAlertMap.has(key)) continue;
 
-      const message = generateAlertMessage(
-        threshold.stateName,
-        level,
-        sales,
-        threshold.salesThreshold,
-        exposure.highestPercentage
-      );
+      const message = alertMessageFor(evaluation, level);
 
       const alertResult: NexusAlertResult = {
-        stateCode: threshold.stateCode,
-        stateName: threshold.stateName,
+        stateCode: evaluation.stateCode,
+        stateName: evaluation.stateName,
         alertLevel: level,
-        salesAmount: sales,
-        threshold: threshold.salesThreshold,
-        percentage: exposure.highestPercentage,
+        salesAmount: evaluation.measuredSales,
+        threshold,
+        percentage: evaluation.highestPercentage,
         message,
+        summary: evaluation.summaryLine,
+        detail: evaluation.nextStep.text,
       };
 
       // Create in database
       await prisma.nexusAlert.create({
         data: {
           userId,
-          stateCode: threshold.stateCode,
-          stateName: threshold.stateName,
+          stateCode: evaluation.stateCode,
+          stateName: evaluation.stateName,
           alertLevel: level,
-          salesAmount: sales,
-          threshold: threshold.salesThreshold,
-          percentage: Math.min(exposure.highestPercentage, 999.99),
+          salesAmount: evaluation.measuredSales,
+          threshold,
+          percentage: Math.min(evaluation.highestPercentage, 999.99),
           message,
         },
       });
@@ -190,6 +193,8 @@ async function sendNexusAlertEmails(
         salesAmount: alert.salesAmount,
         threshold: alert.threshold,
         percentage: alert.percentage,
+        summary: alert.summary,
+        detail: alert.detail,
       });
 
       // Mark email as sent
@@ -217,7 +222,8 @@ export function generateAlertMessage(
   level: ExposureStatus,
   sales: number,
   threshold: number,
-  percentage: number
+  percentage: number,
+  opts: { startsNextYear?: boolean; year?: number } = {}
 ): string {
   const salesFormatted = new Intl.NumberFormat('en-US', {
     style: 'currency',
@@ -233,9 +239,13 @@ export function generateAlertMessage(
     maximumFractionDigits: 0,
   }).format(threshold);
 
+  if (opts.startsNextYear && opts.year) {
+    return `Your ${opts.year} sales in ${stateName} have reached ${salesFormatted}, over the ${thresholdFormatted} threshold. ${stateName} looks at the previous year, so you'll likely need to register by January 1, ${opts.year + 1}.`;
+  }
+
   switch (level) {
     case 'exceeded':
-      return `Your sales in ${stateName} have reached ${salesFormatted}, exceeding the ${thresholdFormatted} economic nexus threshold. You need to register and start collecting sales tax.`;
+      return `Your sales in ${stateName} have reached ${salesFormatted}, over the ${thresholdFormatted} economic nexus threshold. You'll likely need to register with ${stateName} before you start collecting sales tax there.`;
     case 'warning':
       return `Your sales in ${stateName} have reached ${salesFormatted} — that's ${Math.round(percentage)}% of the ${thresholdFormatted} nexus threshold. You may need to register soon.`;
     case 'approaching':

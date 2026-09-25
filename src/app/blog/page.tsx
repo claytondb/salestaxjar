@@ -36,15 +36,15 @@ export default function BlogPage() {
               <SailsLogo className="w-10 h-10 text-theme-accent" />
               <span className="text-2xl font-bold text-theme-primary">Sails</span>
             </Link>
-            <nav className="hidden md:flex gap-6 items-center">
-              <Link href="/#features" className="text-theme-secondary hover:text-theme-primary transition">Features</Link>
+            <nav className="hidden lg:flex gap-6 items-center">
+              <Link href="/free-scan" className="text-theme-secondary hover:text-theme-primary transition whitespace-nowrap">Nexus Check</Link>
               <Link href="/pricing" className="text-theme-secondary hover:text-theme-primary transition">Pricing</Link>
-              <Link href="/free-calculator" className="text-theme-secondary hover:text-theme-primary transition">Free Calculator</Link>
+              <Link href="/free-calculator" className="text-theme-secondary hover:text-theme-primary transition">Calculator</Link>
               <Link href="/blog" className="text-theme-accent font-medium">Blog</Link>
               <ThemeToggle />
             </nav>
             <div className="flex gap-3 items-center">
-              <div className="md:hidden">
+              <div className="lg:hidden">
                 <ThemeToggle />
               </div>
               <Link href="/login" className="text-theme-secondary hover:text-theme-primary transition">Log in</Link>

@@ -33,6 +33,9 @@ vi.mock('@/lib/prisma', () => ({
     importedOrder: {
       count: vi.fn(),
     },
+    notificationPreference: {
+      findMany: vi.fn(),
+    },
   },
 }));
 
@@ -57,6 +60,7 @@ const mockPrisma = prisma as unknown as {
   emailLog: { findFirst: ReturnType<typeof vi.fn> };
   platformConnection: { count: ReturnType<typeof vi.fn> };
   importedOrder: { count: ReturnType<typeof vi.fn> };
+  notificationPreference: { findMany: ReturnType<typeof vi.fn> };
 };
 
 const mockSendDay1 = sendDripDay1Email as ReturnType<typeof vi.fn>;
@@ -102,6 +106,7 @@ beforeEach(() => {
   mockPrisma.emailLog.findFirst.mockResolvedValue(null); // not already sent
   mockPrisma.platformConnection.count.mockResolvedValue(0); // no platform
   mockPrisma.importedOrder.count.mockResolvedValue(0); // no orders
+  mockPrisma.notificationPreference.findMany.mockResolvedValue([]); // nobody opted out
   mockSendDay1.mockResolvedValue({ success: true });
   mockSendDay3.mockResolvedValue({ success: true });
   mockSendDay7.mockResolvedValue({ success: true });
@@ -827,5 +832,50 @@ describe('GET /api/drip/cron — stats accuracy', () => {
     expect(body.results.day7.skipped).toBe(1);
     expect(body.results.day7.sent).toBe(0);
     expect(body.results.day14.processed).toBe(0);
+  });
+});
+
+// ─── Consent and address checks ──────────────────────────────────────────────
+
+describe('GET /api/drip/cron — who gets emailed', () => {
+  it('only looks at users with a verified email address', async () => {
+    setEmptyBatches();
+    await GET(makeRequest());
+    for (const call of mockPrisma.user.findMany.mock.calls) {
+      expect(call[0].where.emailVerified).toBe(true);
+    }
+  });
+
+  it('skips users who turned off getting-started tips', async () => {
+    const optedOut = makeUser('u-out');
+    const optedIn = makeUser('u-in');
+    mockPrisma.user.findMany
+      .mockResolvedValueOnce([optedOut, optedIn]) // day1
+      .mockResolvedValueOnce([])
+      .mockResolvedValueOnce([])
+      .mockResolvedValueOnce([]);
+    mockPrisma.notificationPreference.findMany.mockResolvedValueOnce([{ userId: 'u-out' }]);
+
+    const res = await GET(makeRequest());
+    const body = await res.json();
+
+    expect(mockSendDay1).toHaveBeenCalledTimes(1);
+    expect(mockSendDay1).toHaveBeenCalledWith(expect.objectContaining({ userId: 'u-in' }));
+    expect(body.results.day1.processed).toBe(1);
+  });
+
+  it('does not send the upgrade email to someone on a trial', async () => {
+    const user = makeUser('u7-trial', { subscription: { status: 'trialing', plan: 'starter' } });
+    mockPrisma.user.findMany
+      .mockResolvedValueOnce([])
+      .mockResolvedValueOnce([])
+      .mockResolvedValueOnce([user])
+      .mockResolvedValueOnce([]);
+
+    const res = await GET(makeRequest());
+    const body = await res.json();
+
+    expect(body.results.day7).toEqual({ processed: 1, sent: 0, skipped: 1, errors: 0 });
+    expect(mockSendDay7).not.toHaveBeenCalled();
   });
 });

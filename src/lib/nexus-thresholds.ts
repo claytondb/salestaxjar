@@ -1,34 +1,44 @@
 /**
- * State Economic Nexus Thresholds (2026)
+ * State Economic Nexus Thresholds
  *
- * Comprehensive data on economic nexus thresholds for all US states + DC.
- * States measure either on a rolling 12-month or calendar year basis.
- * Most states: $100,000 in sales OR 200 transactions.
- * Notable exceptions: CA, NY, TX use $500K thresholds.
+ * One entry per state + DC: the dollar and transaction thresholds, how they
+ * combine, the measurement period, which sales count, and whether sales made
+ * through a marketplace (Amazon, Etsy, eBay, Walmart…) count toward YOUR
+ * threshold.
  *
- * DATA REVIEWED: 2026-07-08.
- * Sources (current-law verification for transaction-threshold repeals + AND-logic states):
- *  - Avalara, "States eliminating economic nexus transaction thresholds" (updated Apr 21, 2026):
- *    https://www.avalara.com/blog/en/north-america/2025/06/states-eliminating-economic-nexus-transaction-thresholds.html
- *  - Sales Tax Institute, Economic Nexus State Guide:
+ * RULES REVIEWED: 2026-09-25 (see NEXUS_RULES_REVIEWED_ON).
+ * Every field below was checked against:
+ *  - Sales Tax Institute, "Economic Nexus State Guide" (page updated Sep 23, 2026):
  *    https://www.salestaxinstitute.com/resources/economic-nexus-state-guide
- *  - Louisiana (repealed 200-txn, eff. Aug 1 2023):
- *    https://www.salestaxinstitute.com/resources/louisiana-removes-200-transaction-threshold-from-economic-nexus-rules
- *  - Indiana & Wyoming (repealed, eff. 2024):
- *    https://www.avalara.com/blog/en/north-america/2024/03/indiana-wyoming-drop-remote-seller-transaction-threshold.html
- *  - North Carolina (repealed, eff. Jul 1 2024):
- *    https://www.salestaxinstitute.com/resources/north-carolina-repeals-transaction-count-from-economic-nexus-threshold
- *  - Illinois (repealed, eff. Jan 1 2026):
- *    https://www.anrok.com/tax-news/illinois-to-eliminate-its-200-transaction-economic-nexus-threshold
+ *    Source for thresholds, measurement periods, includable sales and
+ *    marketplace treatment for every state.
+ *  - Avalara, "States eliminating economic nexus transaction thresholds"
+ *    (updated Aug 3, 2026) — confirms Kentucky's repeal effective Aug 1, 2026:
+ *    https://www.avalara.com/blog/en/north-america/2025/06/states-eliminating-economic-nexus-transaction-thresholds.html
  *
- * Transaction-count threshold REPEALED (now sales-dollar test only) -> transactionThreshold: null:
+ * Transaction-count threshold REPEALED (sales-dollar test only) -> transactionThreshold: null:
  *  ME (2022), SD (Jul 2023), LA (Aug 2023), IN (Jan 2024), WY (Jul 2024),
- *  NC (Jul 2024), UT (Jul 2025), IL (Jan 2026). All confirmed via sources above.
+ *  NC (Jul 2024), UT (Jul 2025), IL (Jan 2026), KY (Aug 2026).
  *
- * AND-logic states (BOTH sales AND transaction thresholds must be met to establish nexus):
- *  CT ($100K AND 200 txns) and NY ($500K AND 100 txns). These are the ONLY two AND states;
- *  every other dual-threshold state uses OR logic. See `logic` field below.
+ * AND-logic states (BOTH thresholds must be met): CT ($100K AND 200 txns) and
+ * NY ($500K AND more than 100 sales). Every other dual-threshold state uses OR.
+ *
+ * Release rule: do not change a value here without a named source and the date
+ * you checked it. Update NEXUS_RULES_REVIEWED_ON when you re-review.
  */
+
+export type MeasurementPeriod =
+  /** Previous calendar year only (e.g. FL, PA). Current-year sales decide NEXT year. */
+  | 'previous_calendar_year'
+  /** Either the previous or the current calendar year (most states). */
+  | 'previous_or_current_calendar_year'
+  /** A trailing 12-month (or four-quarter) window. */
+  | 'rolling_12_months'
+  /** Legacy value kept for compatibility; treated like previous_or_current. */
+  | 'calendar_year';
+
+/** Which of a seller's sales the state counts toward the threshold. */
+export type CountedSales = 'gross' | 'retail' | 'taxable';
 
 export interface NexusThreshold {
   stateCode: string;
@@ -46,10 +56,57 @@ export interface NexusThreshold {
   /** Whether the state has a general sales tax */
   hasSalesTax: boolean;
   /** Measurement period */
-  measurementPeriod: 'calendar_year' | 'rolling_12_months' | 'previous_or_current_calendar_year';
+  measurementPeriod: MeasurementPeriod;
+  /** Extra detail when the state's window is more specific than our period type */
+  measurementNote?: string;
+  /** Which sales the state counts (gross, retail or taxable sales) */
+  countedSales: CountedSales;
+  /**
+   * Whether sales made through a marketplace facilitator (Amazon, Etsy, eBay…)
+   * count toward the seller's own threshold in this state.
+   */
+  marketplaceSales: 'included' | 'excluded';
+  /** Extra detail about marketplace treatment */
+  marketplaceNote?: string;
+  /**
+   * A local (not statewide) remote-seller threshold — Alaska has no state
+   * sales tax, but many towns collect through the ARSSTC.
+   */
+  localNexus?: { salesThreshold: number; body: string; url: string };
   /** Additional notes about the state's nexus rules */
   notes: string;
 }
+
+/** Date the whole table was last reviewed against the sources above. */
+export const NEXUS_RULES_REVIEWED_ON = '2026-09-25';
+export const NEXUS_RULES_REVIEWED_LABEL = 'September 25, 2026';
+export const NEXUS_RULES_REVIEWED_MONTH = 'Sep 2026';
+
+export const NEXUS_RULES_SOURCES = [
+  {
+    name: 'Sales Tax Institute — Economic Nexus State Guide',
+    url: 'https://www.salestaxinstitute.com/resources/economic-nexus-state-guide',
+    updated: 'September 23, 2026',
+  },
+  {
+    name: 'Avalara — States eliminating economic nexus transaction thresholds',
+    url: 'https://www.avalara.com/blog/en/north-america/2025/06/states-eliminating-economic-nexus-transaction-thresholds.html',
+    updated: 'August 3, 2026',
+  },
+] as const;
+
+export const MEASUREMENT_PERIOD_LABELS: Record<MeasurementPeriod, string> = {
+  previous_calendar_year: 'Previous calendar year',
+  previous_or_current_calendar_year: 'Previous or current calendar year',
+  rolling_12_months: 'Last 12 months',
+  calendar_year: 'Previous or current calendar year',
+};
+
+export const COUNTED_SALES_LABELS: Record<CountedSales, string> = {
+  gross: 'Gross sales (taxable and exempt)',
+  retail: 'Retail sales',
+  taxable: 'Taxable sales only',
+};
 
 export const STATE_NEXUS_THRESHOLDS: NexusThreshold[] = [
   {
@@ -58,8 +115,10 @@ export const STATE_NEXUS_THRESHOLDS: NexusThreshold[] = [
     salesThreshold: 250000,
     transactionThreshold: null,
     hasSalesTax: true,
-    measurementPeriod: 'previous_or_current_calendar_year',
-    notes: 'Simplified Sellers Use Tax (SSUT) program. $250K threshold.',
+    measurementPeriod: 'previous_calendar_year',
+    countedSales: 'retail',
+    marketplaceSales: 'excluded',
+    notes: 'Simplified Sellers Use Tax (SSUT) program available.',
   },
   {
     stateCode: 'AK',
@@ -67,8 +126,15 @@ export const STATE_NEXUS_THRESHOLDS: NexusThreshold[] = [
     salesThreshold: null,
     transactionThreshold: null,
     hasSalesTax: false,
-    measurementPeriod: 'calendar_year',
-    notes: 'No statewide sales tax. Some local jurisdictions impose sales tax; check local rules.',
+    measurementPeriod: 'previous_or_current_calendar_year',
+    countedSales: 'gross',
+    marketplaceSales: 'included',
+    localNexus: {
+      salesThreshold: 100000,
+      body: 'Alaska Remote Seller Sales Tax Commission (ARSSTC)',
+      url: 'https://arsstc.org/',
+    },
+    notes: 'Many local governments collect through the Alaska Remote Seller Sales Tax Commission (ARSSTC), which uses a $100K threshold.',
   },
   {
     stateCode: 'AZ',
@@ -77,7 +143,9 @@ export const STATE_NEXUS_THRESHOLDS: NexusThreshold[] = [
     transactionThreshold: null,
     hasSalesTax: true,
     measurementPeriod: 'previous_or_current_calendar_year',
-    notes: 'Transaction privilege tax (TPT). No transaction count threshold.',
+    countedSales: 'gross',
+    marketplaceSales: 'excluded',
+    notes: 'Transaction privilege tax (TPT).',
   },
   {
     stateCode: 'AR',
@@ -86,7 +154,9 @@ export const STATE_NEXUS_THRESHOLDS: NexusThreshold[] = [
     transactionThreshold: 200,
     hasSalesTax: true,
     measurementPeriod: 'previous_or_current_calendar_year',
-    notes: '$100K in sales OR 200 transactions.',
+    countedSales: 'taxable',
+    marketplaceSales: 'excluded',
+    notes: '$100K in taxable sales OR 200 transactions.',
   },
   {
     stateCode: 'CA',
@@ -95,7 +165,9 @@ export const STATE_NEXUS_THRESHOLDS: NexusThreshold[] = [
     transactionThreshold: null,
     hasSalesTax: true,
     measurementPeriod: 'previous_or_current_calendar_year',
-    notes: '$500K threshold. No transaction count threshold.',
+    countedSales: 'gross',
+    marketplaceSales: 'included',
+    notes: '$500K in sales of tangible personal property.',
   },
   {
     stateCode: 'CO',
@@ -104,7 +176,9 @@ export const STATE_NEXUS_THRESHOLDS: NexusThreshold[] = [
     transactionThreshold: null,
     hasSalesTax: true,
     measurementPeriod: 'previous_or_current_calendar_year',
-    notes: 'Retail delivery fee also applies. No transaction count threshold.',
+    countedSales: 'retail',
+    marketplaceSales: 'excluded',
+    notes: 'Retail delivery fee also applies.',
   },
   {
     stateCode: 'CT',
@@ -114,7 +188,10 @@ export const STATE_NEXUS_THRESHOLDS: NexusThreshold[] = [
     logic: 'and',
     hasSalesTax: true,
     measurementPeriod: 'rolling_12_months',
-    notes: '$100K in sales AND 200 transactions (both must be met).',
+    measurementNote: 'Connecticut measures the 12-month period ending September 30.',
+    countedSales: 'retail',
+    marketplaceSales: 'included',
+    notes: '$100K in retail sales AND 200 transactions (both must be met).',
   },
   {
     stateCode: 'DE',
@@ -122,7 +199,9 @@ export const STATE_NEXUS_THRESHOLDS: NexusThreshold[] = [
     salesThreshold: null,
     transactionThreshold: null,
     hasSalesTax: false,
-    measurementPeriod: 'calendar_year',
+    measurementPeriod: 'previous_or_current_calendar_year',
+    countedSales: 'gross',
+    marketplaceSales: 'included',
     notes: 'No sales tax.',
   },
   {
@@ -131,8 +210,10 @@ export const STATE_NEXUS_THRESHOLDS: NexusThreshold[] = [
     salesThreshold: 100000,
     transactionThreshold: null,
     hasSalesTax: true,
-    measurementPeriod: 'previous_or_current_calendar_year',
-    notes: 'Effective July 2021. No transaction count threshold.',
+    measurementPeriod: 'previous_calendar_year',
+    countedSales: 'taxable',
+    marketplaceSales: 'excluded',
+    notes: '$100K in taxable remote sales in the previous calendar year.',
   },
   {
     stateCode: 'GA',
@@ -141,7 +222,9 @@ export const STATE_NEXUS_THRESHOLDS: NexusThreshold[] = [
     transactionThreshold: 200,
     hasSalesTax: true,
     measurementPeriod: 'previous_or_current_calendar_year',
-    notes: '$100K in sales OR 200 transactions.',
+    countedSales: 'retail',
+    marketplaceSales: 'excluded',
+    notes: '$100K in retail sales OR 200 transactions.',
   },
   {
     stateCode: 'HI',
@@ -150,7 +233,9 @@ export const STATE_NEXUS_THRESHOLDS: NexusThreshold[] = [
     transactionThreshold: 200,
     hasSalesTax: true,
     measurementPeriod: 'previous_or_current_calendar_year',
-    notes: 'General excise tax (GET), not technically a sales tax but functions similarly.',
+    countedSales: 'gross',
+    marketplaceSales: 'included',
+    notes: 'General excise tax (GET), not technically a sales tax but works similarly.',
   },
   {
     stateCode: 'ID',
@@ -159,7 +244,9 @@ export const STATE_NEXUS_THRESHOLDS: NexusThreshold[] = [
     transactionThreshold: null,
     hasSalesTax: true,
     measurementPeriod: 'previous_or_current_calendar_year',
-    notes: 'No transaction count threshold.',
+    countedSales: 'gross',
+    marketplaceSales: 'included',
+    notes: '',
   },
   {
     stateCode: 'IL',
@@ -168,6 +255,8 @@ export const STATE_NEXUS_THRESHOLDS: NexusThreshold[] = [
     transactionThreshold: null,
     hasSalesTax: true,
     measurementPeriod: 'rolling_12_months',
+    countedSales: 'retail',
+    marketplaceSales: 'excluded',
     notes: '$100K in sales only. 200-transaction threshold repealed effective Jan 1, 2026.',
   },
   {
@@ -177,6 +266,8 @@ export const STATE_NEXUS_THRESHOLDS: NexusThreshold[] = [
     transactionThreshold: null,
     hasSalesTax: true,
     measurementPeriod: 'previous_or_current_calendar_year',
+    countedSales: 'gross',
+    marketplaceSales: 'excluded',
     notes: '$100K in sales only. 200-transaction threshold repealed effective Jan 1, 2024.',
   },
   {
@@ -186,7 +277,9 @@ export const STATE_NEXUS_THRESHOLDS: NexusThreshold[] = [
     transactionThreshold: null,
     hasSalesTax: true,
     measurementPeriod: 'previous_or_current_calendar_year',
-    notes: 'No transaction count threshold.',
+    countedSales: 'gross',
+    marketplaceSales: 'included',
+    notes: '',
   },
   {
     stateCode: 'KS',
@@ -195,16 +288,20 @@ export const STATE_NEXUS_THRESHOLDS: NexusThreshold[] = [
     transactionThreshold: null,
     hasSalesTax: true,
     measurementPeriod: 'previous_or_current_calendar_year',
-    notes: 'No transaction count threshold.',
+    countedSales: 'gross',
+    marketplaceSales: 'included',
+    notes: '',
   },
   {
     stateCode: 'KY',
     stateName: 'Kentucky',
     salesThreshold: 100000,
-    transactionThreshold: 200,
+    transactionThreshold: null,
     hasSalesTax: true,
     measurementPeriod: 'previous_or_current_calendar_year',
-    notes: '$100K in sales OR 200 transactions. (Transaction threshold scheduled for repeal Aug 1, 2026.)',
+    countedSales: 'gross',
+    marketplaceSales: 'included',
+    notes: '$100K in sales only. 200-transaction threshold repealed effective Aug 1, 2026.',
   },
   {
     stateCode: 'LA',
@@ -213,7 +310,9 @@ export const STATE_NEXUS_THRESHOLDS: NexusThreshold[] = [
     transactionThreshold: null,
     hasSalesTax: true,
     measurementPeriod: 'previous_or_current_calendar_year',
-    notes: '$100K in retail sales only. 200-transaction threshold repealed effective Aug 1, 2023.',
+    countedSales: 'gross',
+    marketplaceSales: 'included',
+    notes: '$100K in sales only. 200-transaction threshold repealed effective Aug 1, 2023.',
   },
   {
     stateCode: 'ME',
@@ -222,6 +321,8 @@ export const STATE_NEXUS_THRESHOLDS: NexusThreshold[] = [
     transactionThreshold: null,
     hasSalesTax: true,
     measurementPeriod: 'previous_or_current_calendar_year',
+    countedSales: 'gross',
+    marketplaceSales: 'excluded',
     notes: '$100K in sales only. 200-transaction threshold repealed effective Jan 1, 2022.',
   },
   {
@@ -231,6 +332,8 @@ export const STATE_NEXUS_THRESHOLDS: NexusThreshold[] = [
     transactionThreshold: 200,
     hasSalesTax: true,
     measurementPeriod: 'previous_or_current_calendar_year',
+    countedSales: 'gross',
+    marketplaceSales: 'included',
     notes: '$100K in sales OR 200 transactions.',
   },
   {
@@ -240,7 +343,10 @@ export const STATE_NEXUS_THRESHOLDS: NexusThreshold[] = [
     transactionThreshold: null,
     hasSalesTax: true,
     measurementPeriod: 'previous_or_current_calendar_year',
-    notes: 'No transaction count threshold.',
+    countedSales: 'gross',
+    marketplaceSales: 'excluded',
+    marketplaceNote: 'Marketplace sales are left out when the marketplace collects the tax, which Amazon, Etsy, eBay and Walmart do.',
+    notes: '',
   },
   {
     stateCode: 'MI',
@@ -248,8 +354,10 @@ export const STATE_NEXUS_THRESHOLDS: NexusThreshold[] = [
     salesThreshold: 100000,
     transactionThreshold: 200,
     hasSalesTax: true,
-    measurementPeriod: 'previous_or_current_calendar_year',
-    notes: '$100K in sales OR 200 transactions.',
+    measurementPeriod: 'previous_calendar_year',
+    countedSales: 'gross',
+    marketplaceSales: 'included',
+    notes: '$100K in sales OR 200 transactions in the previous calendar year.',
   },
   {
     stateCode: 'MN',
@@ -258,7 +366,10 @@ export const STATE_NEXUS_THRESHOLDS: NexusThreshold[] = [
     transactionThreshold: 200,
     hasSalesTax: true,
     measurementPeriod: 'rolling_12_months',
-    notes: '$100K in sales OR 200 transactions over 12 months.',
+    measurementNote: 'Minnesota measures the 12 months ending with the last completed calendar quarter.',
+    countedSales: 'retail',
+    marketplaceSales: 'included',
+    notes: '$100K in retail sales OR 200 retail sales.',
   },
   {
     stateCode: 'MS',
@@ -267,7 +378,9 @@ export const STATE_NEXUS_THRESHOLDS: NexusThreshold[] = [
     transactionThreshold: null,
     hasSalesTax: true,
     measurementPeriod: 'rolling_12_months',
-    notes: '$250K threshold. No transaction count threshold.',
+    countedSales: 'gross',
+    marketplaceSales: 'excluded',
+    notes: 'More than $250K in sales over the prior 12 months.',
   },
   {
     stateCode: 'MO',
@@ -275,8 +388,10 @@ export const STATE_NEXUS_THRESHOLDS: NexusThreshold[] = [
     salesThreshold: 100000,
     transactionThreshold: null,
     hasSalesTax: true,
-    measurementPeriod: 'previous_or_current_calendar_year',
-    notes: 'Effective January 2023. No transaction count threshold.',
+    measurementPeriod: 'rolling_12_months',
+    countedSales: 'taxable',
+    marketplaceSales: 'included',
+    notes: '$100K in taxable sales over the previous 12 months, checked quarterly.',
   },
   {
     stateCode: 'MT',
@@ -284,7 +399,9 @@ export const STATE_NEXUS_THRESHOLDS: NexusThreshold[] = [
     salesThreshold: null,
     transactionThreshold: null,
     hasSalesTax: false,
-    measurementPeriod: 'calendar_year',
+    measurementPeriod: 'previous_or_current_calendar_year',
+    countedSales: 'gross',
+    marketplaceSales: 'included',
     notes: 'No sales tax.',
   },
   {
@@ -294,7 +411,9 @@ export const STATE_NEXUS_THRESHOLDS: NexusThreshold[] = [
     transactionThreshold: 200,
     hasSalesTax: true,
     measurementPeriod: 'previous_or_current_calendar_year',
-    notes: '$100K in sales OR 200 transactions.',
+    countedSales: 'retail',
+    marketplaceSales: 'included',
+    notes: '$100K in retail sales OR 200 transactions.',
   },
   {
     stateCode: 'NV',
@@ -303,7 +422,9 @@ export const STATE_NEXUS_THRESHOLDS: NexusThreshold[] = [
     transactionThreshold: 200,
     hasSalesTax: true,
     measurementPeriod: 'previous_or_current_calendar_year',
-    notes: '$100K in sales OR 200 transactions.',
+    countedSales: 'retail',
+    marketplaceSales: 'included',
+    notes: '$100K in retail sales OR 200 transactions.',
   },
   {
     stateCode: 'NH',
@@ -311,7 +432,9 @@ export const STATE_NEXUS_THRESHOLDS: NexusThreshold[] = [
     salesThreshold: null,
     transactionThreshold: null,
     hasSalesTax: false,
-    measurementPeriod: 'calendar_year',
+    measurementPeriod: 'previous_or_current_calendar_year',
+    countedSales: 'gross',
+    marketplaceSales: 'included',
     notes: 'No sales tax.',
   },
   {
@@ -321,6 +444,8 @@ export const STATE_NEXUS_THRESHOLDS: NexusThreshold[] = [
     transactionThreshold: 200,
     hasSalesTax: true,
     measurementPeriod: 'previous_or_current_calendar_year',
+    countedSales: 'gross',
+    marketplaceSales: 'included',
     notes: '$100K in sales OR 200 transactions.',
   },
   {
@@ -329,8 +454,10 @@ export const STATE_NEXUS_THRESHOLDS: NexusThreshold[] = [
     salesThreshold: 100000,
     transactionThreshold: null,
     hasSalesTax: true,
-    measurementPeriod: 'previous_or_current_calendar_year',
-    notes: 'Gross receipts tax (GRT). No transaction count threshold.',
+    measurementPeriod: 'previous_calendar_year',
+    countedSales: 'taxable',
+    marketplaceSales: 'excluded',
+    notes: 'Gross receipts tax (GRT). $100K in taxable receipts in the previous calendar year.',
   },
   {
     stateCode: 'NY',
@@ -339,8 +466,11 @@ export const STATE_NEXUS_THRESHOLDS: NexusThreshold[] = [
     transactionThreshold: 100,
     logic: 'and',
     hasSalesTax: true,
-    measurementPeriod: 'previous_or_current_calendar_year',
-    notes: '$500K in sales AND 100 transactions (both must be met).',
+    measurementPeriod: 'rolling_12_months',
+    measurementNote: 'New York measures the immediately preceding four sales tax quarters.',
+    countedSales: 'gross',
+    marketplaceSales: 'included',
+    notes: '$500K in sales AND more than 100 sales (both must be met).',
   },
   {
     stateCode: 'NC',
@@ -349,6 +479,8 @@ export const STATE_NEXUS_THRESHOLDS: NexusThreshold[] = [
     transactionThreshold: null,
     hasSalesTax: true,
     measurementPeriod: 'previous_or_current_calendar_year',
+    countedSales: 'gross',
+    marketplaceSales: 'included',
     notes: '$100K in sales only. 200-transaction threshold repealed effective Jul 1, 2024.',
   },
   {
@@ -358,7 +490,9 @@ export const STATE_NEXUS_THRESHOLDS: NexusThreshold[] = [
     transactionThreshold: null,
     hasSalesTax: true,
     measurementPeriod: 'previous_or_current_calendar_year',
-    notes: 'No transaction count threshold.',
+    countedSales: 'taxable',
+    marketplaceSales: 'excluded',
+    notes: '',
   },
   {
     stateCode: 'OH',
@@ -367,6 +501,8 @@ export const STATE_NEXUS_THRESHOLDS: NexusThreshold[] = [
     transactionThreshold: 200,
     hasSalesTax: true,
     measurementPeriod: 'previous_or_current_calendar_year',
+    countedSales: 'retail',
+    marketplaceSales: 'included',
     notes: '$100K in sales OR 200 transactions.',
   },
   {
@@ -376,7 +512,9 @@ export const STATE_NEXUS_THRESHOLDS: NexusThreshold[] = [
     transactionThreshold: null,
     hasSalesTax: true,
     measurementPeriod: 'previous_or_current_calendar_year',
-    notes: 'No transaction count threshold.',
+    countedSales: 'taxable',
+    marketplaceSales: 'excluded',
+    notes: '',
   },
   {
     stateCode: 'OR',
@@ -384,7 +522,9 @@ export const STATE_NEXUS_THRESHOLDS: NexusThreshold[] = [
     salesThreshold: null,
     transactionThreshold: null,
     hasSalesTax: false,
-    measurementPeriod: 'calendar_year',
+    measurementPeriod: 'previous_or_current_calendar_year',
+    countedSales: 'gross',
+    marketplaceSales: 'included',
     notes: 'No sales tax.',
   },
   {
@@ -393,8 +533,10 @@ export const STATE_NEXUS_THRESHOLDS: NexusThreshold[] = [
     salesThreshold: 100000,
     transactionThreshold: null,
     hasSalesTax: true,
-    measurementPeriod: 'previous_or_current_calendar_year',
-    notes: 'No transaction count threshold.',
+    measurementPeriod: 'previous_calendar_year',
+    countedSales: 'gross',
+    marketplaceSales: 'included',
+    notes: '$100K in gross sales on all channels in the previous calendar year.',
   },
   {
     stateCode: 'RI',
@@ -402,8 +544,10 @@ export const STATE_NEXUS_THRESHOLDS: NexusThreshold[] = [
     salesThreshold: 100000,
     transactionThreshold: 200,
     hasSalesTax: true,
-    measurementPeriod: 'previous_or_current_calendar_year',
-    notes: '$100K in sales OR 200 transactions.',
+    measurementPeriod: 'previous_calendar_year',
+    countedSales: 'gross',
+    marketplaceSales: 'included',
+    notes: '$100K in sales OR 200 transactions in the previous calendar year.',
   },
   {
     stateCode: 'SC',
@@ -412,7 +556,9 @@ export const STATE_NEXUS_THRESHOLDS: NexusThreshold[] = [
     transactionThreshold: null,
     hasSalesTax: true,
     measurementPeriod: 'previous_or_current_calendar_year',
-    notes: 'No transaction count threshold.',
+    countedSales: 'gross',
+    marketplaceSales: 'included',
+    notes: '',
   },
   {
     stateCode: 'SD',
@@ -421,7 +567,9 @@ export const STATE_NEXUS_THRESHOLDS: NexusThreshold[] = [
     transactionThreshold: null,
     hasSalesTax: true,
     measurementPeriod: 'previous_or_current_calendar_year',
-    notes: '$100K in sales only. 200-transaction threshold repealed effective Jul 1, 2023. Wayfair v. South Dakota origin state.',
+    countedSales: 'gross',
+    marketplaceSales: 'included',
+    notes: '$100K in sales only. 200-transaction threshold repealed effective Jul 1, 2023.',
   },
   {
     stateCode: 'TN',
@@ -430,7 +578,9 @@ export const STATE_NEXUS_THRESHOLDS: NexusThreshold[] = [
     transactionThreshold: null,
     hasSalesTax: true,
     measurementPeriod: 'rolling_12_months',
-    notes: 'No transaction count threshold.',
+    countedSales: 'retail',
+    marketplaceSales: 'excluded',
+    notes: '',
   },
   {
     stateCode: 'TX',
@@ -439,7 +589,9 @@ export const STATE_NEXUS_THRESHOLDS: NexusThreshold[] = [
     transactionThreshold: null,
     hasSalesTax: true,
     measurementPeriod: 'rolling_12_months',
-    notes: '$500K threshold. No transaction count threshold.',
+    countedSales: 'gross',
+    marketplaceSales: 'included',
+    notes: '$500K in gross revenue over the preceding 12 months.',
   },
   {
     stateCode: 'UT',
@@ -448,6 +600,8 @@ export const STATE_NEXUS_THRESHOLDS: NexusThreshold[] = [
     transactionThreshold: null,
     hasSalesTax: true,
     measurementPeriod: 'previous_or_current_calendar_year',
+    countedSales: 'gross',
+    marketplaceSales: 'excluded',
     notes: '$100K in sales only. 200-transaction threshold repealed effective Jul 1, 2025.',
   },
   {
@@ -457,6 +611,9 @@ export const STATE_NEXUS_THRESHOLDS: NexusThreshold[] = [
     transactionThreshold: 200,
     hasSalesTax: true,
     measurementPeriod: 'rolling_12_months',
+    measurementNote: 'Vermont measures the prior four calendar quarters.',
+    countedSales: 'gross',
+    marketplaceSales: 'included',
     notes: '$100K in sales OR 200 transactions.',
   },
   {
@@ -466,7 +623,9 @@ export const STATE_NEXUS_THRESHOLDS: NexusThreshold[] = [
     transactionThreshold: 200,
     hasSalesTax: true,
     measurementPeriod: 'previous_or_current_calendar_year',
-    notes: '$100K in sales OR 200 transactions.',
+    countedSales: 'retail',
+    marketplaceSales: 'excluded',
+    notes: '$100K in retail sales OR 200 transactions.',
   },
   {
     stateCode: 'WA',
@@ -475,7 +634,9 @@ export const STATE_NEXUS_THRESHOLDS: NexusThreshold[] = [
     transactionThreshold: null,
     hasSalesTax: true,
     measurementPeriod: 'previous_or_current_calendar_year',
-    notes: 'B&O tax also applies. No transaction count threshold.',
+    countedSales: 'gross',
+    marketplaceSales: 'included',
+    notes: 'B&O tax also applies.',
   },
   {
     stateCode: 'WV',
@@ -484,6 +645,8 @@ export const STATE_NEXUS_THRESHOLDS: NexusThreshold[] = [
     transactionThreshold: 200,
     hasSalesTax: true,
     measurementPeriod: 'previous_or_current_calendar_year',
+    countedSales: 'gross',
+    marketplaceSales: 'included',
     notes: '$100K in sales OR 200 transactions.',
   },
   {
@@ -493,7 +656,10 @@ export const STATE_NEXUS_THRESHOLDS: NexusThreshold[] = [
     transactionThreshold: null,
     hasSalesTax: true,
     measurementPeriod: 'previous_or_current_calendar_year',
-    notes: 'No transaction count threshold.',
+    countedSales: 'gross',
+    marketplaceSales: 'included',
+    marketplaceNote: 'If all of your Wisconsin sales go through marketplaces that collect the tax, you don\'t need to register.',
+    notes: '',
   },
   {
     stateCode: 'WY',
@@ -502,6 +668,8 @@ export const STATE_NEXUS_THRESHOLDS: NexusThreshold[] = [
     transactionThreshold: null,
     hasSalesTax: true,
     measurementPeriod: 'previous_or_current_calendar_year',
+    countedSales: 'gross',
+    marketplaceSales: 'excluded',
     notes: '$100K in sales only. 200-transaction threshold repealed effective Jul 1, 2024.',
   },
   {
@@ -511,7 +679,9 @@ export const STATE_NEXUS_THRESHOLDS: NexusThreshold[] = [
     transactionThreshold: 200,
     hasSalesTax: true,
     measurementPeriod: 'previous_or_current_calendar_year',
-    notes: '$100K in sales OR 200 transactions.',
+    countedSales: 'retail',
+    marketplaceSales: 'included',
+    notes: '$100K in retail sales OR 200 transactions.',
   },
 ];
 

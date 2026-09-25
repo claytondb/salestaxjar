@@ -1,4 +1,5 @@
 import Stripe from 'stripe';
+import { PLAN_MARKETING } from './plan-features';
 
 // Initialize Stripe with the secret key (server-side only)
 // Falls back gracefully if key is not set (for build time)
@@ -30,38 +31,21 @@ export const PLANS = {
     name: 'Starter',
     priceId: process.env.STRIPE_STARTER_PRICE_ID || 'price_starter',
     price: 9,
-    features: [
-      '2 platform integrations',
-      'Up to 500 orders/month',
-      'Automatic nexus exposure alerts',
-      'Email deadline reminders',
-      'CSV order import',
-    ],
+    features: PLAN_MARKETING.starter.highlights,
   },
   pro: {
     name: 'Pro',
     priceId: process.env.STRIPE_PRO_PRICE_ID || 'price_pro',
     price: 29,
     popular: true,
-    features: [
-      'Up to 5,000 orders/month',
-      '3 platform integrations',
-      'Tax calculation API + API keys',
-      'Priority email support',
-      'Filing assistance (coming soon)',
-    ],
+    features: PLAN_MARKETING.pro.highlights,
   },
   enterprise: {
     name: 'Enterprise',
     // No fake fallback: if unset, priceId is '' and checkout degrades gracefully.
     priceId: process.env.STRIPE_ENTERPRISE_PRICE_ID || process.env.STRIPE_BUSINESS_PRICE_ID || '',
     price: 79,
-    features: [
-      'Unlimited orders',
-      'Unlimited platform integrations',
-      'Highest priority support',
-      'Auto-filing (coming soon)',
-    ],
+    features: PLAN_MARKETING.enterprise.highlights,
   },
 } as const;
 
@@ -75,6 +59,8 @@ export async function createCheckoutSession(params: {
   successUrl: string;
   cancelUrl: string;
   customerId?: string;
+  /** Free-trial length in days. Defaults to 14; pass 0 for no trial (returning subscribers). */
+  trialDays?: number;
 }): Promise<{ sessionId?: string; url?: string; error?: string }> {
   if (!stripe) {
     return { error: 'Stripe is not configured' };
@@ -99,11 +85,21 @@ export async function createCheckoutSession(params: {
       ],
       // 14-day free trial, no card required up front (matches the pricing page).
       // payment_method_collection: 'if_required' lets the trial start without
-      // collecting a card; Stripe collects payment before the trial converts.
-      subscription_data: {
-        trial_period_days: 14,
-      },
-      payment_method_collection: 'if_required',
+      // collecting a card. If no card has been added when the trial ends, the
+      // subscription is CANCELED (the webhook then drops the account to Free)
+      // rather than invoicing a card that doesn't exist — exactly what the
+      // pricing page promises. Returning subscribers don't get another trial.
+      ...((params.trialDays ?? 14) > 0
+        ? {
+            subscription_data: {
+              trial_period_days: params.trialDays ?? 14,
+              trial_settings: {
+                end_behavior: { missing_payment_method: 'cancel' as const },
+              },
+            },
+            payment_method_collection: 'if_required' as const,
+          }
+        : {}),
       success_url: params.successUrl,
       cancel_url: params.cancelUrl,
       client_reference_id: params.userId,

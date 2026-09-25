@@ -12,7 +12,7 @@ export default function TermsPage() {
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="card-theme rounded-2xl p-8">
           <h1 className="text-3xl font-bold text-theme-primary mb-2">Terms of Service</h1>
-          <p className="text-theme-muted mb-8">Last updated: January 27, 2025</p>
+          <p className="text-theme-muted mb-8">Last updated: September 25, 2026</p>
 
           {/* Critical Tax Disclaimer Banner */}
           <div className="rounded-xl p-6 mb-8" style={{ backgroundColor: 'var(--error-bg)', border: '2px solid var(--error-border)' }}>
@@ -47,7 +47,7 @@ export default function TermsPage() {
             </div>
           </div>
 
-          <div className="prose prose-invert max-w-none space-y-8 text-theme-secondary">
+          <div className="prose legal-prose max-w-none space-y-8 text-theme-secondary">
             <section>
               <h2 className="text-xl font-semibold text-theme-primary mb-4">1. Acceptance of Terms</h2>
               <p>
@@ -65,7 +65,7 @@ export default function TermsPage() {
                 <li>Sales tax calculation tools for US states and territories</li>
                 <li>Product category-based tax rate estimation</li>
                 <li>Nexus determination assistance</li>
-                <li>Filing deadline tracking and reminders</li>
+                <li>Filing deadline tracking</li>
                 <li>Integration with e-commerce platforms</li>
                 <li>Tax calculation history and reporting</li>
               </ul>
@@ -99,9 +99,9 @@ export default function TermsPage() {
               </div>
               <p>Regarding our tax rate data:</p>
               <ul className="list-disc pl-6 space-y-2 mt-2">
-                <li><strong>Sources:</strong> State departments of revenue, tax foundation data, government publications</li>
-                <li><strong>Updates:</strong> We aim to update rates quarterly, but changes may not be immediate</li>
-                <li><strong>Local Taxes:</strong> City, county, and special district taxes may not be fully captured</li>
+                <li><strong>Sources:</strong> The calculator uses each state&apos;s rate plus the average local rate published by the Tax Foundation; nexus thresholds come from state sources summarized by the Sales Tax Institute. Each page shows when its data was last reviewed.</li>
+                <li><strong>Updates:</strong> We update rates when the Tax Foundation publishes new averages (twice a year) and review nexus rules regularly, but changes may not be immediate</li>
+                <li><strong>Local Taxes:</strong> Average local rates are estimates — the actual city, county, and special district rate at a specific address can be higher or lower</li>
                 <li><strong>Exemptions:</strong> Product exemptions are simplified and may not cover all scenarios</li>
                 <li><strong>Verification:</strong> Always verify rates with official state tax authority websites</li>
               </ul>

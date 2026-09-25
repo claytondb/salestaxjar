@@ -49,13 +49,25 @@ vi.mock('@/lib/plans', () => ({
   tierGateError: vi.fn(),
 }));
 
-vi.mock('@/lib/usage', () => ({
-  canImportOrders: vi.fn(),
-  getImportableOrderCount: vi.fn(),
-  freeUserImportError: vi.fn(),
-  orderLimitExceededError: vi.fn(),
-  getUserUsageStatus: vi.fn(),
-}));
+vi.mock('@/lib/usage', () => {
+  const getImportableOrderCount = vi.fn();
+  return {
+    canImportOrders: vi.fn(),
+    getImportableOrderCount,
+    // Test adapter: tests drive truncation through the getImportableOrderCount
+    // mock ({ truncated, canImport }); the real cap logic is unit-tested in
+    // src/lib/usage.test.ts.
+    applyMonthlyOrderCap: vi.fn(async ({ userId, subscription, items }: { userId: string; subscription: unknown; items: unknown[] }) => {
+      const info = ((await getImportableOrderCount(userId, subscription, items.length)) as { truncated?: boolean; canImport?: number } | undefined)
+        ?? { truncated: false, canImport: items.length };
+      const kept = info.truncated ? items.slice(0, info.canImport) : items;
+      return { items: kept, truncated: !!info.truncated, skipped: items.length - kept.length, limit: 500, remaining: 0 };
+    }),
+    freeUserImportError: vi.fn(),
+    orderLimitExceededError: vi.fn(),
+    getUserUsageStatus: vi.fn(),
+  };
+});
 
 import { POST } from './route';
 import { getCurrentUser } from '@/lib/auth';

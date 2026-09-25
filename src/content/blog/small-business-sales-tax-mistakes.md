@@ -1,6 +1,7 @@
 ---
 title: "7 Common Sales Tax Mistakes Small Businesses Make"
 date: "2026-02-25"
+lastReviewed: "2026-09-25"
 excerpt: "Avoid costly penalties by learning the most common sales tax errors small businesses make and how to fix them before they become problems."
 author: "Sails Team"
 category: "Getting Started"
@@ -23,7 +24,7 @@ Sales tax compliance trips up even the most careful business owners. The rules a
 
 **Why It's a Problem:** You're personally liable for uncollected tax. States can assess back taxes plus penalties and interest, sometimes going back several years.
 
-**The Fix:** Track your sales by state. When you approach economic nexus thresholds ($100K sales or 200 transactions in most states), register before you cross them. Tools like Sails can monitor your exposure automatically.
+**The Fix:** Track your sales by state. When you approach economic nexus thresholds ($100K in sales in most states; some also count 200 transactions), register before you cross them. Tools like Sails can check your sales against each state's thresholds and email you alerts.
 
 ## 3. Collecting in States Where You Don't Have Nexus
 
@@ -73,7 +74,7 @@ Most states require you to retain records for 3-7 years.
 
 ## Bonus: The Marketplace Facilitator Confusion
 
-Many sellers don't realize that marketplaces like Amazon, Etsy, and eBay now collect and remit sales tax on their behalf in most states. This is good news. It means less work for you.
+Many sellers don't realize that marketplaces like Amazon, Etsy, and eBay now collect and remit sales tax on their behalf in every state with a sales tax. This is good news. It means less work for you.
 
 **But here's the catch:** You're still responsible for sales through your own website and other direct channels. Don't assume that because Amazon handles your marketplace sales, you're covered everywhere.
 
@@ -99,4 +100,4 @@ The initial setup takes effort, but ongoing compliance is manageable even for sm
 
 ---
 
-*Need help getting your sales tax right? [Start with Sails](/signup) to automate collection and tracking.*
+*Need help getting your sales tax right? [Start with Sails](/signup) to track your nexus and filing deadlines.*

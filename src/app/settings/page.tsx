@@ -7,9 +7,11 @@ import { useAuth } from '@/context/AuthContext';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import PlatformsManager from '@/components/PlatformsManager';
+import { AmazonManualImport } from '@/components/AmazonManualImport';
 import { BusinessProfile, BillingInfo } from '@/types';
 import { stateTaxRates } from '@/data/taxRates';
-import { exportUserData, deleteAllUserData } from '@/lib/security';
+import { deleteAllUserData } from '@/lib/security';
+import { PLAN_MARKETING } from '@/lib/plan-features';
 import { 
   Building2, 
   User, 
@@ -41,37 +43,14 @@ const businessTypes = [
   { value: 'other', label: 'Other' },
 ];
 
-const plans = [
-  {
-    id: 'free',
-    name: 'Free',
-    price: 0,
-    tier: 0,
-    features: ['Nexus monitoring (all 50 states)', 'Unlimited calculations', '1 platform integration', 'Calculation history + CSV export', 'Email support']
-  },
-  {
-    id: 'starter',
-    name: 'Starter',
-    price: 9,
-    tier: 1,
-    features: ['2 platform integrations', '500 orders/month', 'Nexus exposure alerts', 'Email reminders']
-  },
-  {
-    id: 'pro',
-    name: 'Pro',
-    price: 29,
-    tier: 2,
-    features: ['3 platform integrations', '5,000 orders/month', 'Tax calculation API', 'Priority email support'],
-    popular: true
-  },
-  {
-    id: 'enterprise',
-    name: 'Enterprise',
-    price: 79,
-    tier: 3,
-    features: ['Unlimited platform integrations', 'Unlimited orders', 'Highest priority support', 'Auto-filing (coming soon)']
-  },
-];
+const plans = (['free', 'starter', 'pro', 'enterprise'] as const).map((id, tier) => ({
+  id,
+  name: PLAN_MARKETING[id].name,
+  price: PLAN_MARKETING[id].price,
+  tier,
+  features: PLAN_MARKETING[id].highlights,
+  popular: id === 'pro',
+}));
 
 // Wrapper component with Suspense for useSearchParams
 export default function SettingsPage() {
@@ -174,6 +153,10 @@ function SettingsPageContent() {
     const hash = window.location.hash.replace('#', '');
     if (hash && ['profile', 'account', 'notifications', 'platforms', 'apikeys', 'billing', 'privacy'].includes(hash)) {
       setActiveTab(hash);
+    } else if (hash === 'amazon') {
+      // The Amazon upload lives on the Platforms tab
+      setActiveTab('platforms');
+      setTimeout(() => document.getElementById('amazon')?.scrollIntoView({ behavior: 'smooth' }), 300);
     }
   }, []);
 
@@ -281,18 +264,27 @@ function SettingsPageContent() {
     setTimeout(() => setSaveMessage(''), 2000);
   };
 
-  // Data export handler
-  const handleExportData = () => {
-    const data = exportUserData();
-    const blob = new Blob([data], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `sails-data-export-${new Date().toISOString().split('T')[0]}.json`;
-    a.click();
-    URL.revokeObjectURL(url);
-    setSaveMessage('Data exported successfully!');
-    setTimeout(() => setSaveMessage(''), 3000);
+  // Data export handler — downloads everything we store about the account
+  // from the server (not just this browser).
+  const handleExportData = async () => {
+    try {
+      const response = await fetch('/api/account/export');
+      if (!response.ok) {
+        const data = await response.json().catch(() => ({}));
+        throw new Error(data.error || 'Export failed');
+      }
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `sails-data-export-${new Date().toISOString().split('T')[0]}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+      setSaveMessage('Your data export has downloaded.');
+    } catch (error) {
+      setSaveMessage(error instanceof Error ? error.message : 'Export failed');
+    }
+    setTimeout(() => setSaveMessage(''), 4000);
   };
 
   // Account deletion handler
@@ -748,60 +740,51 @@ function SettingsPageContent() {
                     <h3 className="font-medium text-theme-primary mb-4">Email Notifications</h3>
                     <div className="space-y-3">
                       {[
-                        { key: 'emailDeadlineReminders', label: 'Filing deadline reminders' },
-                        { key: 'emailWeeklyDigest', label: 'Weekly tax summary digest' },
-                        { key: 'emailNewRates', label: 'Tax rate change alerts' },
-                      ].map((item) => (
-                        <label key={item.key} className="flex items-center justify-between p-3 bg-white/5 rounded-lg cursor-pointer">
-                          <span className="text-theme-secondary">{item.label}</span>
-                          <button
-                            onClick={() => updateNotifications({ 
-                              ...notifications, 
-                              [item.key]: !notifications[item.key as keyof typeof notifications] 
-                            })}
-                            className={`relative w-12 h-6 rounded-full transition-colors ${
-                              notifications[item.key as keyof typeof notifications] ? 'btn-theme-primary' : 'bg-gray-600'
-                            }`}
-                          >
-                            <span className={`absolute top-1 left-1 w-4 h-4 rounded-full bg-white transition-transform ${
-                              notifications[item.key as keyof typeof notifications] ? 'translate-x-6' : ''
-                            }`} />
-                          </button>
-                        </label>
-                      ))}
+                        {
+                          key: 'emailNexusAlerts',
+                          label: 'Threshold alerts',
+                          help: "An email when your sales approach or pass a state's economic nexus threshold.",
+                        },
+                        {
+                          key: 'emailDeadlineReminders',
+                          label: 'Filing deadline reminders (coming soon)',
+                          help: 'An email a week and a day before each filing deadline you track. Leave this on to get them when they launch.',
+                        },
+                        {
+                          // Stored in emailWeeklyDigest; the onboarding emails check it.
+                          key: 'emailWeeklyDigest',
+                          label: 'Getting-started tips',
+                          help: 'A few emails in your first two weeks with tips for setting up Sails.',
+                        },
+                      ].map((item) => {
+                        const enabled = notifications[item.key as keyof typeof notifications] !== false;
+                        return (
+                          <label key={item.key} className="flex items-center justify-between gap-4 p-3 bg-white/5 rounded-lg cursor-pointer">
+                            <span>
+                              <span className="block text-theme-secondary">{item.label}</span>
+                              <span className="block text-theme-muted text-sm">{item.help}</span>
+                            </span>
+                            <button
+                              type="button"
+                              role="switch"
+                              aria-checked={enabled}
+                              aria-label={item.label}
+                              onClick={() => updateNotifications({ 
+                                ...notifications, 
+                                [item.key]: !enabled,
+                              })}
+                              className={`relative flex-shrink-0 w-12 h-6 rounded-full transition-colors ${
+                                enabled ? 'btn-theme-primary' : 'bg-gray-600'
+                              }`}
+                            >
+                              <span className={`absolute top-1 left-1 w-4 h-4 rounded-full bg-white transition-transform ${
+                                enabled ? 'translate-x-6' : ''
+                              }`} />
+                            </button>
+                          </label>
+                        );
+                      })}
                     </div>
-                  </div>
-
-                  <div>
-                    <h3 className="font-medium text-theme-primary mb-4">Push Notifications</h3>
-                    <label className="flex items-center justify-between p-3 bg-white/5 rounded-lg cursor-pointer">
-                      <span className="text-theme-secondary">Deadline reminders</span>
-                      <button
-                        onClick={() => updateNotifications({ ...notifications, pushDeadlines: !notifications.pushDeadlines })}
-                        className={`relative w-12 h-6 rounded-full transition-colors ${
-                          notifications.pushDeadlines ? 'btn-theme-primary' : 'bg-gray-600'
-                        }`}
-                      >
-                        <span className={`absolute top-1 left-1 w-4 h-4 rounded-full bg-white transition-transform ${
-                          notifications.pushDeadlines ? 'translate-x-6' : ''
-                        }`} />
-                      </button>
-                    </label>
-                  </div>
-
-                  <div>
-                    <label className="block text-theme-secondary mb-2 font-medium">Remind me before deadlines</label>
-                    <select
-                      value={notifications.reminderDaysBefore}
-                      onChange={(e) => updateNotifications({ ...notifications, reminderDaysBefore: parseInt(e.target.value) })}
-                      className="w-full px-4 py-3 border border-theme-primary rounded-lg text-theme-primary focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                      style={{ backgroundColor: 'var(--bg-input)' }}
-                    >
-                      <option value={3} style={{ backgroundColor: 'var(--bg-input)', color: 'var(--text-primary)' }}>3 days before</option>
-                      <option value={7} style={{ backgroundColor: 'var(--bg-input)', color: 'var(--text-primary)' }}>7 days before</option>
-                      <option value={14} style={{ backgroundColor: 'var(--bg-input)', color: 'var(--text-primary)' }}>14 days before</option>
-                      <option value={30} style={{ backgroundColor: 'var(--bg-input)', color: 'var(--text-primary)' }}>30 days before</option>
-                    </select>
                   </div>
 
                   <button
@@ -817,7 +800,17 @@ function SettingsPageContent() {
 
             {/* Platforms Tab */}
             {activeTab === 'platforms' && (
-              <PlatformsManager />
+              <div className="space-y-6">
+                <PlatformsManager />
+                <section id="amazon" className="card-theme rounded-xl border border-theme-primary p-6" aria-labelledby="amazon-import-heading">
+                  <h2 id="amazon-import-heading" className="text-xl font-semibold text-theme-primary mb-1">Amazon sales</h2>
+                  <p className="text-theme-muted text-sm mb-6">
+                    Amazon collects sales tax for you, but many states still count Amazon sales toward your own
+                    threshold. Upload an Amazon report and Sails will include those sales in the states that count them.
+                  </p>
+                  <AmazonManualImport />
+                </section>
+              </div>
             )}
 
             {/* API Keys Tab */}
@@ -1266,13 +1259,11 @@ function SettingsPageContent() {
                     <Link href="/privacy" className="text-theme-accent hover:text-emerald-300">Privacy Policy</Link>.
                   </p>
                   
-                  <div className="rounded-lg p-4" style={{ backgroundColor: 'var(--warning-bg)', border: '1px solid var(--warning-border)' }}>
-                    <p className="text-sm flex items-start gap-2" style={{ color: 'var(--warning-text)' }}>
-                      <AlertTriangle className="w-4 h-4 flex-shrink-0 mt-0.5" />
-                      <span><strong>Demo Mode:</strong> This application uses browser localStorage for data storage. 
-                      In production, all data would be securely encrypted and stored on protected servers.</span>
-                    </p>
-                  </div>
+                  <ul className="text-sm text-theme-secondary space-y-1">
+                    <li>• Your account data is stored on our servers and encrypted in transit and at rest.</li>
+                    <li>• Store connection keys get an extra layer of AES-256 encryption.</li>
+                    <li>• We don&apos;t store your buyers&apos; names, emails or street addresses.</li>
+                  </ul>
                 </div>
 
                 {/* Your Rights */}
@@ -1305,8 +1296,8 @@ function SettingsPageContent() {
                 <div className="card-theme rounded-xl border border-theme-primary p-6">
                   <h2 className="text-xl font-semibold text-theme-primary mb-2">Export Your Data</h2>
                   <p className="text-theme-muted mb-4">
-                    Download all your data in JSON format. This includes your profile, calculations, 
-                    settings, and preferences.
+                    Download everything Sails stores about your account as a JSON file: your profile, businesses,
+                    nexus states, filings, calculations, connected stores, imported orders, alerts and settings.
                   </p>
                   <button
                     onClick={handleExportData}

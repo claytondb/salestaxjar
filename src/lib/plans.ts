@@ -8,17 +8,23 @@
  *
  * Platform-connection caps: free=1, starter=2, pro=3, enterprise=unlimited.
  *
+ * What customers see for each plan lives in plan-features.ts. The real gates are:
+ *   - order volume: PLAN_ORDER_LIMITS, enforced by applyMonthlyOrderCap() (usage.ts)
+ *   - store connections: PLAN_PLATFORM_LIMITS, enforced by checkPlatformLimit()
+ *   - API keys: userCanAccess(user, 'api_keys')
+ * Other FEATURE_MINIMUM_TIER entries are descriptive only and are NOT enforced
+ * (free users can connect one store and import orders). Don't gate on them
+ * without updating plan-features.ts and the pricing page.
+ *
  * Free users get:
- *   - Nexus monitoring (all states)
+ *   - Nexus monitoring (all states), threshold alerts, filing calendar
  *   - Tax calculator
  *   - Calculation history + CSV export
- *   - 1 platform connection
+ *   - 1 platform connection, up to 50 orders/month (history import is free)
  *
  * Starter adds:
- *   - ALL platform integrations (up to 2 connections)
- *   - Order import / sync (up to 500 orders/month)
- *   - Email deadline reminders
- *   - CSV order import
+ *   - Up to 2 platform connections
+ *   - Up to 500 orders/month
  *
  * Pro adds:
  *   - Up to 5,000 orders/month
@@ -65,9 +71,13 @@ export type Feature =
 
 const PLAN_TIER_ORDER: PlanTier[] = ['free', 'starter', 'pro', 'enterprise'];
 
-/** Monthly order limits per plan */
+/**
+ * Monthly order limits per plan, counted by ORDER DATE (the seller's monthly
+ * order volume). Importing older history never counts against the limit —
+ * see applyMonthlyOrderCap() in usage.ts.
+ */
 export const PLAN_ORDER_LIMITS: Record<PlanTier, number | null> = {
-  free: 0,        // No order imports
+  free: 50,       // 1 store connection, up to 50 orders/month (matches STRATEGY.md)
   starter: 500,   // Up to 500 orders/month
   pro: 5000,      // Up to 5,000 orders/month
   enterprise: null,  // Unlimited
@@ -189,7 +199,7 @@ export function canAccessFeature(tier: PlanTier, feature: Feature): boolean {
  * which is always true.
  */
 export function canConnectPlatform(
-  tier: PlanTier,
+  _tier: PlanTier,
   _platform?: string
 ): { allowed: boolean; requiredPlan: PlanTier } {
   return { allowed: true, requiredPlan: 'free' };
@@ -262,7 +272,7 @@ export function checkOrderLimit(
     return { allowed: true, currentCount: currentMonthOrderCount, limit: null, remaining: null, upgradeNeeded: null };
   }
 
-  // Free users can't import
+  // A zero limit means the plan can't import at all
   if (limit === 0) {
     return { allowed: false, currentCount: currentMonthOrderCount, limit: 0, remaining: 0, upgradeNeeded: 'starter' };
   }
@@ -273,7 +283,8 @@ export function checkOrderLimit(
   // Suggest next tier if at limit
   let upgradeNeeded: PlanTier | null = null;
   if (!allowed) {
-    if (tier === 'starter') upgradeNeeded = 'pro';
+    if (tier === 'free') upgradeNeeded = 'starter';
+    else if (tier === 'starter') upgradeNeeded = 'pro';
     else if (tier === 'pro') upgradeNeeded = 'enterprise';
   }
 

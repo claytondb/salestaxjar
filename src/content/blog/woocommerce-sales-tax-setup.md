@@ -1,13 +1,13 @@
 ---
 title: "WooCommerce Sales Tax: The Complete Setup Guide"
 date: "2026-02-18"
-excerpt: "Learn how to set up automatic sales tax calculation for your WooCommerce store using the free Sails plugin. Step-by-step instructions included."
+excerpt: "Learn how to set up sales tax calculation for your WooCommerce store using the free Sails plugin. Step-by-step instructions included."
 author: "Sails Team"
 category: "Integrations"
 readTime: "4 min read"
 ---
 
-If you run a WooCommerce store, handling sales tax correctly is crucial. The built-in WooCommerce tax features require manual rate entry, which gets complicated fast when you're selling to multiple states. Here's how to set up automatic, accurate sales tax calculation with the Sails plugin.
+If you run a WooCommerce store, handling sales tax correctly is crucial. The built-in WooCommerce tax features require manual rate entry, which gets complicated fast when you're selling to multiple states. Here's how to set up sales tax calculation with the Sails plugin.
 
 ## Why Automate Sales Tax?
 
@@ -23,7 +23,7 @@ With an automated solution, tax rates are calculated in real-time based on the c
 
 ### Step 1: Create a Sails Account
 
-First, [sign up for a free Sails account](/signup). You'll need this to get your API key.
+First, [sign up for a Sails account](/signup). The plugin needs an API key, and API keys are included in the Pro plan.
 
 ### Step 2: Get Your API Key
 
@@ -55,7 +55,7 @@ Download the Sails Tax for WooCommerce plugin:
 4. Choose your **Tax Display** preferences
 5. Click **Save Changes**
 
-That's it! The plugin will now automatically calculate sales tax at checkout.
+That's it! The plugin will now calculate sales tax at checkout.
 
 ## How It Works
 
@@ -63,10 +63,10 @@ When a customer reaches checkout, the Sails plugin:
 
 1. Captures the shipping address
 2. Sends it to the Sails API
-3. Receives the precise tax rate for that exact location
-4. Applies the correct tax to the order
+3. Receives an estimated tax rate for that location
+4. Applies that tax to the order
 
-All of this happens in milliseconds. Customers won't notice any delay.
+It's quick enough that customers won't notice. Today the estimate uses each state's rate plus its average local rate, so it can differ from the exact rate at a specific address — check a few orders against your state's rate lookup tool, especially in states with high local rates.
 
 ## Plugin Settings Explained
 
@@ -104,7 +104,7 @@ The plugin works with WooCommerce Subscriptions. Tax is calculated for each rene
 
 ### Do I need the paid Sails plan?
 
-The free Sails plan includes up to 100 tax calculations per month. For most small stores, this is plenty to get started. Upgrade when you need more.
+The free Sails plan includes 1 store connection with up to 50 orders per month — enough to get started. Upgrade when you need more.
 
 ### What if my site is slow?
 

@@ -7,7 +7,10 @@
 
 import { Resend } from 'resend';
 import { prisma } from './prisma';
-import { ExposureStatus } from './nexus-thresholds';
+import type { ExposureStatus } from './nexus-thresholds';
+
+/** Exposure status, plus the special situations explained by the nexus engine. */
+export type AlertLevel = ExposureStatus | 'next_year' | 'past' | 'marketplace' | 'local';
 
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
 const resend = RESEND_API_KEY ? new Resend(RESEND_API_KEY) : null;
@@ -21,10 +24,18 @@ export interface NexusAlertEmailParams {
   userId: string;
   stateCode: string;
   stateName: string;
-  alertLevel: ExposureStatus;
+  alertLevel: AlertLevel;
   salesAmount: number;
   threshold: number;
   percentage: number;
+  /** One sentence with the numbers that decided the result (from the nexus engine) */
+  summary?: string;
+  /** What to do next for this state (overrides the generic text for the level) */
+  detail?: string;
+}
+
+function escapeHtml(text: string): string {
+  return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
 // Export for testing
@@ -38,7 +49,7 @@ export function formatCurrency(amount: number): string {
 }
 
 // Export for testing
-export function getAlertConfig(level: ExposureStatus): {
+export function getAlertConfig(level: AlertLevel): {
   emoji: string;
   urgency: string;
   bgColor: string;
@@ -54,7 +65,7 @@ export function getAlertConfig(level: ExposureStatus): {
         bgColor: '#fef2f2',
         borderColor: '#ef4444',
         textColor: '#dc2626',
-        actionText: 'You need to register for sales tax collection in this state.',
+        actionText: "You've likely passed this state's economic nexus threshold. That usually means registering for a sales tax permit before you start collecting there — the timing varies by state, so check the state's rules or ask a tax professional.",
       };
     case 'warning':
       return {
@@ -63,7 +74,35 @@ export function getAlertConfig(level: ExposureStatus): {
         bgColor: '#fff7ed',
         borderColor: '#f97316',
         textColor: '#ea580c',
-        actionText: 'You should prepare to register for sales tax collection.',
+        actionText: "You're close to this state's threshold. Now is a good time to look at how registration works there.",
+      };
+    case 'next_year':
+      return {
+        emoji: '📅',
+        urgency: 'Plan Ahead',
+        bgColor: '#faf5ff',
+        borderColor: '#a855f7',
+        textColor: '#9333ea',
+        actionText: 'This state looks at the previous year, so plan to register before January 1.',
+      };
+    case 'past':
+      return {
+        emoji: '🧾',
+        urgency: 'Check Past Sales',
+        bgColor: '#fff7ed',
+        borderColor: '#f97316',
+        textColor: '#ea580c',
+        actionText: 'An earlier crossing may mean tax is owed for a past period. A tax professional can help.',
+      };
+    case 'marketplace':
+    case 'local':
+      return {
+        emoji: 'ℹ️',
+        urgency: 'Check the Rules',
+        bgColor: '#eff6ff',
+        borderColor: '#3b82f6',
+        textColor: '#2563eb',
+        actionText: 'Check whether this state expects you to register.',
       };
     case 'approaching':
       return {
@@ -96,8 +135,15 @@ export function nexusAlertEmailTemplate(params: NexusAlertEmailParams): {
   const salesFormatted = formatCurrency(params.salesAmount);
   const thresholdFormatted = formatCurrency(params.threshold);
   const percentRounded = Math.round(params.percentage);
+  const actionText = params.detail || config.actionText;
+  const isThresholdLevel = !['next_year', 'past', 'marketplace', 'local'].includes(params.alertLevel);
+  const summaryText =
+    params.summary ||
+    `Your sales in ${params.stateName} have reached ${salesFormatted} — that's ${percentRounded}% of the ${thresholdFormatted} economic nexus threshold.`;
 
-  const subject = `${config.emoji} ${config.urgency}: ${params.stateName} nexus threshold at ${percentRounded}%`;
+  const subject = isThresholdLevel
+    ? `${config.emoji} ${config.urgency}: ${params.stateName} nexus threshold at ${percentRounded}%`
+    : `${config.emoji} ${config.urgency}: ${params.stateName}`;
 
   const html = `
 <!DOCTYPE html>
@@ -137,9 +183,7 @@ export function nexusAlertEmailTemplate(params: NexusAlertEmailParams): {
                 Hi ${params.name},
               </p>
               <p style="margin: 0 0 20px; color: #475569; font-size: 16px; line-height: 1.6;">
-                Your sales in <strong>${params.stateName}</strong> have reached 
-                <strong>${salesFormatted}</strong> — that's <strong>${percentRounded}%</strong> 
-                of the <strong>${thresholdFormatted}</strong> economic nexus threshold.
+                ${escapeHtml(summaryText)}
               </p>
               
               <!-- Progress Bar -->
@@ -158,7 +202,7 @@ export function nexusAlertEmailTemplate(params: NexusAlertEmailParams): {
               </div>
               
               <p style="margin: 0 0 24px; color: #475569; font-size: 15px; line-height: 1.6;">
-                ${config.actionText}
+                ${escapeHtml(actionText)}
               </p>
               
               <!-- CTA -->
@@ -194,9 +238,9 @@ export function nexusAlertEmailTemplate(params: NexusAlertEmailParams): {
 
 Hi ${params.name},
 
-Your sales in ${params.stateName} have reached ${salesFormatted} — that's ${percentRounded}% of the ${thresholdFormatted} economic nexus threshold.
+${summaryText}
 
-${config.actionText}
+${actionText}
 
 View your nexus exposure: ${APP_URL}/nexus
 
@@ -258,10 +302,16 @@ export async function sendNexusAlertEmail(
     const result = await resend.emails.send({
       from: FROM_EMAIL,
       to: params.to,
+      replyTo: process.env.REPLY_TO_EMAIL || 'support@sails.tax',
       subject: template.subject,
       html: template.html,
       text: template.text,
     });
+
+    // Resend reports API failures in `error` instead of throwing.
+    if (result.error) {
+      throw new Error(result.error.message || 'Email provider rejected the message');
+    }
 
     logData.messageId = result.data?.id;
 

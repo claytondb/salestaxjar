@@ -166,22 +166,22 @@ export default function Header() {
             <SailsLogo className="w-10 h-10 text-theme-accent" />
             <span className="text-2xl font-bold text-theme-primary">Sails</span>
           </Link>
-          <nav className="hidden md:flex gap-6 items-center">
-            <a href="#features" className="text-theme-secondary hover:text-theme-primary transition">Features</a>
+          <nav className="hidden lg:flex gap-6 items-center">
+            <Link href="/free-scan" className="text-theme-secondary hover:text-theme-primary transition whitespace-nowrap">Nexus Check</Link>
             <Link href="/pricing" className="text-theme-secondary hover:text-theme-primary transition">Pricing</Link>
-            <Link href="/free-calculator" className="text-theme-secondary hover:text-theme-primary transition">Free Calculator</Link>
+            <Link href="/free-calculator" className="text-theme-secondary hover:text-theme-primary transition">Calculator</Link>
             <Link href="/faq" className="text-theme-secondary hover:text-theme-primary transition">FAQ</Link>
             <ThemeToggle />
           </nav>
           <div className="flex gap-3 items-center">
-            <div className="md:hidden">
+            <div className="lg:hidden">
               <ThemeToggle />
             </div>
             <Link href="/login" className="text-theme-secondary hover:text-theme-primary px-4 py-2 transition">
               Log in
             </Link>
             <Link href="/signup" className="btn-theme-primary px-4 py-2 rounded-lg font-medium transition">
-              Start Free Trial
+              Start Free
             </Link>
           </div>
         </div>

@@ -1,6 +1,7 @@
 ---
 title: "TikTok Shop Sales Tax Guide: What Sellers Need to Know in 2026"
 date: "2026-02-27"
+lastReviewed: "2026-09-25"
 excerpt: "Learn how TikTok Shop handles sales tax collection, what your responsibilities are as a seller, and how to stay compliant as a TikTok Shop seller."
 author: "Sails Team"
 category: "Platform Guides"
@@ -25,7 +26,7 @@ Good news: **TikTok Shop is a marketplace facilitator**. This means TikTok calcu
 
 ### Where TikTok Collects Tax
 
-As of 2026, TikTok Shop collects and remits sales tax in all states with marketplace facilitator laws, which includes nearly every state with sales tax. This covers over 45 states and territories.
+As of 2026, TikTok Shop collects and remits sales tax in all states with marketplace facilitator laws, which now includes every state with a sales tax. That covers all 45 sales tax states plus Washington, D.C.
 
 ## What TikTok Shop Doesn't Handle
 
@@ -33,9 +34,9 @@ While TikTok handles marketplace sales, you may still have tax obligations in th
 
 ### 1. Direct Sales Outside TikTok
 
-If you sell through your own website, at craft fairs, or through other channels, you're responsible for:
+If you sell through your own website, at craft fairs, or through other channels that don't collect tax for you, you're responsible for:
 
-- Determining if you have nexus in the buyer's state
+- Determining if you have nexus in the buyer's state (some states count your TikTok Shop sales toward their threshold)
 - Collecting the correct sales tax rate
 - Filing returns and remitting taxes
 
@@ -97,13 +98,13 @@ TikTok provides:
 
 - **Transaction Reports**: Download detailed reports showing tax collected per transaction
 - **Summary Reports**: Monthly and annual tax summaries
-- **1099-K Forms**: For sellers meeting IRS thresholds ($5,000 in 2024+)
+- **1099-K Forms**: For sellers meeting IRS reporting thresholds (check the IRS's current threshold)
 
 ## Common TikTok Shop Tax Scenarios
 
 ### Scenario 1: Clothing and Apparel
 
-Some states exempt clothing under certain price thresholds:
+Some states exempt clothing under certain price thresholds (rules have exceptions, so verify with the state):
 
 - **New York**: Clothing under $110 is exempt
 - **Pennsylvania**: Most clothing is exempt
@@ -171,7 +172,7 @@ Sales tax is separate from income tax. For income tax purposes:
 
 TikTok Shop issues 1099-K forms for sellers meeting thresholds:
 
-- 2024 and later: $5,000 threshold
+- Threshold: set by the IRS—check the current threshold for your tax year
 - Report the gross amount (before fees)
 - Reconcile with your records
 
@@ -188,16 +189,18 @@ Many TikTok Shop sellers also sell on other platforms:
 ### Shopify or Your Own Website
 
 - You're responsible for tax collection
-- Calculate economic nexus across all channels
+- Calculate economic nexus across all channels (some states count your marketplace sales toward the threshold; others don't)
 - Register where you exceed thresholds
 
 ### Etsy
 
-- Marketplace facilitator in most states
+- Marketplace facilitator in every state with a sales tax
 - Similar to TikTok Shop handling
 - Keep separate records by platform
 
 ## State-Specific Considerations
+
+Rates and rules change, so verify these details with each state before relying on them.
 
 ### California
 
@@ -266,14 +269,14 @@ Consider consulting a tax professional if you:
 
 Tools like Sails can help you:
 
-- Track nexus across all sales channels
-- Manage permits and filing deadlines
-- Generate reports for tax preparation
-- Stay compliant automatically
+- Track nexus for your Shopify, WooCommerce and Amazon sales (Sails doesn't connect to TikTok Shop)
+- Keep track of filing deadlines on one calendar
+- Generate sales-by-state reports for tax preparation
+- Get email alerts as you approach state thresholds
 
 ## Key Takeaways
 
-1. **TikTok Shop collects sales tax for you** in marketplace facilitator states (most states with sales tax)
+1. **TikTok Shop collects sales tax for you** in marketplace facilitator states (every state with a sales tax)
 
 2. **You're still responsible** for direct sales, record keeping, and some state registrations
 

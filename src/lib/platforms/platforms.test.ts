@@ -108,7 +108,8 @@ describe('getPlatformConfigurations', () => {
       
       expect(shopify).toBeDefined();
       expect(shopify!.name).toBe('Shopify');
-      expect(shopify!.features).toContain('Order sync');
+      expect(shopify!.features).toContain('Order import');
+      expect(shopify!.status).toBe('live');
       expect(shopify!.setupUrl).toBeDefined();
     });
 
@@ -130,8 +131,9 @@ describe('getPlatformConfigurations', () => {
       
       expect(woo).toBeDefined();
       expect(woo!.name).toBe('WooCommerce');
-      expect(woo!.features).toContain('Order sync');
-      expect(woo!.features).toContain('WordPress plugin');
+      expect(woo!.features).toContain('Order import');
+      expect(woo!.features).toContain('Read-only API key');
+      expect(woo!.status).toBe('live');
     });
 
     it('should show WooCommerce as always configured (uses per-store credentials)', () => {
@@ -185,7 +187,8 @@ describe('getPlatformConfigurations', () => {
       expect(oc).toBeDefined();
       expect(oc!.name).toBe('OpenCart');
       expect(oc!.configured).toBe(true);
-      expect(oc!.features).toContain('Session API');
+      expect(oc!.features).toContain('Order import');
+      expect(oc!.status).toBe('beta');
     });
   });
 

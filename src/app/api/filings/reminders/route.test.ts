@@ -50,6 +50,7 @@ describe('GET /api/filings/reminders — auth', () => {
   beforeEach(() => {
     vi.resetAllMocks();
     process.env.CRON_SECRET = 'test-secret';
+    process.env.DEADLINE_REMINDERS_ENABLED = 'true';
     vi.mocked(processBatchReminders).mockResolvedValue(emptyResult());
   });
 
@@ -111,6 +112,7 @@ describe('GET /api/filings/reminders — response shape', () => {
   beforeEach(() => {
     vi.resetAllMocks();
     process.env.CRON_SECRET = 'test-secret';
+    process.env.DEADLINE_REMINDERS_ENABLED = 'true';
   });
 
   it('returns ok:true with summary', async () => {
@@ -172,6 +174,7 @@ describe('GET /api/filings/reminders — error handling', () => {
   beforeEach(() => {
     vi.resetAllMocks();
     process.env.CRON_SECRET = 'test-secret';
+    process.env.DEADLINE_REMINDERS_ENABLED = 'true';
   });
 
   it('returns 500 when processBatchReminders throws', async () => {
@@ -190,6 +193,7 @@ describe('GET /api/filings/reminders — missing CRON_SECRET env', () => {
   beforeEach(() => {
     vi.resetAllMocks();
     delete process.env.CRON_SECRET;
+    process.env.DEADLINE_REMINDERS_ENABLED = 'true';
     vi.mocked(processBatchReminders).mockResolvedValue(emptyResult());
   });
 
@@ -211,5 +215,24 @@ describe('GET /api/filings/reminders — missing CRON_SECRET env', () => {
     const req = makeRequest({});
     const res = await GET(req);
     expect(res.status).toBe(401);
+  });
+});
+
+// ─── Off switch ───────────────────────────────────────────────────────────────
+
+describe('GET /api/filings/reminders — off unless enabled', () => {
+  beforeEach(() => {
+    vi.resetAllMocks();
+    process.env.CRON_SECRET = 'test-secret';
+    delete process.env.DEADLINE_REMINDERS_ENABLED;
+    vi.mocked(processBatchReminders).mockResolvedValue(emptyResult());
+  });
+
+  it('sends nothing when DEADLINE_REMINDERS_ENABLED is not true', async () => {
+    const res = await GET(makeRequest({ 'x-cron-secret': 'test-secret' }));
+    expect(res.status).toBe(200);
+    const body = await res.json();
+    expect(body.skipped).toBeTruthy();
+    expect(processBatchReminders).not.toHaveBeenCalled();
   });
 });

@@ -336,7 +336,7 @@ describe('State Data Validation', () => {
 
     expect(data.data.stateRate).toBe(7.25);
     expect(data.data.avgLocalRate).toBeGreaterThan(0);
-    expect(data.data.combinedRate).toBeCloseTo(8.82, 1);
+    expect(data.data.combinedRate).toBeCloseTo(9.03, 1);
     expect(data.data.hasLocalTax).toBe(true);
   });
 

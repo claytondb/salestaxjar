@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import { SERVICE_PROVIDERS } from '@/lib/service-providers';
 
 export default function PrivacyPage() {
   return (
@@ -12,9 +13,9 @@ export default function PrivacyPage() {
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="card-theme rounded-2xl p-8">
           <h1 className="text-3xl font-bold text-theme-primary mb-2">Privacy Policy</h1>
-          <p className="text-theme-muted mb-8">Last updated: January 27, 2025</p>
+          <p className="text-theme-muted mb-8">Last updated: September 25, 2026</p>
 
-          <div className="prose prose-invert max-w-none space-y-8 text-theme-secondary">
+          <div className="prose legal-prose max-w-none space-y-8 text-theme-secondary">
             <section>
               <h2 className="text-xl font-semibold text-theme-primary mb-4">1. Introduction</h2>
               <p>
@@ -37,19 +38,32 @@ export default function PrivacyPage() {
                 <li><strong>Business Information:</strong> Business name, address, EIN (optional), business type</li>
                 <li><strong>Tax-Related Data:</strong> Nexus registrations, state registration numbers, filing history</li>
                 <li><strong>Transaction Data:</strong> Sale amounts, product categories, state information for tax calculations</li>
-                <li><strong>Payment Information:</strong> Billing address, payment method details (processed by third-party payment processors)</li>
+                <li><strong>Payment Information:</strong> Billing details are collected and processed by Stripe. Sails never sees or stores your full card number.</li>
               </ul>
 
-              <h3 className="text-lg font-medium text-theme-accent mt-4 mb-2">2.2 Information Collected Automatically</h3>
-              <ul className="list-disc pl-6 space-y-2">
-                <li><strong>Usage Data:</strong> Pages visited, features used, time spent on the service</li>
-                <li><strong>Device Information:</strong> Browser type, operating system, device identifiers</li>
-                <li><strong>Log Data:</strong> IP address, access times, referring URLs</li>
-              </ul>
-
-              <h3 className="text-lg font-medium text-theme-accent mt-4 mb-2">2.3 Cookies and Tracking</h3>
+              <h3 className="text-lg font-medium text-theme-accent mt-4 mb-2">2.2 Store and Order Data</h3>
               <p>
-                We use cookies and similar technologies to enhance your experience. See our{' '}
+                When you connect a store or upload an order report, Sails imports only what sales tax work needs: order
+                number and date, amounts, tax collected, order status, the items sold, and the ship-to city, state, ZIP
+                and country. We do <strong>not</strong> store your buyers&apos; names, email addresses, phone numbers or
+                street addresses, even when the platform provides them.
+              </p>
+              <p className="mt-2">
+                Store connections only ask for read access. The keys that let Sails read your orders are encrypted
+                (AES-256) before they are saved, and you can disconnect a store at any time. While a Shopify or
+                WooCommerce store is connected, Sails checks it for new orders once a day, as well as whenever you
+                click Sync.
+              </p>
+
+              <h3 className="text-lg font-medium text-theme-accent mt-4 mb-2">2.3 Information Collected Automatically</h3>
+              <ul className="list-disc pl-6 space-y-2">
+                <li><strong>Log Data:</strong> IP address, access times, browser type and pages requested, kept by our hosting provider for security and troubleshooting</li>
+                <li><strong>Error Reports:</strong> When something breaks, our error-monitoring service (Sentry) records technical details about the error, like the page address, your browser and the code that failed. It doesn&apos;t record your screen.</li>
+              </ul>
+
+              <h3 className="text-lg font-medium text-theme-accent mt-4 mb-2">2.4 Cookies and Tracking</h3>
+              <p>
+                Sails uses one cookie, to keep you signed in. We don&apos;t use tracking or advertising cookies. See our{' '}
                 <Link href="/cookies" className="text-theme-accent hover:text-emerald-300">Cookie Policy</Link> for details.
               </p>
             </section>
@@ -60,11 +74,11 @@ export default function PrivacyPage() {
               <ul className="list-disc pl-6 space-y-2 mt-2">
                 <li>Provide, maintain, and improve our sales tax calculation services</li>
                 <li>Process tax calculations and generate compliance reports</li>
-                <li>Send you important notices about deadlines and rate changes</li>
+                <li>Send you the emails you&apos;ve asked for, like threshold alerts (you can turn these off in Settings)</li>
                 <li>Respond to your inquiries and provide customer support</li>
                 <li>Detect, prevent, and address technical issues and fraud</li>
                 <li>Comply with legal obligations and enforce our terms</li>
-                <li>Analyze usage patterns to improve our service (in aggregate, anonymized form)</li>
+                <li>Understand how the service is used, in aggregate, so we can improve it</li>
               </ul>
             </section>
 
@@ -72,7 +86,7 @@ export default function PrivacyPage() {
               <h2 className="text-xl font-semibold text-theme-primary mb-4">4. Data Sharing and Disclosure</h2>
               <p>We may share your information with:</p>
               <ul className="list-disc pl-6 space-y-2 mt-2">
-                <li><strong>Service Providers:</strong> Cloud hosting, payment processing, email delivery services</li>
+                <li><strong>Service Providers:</strong> The companies listed in section 10, only as needed to run Sails</li>
                 <li><strong>Legal Requirements:</strong> When required by law, court order, or government request</li>
                 <li><strong>Business Transfers:</strong> In connection with a merger, acquisition, or sale of assets</li>
                 <li><strong>With Your Consent:</strong> For any other purpose with your explicit permission</li>
@@ -85,21 +99,20 @@ export default function PrivacyPage() {
             <section>
               <h2 className="text-xl font-semibold text-theme-primary mb-4">5. Data Security</h2>
               <p>
-                We implement appropriate technical and organizational measures to protect your data, including:
+                We protect your data with these measures:
               </p>
               <ul className="list-disc pl-6 space-y-2 mt-2">
-                <li>Encryption of data in transit (TLS/SSL) and at rest</li>
-                <li>Password hashing using industry-standard algorithms</li>
-                <li>Regular security assessments and updates</li>
-                <li>Access controls and authentication measures</li>
-                <li>Secure data centers with physical security controls</li>
+                <li>Encryption in transit (TLS) for every connection to Sails</li>
+                <li>Encryption at rest by our database provider, plus an extra layer of AES-256 encryption on store connection keys</li>
+                <li>Passwords stored only as bcrypt hashes</li>
+                <li>Read-only access to your store — Sails can&apos;t change your orders or settings</li>
+                <li>Rate limiting on sign-in and on our API</li>
+                <li>Hosting on established cloud providers (Vercel and Neon) with physical security controls</li>
               </ul>
-              <div className="rounded-lg p-4 mt-4" style={{ backgroundColor: 'var(--warning-bg)', border: '1px solid var(--warning-border)' }}>
-                <p className="text-sm" style={{ color: 'var(--warning-text)' }}>
-                  <strong>Demo Mode Notice:</strong> This demonstration version uses browser localStorage for data storage. 
-                  In production, all data would be stored in secure, encrypted databases with enterprise-grade security.
-                </p>
-              </div>
+              <p className="mt-4">
+                No system is perfectly secure. If you believe you&apos;ve found a security problem, please email{' '}
+                <a href="mailto:support@sails.tax" className="text-theme-accent hover:text-emerald-300">support@sails.tax</a>.
+              </p>
             </section>
 
             <section>
@@ -109,10 +122,10 @@ export default function PrivacyPage() {
                 unless a longer retention period is required by law. Specifically:
               </p>
               <ul className="list-disc pl-6 space-y-2 mt-2">
-                <li><strong>Account Data:</strong> Retained while your account is active, plus 30 days after deletion request</li>
-                <li><strong>Tax Calculations:</strong> Retained for 7 years to comply with tax record-keeping requirements</li>
-                <li><strong>Usage Logs:</strong> Retained for 90 days</li>
-                <li><strong>Marketing Preferences:</strong> Retained until you opt out</li>
+                <li><strong>Account, business and order data:</strong> Kept while your account is open, because nexus is measured over the previous and current year. Deleting your account (Settings → Data &amp; Privacy) permanently deletes this data right away.</li>
+                <li><strong>Billing records:</strong> Kept by Stripe as required for tax and accounting law</li>
+                <li><strong>Server logs and error reports:</strong> Kept by our hosting and monitoring providers for a limited period</li>
+                <li><strong>Email preferences:</strong> Kept until you change them or delete your account</li>
               </ul>
             </section>
 
@@ -153,9 +166,8 @@ export default function PrivacyPage() {
             <section>
               <h2 className="text-xl font-semibold text-theme-primary mb-4">8. International Data Transfers</h2>
               <p>
-                Your information may be transferred to and processed in countries other than your country of residence. 
-                We ensure appropriate safeguards are in place, including Standard Contractual Clauses approved by the 
-                European Commission.
+                Sails is operated from the United States, and our service providers process data primarily in the
+                United States. If you use Sails from outside the US, your information will be transferred to the US.
               </p>
             </section>
 
@@ -170,15 +182,21 @@ export default function PrivacyPage() {
 
             <section>
               <h2 className="text-xl font-semibold text-theme-primary mb-4">10. Third-Party Services</h2>
-              <p>We may integrate with the following types of third-party services:</p>
+              <p>Sails uses these service providers to run the service:</p>
               <ul className="list-disc pl-6 space-y-2 mt-2">
-                <li><strong>E-commerce Platforms:</strong> Shopify, WooCommerce (and others via API)</li>
-                <li><strong>Payment Processors:</strong> Stripe, PayPal</li>
-                <li><strong>Analytics:</strong> Google Analytics (anonymized)</li>
-                <li><strong>Customer Support:</strong> Help desk software</li>
+                {SERVICE_PROVIDERS.map((p) => (
+                  <li key={p.name}>
+                    <strong>{p.name}</strong> — {p.purpose.charAt(0).toLowerCase() + p.purpose.slice(1)}. {p.data}
+                  </li>
+                ))}
+                <li><strong>Your store platform</strong> (for example Shopify or WooCommerce) — only when you connect it</li>
               </ul>
               <p className="mt-2">
-                Each third-party service has its own privacy policy governing the use of your information.
+                See our <Link href="/security" className="text-theme-accent hover:text-emerald-300">security page</Link> for how
+                your data is protected.
+              </p>
+              <p className="mt-2">
+                Each provider has its own privacy policy governing the information it processes for us.
               </p>
             </section>
 

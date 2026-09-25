@@ -485,7 +485,7 @@ describe('calculateTax - Local Calculation', () => {
     });
 
     it('should calculate correctly for low-tax states', async () => {
-      // Hawaii has 4.44% combined rate
+      // Hawaii has 4.5% combined rate
       const hiRequest: TaxCalculationRequest = {
         amount: 100,
         toAddress: { state: 'HI' },
@@ -493,8 +493,8 @@ describe('calculateTax - Local Calculation', () => {
       
       const result = await calculateTax(hiRequest);
       
-      // HI combined rate is 4.44%, so tax on $100 should be ~$4.44
-      expect(result.taxAmount).toBeCloseTo(4.44, 1);
+      // HI combined rate is 4.5%, so tax on $100 should be ~$4.50
+      expect(result.taxAmount).toBeCloseTo(4.5, 1);
     });
 
     it('should handle states with only local taxes (Alaska)', async () => {

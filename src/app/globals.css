@@ -374,6 +374,25 @@ article tbody tr:hover {
   -webkit-overflow-scrolling: touch;
 }
 
+/* On phones, wide tables scroll sideways inside themselves instead of
+   widening the page (overflow only works on a block box, not display: table). */
+@media (max-width: 640px) {
+  .prose table,
+  article table {
+    display: block !important;
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .prose th,
+  article th,
+  .prose td,
+  article td {
+    padding: 0.5rem 0.75rem !important;
+  }
+}
+
 /* Light theme table adjustments */
 .theme-nautical .prose table,
 .theme-nautical article table,
@@ -409,4 +428,25 @@ article tbody tr:hover {
 .theme-emerald .prose tbody tr:hover,
 .theme-emerald article tbody tr:hover {
   background: rgba(0, 0, 0, 0.02);
+}
+
+/* =============================================================================
+   Legal pages (privacy, terms, cookies)
+   Bold text follows the active theme so it's readable in light AND dark mode.
+   (These pages previously used prose-invert, which made <strong> white on the
+   light theme — invisible.)
+   ============================================================================= */
+.legal-prose {
+  color: var(--text-secondary);
+}
+.legal-prose strong,
+.legal-prose b {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+.legal-prose a {
+  color: var(--accent-primary);
+}
+.legal-prose li::marker {
+  color: var(--text-muted);
 }

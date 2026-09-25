@@ -79,14 +79,21 @@ describe('getAuthorizationUrl', () => {
     expect(url).toContain('scope=');
   });
 
-  it('should include required scopes', async () => {
+  it('asks only for what nexus needs (orders and locations)', async () => {
     const { getAuthorizationUrl } = await import('./shopify');
-    const url = getAuthorizationUrl('mystore.myshopify.com', 'state');
+    const url = decodeURIComponent(getAuthorizationUrl('mystore.myshopify.com', 'state'));
     
     expect(url).toContain('read_orders');
-    expect(url).toContain('read_products');
-    expect(url).toContain('read_customers');
     expect(url).toContain('read_locations');
+    expect(url).not.toContain('read_customers');
+    expect(url).not.toContain('read_products');
+  });
+
+  it('lets SHOPIFY_SCOPES add read_all_orders once Shopify approves it', async () => {
+    process.env.SHOPIFY_SCOPES = 'read_orders,read_all_orders,read_locations';
+    const { getAuthorizationUrl } = await import('./shopify');
+    const url = decodeURIComponent(getAuthorizationUrl('mystore.myshopify.com', 'state'));
+    expect(url).toContain('read_all_orders');
   });
 
   it('should normalize shop domain in URL', async () => {
@@ -458,5 +465,48 @@ describe('Shopify order data handling', () => {
     
     const itemTax = item.tax_lines.reduce((sum, t) => sum + parseFloat(t.price), 0);
     expect(itemTax).toBe(3.20);
+  });
+});
+
+describe('fetchOrdersSince', () => {
+  function page(ids: number[]) {
+    return {
+      ok: true,
+      json: async () => ({ orders: ids.map((id) => ({ id, created_at: '2026-01-01T00:00:00Z' })) }),
+      text: async () => '',
+    } as unknown as Response;
+  }
+
+  it('follows since_id until a short page, oldest first', async () => {
+    const { fetchOrdersSince } = await import('./shopify');
+    const first = Array.from({ length: 250 }, (_, i) => i + 1);
+    const fetchImpl = vi.fn().mockResolvedValueOnce(page(first)).mockResolvedValueOnce(page([251, 252]));
+    const result = await fetchOrdersSince('shop.myshopify.com', 'tok', { createdAtMin: '2025-01-01T00:00:00Z', fetchImpl });
+    expect(result.complete).toBe(true);
+    expect(result.orders).toHaveLength(252);
+    const secondUrl = String(fetchImpl.mock.calls[1][0]);
+    expect(secondUrl).toContain('since_id=250');
+    expect(secondUrl).toContain('created_at_min=2025-01-01');
+  });
+
+  it('stops at the deadline and reports it is incomplete', async () => {
+    const { fetchOrdersSince } = await import('./shopify');
+    const fetchImpl = vi.fn();
+    const result = await fetchOrdersSince('shop.myshopify.com', 'tok', { deadline: Date.now() - 1, fetchImpl });
+    expect(result.complete).toBe(false);
+    expect(fetchImpl).not.toHaveBeenCalled();
+  });
+
+  it('returns what it has plus the error when a page fails', async () => {
+    const { fetchOrdersSince } = await import('./shopify');
+    const full = Array.from({ length: 250 }, (_, i) => i + 1);
+    const fetchImpl = vi
+      .fn()
+      .mockResolvedValueOnce(page(full))
+      .mockResolvedValueOnce({ ok: false, text: async () => 'rate limited' } as unknown as Response);
+    const result = await fetchOrdersSince('shop.myshopify.com', 'tok', { fetchImpl });
+    expect(result.orders).toHaveLength(250);
+    expect(result.complete).toBe(false);
+    expect(result.error).toContain('rate limited');
   });
 });

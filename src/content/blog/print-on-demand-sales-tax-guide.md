@@ -55,7 +55,7 @@ Similar to Printify:
 These are **marketplace facilitators**:
 - They collect and remit sales tax on all orders
 - You just receive your profit share
-- No sales tax action needed from you
+- No sales tax collection needed from you on those orders
 
 ## Tax by Sales Channel
 
@@ -95,21 +95,21 @@ With Shopify + Printful/Printify:
 **WooCommerce is self-hosted** (not a marketplace).
 
 - You're responsible for sales tax
-- Use WooCommerce tax plugins or Sails integration
-- You must register, collect, and remit
+- Use a WooCommerce tax plugin to collect tax, and the Sails integration to track nexus
+- You must register, collect, and remit where you have nexus
 
 ### Your Own Website + POD
 
 If you run your own store:
 - You're fully responsible for sales tax
-- Use a tax calculation service (like Sails)
+- Use a tax calculation service at checkout, plus a nexus tracker (like Sails)
 - Register in states where you have nexus
 
 ## State-by-State Considerations
 
 ### Clothing Exemptions
 
-Many states have special rules for clothing:
+Many states have special rules for clothing (with exceptions, so verify with the state):
 
 | State | Clothing Tax |
 |-------|--------------|
@@ -140,8 +140,8 @@ POD products have varying tax treatment:
 
 You create economic nexus by selling TO customers in a state. Thresholds are typically:
 
-- $100,000 in sales, OR
-- 200 transactions
+- $100,000 in sales
+- Some states also count 200 transactions
 
 Once exceeded, you must collect sales tax in that state (unless a marketplace facilitator handles it).
 
@@ -163,7 +163,7 @@ However, consult a tax professional for your specific situation.
 1. Create designs
 2. List on Etsy
 3. Connect to Printful/Printify
-4. **Sales tax: Etsy handles it all** ✓
+4. **Sales tax: Etsy handles collection** ✓
 5. Focus on design and marketing
 
 ### Workflow 2: Shopify + Printful
@@ -180,8 +180,8 @@ However, consult a tax professional for your specific situation.
 1. Etsy sales → Etsy collects tax ✓
 2. Amazon sales → Amazon collects tax ✓
 3. Shopify sales → YOU collect and remit tax
-4. Track nexus across all channels combined
-5. File returns covering all channels
+4. Track nexus across all channels combined (some states count marketplace sales toward your threshold, others don't)
+5. File returns covering all channels (check how each state wants marketplace sales reported)
 
 ## Record Keeping
 
@@ -239,8 +239,8 @@ For each channel:
 
 ### Step 3: Calculate Nexus
 
-Add up ALL sales by state (from all channels):
-- Do you exceed $100K or 200 transactions anywhere?
+Add up ALL sales by state (from all channels), then check which ones each state counts—some states leave out marketplace sales:
+- Do you exceed a state's threshold (usually $100K in sales; some states also count 200 transactions)?
 - That's where you have nexus
 
 ### Step 4: Register and Configure
@@ -254,12 +254,12 @@ For states where you have nexus AND collection responsibility:
 
 Even if marketplaces collected most of your tax:
 - Some states require you to file $0 returns
-- Report marketplace sales separately
+- Report marketplace sales separately if the state asks for it
 - Keep all documentation
 
 ## Tools and Resources
 
-- **[Sails Calculator](/calculator)** - Calculate tax rates for any US address
+- **[Sails Calculator](/calculator)** - Estimate tax using state and average local rates
 - **[Nexus Tracker](/dashboard)** - Track your economic nexus status
 - **[State Deadlines](/blog/2026-sales-tax-deadlines)** - Don't miss filing dates
 
@@ -269,7 +269,7 @@ Print-on-demand has made starting a product business easier than ever. The sales
 
 - **Marketplace sales** (Etsy, Amazon, Redbubble) → Marketplaces handle tax
 - **Self-hosted sales** (Shopify, WooCommerce) → You handle tax
-- **Track nexus** across all channels combined
+- **Track nexus** across all channels—some states count marketplace sales toward your threshold
 
 Start with the channels that handle tax for you. As you grow into self-hosted sales, set up proper tax collection. And always keep good records!
 

@@ -1,6 +1,7 @@
 ---
 title: "Shopify Sales Tax: Complete Guide for Store Owners"
 date: "2026-02-24"
+lastReviewed: "2026-09-25"
 excerpt: "Everything you need to know about Shopify sales tax, from basic setup to handling multi-state nexus. Learn how to automate tax collection and stay compliant."
 author: "Sails Team"
 category: "Integrations"
@@ -14,7 +15,7 @@ Running a Shopify store means dealing with sales tax, whether you like it or not
 You need to collect sales tax if you have **nexus** in a state. Nexus means a significant connection to that state, either through:
 
 - **Physical presence**: An office, warehouse, employee, or inventory in the state
-- **Economic nexus**: Exceeding a state's sales threshold (typically $100,000 in sales or 200 transactions per year)
+- **Economic nexus**: Exceeding a state's sales threshold (typically $100,000 in sales per year; some states also count 200 transactions)
 
 Most small Shopify sellers start with nexus only in their home state. As you grow, you'll likely trigger economic nexus in other states.
 
@@ -66,7 +67,7 @@ Some products are taxed differently. In Shopify:
 3. Check **Charge tax on this product**
 4. Set a product tax code if needed (for clothing, food, etc.)
 
-Common exempt categories include:
+Common exempt categories include (rules vary, so verify with each state):
 - Groceries (in many states)
 - Clothing (in PA, NJ, and others)
 - Digital products (varies by state)
@@ -75,19 +76,19 @@ Common exempt categories include:
 
 Shopify's built-in tax works well for simple setups. Consider a specialized solution like Sails when:
 
-- You sell across many states and need precise jurisdiction-level rates
-- You need tax reports formatted for state filings
-- You want to track economic nexus thresholds automatically
+- You sell across many states and need to see your sales in each one
+- You need sales-by-state reports to prepare your state filings
+- You want your sales checked against every state's economic nexus thresholds
 - You need better audit documentation
 
 ### Connecting Sails to Shopify
 
-1. Install the Sails app from the Shopify App Store
-2. Connect your Sails account
-3. The app syncs your orders automatically
-4. View nexus exposure and filing reports in your Sails dashboard
+1. Create a Sails account
+2. Connect your Shopify store
+3. Sails imports your orders
+4. View nexus exposure and sales-by-state reports in your Sails dashboard
 
-The app doesn't replace Shopify's tax calculation. Instead, it imports your order data for reporting and nexus tracking.
+Sails doesn't replace Shopify's tax calculation. Instead, it imports your order data for reporting and nexus tracking.
 
 ## Filing Sales Tax Returns
 
@@ -108,7 +109,7 @@ State returns typically ask for:
 - Tax collected
 - Tax due
 
-Sails generates filing-ready reports that match what most state forms require.
+Sails generates sales-by-state reports you can export to CSV.
 
 ## Common Shopify Sales Tax Mistakes
 
@@ -135,7 +136,7 @@ Shopify provides basic tax reports under **Analytics** > **Reports** > **Finance
 - Taxes collected by state
 - Taxes collected by location (if you have multiple locations)
 
-For more detailed reports, export your orders and use a tool like Sails to generate state-specific filing summaries.
+For more detailed reports, export your orders and use a tool like Sails to generate sales-by-state reports.
 
 ## Getting Help
 
@@ -143,7 +144,7 @@ Sales tax is complex, and the rules change constantly. If you're unsure about yo
 
 - Consult a tax professional for advice specific to your situation
 - Use the state Department of Revenue websites for official guidance
-- Tools like Sails help automate compliance, but they don't replace professional advice
+- Tools like Sails help you track nexus and deadlines, but they don't replace professional advice
 
 ---
 

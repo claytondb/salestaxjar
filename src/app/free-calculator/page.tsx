@@ -70,15 +70,15 @@ export default function FreeCalculatorPage() {
               <SailsLogo className="w-10 h-10 text-theme-accent" />
               <span className="text-2xl font-bold text-theme-primary">Sails</span>
             </Link>
-            <nav className="hidden md:flex gap-6 items-center">
-              <Link href="/#features" className="text-theme-secondary hover:text-theme-primary transition">Features</Link>
+            <nav className="hidden lg:flex gap-6 items-center">
+              <Link href="/free-scan" className="text-theme-secondary hover:text-theme-primary transition whitespace-nowrap">Nexus Check</Link>
               <Link href="/pricing" className="text-theme-secondary hover:text-theme-primary transition">Pricing</Link>
-              <Link href="/free-calculator" className="text-theme-accent font-medium">Free Calculator</Link>
+              <Link href="/free-calculator" className="text-theme-accent font-medium">Calculator</Link>
               <Link href="/blog" className="text-theme-secondary hover:text-theme-primary transition">Blog</Link>
               <ThemeToggle />
             </nav>
             <div className="flex gap-3 items-center">
-              <div className="md:hidden">
+              <div className="lg:hidden">
                 <ThemeToggle />
               </div>
               <Link href="/login" className="text-theme-secondary hover:text-theme-primary px-4 py-2 transition">Log in</Link>
@@ -102,7 +102,7 @@ export default function FreeCalculatorPage() {
               Free Sales Tax Calculator
             </h1>
             <p className="text-xl text-theme-secondary max-w-2xl mx-auto">
-              Instantly calculate sales tax for any US state. Enter your sale amount, pick a state, and get accurate results in seconds.
+              Estimate sales tax for any US state in seconds. Enter your sale amount and pick a state — Sails uses the state rate plus the state&apos;s average local rate.
             </p>
           </div>
         </section>
@@ -252,7 +252,7 @@ export default function FreeCalculatorPage() {
         <section className="px-4 pb-16">
           <div className="max-w-4xl mx-auto">
             <h2 className="text-2xl font-bold text-theme-primary text-center mb-2">
-              2025 Sales Tax Rates by State
+              Sales Tax Rates by State (July 2026)
             </h2>
             <p className="text-theme-secondary text-center mb-8">
               Combined state + average local rates across all 50 US states.
@@ -287,7 +287,7 @@ export default function FreeCalculatorPage() {
               </div>
               <div className="p-4 border-t border-theme-primary">
                 <p className="text-theme-muted text-xs text-center">
-                  Rates effective January 1, 2025. Source: Tax Foundation, state DOR websites. For estimation only — not tax advice.
+                  State rates plus average local rates as of July 1, 2026. Source: Tax Foundation. For estimation only — not tax advice.
                 </p>
               </div>
             </div>
@@ -310,9 +310,9 @@ export default function FreeCalculatorPage() {
               </div>
               <div className="text-center">
                 <CheckCircle className="w-10 h-10 text-theme-accent mx-auto mb-3" />
-                <h3 className="font-semibold text-theme-primary mb-2">2025 Rates</h3>
+                <h3 className="font-semibold text-theme-primary mb-2">Dated, Sourced Rates</h3>
                 <p className="text-theme-secondary text-sm">
-                  Our state rates are updated annually from Tax Foundation data and state revenue departments.
+                  Rates as of July 1, 2026, from the Tax Foundation&apos;s state and average local rates, so you know how current they are.
                 </p>
               </div>
               <div className="text-center">
@@ -344,15 +344,15 @@ export default function FreeCalculatorPage() {
                 },
                 {
                   q: 'What is the highest sales tax state?',
-                  a: 'When combining state and average local rates, Louisiana, Tennessee, and Arkansas typically have the highest combined sales tax rates in the US, often above 9%.',
+                  a: 'Combining state rates with average local rates (as of July 2026), Louisiana, Tennessee, Washington, Arkansas and Alabama have the highest combined rates, all above 9%.',
                 },
                 {
                   q: 'Do I need to collect sales tax on all my sales?',
-                  a: 'It depends on whether you have "nexus" in a state — meaning a sufficient business presence or sales volume that triggers a collection obligation. Most states use economic nexus thresholds ($100K in sales or 200 transactions). Sails can help you track your nexus across all states.',
+                  a: 'It depends on whether you have "nexus" in a state — meaning a sufficient business presence or sales volume that triggers a collection obligation. Most states use a $100,000 sales threshold; a few set a higher amount, and some also count transactions. Sails can help you track your nexus across all states.',
                 },
                 {
                   q: 'Are these rates accurate for my city or ZIP code?',
-                  a: 'These are state-level combined rates (state rate + average local rate). Actual local taxes vary by city, county, and special district. For precise ZIP-code-level rates, consider upgrading to Sails to get exact rates for every order.',
+                  a: 'No — these are state-level estimates (state rate + average local rate). Actual local taxes vary by city, county, and special district, so the rate at a specific address can be higher or lower. For an exact rate, use your state\'s official rate lookup.',
                 },
               ].map(({ q, a }) => (
                 <div key={q} className="card-theme rounded-xl p-6">
@@ -368,10 +368,10 @@ export default function FreeCalculatorPage() {
         <section className="px-4 pb-16">
           <div className="max-w-2xl mx-auto text-center card-theme rounded-2xl p-10">
             <h2 className="text-3xl font-bold text-theme-primary mb-4">
-              Ready to automate sales tax for your store?
+              Know where your store owes sales tax
             </h2>
             <p className="text-theme-secondary mb-6 text-lg">
-              Sails connects to Shopify, WooCommerce, and BigCommerce. Track nexus, calculate taxes, and never miss a filing deadline. Free to start.
+              Connect Shopify or WooCommerce (more platforms are in beta) to see how close you are to each state&apos;s threshold, with your filing due dates in one place. Free to start.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <Link

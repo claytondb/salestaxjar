@@ -13,6 +13,7 @@ const DRIP_SECRET = 'test-drip-secret-xyz';
 // Set env var BEFORE module is loaded (DRIP_SECRET is captured at module init)
 vi.hoisted(() => {
   process.env.DRIP_SECRET = 'test-drip-secret-xyz';
+  process.env.ONBOARDING_EMAILS_ENABLED = 'true';
 });
 
 // Mock env before imports
@@ -478,5 +479,25 @@ describe('POST /api/drip/send — error handling', () => {
     const req = makeRequest({ userId: 'user-abc', dripDay: 1 });
     const res = await POST(req);
     expect(res.status).toBe(500);
+  });
+});
+
+describe('POST /api/drip/send — off switch', () => {
+  it('sends nothing when ONBOARDING_EMAILS_ENABLED is not true', async () => {
+    const previous = process.env.ONBOARDING_EMAILS_ENABLED;
+    delete process.env.ONBOARDING_EMAILS_ENABLED;
+    try {
+      const req = new NextRequest('http://localhost:3000/api/drip/send', {
+        method: 'POST',
+        headers: { Authorization: 'Bearer test-drip-secret-xyz', 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: 'u1', dripDay: 1 }),
+      });
+      const res = await POST(req);
+      const body = await res.json();
+      expect(body.skipped).toBe(true);
+      expect(body.sent).toBe(false);
+    } finally {
+      process.env.ONBOARDING_EMAILS_ENABLED = previous;
+    }
   });
 });

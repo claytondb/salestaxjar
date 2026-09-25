@@ -70,7 +70,7 @@ export default function WooCommerceIntegrationPage() {
     {
       number: 3,
       title: 'Get Your API Key',
-      description: 'Go to Settings → API Keys in your Sails dashboard to create an API key.',
+      description: 'API keys come with the Pro plan. Go to Settings → API Keys in your Sails dashboard to create one.',
       action: (
         <a
           href="/settings#apikeys"
@@ -89,7 +89,7 @@ export default function WooCommerceIntegrationPage() {
     {
       number: 5,
       title: 'Enable Tax Calculation',
-      description: 'Check "Enable Sails Tax" and save. Tax will now calculate automatically at checkout!',
+      description: 'Check "Enable Sails Tax" and save. Checkout will now add a sales tax estimate.',
       icon: <CheckCircle className="w-6 h-6" />,
     },
   ];
@@ -116,21 +116,23 @@ export default function WooCommerceIntegrationPage() {
             </div>
             <div>
               <h1 className="text-2xl font-bold text-theme-primary">WooCommerce Tax Plugin</h1>
-              <p className="text-theme-muted">Automatic sales tax calculation at checkout</p>
+              <p className="text-theme-muted">Sales tax estimates at checkout · Pro plan</p>
             </div>
           </div>
           <p className="text-theme-secondary">
-            Install our official WooCommerce plugin to automatically calculate and apply accurate 
-            sales tax at checkout. Works with all 13,000+ US tax jurisdictions including state, 
-            county, city, and special district rates.
+            Our WooCommerce plugin adds a sales tax estimate at checkout using the Sails tax API. Sails
+            looks up the rate for the customer&apos;s address when its rate provider is available, and
+            otherwise uses the state rate plus the state&apos;s average local rate — which can be higher or
+            lower than the exact rate. Check the rates against your state&apos;s official rate lookup before
+            relying on them.
           </p>
         </div>
 
         {/* Features */}
         <div className="grid md:grid-cols-3 gap-4 mb-8">
           <div className="bg-theme-secondary/30 backdrop-blur rounded-xl border border-theme-primary p-4">
-            <h3 className="font-semibold text-theme-primary mb-2">Real-Time Rates</h3>
-            <p className="text-sm text-theme-muted">Accurate rates calculated instantly based on customer&apos;s address</p>
+            <h3 className="font-semibold text-theme-primary mb-2">Rate Estimates</h3>
+            <p className="text-sm text-theme-muted">State and local rates for the customer&apos;s address when available, state plus average local rate otherwise</p>
           </div>
           <div className="bg-theme-secondary/30 backdrop-blur rounded-xl border border-theme-primary p-4">
             <h3 className="font-semibold text-theme-primary mb-2">Smart Caching</h3>
@@ -138,7 +140,7 @@ export default function WooCommerceIntegrationPage() {
           </div>
           <div className="bg-theme-secondary/30 backdrop-blur rounded-xl border border-theme-primary p-4">
             <h3 className="font-semibold text-theme-primary mb-2">Easy Setup</h3>
-            <p className="text-sm text-theme-muted">Connect in under 5 minutes with just an API key</p>
+            <p className="text-sm text-theme-muted">Set up in about 5 minutes with a Pro API key</p>
           </div>
         </div>
 

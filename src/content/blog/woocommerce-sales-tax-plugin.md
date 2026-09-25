@@ -1,7 +1,7 @@
 ---
 title: "The Best WooCommerce Sales Tax Plugin for Small Sellers (2026)"
 date: "2026-03-11"
-excerpt: "Stop manually entering tax rates or paying hundreds a month for Avalara. The free Sails WooCommerce plugin handles real-time sales tax calculation automatically."
+excerpt: "What to look for in a WooCommerce sales tax plugin, how the options compare, and where the Sails plugin fits — including what it can and can't do today."
 author: "Sails Team"
 category: "Integrations"
 readTime: "5 min read"
@@ -9,7 +9,7 @@ readTime: "5 min read"
 
 If you run a WooCommerce store, you've probably already discovered the problem: WooCommerce doesn't automatically calculate sales tax. It gives you a table where you can *manually* enter rates for every state, county, and city. That's not a feature — that's homework.
 
-Most sellers solve this one of two ways: they ignore it (risky), or they sign up for an expensive tax automation service like Avalara or TaxJar and pay $99–$300/month for a problem that shouldn't cost that much to solve.
+Most sellers solve this one of two ways: they ignore it (risky), or they sign up for a tax automation service like Avalara or TaxJar (TaxJar starts at $39/month, as of September 2026) for a problem that shouldn't cost that much to solve.
 
 There's a better option. This guide walks you through what makes a great WooCommerce sales tax plugin, and why Sails is the one most small sellers should be using in 2026.
 
@@ -33,7 +33,7 @@ Not all plugins are equal. Here's what actually matters:
 
 ### Rooftop-Level Accuracy
 
-"Rooftop accuracy" means the tax rate is calculated based on the specific delivery address — not just the state or ZIP code. ZIP codes can span multiple tax districts. Rooftop accuracy is the gold standard, and any serious plugin should support it.
+"Rooftop accuracy" means the tax rate is calculated based on the specific delivery address — not just the state or ZIP code. ZIP codes can span multiple tax districts. Rooftop accuracy is the gold standard for checkout calculation.
 
 ### Real-Time Calculation
 
@@ -49,19 +49,19 @@ A plugin that costs more than your profit margin isn't a solution. For most smal
 
 ## Why Sails Is the Best WooCommerce Sales Tax Plugin for Small Sellers
 
-Sails was built specifically for small online sellers. The WooCommerce plugin is **free to download**, and the core plan is free for low-volume stores. Here's what you get:
+Sails was built specifically for small online sellers. The WooCommerce plugin is **free to download**; it uses the Sails tax API, which is included in the Pro plan. Here's what you get:
 
-### Free Plugin, Real-Time Accuracy
+### Free Plugin, No Rate Tables
 
-The Sails WooCommerce plugin connects your store to Sails' tax calculation engine. When a customer enters their address at checkout, Sails looks up the exact rate for their location — including state, county, city, and any special district taxes — and applies it to the cart instantly.
+The Sails WooCommerce plugin connects your store to Sails' tax calculation engine. When a customer enters their address at checkout, Sails estimates the tax for their location and applies it to the cart.
 
-No manual rate tables. No guessing. No outdated data.
+No manual rate tables. **Be aware:** today the estimate is based on each state's rate plus its average local rate, not the exact rate for the street address. That's fine for many states with no or low local taxes, but it can be off in states with large local rates. If you need exact address-level rates at checkout, WooCommerce Tax or TaxJar are better fits for calculation — and you can still use Sails for nexus tracking and deadlines.
 
 ### Simple Setup (Under 10 Minutes)
 
 Getting the plugin running doesn't require a developer:
 
-1. **Create a free Sails account** at [sails.tax](https://sails.tax)
+1. **Create a Sails account** at [sails.tax](https://sails.tax) and choose the Pro plan (the tax API is a Pro feature)
 2. **Get your API key** from Settings → API Keys in your dashboard
 3. **Download the plugin** from your dashboard under Integrations → WooCommerce
 4. **Install in WordPress** via Plugins → Add New → Upload Plugin
@@ -72,28 +72,28 @@ That's it. Most merchants are live in under 10 minutes.
 
 ### Nexus Tracking Built In
 
-Sails monitors your sales by state in the background and alerts you as you approach economic nexus thresholds. Most states kick in at $100,000 in sales to customers in that state. Without tracking, you might blow past the threshold and not realize it until you're filing late.
+Sails checks your sales by state and emails you as you approach economic nexus thresholds. Most states kick in at $100,000 in sales to customers in that state. Without tracking, you might blow past the threshold and not realize it until you're filing late.
 
 ### Plans That Match Your Volume
 
-| Plan | Price | Calculations/Month |
+| Plan | Price | Stores / Orders per Month |
 |------|-------|-------------------|
-| Free | $0 | 100 |
-| Starter | $9/mo | 1,000 |
-| Pro | $29/mo | 10,000 |
-| Business | $59/mo | 50,000 |
+| Free | $0 | 1 store / 50 orders |
+| Starter | $9/mo | 2 stores / 500 orders |
+| Pro | $29/mo | 3 stores / 5,000 orders |
+| Enterprise | $79/mo | Unlimited |
 
-For a store doing a few hundred orders a month, Starter at $9/mo handles it easily. Compare that to TaxJar at $99/mo or Avalara's enterprise pricing — for small sellers, the math is obvious.
+For a store doing a few hundred orders a month, Starter at $9/mo handles it easily. Compare that to TaxJar from $39/mo (as of September 2026) or Avalara, which is built for larger businesses — for small sellers, the math is obvious.
 
 ## How It Compares to Other Popular Options
 
 ### Avalara (AvaTax)
 
-Avalara is the market leader for enterprise tax compliance. It's accurate, it has integrations everywhere, and it costs an average of **$19,000/year** for businesses that need it. If you're doing $500K+ in revenue across dozens of states with complex product taxability rules, Avalara makes sense. If you're a small WooCommerce seller doing $50K/year, you're dramatically overpaying.
+Avalara is the market leader for enterprise tax compliance. It's accurate, it has integrations everywhere, and it's built for larger businesses. If you're doing $500K+ in revenue across dozens of states with complex product taxability rules, Avalara makes sense. If you're a small WooCommerce seller doing $50K/year, you're probably paying for more than you need.
 
 ### TaxJar
 
-TaxJar is a solid mid-market option. Their WooCommerce integration works well, and their AutoFile feature can automatically file your returns. Pricing starts at **$99/month** for the AutoFile plan. Better than Avalara for small sellers, but still 10x the price of Sails Starter.
+TaxJar is a solid mid-market option. Their WooCommerce integration works well, and their AutoFile feature can automatically file your returns. Pricing starts at **$39/month** (Starter), and AutoFile costs $50–$55 per return on top (as of September 2026). Better than Avalara for small sellers, but still more than 4x the price of Sails Starter.
 
 ### WooCommerce Tax (Jetpack)
 
@@ -101,7 +101,7 @@ WooCommerce's own tax solution (powered by Jetpack) offers automated tax rates f
 
 ### Sails
 
-Purpose-built for small online sellers. Free plugin, affordable plans, real-time accuracy, nexus monitoring. The best fit if you're a small seller who wants compliance without enterprise pricing.
+Purpose-built for small online sellers. Free plugin, affordable plans, nexus monitoring. The best fit if you're a small seller who wants compliance without enterprise pricing.
 
 ## Common WooCommerce Sales Tax Mistakes to Avoid
 
@@ -117,4 +117,4 @@ Purpose-built for small online sellers. Free plugin, affordable plans, real-time
 
 If you're still manually entering tax rates into WooCommerce — or just hoping for the best — it's time to fix that. The Sails plugin is free, takes 10 minutes to set up, and handles the calculation math so you can focus on actually running your store.
 
-**[Download the free Sails WooCommerce plugin](https://sails.tax/dashboard/integrations/woocommerce)** and get accurate sales tax on autopilot.
+**[Download the free Sails WooCommerce plugin](https://sails.tax/dashboard/integrations/woocommerce)** to connect your store to Sails.

@@ -31,6 +31,7 @@ vi.mock('@/lib/prisma', () => ({
   prisma: {
     importedOrder: {
       count: vi.fn(),
+      aggregate: vi.fn(async () => ({ _max: { orderDate: null } })),
     },
   },
 }));
@@ -54,6 +55,7 @@ vi.mock('@/lib/plans', () => ({
 
 vi.mock('@/lib/platforms/shopify', () => ({
   fetchOrders: vi.fn(),
+  fetchOrdersSince: vi.fn(),
 }));
 
 vi.mock('@/lib/platforms/woocommerce', () => ({
@@ -107,6 +109,24 @@ vi.mock('@/lib/nexus-alerts', () => ({
   checkAndCreateAlerts: vi.fn(),
 }));
 
+// Test adapter for the usage module: the month's order count comes from the
+// prisma.importedOrder.count mock, and the cap trims to (limit - currentCount)
+// from the checkOrderLimit mock. The real cap logic is unit-tested in
+// src/lib/usage.test.ts.
+vi.mock('@/lib/usage', async () => {
+  const { prisma } = await import('@/lib/prisma');
+  const plans = await import('@/lib/plans');
+  return {
+    getCurrentMonthOrderCount: vi.fn(async () => (await prisma.importedOrder.count({} as never)) as unknown as number),
+    applyMonthlyOrderCap: vi.fn(async ({ items }: { items: unknown[] }) => {
+      const check = ((plans.checkOrderLimit as unknown as (...a: unknown[]) => { currentCount?: number; limit?: number | null } | undefined)('starter', 0)) ?? {};
+      const remaining = check.limit == null ? Infinity : Math.max(0, check.limit - (check.currentCount ?? 0));
+      const kept = items.length > remaining ? items.slice(0, remaining) : items;
+      return { items: kept, truncated: kept.length < items.length, skipped: items.length - kept.length, limit: check.limit ?? null, remaining: 0 };
+    }),
+  };
+});
+
 import { POST } from './route';
 import { getCurrentUser } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
@@ -120,7 +140,7 @@ import {
   getOrderLimitDisplay,
   getPlanDisplayName,
 } from '@/lib/plans';
-import { fetchOrders as fetchShopifyOrders } from '@/lib/platforms/shopify';
+import { fetchOrdersSince as fetchShopifyOrders } from '@/lib/platforms/shopify';
 import { getCredentials as getWooCredentials, fetchAllOrders as fetchWooOrders, mapOrderToImport as mapWooOrder } from '@/lib/platforms/woocommerce';
 import { getCredentials as getSquarespaceCredentials, fetchAllOrders as fetchSquarespaceOrders, mapOrderToImport as mapSquarespaceOrder } from '@/lib/platforms/squarespace';
 import { getCredentials as getBigCommerceCredentials, fetchAllOrders as fetchBigCommerceOrders, fetchOrderShippingAddresses as fetchBigCommerceShippingAddresses, mapOrderToImport as mapBigCommerceOrder } from '@/lib/platforms/bigcommerce';
@@ -255,12 +275,12 @@ describe('tier gate', () => {
 // ─── Order limit ────────────────────────────────────────────────────────────
 
 describe('order limit', () => {
-  it('returns 403 when monthly order limit is exceeded before sync', async () => {
+  it('returns 403 when the plan cannot import orders at all (zero limit)', async () => {
     vi.mocked(checkOrderLimit).mockReturnValue({
       allowed: false,
-      currentCount: 500,
-      limit: 500,
-      upgradeNeeded: 'growth',
+      currentCount: 0,
+      limit: 0,
+      upgradeNeeded: 'starter',
     } as never);
     vi.mocked(orderLimitError).mockReturnValue({ error: 'order_limit_exceeded' } as never);
 
@@ -268,6 +288,20 @@ describe('order limit', () => {
     expect(res.status).toBe(403);
     const body = await res.json();
     expect(body.error).toBe('order_limit_exceeded');
+  });
+
+  it('still syncs (older history) when this month\'s limit is already used up', async () => {
+    vi.mocked(checkOrderLimit).mockReturnValue({
+      allowed: false,
+      currentCount: 500,
+      limit: 500,
+      upgradeNeeded: 'pro',
+    } as never);
+    vi.mocked(getEcwidCredentials).mockResolvedValue({ storeId: 'store-123', secretKey: 'secret-abc' } as never);
+    vi.mocked(fetchEcwidOrders).mockResolvedValue([] as never);
+
+    const res = await POST(postRequest({ platform: 'ecwid', platformId: 'store-123' }));
+    expect(res.status).toBe(200);
   });
 });
 
@@ -361,6 +395,127 @@ describe('Ecwid sync', () => {
     const call = vi.mocked(fetchEcwidOrders).mock.calls[0][1] as { createdFrom: string; createdTo: string };
     expect(call.createdFrom).toBeDefined();
     expect(call.createdTo).toBeDefined();
+  });
+});
+
+// ─── History import (WooCommerce) ─────────────────────────────────────────────
+
+describe('history import', () => {
+  const wooCreds = { storeUrl: 'https://shop.example', consumerKey: 'ck', consumerSecret: 'cs' };
+
+  beforeEach(() => {
+    vi.mocked(getWooCredentials).mockResolvedValue(wooCreds as never);
+    vi.mocked(fetchWooOrders).mockResolvedValue([] as never);
+    vi.mocked(mapWooOrder).mockReturnValue(mappedOrder as never);
+  });
+
+  it('first sync reaches back to January 1 of last year, oldest first', async () => {
+    await POST(postRequest({ platform: 'woocommerce', platformId: 'https://shop.example' }));
+    const opts = vi.mocked(fetchWooOrders).mock.calls[0][1] as { after: string; order: string };
+    const lastYear = new Date().getUTCFullYear() - 1;
+    expect(opts.after).toBe(`${lastYear}-01-01T00:00:00.000Z`);
+    expect(opts.order).toBe('asc');
+  });
+
+  it('later syncs start a week before the newest imported order', async () => {
+    vi.mocked(prisma.importedOrder.aggregate).mockResolvedValueOnce({ _max: { orderDate: new Date('2026-06-10T00:00:00Z') } } as never);
+    await POST(postRequest({ platform: 'woocommerce', platformId: 'https://shop.example' }));
+    const opts = vi.mocked(fetchWooOrders).mock.calls[0][1] as { after: string };
+    expect(opts.after).toBe('2026-06-03T00:00:00.000Z');
+  });
+
+  it('an explicit dateRange still wins', async () => {
+    await POST(postRequest({ platform: 'woocommerce', platformId: 'https://shop.example', dateRange: { start: '2025-05-01T00:00:00Z' } }));
+    const opts = vi.mocked(fetchWooOrders).mock.calls[0][1] as { after: string };
+    expect(opts.after).toBe('2025-05-01T00:00:00Z');
+  });
+
+  it('says when there is more history to bring in', async () => {
+    vi.mocked(fetchWooOrders).mockResolvedValue(Array.from({ length: 5000 }, () => ({})) as never);
+    const res = await POST(postRequest({ platform: 'woocommerce', platformId: 'https://shop.example' }));
+    const body = await res.json();
+    expect(body.moreToImport?.message).toMatch(/Sync again/);
+  });
+
+  it('is complete when everything fit', async () => {
+    const res = await POST(postRequest({ platform: 'woocommerce', platformId: 'https://shop.example' }));
+    const body = await res.json();
+    expect(body.moreToImport).toBeUndefined();
+  });
+});
+
+// ─── Shopify sync ────────────────────────────────────────────────────────────
+
+describe('Shopify sync', () => {
+  const baseOrder = {
+    name: '#1001',
+    created_at: '2026-03-01T10:00:00Z',
+    total_price: '110.00',
+    subtotal_price: '100.00',
+    total_tax: '10.00',
+    currency: 'USD',
+    financial_status: 'paid',
+    fulfillment_status: null,
+    line_items: [],
+    tax_lines: [],
+  };
+  const address = (province_code: string) => ({
+    address1: '1 Main St',
+    city: 'Town',
+    province: '',
+    province_code,
+    zip: '00000',
+    country: 'United States',
+    country_code: 'US',
+  });
+
+  beforeEach(() => {
+    vi.mocked(getConnection).mockResolvedValue({ ...mockConnection, platform: 'shopify', platformId: 'shop.myshopify.com' } as never);
+  });
+
+  it('uses the billing address for orders with nothing to ship (digital products)', async () => {
+    vi.mocked(fetchShopifyOrders).mockResolvedValue({
+      orders: [
+        { ...baseOrder, id: 1, shipping_address: address('TX'), billing_address: address('CA') },
+        { ...baseOrder, id: 2, shipping_address: null, billing_address: address('NY') },
+        { ...baseOrder, id: 3 },
+      ],
+      complete: true,
+    } as never);
+    await POST(postRequest({ platform: 'shopify', platformId: 'shop.myshopify.com' }));
+    const saved = vi.mocked(saveImportedOrders).mock.calls[0][2] as { shippingState?: string }[];
+    expect(saved.map((o) => o.shippingState)).toEqual(['TX', 'NY', undefined]);
+  });
+
+  it('keeps only what tax work needs from line items (no buyer-entered custom fields)', async () => {
+    vi.mocked(fetchShopifyOrders).mockResolvedValue({
+      orders: [
+        {
+          ...baseOrder,
+          id: 7,
+          shipping_address: address('CA'),
+          line_items: [
+            {
+              id: 1,
+              title: 'Engraved mug',
+              quantity: 2,
+              price: '20.00',
+              sku: 'MUG-1',
+              taxable: true,
+              tax_lines: [{ title: 'CA State Tax', price: '2.90', rate: 0.0725 }],
+              properties: [{ name: 'Engraving', value: 'For Jane Doe' }],
+            },
+          ],
+        },
+      ],
+      complete: true,
+    } as never);
+    await POST(postRequest({ platform: 'shopify', platformId: 'shop.myshopify.com' }));
+    const [saved] = vi.mocked(saveImportedOrders).mock.calls[0][2] as { lineItems?: unknown }[];
+    expect(saved.lineItems).toEqual([
+      { name: 'Engraved mug', quantity: 2, price: 20, sku: 'MUG-1', taxable: true, taxLines: [{ title: 'CA State Tax', price: '2.90', rate: 0.0725 }] },
+    ]);
+    expect(JSON.stringify(saved)).not.toContain('Jane Doe');
   });
 });
 
@@ -611,7 +766,8 @@ describe('order trimming', () => {
     expect(res.status).toBe(200);
     const body = await res.json();
     expect(body.trimmed).toBeDefined();
-    expect(body.trimmed.message).toMatch(/monthly limit/i);
+    expect(body.trimmed.message).toMatch(/over your plan's limit of 500 orders a month/i);
+    expect(body.trimmed.message).toMatch(/state totals don't include them/i);
   });
 });
 
@@ -629,7 +785,8 @@ describe('usage warnings', () => {
 
   it('returns approaching warning at 75-89% usage', async () => {
     // 350 existing + 50 imported = 400 / 500 = 80% → 'approaching'
-    vi.mocked(prisma.importedOrder.count).mockResolvedValue(350);
+    // Month's count before the sync, then after it (the route re-counts)
+    vi.mocked(prisma.importedOrder.count).mockResolvedValueOnce(350).mockResolvedValue(400);
     vi.mocked(checkOrderLimit).mockReturnValue({ allowed: true, currentCount: 350, limit: 500 } as never);
     vi.mocked(saveImportedOrders).mockResolvedValue({ imported: 50, errors: [] } as never);
 
@@ -642,7 +799,8 @@ describe('usage warnings', () => {
 
   it('returns warning at 90-99% usage', async () => {
     // 420 existing + 50 imported = 470 / 500 = 94% → 'warning'
-    vi.mocked(prisma.importedOrder.count).mockResolvedValue(420);
+    // Month's count before the sync, then after it (the route re-counts)
+    vi.mocked(prisma.importedOrder.count).mockResolvedValueOnce(420).mockResolvedValue(470);
     vi.mocked(checkOrderLimit).mockReturnValue({ allowed: true, currentCount: 420, limit: 500 } as never);
     vi.mocked(saveImportedOrders).mockResolvedValue({ imported: 50, errors: [] } as never);
 
@@ -654,7 +812,8 @@ describe('usage warnings', () => {
   });
 
   it('returns at_limit warning at 100% usage', async () => {
-    vi.mocked(prisma.importedOrder.count).mockResolvedValue(450);
+    // Month's count before the sync, then after it (the route re-counts)
+    vi.mocked(prisma.importedOrder.count).mockResolvedValueOnce(450).mockResolvedValue(500);
     vi.mocked(checkOrderLimit).mockReturnValue({ allowed: true, currentCount: 450, limit: 500 } as never);
     vi.mocked(saveImportedOrders).mockResolvedValue({ imported: 50, errors: [] } as never);
 
@@ -667,7 +826,8 @@ describe('usage warnings', () => {
   });
 
   it('omits usageWarning below 75% usage', async () => {
-    vi.mocked(prisma.importedOrder.count).mockResolvedValue(10);
+    // Month's count before the sync, then after it (the route re-counts)
+    vi.mocked(prisma.importedOrder.count).mockResolvedValueOnce(10).mockResolvedValue(15);
     vi.mocked(checkOrderLimit).mockReturnValue({ allowed: true, currentCount: 10, limit: 500 } as never);
     vi.mocked(saveImportedOrders).mockResolvedValue({ imported: 5, errors: [] } as never);
 

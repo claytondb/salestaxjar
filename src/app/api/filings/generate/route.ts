@@ -3,8 +3,10 @@ import { getCurrentUser } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
 import {
+  getCurrentDeadlines,
   getFilingDeadlines,
-  getStateFilingConfig,
+  resolveFilingPeriod,
+  type FilingDeadline,
   type FilingPeriod,
 } from '@/lib/filing-deadlines';
 
@@ -35,6 +37,30 @@ const STATE_NAMES: Record<string, string> = {
   VA: 'Virginia', WA: 'Washington', WV: 'West Virginia', WI: 'Wisconsin', WY: 'Wyoming',
   DC: 'District of Columbia',
 };
+
+/**
+ * The deadlines to create for a state. With `remainingOnly`, periods that
+ * haven't passed yet — plus, for the current year, any return that's due soon
+ * but belongs to last year (e.g. Q4, due in January).
+ */
+function deadlinesFor(
+  stateCode: string,
+  year: number,
+  periodOverride: FilingPeriod | undefined,
+  remainingOnly: boolean,
+  today: Date
+): FilingDeadline[] {
+  let deadlines = getFilingDeadlines(stateCode, year, periodOverride);
+  if (!remainingOnly) return deadlines;
+  deadlines = deadlines.filter((d) => d.periodEnd >= today || d.dueDate >= today);
+  if (year === today.getFullYear()) {
+    for (const d of getCurrentDeadlines(stateCode, today, periodOverride)) {
+      if (!deadlines.some((x) => x.periodStart.getTime() === d.periodStart.getTime())) deadlines.push(d);
+    }
+    deadlines.sort((a, b) => a.dueDate.getTime() - b.dueDate.getTime());
+  }
+  return deadlines;
+}
 
 /**
  * POST /api/filings/generate
@@ -106,15 +132,8 @@ export async function POST(request: NextRequest) {
       const stateCode = nexus.stateCode.toUpperCase();
       const stateName = nexus.stateName || STATE_NAMES[stateCode] || stateCode;
 
-      // Get all deadlines for this state/year
-      let deadlines = getFilingDeadlines(stateCode, year, periodOverride as FilingPeriod | undefined);
-
-      // Filter to remaining periods if requested
-      if (remainingOnly) {
-        deadlines = deadlines.filter(
-          d => d.periodEnd >= today || d.dueDate >= today
-        );
-      }
+      const deadlines = deadlinesFor(stateCode, year, periodOverride as FilingPeriod | undefined, remainingOnly, today);
+      const period = resolveFilingPeriod(stateCode, periodOverride as FilingPeriod | undefined);
 
       for (const deadline of deadlines) {
         // Idempotency check: skip if this period already exists
@@ -130,9 +149,6 @@ export async function POST(request: NextRequest) {
           skippedCount++;
           continue;
         }
-
-        const config = getStateFilingConfig(stateCode);
-        const period = periodOverride ?? config.defaultPeriod;
 
         const filing = await prisma.filing.create({
           data: {
@@ -223,13 +239,7 @@ export async function GET(request: NextRequest) {
     for (const nexus of business.nexusStates) {
       const stateCode = nexus.stateCode.toUpperCase();
       const stateName = nexus.stateName || STATE_NAMES[stateCode] || stateCode;
-      let deadlines = getFilingDeadlines(stateCode, year, periodOverride ?? undefined);
-
-      if (remainingOnly) {
-        deadlines = deadlines.filter(
-          d => d.periodEnd >= today || d.dueDate >= today
-        );
-      }
+      const deadlines = deadlinesFor(stateCode, year, periodOverride ?? undefined, remainingOnly, today);
 
       for (const deadline of deadlines) {
         const existing = await prisma.filing.findFirst({
@@ -248,7 +258,7 @@ export async function GET(request: NextRequest) {
         preview.push({
           state: stateName,
           stateCode,
-          period: periodOverride ?? getStateFilingConfig(stateCode).defaultPeriod,
+          period: resolveFilingPeriod(stateCode, periodOverride ?? undefined),
           periodLabel: deadline.periodLabel,
           periodStart: deadline.periodStart.toISOString(),
           periodEnd: deadline.periodEnd.toISOString(),

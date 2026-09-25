@@ -198,9 +198,9 @@ describe('taxRates data', () => {
     it('should calculate tax correctly for California', () => {
       const result = calculateTax(100, 'CA');
       expect(result).not.toBeNull();
-      expect(result?.rate).toBe(8.82); // CA combined rate
-      expect(result?.tax).toBe(8.82);
-      expect(result?.total).toBe(108.82);
+      expect(result?.rate).toBe(9.03); // CA combined rate (Tax Foundation, Jul 1 2026)
+      expect(result?.tax).toBe(9.03);
+      expect(result?.total).toBe(109.03);
     });
 
     it('should calculate tax correctly for no-tax states', () => {
@@ -228,7 +228,7 @@ describe('taxRates data', () => {
 
     it('should round to 2 decimal places', () => {
       // Test with amount that would create many decimal places
-      const result = calculateTax(99.99, 'CA'); // 8.82% tax
+      const result = calculateTax(99.99, 'CA'); // 9.03% tax
       expect(result?.tax.toString().split('.')[1]?.length || 0).toBeLessThanOrEqual(2);
       expect(result?.total.toString().split('.')[1]?.length || 0).toBeLessThanOrEqual(2);
     });
@@ -236,7 +236,7 @@ describe('taxRates data', () => {
     it('should handle large amounts', () => {
       const result = calculateTax(1000000, 'TX');
       expect(result).not.toBeNull();
-      expect(result?.tax).toBeGreaterThan(80000); // 8.19% of 1M
+      expect(result?.tax).toBeGreaterThan(80000); // 8.2% of 1M
       expect(result?.total).toBeGreaterThan(1080000);
     });
 
@@ -264,13 +264,13 @@ describe('taxRates data', () => {
     it('should have correct rate for California', () => {
       const ca = getStateByCode('CA');
       expect(ca?.stateRate).toBe(7.25);
-      expect(ca?.combinedRate).toBe(8.82);
+      expect(ca?.combinedRate).toBe(9.03);
     });
 
     it('should have correct rate for Texas', () => {
       const tx = getStateByCode('TX');
       expect(tx?.stateRate).toBe(6.25);
-      expect(tx?.combinedRate).toBe(8.19);
+      expect(tx?.combinedRate).toBe(8.2);
     });
 
     it('should have correct rate for New York', () => {

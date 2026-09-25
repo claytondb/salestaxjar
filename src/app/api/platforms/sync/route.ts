@@ -1,53 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getCurrentUser } from '@/lib/auth';
-import { 
-  getConnection, 
-  updateSyncStatus,
-  saveImportedOrders,
-  updateSalesSummary,
-  ImportedOrderData,
-} from '@/lib/platforms';
+import { getConnection, updateSyncStatus } from '@/lib/platforms';
 import { userCanConnectPlatform, tierGateError, resolveUserPlan, checkOrderLimit, orderLimitError, getOrderLimitDisplay, getPlanDisplayName } from '@/lib/plans';
-import { prisma } from '@/lib/prisma';
-import { fetchOrders as fetchShopifyOrders, ShopifyOrder } from '@/lib/platforms/shopify';
-import { 
-  getCredentials as getWooCredentials,
-  fetchAllOrders as fetchWooOrders, 
-  mapOrderToImport as mapWooOrder,
-} from '@/lib/platforms/woocommerce';
-import { 
-  getCredentials as getSquarespaceCredentials,
-  fetchAllOrders as fetchSquarespaceOrders, 
-  mapOrderToImport as mapSquarespaceOrder,
-} from '@/lib/platforms/squarespace';
-import { 
-  getCredentials as getBigCommerceCredentials,
-  fetchAllOrders as fetchBigCommerceOrders, 
-  fetchOrderShippingAddresses as fetchBigCommerceShippingAddresses,
-  mapOrderToImport as mapBigCommerceOrder,
-} from '@/lib/platforms/bigcommerce';
-import {
-  getCredentials as getEcwidCredentials,
-  fetchAllOrders as fetchEcwidOrders,
-  mapOrderToImport as mapEcwidOrder,
-} from '@/lib/platforms/ecwid';
-import {
-  getCredentials as getMagentoCredentials,
-  fetchAllOrders as fetchMagentoOrders,
-  mapOrderToImport as mapMagentoOrder,
-} from '@/lib/platforms/magento';
-import {
-  getCredentials as getPrestaShopCredentials,
-  fetchAllOrders as fetchPrestaShopOrders,
-  mapOrderToImport as mapPrestaShopOrder,
-} from '@/lib/platforms/prestashop';
-import {
-  getCredentials as getOpenCartCredentials,
-  fetchOrders as fetchOpenCartOrders,
-  mapOrderToImport as mapOpenCartOrder,
-} from '@/lib/platforms/opencart';
-import { aggregateForStates } from '@/lib/sales-aggregation';
+import { getCurrentMonthOrderCount } from '@/lib/usage';
+import { importConnectionOrders } from '@/lib/platform-sync';
 import { checkAndCreateAlerts } from '@/lib/nexus-alerts';
+
+// History imports can take a while; fetching stops after a minute and the
+// next sync continues from the newest order already imported.
+export const maxDuration = 120;
 
 /**
  * POST /api/platforms/sync
@@ -81,29 +42,19 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Check order limit before syncing
+    // Plan limits count orders DATED this month (see usage.ts). A plan with a
+    // zero limit can't import at all; otherwise older history is always imported
+    // and only new orders dated this month are capped (applyMonthlyOrderCap below).
     const userPlan = resolveUserPlan(user.subscription);
-    const now = new Date();
-    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
-    const currentMonthOrderCount = await prisma.importedOrder.count({
-      where: {
-        userId: user.id,
-        createdAt: { gte: monthStart },
-      },
-    });
+    const currentMonthOrderCount = await getCurrentMonthOrderCount(user.id);
     
     const limitCheck = checkOrderLimit(userPlan, currentMonthOrderCount);
-    if (!limitCheck.allowed) {
+    if (limitCheck.limit === 0) {
       return NextResponse.json(
-        orderLimitError(userPlan, limitCheck.currentCount, limitCheck.limit!, limitCheck.upgradeNeeded),
+        orderLimitError(userPlan, limitCheck.currentCount, limitCheck.limit, limitCheck.upgradeNeeded),
         { status: 403 }
       );
     }
-
-    // Calculate how many more orders we can import this month
-    const remainingCapacity = limitCheck.limit !== null 
-      ? limitCheck.limit - currentMonthOrderCount 
-      : Infinity;
 
     // Get the connection
     const connection = await getConnection(user.id, platform, platformId);
@@ -118,74 +69,17 @@ export async function POST(request: NextRequest) {
     await updateSyncStatus(user.id, platform, platformId, 'syncing');
 
     try {
-      let orders: ImportedOrderData[] = [];
-      
-      // Fetch orders based on platform
-      switch (platform) {
-        case 'shopify':
-          orders = await syncShopifyOrders(connection, dateRange);
-          break;
-        case 'woocommerce':
-          orders = await syncWooCommerceOrders(user.id, connection, dateRange);
-          break;
-        case 'squarespace':
-          orders = await syncSquarespaceOrders(user.id, connection, dateRange);
-          break;
-        case 'bigcommerce':
-          orders = await syncBigCommerceOrders(user.id, connection, dateRange);
-          break;
-        case 'ecwid':
-          orders = await syncEcwidOrders(user.id, connection, dateRange);
-          break;
-        case 'magento':
-          orders = await syncMagentoOrders(user.id, connection, dateRange);
-          break;
-        case 'prestashop':
-          orders = await syncPrestaShopOrders(user.id, connection, dateRange);
-          break;
-        case 'opencart':
-          orders = await syncOpenCartOrders(user.id, connection, dateRange);
-          break;
-        // Future: wix
-        default:
-          throw new Error(`Unsupported platform: ${platform}`);
-      }
+      const result = await importConnectionOrders({
+        userId: user.id,
+        subscription: user.subscription,
+        platform,
+        connection,
+        dateRange,
+      });
+      const { imported, errors } = result;
 
-      // Trim orders to remaining capacity if needed
-      let trimmed = false;
-      if (orders.length > remainingCapacity && remainingCapacity !== Infinity) {
-        orders = orders.slice(0, remainingCapacity);
-        trimmed = true;
-      }
-
-      // Save orders to database
-      const { imported, errors } = await saveImportedOrders(
-        user.id,
-        connection.id,
-        orders
-      );
-
-      // Update sales summaries for affected states
-      const affectedStates = new Set(orders.map(o => o.shippingState).filter(Boolean));
-      const affectedStateArray = Array.from(affectedStates).filter((s): s is string => !!s);
-      const currentMonth = new Date().toISOString().slice(0, 7); // YYYY-MM
-      
-      for (const state of affectedStates) {
-        if (state) {
-          await updateSalesSummary(user.id, state, currentMonth);
-        }
-      }
-
-      // Run full aggregation for affected states (rolling 12-month + calendar year)
-      if (affectedStateArray.length > 0) {
-        try {
-          await aggregateForStates(user.id, affectedStateArray);
-        } catch (aggError) {
-          console.error('Sales aggregation error (non-fatal):', aggError);
-        }
-      }
-
-      // Check nexus thresholds and create alerts
+      // Check nexus thresholds and create alerts. The nexus engine reads the
+      // imported orders directly, so no per-month summaries need rebuilding.
       let newAlerts: unknown[] = [];
       try {
         newAlerts = await checkAndCreateAlerts(user.id);
@@ -197,7 +91,7 @@ export async function POST(request: NextRequest) {
       await updateSyncStatus(user.id, platform, platformId, 'success');
 
       // Check order usage after import for approaching-limit warnings
-      const updatedOrderCount = currentMonthOrderCount + imported;
+      const updatedOrderCount = await getCurrentMonthOrderCount(user.id);
       const updatedLimitCheck = checkOrderLimit(userPlan, updatedOrderCount);
       
       let usageWarning: {
@@ -245,14 +139,19 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({
         success: true,
         imported,
-        trimmed: trimmed ? { 
-          message: `Only ${imported} of your orders were imported due to your monthly limit. Upgrade for more.`,
-          totalAvailable: orders.length + (trimmed ? 1 : 0), // approximate
+        trimmed: result.cap.truncated ? {
+          message: `${result.cap.skipped} order${result.cap.skipped === 1 ? '' : 's'} weren't imported because ${result.cap.skipped === 1 ? 'its month is' : 'their months are'} over your plan's limit of ${(result.cap.limit ?? 0).toLocaleString()} orders a month, so your state totals don't include ${result.cap.skipped === 1 ? 'it' : 'them'}. Upgrade to import ${result.cap.skipped === 1 ? 'it' : 'them'}.`,
+          totalAvailable: result.fetchedCount,
+          skipped: result.cap.skipped,
         } : undefined,
         errors: errors.length > 0 ? errors : undefined,
-        affectedStates: affectedStateArray,
+        affectedStates: result.affectedStates,
         newAlerts: newAlerts.length > 0 ? newAlerts.length : undefined,
         usageWarning,
+        historyFrom: result.historyFrom,
+        moreToImport: result.complete
+          ? undefined
+          : { message: 'There are more orders to bring in. Click Sync again to continue importing your history.' },
       });
     } catch (syncError) {
       // Update sync status with error
@@ -272,304 +171,4 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
-}
-
-// =============================================================================
-// Platform-specific sync functions
-// =============================================================================
-
-interface DateRange {
-  start?: string;
-  end?: string;
-}
-
-interface PlatformConnection {
-  id: string;
-  platform: string;
-  platformId: string;
-  accessToken: string;
-  refreshToken: string | null;
-}
-
-async function syncShopifyOrders(
-  connection: PlatformConnection,
-  dateRange?: DateRange
-): Promise<ImportedOrderData[]> {
-  const params: {
-    createdAtMin?: string;
-    createdAtMax?: string;
-    status?: 'any' | 'open' | 'closed' | 'cancelled';
-    limit?: number;
-  } = {
-    status: 'any',
-    limit: 250,
-  };
-
-  if (dateRange?.start) params.createdAtMin = dateRange.start;
-  if (dateRange?.end) params.createdAtMax = dateRange.end;
-
-  const { orders, error } = await fetchShopifyOrders(
-    connection.platformId,
-    connection.accessToken,
-    params
-  );
-
-  if (error || !orders) {
-    throw new Error(error || 'Failed to fetch Shopify orders');
-  }
-
-  return orders.map((order: ShopifyOrder) => ({
-    platform: 'shopify',
-    platformOrderId: String(order.id),
-    orderNumber: order.name,
-    orderDate: new Date(order.created_at),
-    subtotal: parseFloat(order.subtotal_price),
-    shippingAmount: 0, // Would need to extract from line items
-    taxAmount: parseFloat(order.total_tax),
-    totalAmount: parseFloat(order.total_price),
-    currency: order.currency,
-    status: mapShopifyStatus(order.financial_status, order.fulfillment_status),
-    customerEmail: undefined, // Privacy - don't store by default
-    shippingState: order.shipping_address?.province_code,
-    shippingCity: order.shipping_address?.city,
-    shippingZip: order.shipping_address?.zip,
-    shippingCountry: order.shipping_address?.country_code || 'US',
-    billingState: order.billing_address?.province_code,
-    lineItems: order.line_items,
-    taxBreakdown: {
-      taxLines: order.tax_lines,
-    },
-    rawData: order,
-  }));
-}
-
-async function syncWooCommerceOrders(
-  userId: string,
-  connection: PlatformConnection,
-  dateRange?: DateRange
-): Promise<ImportedOrderData[]> {
-  // Get credentials from database
-  const credentials = await getWooCredentials(userId, connection.platformId);
-  if (!credentials) {
-    throw new Error('WooCommerce credentials not found');
-  }
-
-  // Build fetch options
-  const options: {
-    after?: string;
-    before?: string;
-    status?: string[];
-  } = {
-    status: ['processing', 'completed', 'on-hold'],
-  };
-
-  if (dateRange?.start) options.after = dateRange.start;
-  if (dateRange?.end) options.before = dateRange.end;
-
-  // Fetch orders
-  const orders = await fetchWooOrders(credentials, options);
-
-  // Map to our format
-  return orders.map(order => mapWooOrder(order, connection.platformId));
-}
-
-async function syncSquarespaceOrders(
-  userId: string,
-  connection: PlatformConnection,
-  dateRange?: DateRange
-): Promise<ImportedOrderData[]> {
-  // Get API key from database
-  const apiKey = await getSquarespaceCredentials(userId, connection.platformId);
-  if (!apiKey) {
-    throw new Error('Squarespace credentials not found');
-  }
-
-  // Build fetch options
-  const now = new Date();
-  const defaultStart = new Date();
-  defaultStart.setDate(defaultStart.getDate() - 30);
-
-  const options = {
-    modifiedAfter: dateRange?.start || defaultStart.toISOString(),
-    modifiedBefore: dateRange?.end || now.toISOString(),
-  };
-
-  // Fetch orders
-  const orders = await fetchSquarespaceOrders(apiKey, options);
-
-  // Filter out test orders and cancelled
-  const validOrders = orders.filter(
-    order => !order.testmode && order.fulfillmentStatus !== 'CANCELED'
-  );
-
-  // Map to our format
-  return validOrders.map(order => mapSquarespaceOrder(order));
-}
-
-async function syncBigCommerceOrders(
-  userId: string,
-  connection: PlatformConnection,
-  dateRange?: DateRange
-): Promise<ImportedOrderData[]> {
-  // Get credentials from database
-  const credentials = await getBigCommerceCredentials(userId, connection.platformId);
-  if (!credentials) {
-    throw new Error('BigCommerce credentials not found');
-  }
-
-  // Build fetch options
-  const now = new Date();
-  const defaultStart = new Date();
-  defaultStart.setDate(defaultStart.getDate() - 30);
-
-  const options = {
-    minDateCreated: dateRange?.start || defaultStart.toISOString(),
-    maxDateCreated: dateRange?.end || now.toISOString(),
-  };
-
-  // Fetch orders
-  const orders = await fetchBigCommerceOrders(credentials, options);
-
-  // Filter out cancelled and refunded orders
-  const validOrders = orders.filter(
-    order => ![4, 5, 6].includes(order.status_id)
-  );
-
-  // Map to our format (fetch shipping addresses for accuracy)
-  const mappedOrders = await Promise.all(
-    validOrders.map(async (order) => {
-      try {
-        const shippingAddresses = await fetchBigCommerceShippingAddresses(credentials, order.id);
-        return mapBigCommerceOrder(order, shippingAddresses[0]);
-      } catch {
-        return mapBigCommerceOrder(order);
-      }
-    })
-  );
-
-  return mappedOrders;
-}
-
-async function syncEcwidOrders(
-  userId: string,
-  connection: PlatformConnection,
-  dateRange?: DateRange
-): Promise<ImportedOrderData[]> {
-  const credentials = await getEcwidCredentials(userId, connection.platformId);
-  if (!credentials) {
-    throw new Error('Ecwid credentials not found');
-  }
-
-  const now = new Date();
-  const defaultStart = new Date();
-  defaultStart.setDate(defaultStart.getDate() - 30);
-
-  const options = {
-    createdFrom: dateRange?.start || defaultStart.toISOString(),
-    createdTo: dateRange?.end || now.toISOString(),
-  };
-
-  const orders = await fetchEcwidOrders(credentials, options);
-
-  // Filter out cancelled/incomplete orders
-  const validOrders = orders.filter(
-    (order) => order.paymentStatus !== 'CANCELLED' && order.fulfillmentStatus !== 'RETURNED'
-  );
-
-  return validOrders.map((order) => mapEcwidOrder(order));
-}
-
-async function syncMagentoOrders(
-  userId: string,
-  connection: PlatformConnection,
-  dateRange?: DateRange
-): Promise<ImportedOrderData[]> {
-  const credentials = await getMagentoCredentials(userId, connection.platformId);
-  if (!credentials) {
-    throw new Error('Magento credentials not found');
-  }
-
-  const now = new Date();
-  const defaultStart = new Date();
-  defaultStart.setDate(defaultStart.getDate() - 30);
-
-  const options = {
-    createdAtFrom: dateRange?.start || defaultStart.toISOString(),
-    createdAtTo: dateRange?.end || now.toISOString(),
-  };
-
-  const orders = await fetchMagentoOrders(credentials, options);
-
-  // Filter out cancelled orders (status = 'canceled' in Magento)
-  const validOrders = orders.filter(
-    (order) => order.status !== 'canceled' && order.status !== 'closed'
-  );
-
-  return validOrders.map((order) => mapMagentoOrder(order));
-}
-
-async function syncPrestaShopOrders(
-  userId: string,
-  connection: PlatformConnection,
-  dateRange?: DateRange
-): Promise<ImportedOrderData[]> {
-  const credentials = await getPrestaShopCredentials(userId, connection.platformId);
-  if (!credentials) {
-    throw new Error('PrestaShop credentials not found');
-  }
-
-  const now = new Date();
-  const defaultStart = new Date();
-  defaultStart.setDate(defaultStart.getDate() - 30);
-
-  const options = {
-    dateFrom: dateRange?.start || defaultStart.toISOString(),
-    dateTo: dateRange?.end || now.toISOString(),
-  };
-
-  const orders = await fetchPrestaShopOrders(credentials, options);
-
-  // Map orders (PrestaShop's mapper fetches address details async)
-  const mappedOrders = await Promise.all(
-    orders.map((order) => mapPrestaShopOrder(order, credentials))
-  );
-
-  return mappedOrders;
-}
-
-async function syncOpenCartOrders(
-  userId: string,
-  connection: PlatformConnection,
-  dateRange?: DateRange
-): Promise<ImportedOrderData[]> {
-  const credentials = await getOpenCartCredentials(userId, connection.platformId);
-  if (!credentials) {
-    throw new Error('OpenCart credentials not found');
-  }
-
-  const now = new Date();
-  const defaultStart = new Date();
-  defaultStart.setDate(defaultStart.getDate() - 30);
-
-  const options = {
-    dateFrom: dateRange?.start || defaultStart.toISOString(),
-    dateTo: dateRange?.end || now.toISOString(),
-    limit: 250,
-  };
-
-  const orders = await fetchOpenCartOrders(credentials, options);
-
-  return orders.map((order) => mapOpenCartOrder(order));
-}
-
-// =============================================================================
-// Status Mapping Helpers
-// =============================================================================
-
-function mapShopifyStatus(financial: string, fulfillment: string | null): string {
-  if (financial === 'refunded') return 'refunded';
-  if (financial === 'voided') return 'cancelled';
-  if (fulfillment === 'fulfilled') return 'fulfilled';
-  if (financial === 'paid') return 'paid';
-  return 'pending';
 }

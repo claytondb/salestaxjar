@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import { platformLogos } from '@/components/PlatformLogos';
 import PlanUsage from '@/components/PlanUsage';
+import TopActionsCard from '@/components/TopActionsCard';
 import BetaSurveyCard from '@/components/BetaSurveyCard';
 
 const ICON_CLASS = "w-6 h-6 text-theme-accent";
@@ -117,13 +118,26 @@ export default function DashboardPage() {
         )}
 
         {/* Setup Checklist (if not complete) */}
-        {(!businessProfile || activeNexusCount === 0 || connectedCount === 0) && (
+        {(!businessProfile || connectedCount === 0) && (
           <div className="rounded-xl p-6 mb-8 card-theme border-2" style={{ borderColor: 'var(--accent-primary)' }}>
             <h2 className="text-lg font-semibold mb-4 text-theme-accent">Complete your setup</h2>
             <div className="-my-1">
+              {connectedCount === 0 && (
+                <Link href="/settings#platforms" className="group flex items-center gap-3 text-theme-secondary hover:text-theme-primary transition-all duration-150 hover:duration-0 px-3 py-2 -mx-3 rounded-lg hover:bg-[var(--bg-accent)]">
+                  <div className="w-6 h-6 rounded-full border-2 border-theme-secondary flex items-center justify-center text-sm">1</div>
+                  <span>Connect your store (or upload an Amazon report)</span>
+                  <span className="ml-auto text-theme-accent opacity-0 group-hover:opacity-100 transition-opacity duration-150 group-hover:duration-0">→</span>
+                </Link>
+              )}
+              {connectedCount > 0 && (
+                <div className="flex items-center gap-3 text-theme-accent px-3 py-2 -mx-3">
+                  <div className="w-6 h-6 rounded-full bg-accent-subtle flex items-center justify-center text-sm">✓</div>
+                  <span>Store connected ({connectedCount} {connectedCount === 1 ? 'connection' : 'connections'})</span>
+                </div>
+              )}
               {!businessProfile && (
                 <Link href="/settings" className="group flex items-center gap-3 text-theme-secondary hover:text-theme-primary transition-all duration-150 hover:duration-0 px-3 py-2 -mx-3 rounded-lg hover:bg-[var(--bg-accent)]">
-                  <div className="w-6 h-6 rounded-full border-2 border-theme-secondary flex items-center justify-center text-sm">1</div>
+                  <div className="w-6 h-6 rounded-full border-2 border-theme-secondary flex items-center justify-center text-sm">2</div>
                   <span>Set up your business profile</span>
                   <span className="ml-auto text-theme-accent opacity-0 group-hover:opacity-100 transition-opacity duration-150 group-hover:duration-0">→</span>
                 </Link>
@@ -136,33 +150,23 @@ export default function DashboardPage() {
               )}
               {activeNexusCount === 0 && (
                 <Link href="/nexus" className="group flex items-center gap-3 text-theme-secondary hover:text-theme-primary transition-all duration-150 hover:duration-0 px-3 py-2 -mx-3 rounded-lg hover:bg-[var(--bg-accent)]">
-                  <div className="w-6 h-6 rounded-full border-2 border-theme-secondary flex items-center justify-center text-sm">2</div>
-                  <span>Configure your nexus states</span>
+                  <div className="w-6 h-6 rounded-full border-2 border-theme-secondary flex items-center justify-center text-sm">3</div>
+                  <span>If you&apos;re already registered in any states, mark them (for your filing calendar)</span>
                   <span className="ml-auto text-theme-accent opacity-0 group-hover:opacity-100 transition-opacity duration-150 group-hover:duration-0">→</span>
                 </Link>
               )}
               {activeNexusCount > 0 && (
                 <div className="flex items-center gap-3 text-theme-accent px-3 py-2 -mx-3">
                   <div className="w-6 h-6 rounded-full bg-accent-subtle flex items-center justify-center text-sm">✓</div>
-                  <span>Nexus states configured ({activeNexusCount} states)</span>
-                </div>
-              )}
-              {connectedCount === 0 && (
-                <Link href="/settings#platforms" className="group flex items-center gap-3 text-theme-secondary hover:text-theme-primary transition-all duration-150 hover:duration-0 px-3 py-2 -mx-3 rounded-lg hover:bg-[var(--bg-accent)]">
-                  <div className="w-6 h-6 rounded-full border-2 border-theme-secondary flex items-center justify-center text-sm">3</div>
-                  <span>Connect your sales platforms</span>
-                  <span className="ml-auto text-theme-accent opacity-0 group-hover:opacity-100 transition-opacity duration-150 group-hover:duration-0">→</span>
-                </Link>
-              )}
-              {connectedCount > 0 && (
-                <div className="flex items-center gap-3 text-theme-accent px-3 py-2 -mx-3">
-                  <div className="w-6 h-6 rounded-full bg-accent-subtle flex items-center justify-center text-sm">✓</div>
-                  <span>Platforms connected ({connectedCount} platforms)</span>
+                  <span>Registered states marked ({activeNexusCount})</span>
                 </div>
               )}
             </div>
           </div>
         )}
+
+        {/* What to do next (from the nexus engine) */}
+        <TopActionsCard />
 
         {/* Stats Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">

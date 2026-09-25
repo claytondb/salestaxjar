@@ -8,9 +8,16 @@ import {
   getRemainingDeadlines,
   getStateFilingConfig,
   getFilingScheduleSummary,
+  getCurrentDeadlines,
+  resolveFilingPeriod,
   isYearComplete,
   STATE_FILING_CONFIGS,
 } from './filing-deadlines';
+
+/** "2026-04-20" for a local date */
+function ymd(d: Date): string {
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
 
 // ---------------------------------------------------------------------------
 // calculateDueDate
@@ -196,16 +203,16 @@ describe('getStateFilingConfig', () => {
   it('returns config for known states', () => {
     const ca = getStateFilingConfig('CA');
     expect(ca.defaultPeriod).toBe('quarterly');
-    expect(ca.dueDayOfMonth).toBe(31);
+    expect(ca.quarterlyDue).toBe('last');
 
     const fl = getStateFilingConfig('FL');
-    expect(fl.dueDayOfMonth).toBe(19);
+    expect(fl.quarterlyDue).toBe(20);
   });
 
   it('returns default config for unknown state codes', () => {
     const config = getStateFilingConfig('XX');
     expect(config.defaultPeriod).toBe('quarterly');
-    expect(config.dueDayOfMonth).toBe(20);
+    expect(config.quarterlyDue).toBe(20);
   });
 
   it('is case-insensitive', () => {
@@ -328,8 +335,15 @@ describe('getFilingScheduleSummary', () => {
 
   it('returns a readable string for California', () => {
     const summary = getFilingScheduleSummary('CA');
-    expect(summary).toContain('Quarterly');
-    expect(summary).toContain('31');
+    expect(summary).toBe('Quarterly · due the last day of the following month');
+  });
+
+  it('describes New York quarters, monthly-only states, and non-January annual returns', () => {
+    expect(getFilingScheduleSummary('NY')).toBe('Quarterly (Mar–May, Jun–Aug, Sep–Nov, Dec–Feb) · due the 20th of the following month');
+    expect(getFilingScheduleSummary('OH')).toBe('Monthly · due the 23rd of the following month');
+    expect(getFilingScheduleSummary('WA', 'annual')).toBe('Annual · due April 15');
+    expect(getFilingScheduleSummary('DC', 'annual')).toBe('Annual (October–September year) · due October 20');
+    expect(getFilingScheduleSummary('OR')).toBe('No state sales tax returns');
   });
 
   it('returns a readable string for an unknown state', () => {
@@ -372,5 +386,123 @@ describe('period boundary integrity', () => {
       const dueDateMonth = p.dueDate.getMonth();
       expect((dueDateMonth - periodEndMonth + 12) % 12).toBe(1);
     }
+  });
+});
+
+// ---------------------------------------------------------------------------
+// State rules checked against each state's revenue department (Sept 2026)
+// ---------------------------------------------------------------------------
+describe('state due dates', () => {
+  const quarterDue = (state: string, year = 2026) => getFilingDeadlines(state, year, 'quarterly').map((d) => ymd(d.dueDate));
+
+  it('Nevada returns are due the 20th starting in 2026', () => {
+    expect(quarterDue('NV')).toEqual(['2026-04-20', '2026-07-20', '2026-10-20', '2027-01-20']);
+  });
+
+  it('Massachusetts returns are due the 30th', () => {
+    expect(quarterDue('MA')).toEqual(['2026-04-30', '2026-07-30', '2026-10-30', '2027-01-30']);
+  });
+
+  it('quarterly returns due the last day of the next month: CA, CT, MO, NC, ND, RI, UT, WA, WI, WY', () => {
+    for (const state of ['CA', 'CT', 'MO', 'NC', 'ND', 'RI', 'UT', 'WA', 'WI', 'WY']) {
+      expect({ state, due: quarterDue(state) }).toEqual({ state, due: ['2026-04-30', '2026-07-31', '2026-10-31', '2027-01-31'] });
+    }
+  });
+
+  it('North Carolina and Rhode Island monthly returns are due the 20th, unlike their quarterly ones', () => {
+    expect(ymd(getFilingDeadlines('NC', 2026, 'monthly')[0].dueDate)).toBe('2026-02-20');
+    expect(ymd(getFilingDeadlines('RI', 2026, 'monthly')[0].dueDate)).toBe('2026-02-20');
+  });
+
+  it('other due days: Kansas, New Mexico and Vermont the 25th, Maine the 15th', () => {
+    expect(quarterDue('KS')[0]).toBe('2026-04-25');
+    expect(quarterDue('NM')[0]).toBe('2026-04-25');
+    expect(quarterDue('VT')[0]).toBe('2026-04-25');
+    expect(quarterDue('ME')[0]).toBe('2026-04-15');
+  });
+
+  it("Vermont's January monthly return is due February 23", () => {
+    const vt = getFilingDeadlines('VT', 2026, 'monthly');
+    expect(ymd(vt[0].dueDate)).toBe('2026-02-23');
+    expect(ymd(vt[1].dueDate)).toBe('2026-03-25');
+  });
+
+  it("Washington: monthly the 25th, quarterly the last day, annual April 15", () => {
+    expect(ymd(getFilingDeadlines('WA', 2026, 'monthly')[0].dueDate)).toBe('2026-02-25');
+    expect(quarterDue('WA')[0]).toBe('2026-04-30');
+    expect(ymd(getFilingDeadlines('WA', 2026, 'annual')[0].dueDate)).toBe('2027-04-15');
+  });
+
+  it("New York's quarters run Mar–May, Jun–Aug, Sep–Nov and Dec–Feb, due the 20th", () => {
+    const ny = getFilingDeadlines('NY', 2026);
+    expect(ny.map((d) => [d.periodLabel, ymd(d.periodStart), ymd(d.periodEnd), ymd(d.dueDate)])).toEqual([
+      ['Dec 2025–Feb 2026', '2025-12-01', '2026-02-28', '2026-03-20'],
+      ['Mar–May 2026', '2026-03-01', '2026-05-31', '2026-06-20'],
+      ['Jun–Aug 2026', '2026-06-01', '2026-08-31', '2026-09-20'],
+      ['Sep–Nov 2026', '2026-09-01', '2026-11-30', '2026-12-20'],
+    ]);
+  });
+
+  it("New York's annual period runs March–February, due March 20", () => {
+    const [ny] = getFilingDeadlines('NY', 2026, 'annual');
+    expect([ymd(ny.periodStart), ymd(ny.periodEnd), ymd(ny.dueDate)]).toEqual(['2025-03-01', '2026-02-28', '2026-03-20']);
+  });
+
+  it("DC's annual period runs October–September, due October 20", () => {
+    const [dc] = getFilingDeadlines('DC', 2026, 'annual');
+    expect([ymd(dc.periodStart), ymd(dc.periodEnd), ymd(dc.dueDate)]).toEqual(['2025-10-01', '2026-09-30', '2026-10-20']);
+  });
+
+  it('annual returns not due in January: Michigan Feb 28, Minnesota Feb 5', () => {
+    expect(ymd(getFilingDeadlines('MI', 2026, 'annual')[0].dueDate)).toBe('2027-02-28');
+    expect(ymd(getFilingDeadlines('MN', 2026, 'annual')[0].dueDate)).toBe('2027-02-05');
+  });
+
+  it('Indiana, Iowa, Ohio and Oklahoma have no quarterly filing, so Sails uses monthly', () => {
+    for (const state of ['IN', 'IA', 'OH', 'OK']) {
+      expect(resolveFilingPeriod(state)).toBe('monthly');
+      expect(resolveFilingPeriod(state, 'quarterly')).toBe('monthly');
+      expect(getFilingDeadlines(state, 2026)).toHaveLength(12);
+    }
+    expect(ymd(getFilingDeadlines('OH', 2026)[0].dueDate)).toBe('2026-02-23');
+    expect(ymd(getFilingDeadlines('IA', 2026)[0].dueDate)).toBe('2026-02-28');
+    expect(ymd(getFilingDeadlines('IN', 2026)[2].dueDate)).toBe('2026-04-30');
+  });
+
+  it('falls back to the default frequency where a state has no annual filing', () => {
+    for (const state of ['LA', 'NJ', 'NM', 'NC', 'PA', 'RI', 'VA']) {
+      expect({ state, period: resolveFilingPeriod(state, 'annual') }).toEqual({ state, period: 'quarterly' });
+    }
+  });
+
+  it('has no returns for states without a state sales tax', () => {
+    for (const state of ['AK', 'DE', 'MT', 'NH', 'OR']) {
+      expect(getFilingDeadlines(state, 2026)).toEqual([]);
+    }
+  });
+});
+
+describe('getCurrentDeadlines', () => {
+  it('returns the quarter in progress', () => {
+    const current = getCurrentDeadlines('TX', new Date(2026, 8, 25));
+    expect(current.map((d) => d.periodLabel)).toEqual(['Q3 2026']);
+  });
+
+  it('includes a quarter that ended but is not due yet', () => {
+    const current = getCurrentDeadlines('TX', new Date(2026, 9, 5));
+    expect(current.map((d) => [d.periodLabel, ymd(d.dueDate)])).toEqual([
+      ['Q3 2026', '2026-10-20'],
+      ['Q4 2026', '2027-01-20'],
+    ]);
+  });
+
+  it('still includes a return on its due date', () => {
+    const current = getCurrentDeadlines('TX', new Date(2026, 9, 20, 15, 0));
+    expect(current.map((d) => d.periodLabel)).toContain('Q3 2026');
+  });
+
+  it("looks across the year boundary (New York's Dec–Feb quarter)", () => {
+    const current = getCurrentDeadlines('NY', new Date(2026, 11, 25));
+    expect(current.map((d) => [d.periodLabel, ymd(d.dueDate)])).toEqual([['Dec 2026–Feb 2027', '2027-03-20']]);
   });
 });

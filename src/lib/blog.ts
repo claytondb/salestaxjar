@@ -16,6 +16,8 @@ export interface BlogPost {
   category: string;
   readTime: string;
   image?: string;
+  /** Date the facts in this post were last checked (frontmatter `lastReviewed`) */
+  lastReviewed?: string;
   content?: string;
 }
 
@@ -43,6 +45,7 @@ export function getAllPosts(): BlogPost[] {
         category: data.category || 'General',
         readTime: data.readTime || '5 min read',
         image: data.image || undefined,
+        lastReviewed: data.lastReviewed || undefined,
       };
     });
 
@@ -77,6 +80,7 @@ export async function getPostBySlug(slug: string): Promise<BlogPost | null> {
       category: data.category || 'General',
       readTime: data.readTime || '5 min read',
       image: data.image || undefined,
+      lastReviewed: data.lastReviewed || undefined,
       content: contentHtml,
     };
   } catch {

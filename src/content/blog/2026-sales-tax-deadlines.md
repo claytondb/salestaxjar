@@ -1,7 +1,7 @@
 ---
 title: "2026 Sales Tax Deadlines Every Online Seller Should Know"
 date: "2026-02-20"
-excerpt: "Never miss a sales tax filing deadline again. Here's your complete guide to 2026 filing schedules, due dates, and tips for staying compliant."
+excerpt: "Stay ahead of your sales tax filing deadlines. Here's your complete guide to 2026 filing schedules, due dates, and tips for staying compliant."
 author: "Sails Team"
 category: "Compliance"
 readTime: "5 min read"
@@ -30,7 +30,7 @@ If you file quarterly, mark these dates:
 | Q3 | Jul 1 - Sep 30 | October 20, 2026 |
 | Q4 | Oct 1 - Dec 31 | January 20, 2027 |
 
-Most states use the 20th, but some vary. Always confirm with your specific state.
+Most states use the 20th, but many don't — California, Washington and several others use the last day of the month, and New York's quarters don't follow the calendar at all. See our [due dates for every state](/blog/sales-tax-filing-deadlines-by-state), and confirm with each state.
 
 ## Monthly Filing Due Dates
 
@@ -44,6 +44,8 @@ Some states (like Texas) use the 20th, while others might use the last day of th
 
 ## State-Specific Notes
 
+Use these notes as a starting point, and confirm your assigned filing frequency and due dates with each state — they can differ by seller and change over time.
+
 ### California
 - Due date: Last day of the month following the reporting period
 - Electronic filing required for most sellers
@@ -51,17 +53,17 @@ Some states (like Texas) use the 20th, while others might use the last day of th
 
 ### Texas
 - Due date: 20th of the month following the reporting period
-- Timely filing discount: 0.5% of tax due (up to $2,000/month)
+- Timely filing discount: 0.5% of the tax due when you file and pay on time (plus a 1.25% discount if you prepay)
 - E-file at comptroller.texas.gov
 
 ### New York
 - Due date: 20th of the month following the reporting period
-- Quarterly filers file by March 20, June 20, Sept 20, Dec 20
+- New York's quarters run March–May, June–August, September–November and December–February, so quarterly filers file by June 20, September 20, December 20 and March 20
 - File through NY Tax Department portal
 
 ### Florida
-- Due date: 1st through 20th of the month following
-- Electronic filing required if you owe $1,000+ in tax
+- Due date: 1st through 20th of the month following (late after the 20th)
+- Electronic payments must be started by 5 p.m. Eastern on the business day before the 20th
 - File through Florida Department of Revenue
 
 ### Pennsylvania
@@ -80,7 +82,7 @@ Pick a "tax day" (like the 15th) and always prepare your filings that day. Consi
 
 ### 3. Automate Where Possible
 
-Many states allow automatic payments. Even if you review the return manually, setting up autopay ensures you never accidentally miss the payment.
+Many states allow automatic payments. Even if you review the return manually, setting up autopay helps make sure you don't accidentally miss the payment.
 
 ### 4. File Even When You Owe Nothing
 
@@ -88,7 +90,7 @@ In most states, you must file a "zero return" even if you had no sales. Missing 
 
 ### 5. Keep Records Organized
 
-Maintain clean records throughout the month instead of scrambling at filing time. Your e-commerce platform and Sails can help with automated record-keeping.
+Maintain clean records throughout the month instead of scrambling at filing time. Your e-commerce platform and Sails can help: Sails imports your orders and gives you sales-by-state reports.
 
 ## What Happens If You Miss a Deadline?
 
@@ -108,8 +110,8 @@ Repeated late filings can put your sales tax permit at risk and may affect your 
 
 Sales tax deadlines aren't complicated once you know your schedule. The key is setting up systems that remind you ahead of time and keep your data organized throughout the month.
 
-Sails automatically tracks all your deadlines and sends reminders before each due date. You'll never be surprised by a filing deadline again.
+Sails keeps a filing deadline calendar for the states you track, so every due date is in one place — just confirm your assigned filing frequency and due dates with each state.
 
 ---
 
-*Want deadline reminders sent straight to your inbox? [Sign up for Sails](/signup). It's free to start.*
+*Want every due date in one place? [Sign up for Sails](/signup). It's free to start.*

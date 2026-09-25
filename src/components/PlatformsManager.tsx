@@ -15,6 +15,7 @@ import {
   Download
 } from 'lucide-react';
 import { platformLogos } from './PlatformLogos';
+import { AUTO_SYNC_PLATFORMS } from '@/lib/capabilities';
 // Platform integrations focused on own-website sellers (not marketplace facilitators)
 
 interface PlatformConnection {
@@ -36,6 +37,8 @@ interface PlatformConfig {
   features: string[];
   setupUrl?: string;
   comingSoon?: boolean;
+  /** 'live' | 'beta' — beta platforms haven't been tested with many real stores yet */
+  status?: 'live' | 'beta' | 'planned';
   connections: PlatformConnection[];
   connectedCount: number;
 }
@@ -623,6 +626,15 @@ export default function PlatformsManager() {
                 <div>
                   <h3 className="font-medium text-theme-primary flex items-center gap-2">
                     {platform.name}
+                    {platform.status === 'beta' && (
+                      <span
+                        className="px-2 py-0.5 text-xs rounded-full font-medium"
+                        style={{ backgroundColor: 'rgba(234, 179, 8, 0.15)', color: 'var(--warning)' }}
+                        title="Beta: this connection works but hasn't been tested with many real stores yet. Please double-check the orders it imports."
+                      >
+                        Beta
+                      </span>
+                    )}
                     {platform.connectedCount > 0 && (
                       <span className="px-2 py-0.5 btn-theme-primary/20 text-theme-accent text-xs rounded-full">
                         {platform.connectedCount} connected
@@ -707,7 +719,9 @@ export default function PlatformsManager() {
                           ) : conn.syncStatus === 'error' ? (
                             <span style={{ color: 'var(--error-text)' }}>{conn.syncError || 'Sync error'}</span>
                           ) : conn.lastSyncAt ? (
-                            `Last sync: ${new Date(conn.lastSyncAt).toLocaleDateString()} at ${new Date(conn.lastSyncAt).toLocaleTimeString()}`
+                            `Last sync: ${new Date(conn.lastSyncAt).toLocaleDateString()} at ${new Date(conn.lastSyncAt).toLocaleTimeString()}${
+                              AUTO_SYNC_PLATFORMS.includes(conn.platform) ? ' · syncs automatically each day' : ''
+                            }`
                           ) : (
                             'Never synced'
                           )}

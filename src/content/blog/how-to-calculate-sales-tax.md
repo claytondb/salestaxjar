@@ -43,7 +43,7 @@ Tax rates are updated hundreds of times per year across the country. That 10.25%
 
 ### Product-Specific Rules
 
-Not all products are taxed the same way:
+Not all products are taxed the same way (always verify the rules with each state):
 - Clothing is exempt in Pennsylvania
 - Groceries are exempt in most states (but not all)
 - Digital products have wildly inconsistent rules
@@ -55,7 +55,7 @@ Not all products are taxed the same way:
 
 **Origin-based states** (about 10): Tax is calculated based on where the seller is located.
 
-If you're in Texas (origin-based) shipping to a Texas customer, you charge your local rate. But ship to California (destination-based), and you charge the customer's local rate.
+If you're in Texas (origin-based) shipping to a Texas customer, you charge your local rate. But if you have nexus in California (destination-based) and ship there, you charge the customer's local rate.
 
 ## Manual Calculation (The Hard Way)
 
@@ -86,7 +86,7 @@ Sales tax software handles the complexity for you:
 
 **Shopify**: Built-in automatic calculation. Enable it in Settings > Taxes.
 
-**WooCommerce**: Requires a plugin. The Sails Tax plugin provides real-time rate lookups.
+**WooCommerce**: Requires a plugin for automatic rate calculation.
 
 **Etsy/Amazon/eBay**: Marketplace handles collection for you (marketplace facilitator laws).
 
@@ -109,13 +109,13 @@ $100 - $92.59 = $7.41 (tax portion)
 
 ## Handling Shipping and Handling
 
-Is shipping taxable? It depends on the state:
+Is shipping taxable? It depends on the state, and the rules have exceptions, so always verify with each state:
 
-- **Taxable**: California, Florida, Texas, and others
-- **Exempt**: New Jersey, Pennsylvania, and others
-- **Partially taxable**: Some states tax shipping only when the product is taxable
+- **Some states tax shipping** charges on taxable items, treating them as part of the sale price
+- **Some states don't tax shipping** when it's listed separately on the invoice and done by a common carrier
+- **Many states have conditions** — for example, shipping may be taxable only when the product is taxable, or only when it's bundled into the item price
 
-This is another reason automated solutions exist. The rules are too numerous to track manually.
+Because the details differ so much, check the rule in each state where you're registered before deciding whether to charge tax on shipping.
 
 ## Common Calculation Mistakes
 
@@ -139,7 +139,7 @@ States have different rounding rules. Most round to the nearest cent, but some r
 
 For e-commerce sellers, manual calculation isn't practical. Consider:
 
-- **Sails**: Real-time rate lookups with nexus tracking
+- **Sails**: Nexus tracking, plus rate estimates based on state and average local rates
 - **Platform built-ins**: Shopify, BigCommerce, etc.
 - **Point of sale systems**: Most modern POS handles tax automatically
 
@@ -151,4 +151,4 @@ Sales tax calculation is simple in theory, complex in practice. For the occasion
 
 ---
 
-*Need accurate sales tax calculations? [Start with Sails](/signup) and automate your tax compliance.*
+*Need a quick sales tax estimate? [Start with Sails](/signup) to estimate rates by state and track your nexus.*

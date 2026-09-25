@@ -1,6 +1,7 @@
 ---
 title: "Do I Need to Collect Sales Tax on My Online Store? (The Honest Answer)"
 date: "2026-03-11"
+lastReviewed: "2026-09-25"
 excerpt: "The honest answer: it depends on nexus. This guide walks through the decision tree — physical presence, economic nexus, and marketplace facilitator rules — so you know exactly where you stand."
 author: "Sails Team"
 category: "Beginner"
@@ -18,7 +19,7 @@ Whether you owe sales tax in a given state depends on one concept: **nexus**. On
 
 Nexus is the legal connection between your business and a state that requires you to collect sales tax from customers there. No nexus = no obligation to collect. Nexus = you need to register and collect.
 
-There are three main ways online sellers create nexus:
+There are three main rules that decide whether online sellers need to collect:
 
 1. **Physical presence nexus** — The old-school rule
 2. **Economic nexus** — The post-2018 rule that catches most online sellers
@@ -50,7 +51,7 @@ Before 2018, physical presence was the *only* thing that created nexus. If you h
 
 In 2018, the Supreme Court's *South Dakota v. Wayfair* decision changed everything. Now states can require you to collect sales tax based purely on your *sales volume* — no physical presence needed.
 
-Every state with a sales tax now has an economic nexus threshold. The most common: **$100,000 in sales OR 200 transactions** in a state in the prior year.
+Every state with a sales tax now has an economic nexus threshold. The most common: **$100,000 in sales** in a state in the current or prior calendar year. Some states also count 200 transactions.
 
 ### States with Higher Thresholds
 
@@ -58,15 +59,17 @@ A few states set their bar higher:
 
 | State | Threshold |
 |---|---|
-| California | $500,000 in revenue |
-| New York | $500,000 in revenue AND 100 transactions |
-| Texas | $500,000 in revenue |
+| Alabama | $250,000 in revenue (prior calendar year) |
+| California | $500,000 in revenue (prior or current calendar year) |
+| Mississippi | More than $250,000 in revenue (prior 12 months) |
+| New York | $500,000 in revenue AND more than 100 transactions (prior 4 sales tax quarters) |
+| Texas | $500,000 in revenue (prior 12 months) |
 
 ### What This Means for You
 
 If your online store generates $120,000 in sales to customers in Illinois, you have economic nexus in Illinois — even if you're headquartered in Nevada and have never visited Illinois. You're required to register for an Illinois sales tax permit and collect Illinois sales tax on every sale to an Illinois customer.
 
-**The question to ask for each state:** "Have I sold more than $100,000 worth of products to customers in this state in the past 12 months?"
+**The question to ask for each state:** "Have I sold more than $100,000 worth of products to customers in this state during the period it measures (usually the current or previous calendar year)?"
 
 If yes: you likely have nexus there and need to register.
 
@@ -76,7 +79,7 @@ If yes: you likely have nexus there and need to register.
 
 If you sell through Amazon, Etsy, eBay, Walmart Marketplace, or similar platforms, this is probably the most relevant rule for you.
 
-In all 50 states with a sales tax (plus Washington D.C.), **the marketplace is now responsible for collecting and remitting sales tax** on sales made through their platform. This is called the Marketplace Facilitator law.
+In all 45 states with a sales tax (plus Washington D.C.), **the marketplace is now responsible for collecting and remitting sales tax** on sales made through their platform. This is called the Marketplace Facilitator law.
 
 ### What This Means in Plain English
 
@@ -86,7 +89,7 @@ If you sell through Etsy:
 - Etsy collects it from the buyer
 - Etsy sends it to the state
 
-You don't have to do anything for those marketplace sales.
+You don't have to collect or remit tax on those marketplace sales yourself.
 
 ### The Catch
 
@@ -124,13 +127,13 @@ Yes, but let's be practical about it.
 
 **If you're doing $50K–$100K/year**, check whether your home state sales alone require registration (they almost certainly do), and start monitoring your sales in high-volume states where customers are buying from you.
 
-**If you're doing $100K+/year**, you almost certainly have economic nexus in multiple states. This is the zone where non-compliance gets expensive. States have become much more aggressive about enforcement since *Wayfair*.
+**If you're doing $100K+/year**, you may already have economic nexus in other states — especially if you make lots of small sales into states that still count 200 transactions. This is the zone where non-compliance gets expensive. States have become much more aggressive about enforcement since *Wayfair*.
 
 ### The Home State Rule Is Non-Negotiable
 
-No matter how small your business is: **if you're selling products from your home state, you need a sales tax permit in that state.**
+No matter how small your business is: **if you're selling products from your home state and it has a sales tax, you need a sales tax permit in that state.**
 
-There's no revenue threshold for physical presence nexus. If you run an Etsy shop from your garage in Minnesota, you owe Minnesota sales tax from your first sale.
+There's no revenue threshold for physical presence nexus. If you run your own online store from your garage in Minnesota, you need to collect Minnesota sales tax on taxable sales to Minnesota customers from your first sale.
 
 ---
 
@@ -143,7 +146,7 @@ Even when you have nexus, not everything you sell may be taxable. Some common ex
 - **Prescription drugs**: Exempt almost everywhere
 - **Digital products**: Taxed in some states, exempt in others — this one's especially tricky
 
-If you sell exclusively in a product category with broad exemptions (like food or prescription medication), you may have nexus but owe very little tax. It depends on what you sell and where.
+If you sell exclusively in a product category with broad exemptions (like food or prescription medication), you may have nexus but owe very little tax. It depends on what you sell and where, so check each state's rules.
 
 ---
 
@@ -169,8 +172,8 @@ The good news: many states have voluntary disclosure programs that let you come 
 
 ---
 
-*Not sure if you have nexus? [Sails](https://sails.tax) connects to your Shopify, WooCommerce, or BigCommerce store and tracks your sales exposure automatically — showing you exactly which states you're approaching or exceeding thresholds in. [Start free →](https://sails.tax/signup)*
+*Not sure if you have nexus? [Sails](https://sails.tax) connects to your Shopify or WooCommerce store (BigCommerce is in beta), imports your orders, and checks your sales against each state's thresholds — showing you where you stand in every state. [Start free →](https://sails.tax/signup)*
 
 ---
 
-*Last updated: March 2026. Sales tax rules change frequently. This guide provides general educational information and should not be construed as legal or tax advice. Consult a qualified tax professional for guidance specific to your situation.*
+*Last reviewed: September 25, 2026. Sales tax rules change frequently. This guide provides general educational information and should not be construed as legal or tax advice. Consult a qualified tax professional for guidance specific to your situation.*

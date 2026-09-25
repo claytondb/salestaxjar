@@ -92,7 +92,7 @@ Patreon needs to know what each tier includes to calculate tax correctly. Review
 
 ## State-by-State Variations
 
-Digital content taxation varies wildly by state:
+Digital content taxation varies wildly by state (and changes often, so verify with the state):
 
 ### States That Generally Tax Digital Content
 - Texas
@@ -134,13 +134,13 @@ Even with Patreon handling tax collection, you should still:
 Track your gross revenue, patron counts by location, and what benefits each tier includes. You'll need this for your own income taxes (which are separate from sales tax).
 
 ### 2. Know Your Home State Requirements
-Your home state likely requires:
+Your home state may require:
 - A business license
 - A sales tax permit (even if you're not remitting)
 - Quarterly or annual filings (possibly showing $0 due)
 
 ### 3. Track Cross-Platform Sales
-If you sell on Patreon AND your own website AND Ko-fi AND Gumroad, you need to track total sales. Economic nexus thresholds are based on combined sales, not per-platform.
+If you sell on Patreon AND your own website AND Ko-fi AND Gumroad, you need to track total sales. Economic nexus thresholds are based on combined sales, not per-platform—though some states leave out sales made through marketplaces that collect the tax for you.
 
 ### 4. Understand Your Income Tax Obligations
 Sales tax and income tax are different. You'll still owe income tax on Patreon earnings. Keep records for:
@@ -173,7 +173,7 @@ Patreon provides end-of-year documentation, but keeping monthly records helps ca
 
 ## When to Get Help
 
-Consider a tax professional or tool like Sails if:
+Consider a tax professional (or a tool like Sails for nexus tracking) if:
 
 - You have significant physical merchandise fulfillment
 - You sell on multiple platforms with varying tax treatment
@@ -189,4 +189,4 @@ But if you ship physical goods, sell clearly-defined digital products, or run a 
 
 ---
 
-*Managing tax across Patreon, Gumroad, and your own store? [Try Sails free](/signup) to consolidate your nexus tracking and never miss a filing deadline.*
+*Managing tax across Patreon, Gumroad, and your own store? [Try Sails free](/signup) to track nexus for your own store and keep your filing deadlines in one place.*

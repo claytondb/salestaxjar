@@ -72,7 +72,7 @@ describe('email-alerts.ts', () => {
       expect(config.bgColor).toBe('#fef2f2');
       expect(config.borderColor).toBe('#ef4444');
       expect(config.textColor).toBe('#dc2626');
-      expect(config.actionText).toContain('need to register');
+      expect(config.actionText).toContain('registering for a sales tax permit before you start collecting');
     });
 
     it('returns correct config for "warning" level', () => {
@@ -82,7 +82,7 @@ describe('email-alerts.ts', () => {
       expect(config.bgColor).toBe('#fff7ed');
       expect(config.borderColor).toBe('#f97316');
       expect(config.textColor).toBe('#ea580c');
-      expect(config.actionText).toContain('prepare to register');
+      expect(config.actionText).toContain('how registration works');
     });
 
     it('returns correct config for "approaching" level', () => {

@@ -10,11 +10,13 @@ vi.mock('./prisma', () => ({
   prisma: {
     importedOrder: {
       count: vi.fn().mockResolvedValue(0),
+      findMany: vi.fn().mockResolvedValue([]),
     },
   },
 }));
 
-import { getCurrentBillingPeriod } from './usage';
+import { getCurrentBillingPeriod, applyMonthlyOrderCap, getCurrentMonthOrderCount, canImportOrders } from './usage';
+import { prisma } from './prisma';
 
 describe('usage.ts', () => {
   describe('getCurrentBillingPeriod', () => {
@@ -154,6 +156,103 @@ describe('usage.ts', () => {
       const { end } = getCurrentBillingPeriod();
       
       expect(end.getMilliseconds()).toBe(999);
+    });
+  });
+
+  describe('monthly order cap (counted by order date, per calendar month)', () => {
+    type O = { id: string; date: string };
+    const starter = { plan: 'starter', status: 'active' };
+    const free = null;
+    // existing orders per month key 'YYYY-MM'
+    let existing: Record<string, number> = {};
+
+    beforeEach(() => {
+      vi.useFakeTimers();
+      vi.setSystemTime(new Date('2026-09-15T12:00:00.000Z'));
+      existing = {};
+      vi.mocked(prisma.importedOrder.count).mockReset().mockImplementation((async (args: { where: { orderDate: { gte: Date } } }) => {
+        const d = args.where.orderDate.gte;
+        const key = `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, '0')}`;
+        return existing[key] ?? 0;
+      }) as never);
+      vi.mocked(prisma.importedOrder.findMany).mockReset().mockResolvedValue([] as never);
+    });
+
+    afterEach(() => {
+      vi.useRealTimers();
+    });
+
+    const run = (items: O[], subscription: { plan: string; status: string } | null = starter) =>
+      applyMonthlyOrderCap({
+        userId: 'u1',
+        subscription,
+        platform: 'shopify',
+        items,
+        getOrderDate: (o) => new Date(o.date),
+        getPlatformOrderId: (o) => o.id,
+      });
+
+    const month = (m: string, n: number, prefix: string) =>
+      Array.from({ length: n }, (_, i) => ({ id: `${prefix}${i}`, date: `${m}-10T12:00:00Z` }));
+
+    it('counts this month by orderDate, not import time', async () => {
+      await getCurrentMonthOrderCount('u1');
+      const args = vi.mocked(prisma.importedOrder.count).mock.calls[0][0] as { where: Record<string, unknown> };
+      expect(args.where).toHaveProperty('orderDate');
+      expect(args.where).not.toHaveProperty('createdAt');
+    });
+
+    it('imports history when every month is within the plan (300 orders/month on Starter)', async () => {
+      const items = [...month('2025-10', 300, 'a'), ...month('2025-11', 300, 'b'), ...month('2026-09', 300, 'c')];
+      const res = await run(items);
+      expect(res.items).toHaveLength(900);
+      expect(res.truncated).toBe(false);
+    });
+
+    it('caps each month separately — overflow from a busy month is not imported later', async () => {
+      const res = await run(month('2026-08', 800, 'aug'));
+      expect(res.items).toHaveLength(500);
+      expect(res.skipped).toBe(300);
+      expect(res.truncated).toBe(true);
+    });
+
+    it('counts orders already stored in a month against that month', async () => {
+      existing = { '2026-09': 498 };
+      const res = await run([...month('2026-09', 3, 'n'), ...month('2026-08', 2, 'o')]);
+      expect(res.items.map((o) => o.id)).toEqual(['n0', 'n1', 'o0', 'o1']);
+      expect(res.skipped).toBe(1);
+      expect(res.remaining).toBe(0);
+    });
+
+    it('re-syncing already-imported orders never uses up capacity', async () => {
+      existing = { '2026-09': 500 };
+      vi.mocked(prisma.importedOrder.findMany).mockResolvedValue([{ platformOrderId: 'a' }, { platformOrderId: 'b' }] as never);
+      const res = await run([
+        { id: 'a', date: '2026-09-01T00:00:00Z' },
+        { id: 'b', date: '2026-09-02T00:00:00Z' },
+        { id: 'c', date: '2026-09-03T00:00:00Z' },
+      ]);
+      expect(res.items.map((o) => o.id)).toEqual(['a', 'b']);
+      expect(res.skipped).toBe(1);
+    });
+
+    it('gives the free plan 50 orders a month, for each month', async () => {
+      const res = await run([...month('2026-09', 60, 'x'), ...month('2026-07', 60, 'y')], free);
+      expect(res.items).toHaveLength(100);
+      expect(res.limit).toBe(50);
+    });
+
+    it('does not limit unlimited plans', async () => {
+      const res = await run(month('2026-09', 10, 'e'), { plan: 'enterprise', status: 'active' });
+      expect(res.items).toHaveLength(10);
+      expect(res.limit).toBeNull();
+    });
+
+    it('lets a user at this month\'s cap keep importing earlier months', async () => {
+      existing = { '2026-09': 500 };
+      const res = await canImportOrders('u1', starter);
+      expect(res.allowed).toBe(true);
+      expect(res.remaining).toBe(0);
     });
   });
 });

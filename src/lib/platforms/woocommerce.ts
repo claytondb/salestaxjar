@@ -296,13 +296,15 @@ export async function fetchOrders(
     status?: string[];
     page?: number;
     perPage?: number;
+    /** 'asc' walks forward from `after` (used for history imports) */
+    order?: 'asc' | 'desc';
   } = {}
 ): Promise<WooCommerceOrder[]> {
   const params: Record<string, string> = {
     per_page: String(options.perPage || 100),
     page: String(options.page || 1),
     orderby: 'date',
-    order: 'desc',
+    order: options.order || 'desc',
   };
   
   if (options.after) {
@@ -334,15 +336,20 @@ export async function fetchAllOrders(
     before?: string;
     status?: string[];
     maxPages?: number;
+    order?: 'asc' | 'desc';
+    /** Stop starting new pages after this time (ms timestamp) */
+    deadline?: number;
   } = {}
 ): Promise<WooCommerceOrder[]> {
   const allOrders: WooCommerceOrder[] = [];
   let page = 1;
   const maxPages = options.maxPages || 10; // Safety limit
+  const { deadline, maxPages: _maxPages, ...fetchOptions } = options;
   
   while (page <= maxPages) {
+    if (deadline && Date.now() > deadline) break;
     const orders = await fetchOrders(credentials, {
-      ...options,
+      ...fetchOptions,
       page,
       perPage: 100,
     });

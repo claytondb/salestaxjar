@@ -16,7 +16,7 @@ import {
 } from '@/lib/platforms/woocommerce';
 import { saveImportedOrders, updateSyncStatus } from '@/lib/platforms';
 import { userCanConnectPlatform, tierGateError } from '@/lib/plans';
-import { canImportOrders, getImportableOrderCount, freeUserImportError, orderLimitExceededError, getUserUsageStatus } from '@/lib/usage';
+import { canImportOrders, applyMonthlyOrderCap, freeUserImportError, orderLimitExceededError, getUserUsageStatus } from '@/lib/usage';
 import { z } from 'zod';
 
 const syncSchema = z.object({
@@ -116,13 +116,18 @@ export async function POST(request: NextRequest) {
       });
 
       // Check and enforce order limits - truncate if necessary
-      const importableInfo = await getImportableOrderCount(user.id, user.subscription, allWooOrders.length);
-      const wooOrders = importableInfo.truncated 
-        ? allWooOrders.slice(0, importableInfo.canImport)
-        : allWooOrders;
+      const capped = await applyMonthlyOrderCap({
+        userId: user.id,
+        subscription: user.subscription,
+        platform: 'woocommerce',
+        items: allWooOrders,
+        getOrderDate: (o) => new Date(o.date_created),
+        getPlatformOrderId: (o) => String(o.id),
+      });
+      const wooOrders = capped.items;
       
-      const truncated = importableInfo.truncated;
-      const skippedCount = allWooOrders.length - wooOrders.length;
+      const truncated = capped.truncated;
+      const skippedCount = capped.skipped;
 
       // Map to our format
       const importedOrders = wooOrders.map(order => 

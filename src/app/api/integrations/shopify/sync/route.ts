@@ -9,7 +9,7 @@ import {
 } from '@/lib/platforms';
 import { fetchOrders, isShopifyConfigured, ShopifyOrder } from '@/lib/platforms/shopify';
 import { userCanConnectPlatform, tierGateError } from '@/lib/plans';
-import { canImportOrders, getImportableOrderCount, freeUserImportError, orderLimitExceededError, getUserUsageStatus } from '@/lib/usage';
+import { canImportOrders, applyMonthlyOrderCap, freeUserImportError, orderLimitExceededError, getUserUsageStatus } from '@/lib/usage';
 
 /**
  * POST /api/integrations/shopify/sync
@@ -108,13 +108,18 @@ export async function POST(request: NextRequest) {
       }
 
       // Check and enforce order limits - truncate if necessary
-      const importableInfo = await getImportableOrderCount(user.id, user.subscription, allOrders.length);
-      const orders = importableInfo.truncated 
-        ? allOrders.slice(0, importableInfo.canImport)
-        : allOrders;
+      const capped = await applyMonthlyOrderCap({
+        userId: user.id,
+        subscription: user.subscription,
+        platform: 'shopify',
+        items: allOrders,
+        getOrderDate: (o: ShopifyOrder) => new Date(o.created_at),
+        getPlatformOrderId: (o: ShopifyOrder) => String(o.id),
+      });
+      const orders = capped.items;
       
-      const truncated = importableInfo.truncated;
-      const skippedCount = allOrders.length - orders.length;
+      const truncated = capped.truncated;
+      const skippedCount = capped.skipped;
 
       // Transform orders for import
       const importedOrders: ImportedOrderData[] = orders.map((order: ShopifyOrder) => ({
@@ -129,16 +134,23 @@ export async function POST(request: NextRequest) {
         currency: order.currency,
         status: mapShopifyStatus(order.financial_status, order.fulfillment_status),
         customerEmail: undefined, // Privacy - don't store by default
-        shippingState: order.shipping_address?.province_code,
-        shippingCity: order.shipping_address?.city,
-        shippingZip: order.shipping_address?.zip,
-        shippingCountry: order.shipping_address?.country_code || 'US',
+        // Digital orders have no shipping address; use the billing address.
+        shippingState: (order.shipping_address ?? order.billing_address)?.province_code,
+        shippingCity: (order.shipping_address ?? order.billing_address)?.city,
+        shippingZip: (order.shipping_address ?? order.billing_address)?.zip,
+        shippingCountry: (order.shipping_address ?? order.billing_address)?.country_code || 'US',
         billingState: order.billing_address?.province_code,
-        lineItems: order.line_items,
+        lineItems: (order.line_items ?? []).map((item) => ({
+          name: item.title,
+          quantity: item.quantity,
+          price: parseFloat(item.price),
+          sku: item.sku,
+          taxable: item.taxable,
+          taxLines: item.tax_lines,
+        })),
         taxBreakdown: {
           taxLines: order.tax_lines,
         },
-        rawData: order,
       }));
 
       // Save orders to database

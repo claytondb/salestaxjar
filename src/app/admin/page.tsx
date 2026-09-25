@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import Header from '@/components/Header';
+import type { FunnelWindow } from '@/lib/activation-funnel';
 import { 
   Users, 
   CreditCard, 
@@ -54,6 +55,7 @@ export default function AdminPage() {
   const router = useRouter();
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [stats, setStats] = useState<Stats | null>(null);
+  const [funnel, setFunnel] = useState<FunnelWindow[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [expandedCustomer, setExpandedCustomer] = useState<string | null>(null);
@@ -86,6 +88,7 @@ export default function AdminPage() {
       const data = await res.json();
       setCustomers(data.customers);
       setStats(data.stats);
+      setFunnel(data.funnel ?? []);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
     } finally {
@@ -210,6 +213,45 @@ export default function AdminPage() {
               </div>
             </div>
           </div>
+        )}
+
+        {/* Activation funnel */}
+        {funnel.length > 0 && (
+          <section className="card-theme rounded-xl p-6 mb-8" aria-labelledby="funnel-heading">
+            <h2 id="funnel-heading" className="text-lg font-semibold text-theme-primary mb-1">
+              Activation funnel
+            </h2>
+            <p className="text-theme-muted text-sm mb-4">
+              People who signed up in each period, and how many reached each step (from Sails&apos; own data).
+            </p>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="text-left text-theme-muted">
+                    <th className="py-2 pr-4 font-medium">Step</th>
+                    {funnel.map((w) => (
+                      <th key={w.label} className="py-2 px-3 font-medium text-right whitespace-nowrap">
+                        {w.label}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {funnel[0].steps.map((step, i) => (
+                    <tr key={step.key} className="border-t border-theme-primary">
+                      <td className="py-2 pr-4 text-theme-primary">{step.label}</td>
+                      {funnel.map((w) => (
+                        <td key={w.label} className="py-2 px-3 text-right text-theme-secondary whitespace-nowrap">
+                          {w.steps[i].count}
+                          {i > 0 && <span className="text-theme-muted"> ({w.steps[i].percentOfSignups}%)</span>}
+                        </td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </section>
         )}
 
         {/* Sort Controls */}

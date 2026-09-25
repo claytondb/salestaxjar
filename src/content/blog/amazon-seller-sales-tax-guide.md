@@ -2,6 +2,7 @@
 title: "Amazon Seller Sales Tax Guide: Everything You Need to Know in 2026"
 description: "Complete guide to sales tax for Amazon sellers. Learn about FBA tax implications, marketplace facilitator laws, nexus, and how to stay compliant."
 date: "2026-02-27"
+lastReviewed: "2026-09-25"
 author: "Sails Team"
 tags: ["amazon", "marketplace", "fba", "sales tax"]
 image: "/blog/images/08-amazon-seller-sales-tax-illustration.jpg"
@@ -30,7 +31,7 @@ While Amazon collects on most orders, you may still need to manage sales tax you
 
 ### 1. Off-Amazon Sales
 
-If you sell through your own website, other marketplaces, or in-person, you're responsible for sales tax collection on those channels. Amazon's marketplace facilitator status only covers Amazon.com sales.
+If you sell through your own website or in person, you're responsible for sales tax collection on those channels in states where you have nexus. Amazon's marketplace facilitator status only covers Amazon.com sales—and some states, such as California, New York and Texas, still count your Amazon sales toward their nexus thresholds.
 
 ### 2. B2B Sales and Tax Exemptions
 
@@ -44,7 +45,7 @@ Amazon Business handles some B2B exemptions automatically, but wholesale and cer
 
 ### 3. Sales to States Without Marketplace Facilitator Laws
 
-This is increasingly rare, but if you sell to U.S. territories or make international sales, different rules may apply.
+Every state with a sales tax now has a marketplace facilitator law, but if you sell to U.S. territories or make international sales, different rules may apply.
 
 ## Understanding FBA and Sales Tax Nexus
 
@@ -164,10 +165,9 @@ Amazon operates fulfillment centers in nearly all 50 states. Major hubs include:
 
 While Amazon handles collection for marketplace sales, a tool like Sails helps when:
 
-1. **You sell on multiple channels** - Track and calculate tax for your own website
-2. **You need consolidated reporting** - See all sales tax data in one place
-3. **B2B sales are significant** - Manage exemption certificates
-4. **You're expanding off Amazon** - Prepare for direct sales compliance
+1. **You sell on multiple channels** - Track your own website's sales against each state's nexus thresholds
+2. **You need consolidated reporting** - See sales by state for your connected stores and uploaded Amazon order reports in one place
+3. **You're expanding off Amazon** - Prepare for direct sales compliance
 
 ## Key Takeaways for Amazon Sellers
 
@@ -201,4 +201,4 @@ Consider registering in states where you have significant nexus or plan to expan
 
 ---
 
-*Running an e-commerce business across multiple platforms? [Sails](/) makes sales tax simple with automated calculations and filing. Get started free.*
+*Running an e-commerce business across multiple platforms? [Sails](/) imports your orders, checks your sales against each state's nexus rules and emails you before filing deadlines. Get started free.*

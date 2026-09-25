@@ -23,6 +23,7 @@ vi.mock('@/lib/prisma', () => ({
     apiKey: { deleteMany: mockDeleteMany },
     salesSummary: { deleteMany: mockDeleteMany },
     emailLog: { deleteMany: mockDeleteMany },
+    nexusAlert: { deleteMany: mockDeleteMany },
     user: { delete: mockDelete },
   },
 }));
@@ -235,7 +236,7 @@ describe('DELETE /api/auth/delete-account - data cleanup', () => {
     
     const transactionCall = mockTransaction.mock.calls[0][0];
     // Transaction should include deleteMany for notificationPreference
-    expect(transactionCall).toHaveLength(7); // 6 deleteMany + 1 user delete
+    expect(transactionCall).toHaveLength(8); // 7 deleteMany (incl. nexusAlert) + 1 user delete
   });
 
   it('should use userId for all delete operations', async () => {

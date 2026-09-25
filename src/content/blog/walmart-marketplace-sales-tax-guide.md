@@ -2,6 +2,7 @@
 title: "Walmart Marketplace Sales Tax Guide for Sellers (2026)"
 description: "Complete guide to sales tax for Walmart Marketplace sellers. Learn how Walmart handles sales tax collection, your responsibilities, and compliance tips."
 date: "2026-02-28"
+lastReviewed: "2026-09-25"
 author: "Sails Team"
 tags: ["walmart", "marketplace", "e-commerce", "sales tax", "compliance"]
 image: "/images/blog/walmart-marketplace-tax.jpg"
@@ -49,7 +50,7 @@ Ensure your products are categorized correctly in Walmart Seller Center. Tax rat
 
 If you sell through other channels, you're still responsible for:
 
-- **Your own website** - Direct sales require you to collect tax
+- **Your own website** - Direct sales require you to collect tax in states where you have nexus
 - **Other platforms** - Check if they're marketplace facilitators
 - **Local/in-person sales** - You must collect and remit
 
@@ -65,14 +66,14 @@ Even with Walmart handling collection, you may still need to:
 
 ### Economic Nexus
 
-Walmart handling collection doesn't eliminate your nexus. If you exceed state thresholds (typically $100K in sales or 200 transactions), you have economic nexus.
+Walmart handling collection doesn't eliminate your nexus. If you exceed state thresholds (typically $100K in sales; some states also count 200 transactions), you have economic nexus. Some states (such as California, New York and Texas) count your Walmart sales toward those thresholds; others (such as Florida, Georgia and Illinois) leave them out.
 
 **Common thresholds:**
 
 | Threshold | States |
 |-----------|--------|
 | $100K sales | Most states |
-| $500K sales | CA, TX, NY (higher thresholds) |
+| $500K sales | CA, TX, NY (NY also requires more than 100 transactions) |
 | 200 transactions | Some states still use this |
 
 ### Physical Nexus
@@ -100,7 +101,7 @@ These reports show:
 
 ### For Your Tax Returns
 
-When filing state sales tax returns:
+When filing state sales tax returns (the exact lines vary by state, so check the state's instructions):
 
 - Report Walmart sales in the marketplace facilitator section
 - Enter $0 for tax collected (Walmart collected it)
@@ -160,7 +161,7 @@ Sales tax laws change frequently. Subscribe to updates from:
 
 ### 4. Consider Multi-Channel Complexity
 
-If you sell on multiple platforms plus your own site, you may need sales tax software for the direct sales portion. Sails can help you [calculate rates](/calculator) and track [nexus obligations](/dashboard).
+If you sell on multiple platforms plus your own site, you may need sales tax software for the direct sales portion. Sails can help you [estimate rates](/calculator) and track [nexus obligations](/dashboard).
 
 ## Getting Started on Walmart Marketplace
 

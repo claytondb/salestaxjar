@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getCurrentUser } from '@/lib/auth';
 import { processBatchReminders } from '@/lib/filing-reminders';
+import { isCronAuthorized } from '@/lib/cron-auth';
+import { isAdminUser } from '@/lib/admin';
+import { deadlineRemindersEnabled } from '@/lib/scheduled-email-flags';
 
 /**
  * GET /api/filings/reminders
@@ -9,33 +12,36 @@ import { processBatchReminders } from '@/lib/filing-reminders';
  * Sends 7-day and 1-day reminders for pending filings.
  *
  * Access:
- *  - CRON_SECRET header (for automated cron calls)
- *  - Authenticated admin user
+ *  - CRON_SECRET (Authorization: Bearer … or x-cron-secret header)
+ *  - Authenticated, verified admin user
+ *
+ * The scheduled daily run happens in /api/cron/daily. Like that job, this
+ * sends nothing unless DEADLINE_REMINDERS_ENABLED=true.
  *
  * Returns a summary of emails sent.
  */
 export async function GET(request: NextRequest) {
-  // Allow cron calls with secret header
-  const cronSecret = request.headers.get('x-cron-secret');
-  const expectedSecret = process.env.CRON_SECRET;
-  const hasValidCronSecret = !!expectedSecret && cronSecret === expectedSecret;
+  // Allow scheduled/cron calls with the shared secret
+  const hasValidCronSecret = !!process.env.CRON_SECRET && isCronAuthorized(request);
 
   if (!hasValidCronSecret) {
     // Fall back to admin user auth. A plain authenticated user is NOT sufficient
-    // to trigger mass reminder emails — must be an admin.
+    // to trigger mass reminder emails — must be a verified admin.
     const user = await getCurrentUser();
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const adminEmails = (process.env.ADMIN_EMAILS || 'david@sails.tax,claytondb@gmail.com')
-      .split(',')
-      .map(s => s.trim().toLowerCase())
-      .filter(Boolean);
-
-    if (!user.email || !adminEmails.includes(user.email.toLowerCase())) {
+    if (!isAdminUser(user)) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
+  }
+
+  if (!deadlineRemindersEnabled()) {
+    return NextResponse.json({
+      ok: true,
+      skipped: 'Deadline reminders are turned off (DEADLINE_REMINDERS_ENABLED is not true).',
+    });
   }
 
   try {

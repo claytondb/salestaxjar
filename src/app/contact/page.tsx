@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import { liveIntegrationNames, betaIntegrationNames } from '@/lib/capabilities';
 
 interface FAQItem {
   question: string;
@@ -12,11 +13,11 @@ interface FAQItem {
 const faqs: FAQItem[] = [
   {
     question: "What is sales tax nexus?",
-    answer: "Nexus is the connection between your business and a state that requires you to collect and remit sales tax. You can establish nexus through physical presence (offices, employees, inventory) or economic activity (meeting sales or transaction thresholds). Most states have economic nexus thresholds around $100,000 in sales or 200 transactions."
+    answer: "Nexus is the connection between your business and a state that requires you to collect and remit sales tax. You can establish nexus through physical presence (offices, employees, inventory) or economic activity (meeting sales or transaction thresholds). Most states set their economic nexus threshold at $100,000 in sales a year; some also count 200 transactions, and a few (like California, New York, Texas, Alabama and Mississippi) use higher amounts."
   },
   {
     question: "How accurate are your tax rates?",
-    answer: "We strive for high accuracy by sourcing rates from state departments of revenue and tax foundation data. However, our rates are estimates and should be verified with official sources before filing. Tax rates change frequently, and local taxes (city/county) may vary from our averages. Always consult official state tax authority websites for the most current rates."
+    answer: "Our calculator uses each state's rate plus the average local rate published by the Tax Foundation (rates as of July 1, 2026). That makes it a good estimate, not an exact rate for a specific address — local rates vary by city, county and special district. Verify rates with official state sources before filing."
   },
   {
     question: "Is Sails tax advice?",
@@ -28,23 +29,23 @@ const faqs: FAQItem[] = [
   },
   {
     question: "What product categories have special tax treatment?",
-    answer: "Many states have exemptions or reduced rates for certain categories: groceries (often exempt or reduced), clothing (exempt under certain amounts in NY, PA, NJ, MN), digital goods (varies widely), medical supplies (often exempt), and prepared food (usually taxable at full rate). Use our calculator to see category-specific rates by state."
+    answer: "Many states have exemptions or reduced rates for certain categories: groceries (often exempt or reduced), clothing (fully or partly exempt in states like PA, NJ, MN and NY), digital goods (varies widely), medical supplies (often exempt), and prepared food (usually taxable at full rate). Use our calculator to see category-specific rates by state."
   },
   {
     question: "Can I export my data?",
-    answer: "Yes! Under GDPR and CCPA, you have the right to data portability. Go to Settings > Data & Privacy > Export Data to download all your information in JSON format. This includes your profile, calculations, nexus settings, and preferences."
+    answer: "Yes! Under GDPR and CCPA, you have the right to data portability. Go to Settings > Data & Privacy > Export All Data to download everything Sails stores about your account in JSON format — your profile, businesses, nexus states, filings, calculations, connected stores, imported orders and settings."
   },
   {
     question: "How do I delete my account?",
-    answer: "You can delete your account from Settings > Data & Privacy > Delete Account. This will permanently remove all your data within 30 days. Note that we may retain some data for legal compliance (e.g., tax records for 7 years as required by law)."
+    answer: "You can delete your account from Settings > Data & Privacy > Delete Account. Your account and all its data are deleted right away and can't be recovered. Stripe keeps its own billing records as required by law."
   },
   {
     question: "What integrations do you support?",
-    answer: "We support Shopify and WooCommerce, plus a REST API you can use with any platform. More integrations are coming soon! These platforms require you to handle your own sales tax — unlike marketplaces (Etsy, Amazon, eBay) which collect and remit tax for you."
+    answer: `${liveIntegrationNames()} are live. ${betaIntegrationNames()} are in beta — they work, but please double-check the numbers they produce. Pro plans can also use our tax calculation API. Marketplaces like Amazon, Etsy and eBay collect tax for you, but many states still count those sales toward your own threshold, so include them.`
   },
   {
     question: "Do you file tax returns for me?",
-    answer: "We prepare filing-ready reports and pre-fill the data you need, but you review and submit the returns yourself. This keeps you in control and ensures accuracy. We send deadline reminders so you never miss a filing date. Note: Sails provides tax calculation tools, not tax advice — consult a tax professional for specific guidance."
+    answer: "No. Sails shows your sales and tax collected by state and keeps your filing deadlines on one calendar, and you or your accountant file with each state. Sails provides tax tools, not tax advice — consult a tax professional for specific guidance."
   },
   {
     question: "What if I get audited?",

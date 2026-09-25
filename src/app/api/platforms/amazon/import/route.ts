@@ -2,8 +2,10 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getCurrentUser } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { userCanConnectPlatform, tierGateError } from '@/lib/plans';
-import { canImportOrders, getImportableOrderCount, freeUserImportError, orderLimitExceededError, getUserUsageStatus } from '@/lib/usage';
+import { canImportOrders, applyMonthlyOrderCap, freeUserImportError, orderLimitExceededError, getUserUsageStatus } from '@/lib/usage';
 import { parse } from 'csv-parse/sync';
+import { toStateCode } from '@/lib/us-states';
+import { checkAndCreateAlerts } from '@/lib/nexus-alerts';
 
 /**
  * POST /api/platforms/amazon/import
@@ -106,13 +108,18 @@ export async function POST(request: NextRequest) {
     }
 
     // Check and enforce order limits - truncate if necessary
-    const importableInfo = await getImportableOrderCount(user.id, user.subscription, allOrders.length);
-    const orders = importableInfo.truncated 
-      ? allOrders.slice(0, importableInfo.canImport)
-      : allOrders;
+    const capped = await applyMonthlyOrderCap({
+      userId: user.id,
+      subscription: user.subscription,
+      platform: 'amazon',
+      items: allOrders,
+      getOrderDate: (o) => o.orderDate,
+      getPlatformOrderId: (o) => o.orderId,
+    });
+    const orders = capped.items;
     
-    const truncated = importableInfo.truncated;
-    const skippedCount = allOrders.length - orders.length;
+    const truncated = capped.truncated;
+    const skippedCount = capped.skipped;
 
     // Calculate totals
     const totalSales = orders.reduce((sum, o) => sum + o.totalAmount, 0);
@@ -165,20 +172,20 @@ export async function POST(request: NextRequest) {
             totalAmount: order.totalAmount,
             currency: 'USD',
             status: 'imported',
-            shippingState: order.state,
+            shippingState: order.state || null,
             shippingCity: order.city,
             shippingZip: order.zip,
             shippingCountry: 'US',
-            rawData: JSON.stringify(order.raw),
+            rawData: null, // don't store the raw report row (buyer details)
           },
           update: {
             subtotal: order.totalAmount - order.taxAmount,
             taxAmount: order.taxAmount,
             totalAmount: order.totalAmount,
-            shippingState: order.state,
+            shippingState: order.state || null,
             shippingCity: order.city,
             shippingZip: order.zip,
-            rawData: JSON.stringify(order.raw),
+            rawData: null, // don't store the raw report row (buyer details)
             updatedAt: new Date(),
           },
         });
@@ -194,6 +201,16 @@ export async function POST(request: NextRequest) {
       data: { lastSyncAt: new Date() },
     });
 
+    // Same as a store sync: check thresholds (emails respect the user's settings)
+    let newAlerts = 0;
+    if (ordersImported > 0) {
+      try {
+        newAlerts = (await checkAndCreateAlerts(user.id)).length;
+      } catch (alertError) {
+        console.error('Amazon import: alert check failed', alertError);
+      }
+    }
+
     // Get updated usage stats
     const usageStatus = await getUserUsageStatus(user.id, user.subscription);
 
@@ -205,6 +222,7 @@ export async function POST(request: NextRequest) {
       totalSales: Math.round(totalSales * 100) / 100,
       totalTax: Math.round(totalTax * 100) / 100,
       reportType,
+      newAlerts: newAlerts > 0 ? newAlerts : undefined,
       // Usage info
       usage: {
         current: usageStatus.currentCount,
@@ -330,10 +348,13 @@ function parseAmazonReport(
           const amountType = record['amount-type'] || '';
           const amount = parseAmount(record['amount'] || '0');
           
+          // totalAmount always includes tax (like the other report types), so a
+          // tax line adds to both.
           if (amountType.toLowerCase().includes('principal')) {
             totalAmount = amount;
           } else if (amountType.toLowerCase().includes('tax')) {
             taxAmount = amount;
+            totalAmount = amount;
           }
           
           state = record['ship-state'] || '';
@@ -361,14 +382,18 @@ function parseAmazonReport(
         const existing = orderMap.get(orderId)!;
         existing.totalAmount += totalAmount;
         existing.taxAmount += taxAmount;
-        // Keep first occurrence's address info
+        // Keep the first address we see (fee/tax lines often have none)
+        if (!existing.state) existing.state = toStateCode(state) ?? '';
+        if (!existing.city) existing.city = city;
+        if (!existing.zip) existing.zip = zip;
       } else {
         orderMap.set(orderId, {
           orderId,
           orderDate,
           totalAmount,
           taxAmount,
-          state: state.toUpperCase().substring(0, 2),
+          // "Texas", "tx" and "TX" all become "TX" (never guess by truncating)
+          state: toStateCode(state) ?? '',
           city,
           zip,
           raw: record,
