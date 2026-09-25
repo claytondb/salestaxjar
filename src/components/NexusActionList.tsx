@@ -43,8 +43,25 @@ export function ActionIcon({ kind }: { kind: TopAction['kind'] }) {
   }
 }
 
-export function ActionLink({ action }: { action: TopAction }) {
+export function ActionLink({ action, mode = 'app' }: { action: TopAction; mode?: 'app' | 'scan' }) {
   const linkClass = 'inline-flex items-center gap-1.5 text-sm font-medium text-theme-accent hover:underline';
+  if (mode === 'scan') {
+    const scanText: Partial<Record<TopAction['kind'], string>> = {
+      import_history: 'Add an older export',
+      add_marketplace: 'Add your Amazon or Etsy export',
+      connect_store: 'Add a file',
+      sync: 'Add a newer export',
+    };
+    const text = scanText[action.kind];
+    if (text) {
+      return (
+        <a href="#scan-upload" className={linkClass}>
+          {text}
+        </a>
+      );
+    }
+    if (action.kind === 'upgrade') return null;
+  }
   if ((action.kind === 'register' || action.kind === 'plan') && action.stateCode) {
     const reg = getStateRegistrationUrl(action.stateCode);
     if (reg) {
@@ -90,7 +107,7 @@ export function ActionLink({ action }: { action: TopAction }) {
 }
 
 /** Numbered list of the top actions from the nexus engine. */
-export default function NexusActionList({ actions }: { actions: TopAction[] }) {
+export default function NexusActionList({ actions, mode = 'app' }: { actions: TopAction[]; mode?: 'app' | 'scan' }) {
   return (
     <ol className="space-y-3">
       {actions.map((action, i) => (
@@ -101,7 +118,7 @@ export default function NexusActionList({ actions }: { actions: TopAction[] }) {
             <p className="font-medium text-theme-primary">{action.title}</p>
             <p className="text-sm text-theme-muted">{action.detail}</p>
             <div className="mt-1">
-              <ActionLink action={action} />
+              <ActionLink action={action} mode={mode} />
             </div>
           </div>
         </li>

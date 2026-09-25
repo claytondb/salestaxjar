@@ -444,6 +444,50 @@ describe('history import', () => {
   });
 });
 
+// ─── Shopify sync ────────────────────────────────────────────────────────────
+
+describe('Shopify sync', () => {
+  const baseOrder = {
+    name: '#1001',
+    created_at: '2026-03-01T10:00:00Z',
+    total_price: '110.00',
+    subtotal_price: '100.00',
+    total_tax: '10.00',
+    currency: 'USD',
+    financial_status: 'paid',
+    fulfillment_status: null,
+    line_items: [],
+    tax_lines: [],
+  };
+  const address = (province_code: string) => ({
+    address1: '1 Main St',
+    city: 'Town',
+    province: '',
+    province_code,
+    zip: '00000',
+    country: 'United States',
+    country_code: 'US',
+  });
+
+  beforeEach(() => {
+    vi.mocked(getConnection).mockResolvedValue({ ...mockConnection, platform: 'shopify', platformId: 'shop.myshopify.com' } as never);
+  });
+
+  it('uses the billing address for orders with nothing to ship (digital products)', async () => {
+    vi.mocked(fetchShopifyOrders).mockResolvedValue({
+      orders: [
+        { ...baseOrder, id: 1, shipping_address: address('TX'), billing_address: address('CA') },
+        { ...baseOrder, id: 2, shipping_address: null, billing_address: address('NY') },
+        { ...baseOrder, id: 3 },
+      ],
+      complete: true,
+    } as never);
+    await POST(postRequest({ platform: 'shopify', platformId: 'shop.myshopify.com' }));
+    const saved = vi.mocked(saveImportedOrders).mock.calls[0][2] as { shippingState?: string }[];
+    expect(saved.map((o) => o.shippingState)).toEqual(['TX', 'NY', undefined]);
+  });
+});
+
 // ─── Magento sync ───────────────────────────────────────────────────────────
 
 describe('Magento sync', () => {

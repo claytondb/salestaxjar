@@ -135,8 +135,9 @@ export default function Home() {
               <SailsLogo className="w-10 h-10 text-theme-accent" />
               <span className="text-2xl font-bold text-theme-primary">Sails</span>
             </div>
-            <nav className="hidden md:flex gap-6 items-center">
+            <nav className="hidden lg:flex gap-6 items-center">
               <a href="#features" className="text-theme-secondary hover:text-theme-primary transition">Features</a>
+              <Link href="/free-scan" className="text-theme-secondary hover:text-theme-primary transition whitespace-nowrap">Nexus Check</Link>
               <Link href="/pricing" className="text-theme-secondary hover:text-theme-primary transition">Pricing</Link>
               <a href="#calculator" className="text-theme-secondary hover:text-theme-primary transition">Calculator</a>
               <Link href="/blog" className="text-theme-secondary hover:text-theme-primary transition">Blog</Link>
@@ -144,7 +145,7 @@ export default function Home() {
             </nav>
             <div className="flex gap-2 sm:gap-3 items-center">
               <button
-                className="md:hidden text-theme-secondary hover:text-theme-primary p-2"
+                className="lg:hidden text-theme-secondary hover:text-theme-primary p-2"
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                 aria-label="Toggle menu"
               >
@@ -173,9 +174,10 @@ export default function Home() {
 
       {/* Mobile Menu */}
       {mobileMenuOpen && (
-        <div className="md:hidden border-b border-theme-primary bg-theme-card/95 backdrop-blur-sm">
+        <div className="lg:hidden border-b border-theme-primary bg-theme-card/95 backdrop-blur-sm">
           <nav className="max-w-7xl mx-auto px-4 py-4 flex flex-col gap-3">
             <a href="#features" onClick={() => setMobileMenuOpen(false)} className="text-theme-secondary hover:text-theme-primary transition py-2">Features</a>
+            <Link href="/free-scan" onClick={() => setMobileMenuOpen(false)} className="text-theme-secondary hover:text-theme-primary transition py-2">Free Nexus Check</Link>
             <Link href="/pricing" onClick={() => setMobileMenuOpen(false)} className="text-theme-secondary hover:text-theme-primary transition py-2">Pricing</Link>
             <a href="#calculator" onClick={() => setMobileMenuOpen(false)} className="text-theme-secondary hover:text-theme-primary transition py-2">Calculator</a>
             <Link href="/blog" onClick={() => setMobileMenuOpen(false)} className="text-theme-secondary hover:text-theme-primary transition py-2">Blog</Link>
@@ -230,14 +232,17 @@ export default function Home() {
           </div>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/signup" className="btn-theme-primary px-8 py-4 rounded-xl font-semibold text-lg transition transform hover:scale-105">
-              Start Free — No Credit Card
+            <Link href="/free-scan" className="btn-theme-primary px-8 py-4 rounded-xl font-semibold text-lg transition transform hover:scale-105">
+              Check Where You Owe — Free
             </Link>
-            <Link href="/pricing" className="card-theme px-8 py-4 rounded-xl font-semibold text-lg text-theme-primary hover:bg-theme-accent/10 transition">
-              See Pricing
+            <Link href="/signup" className="card-theme px-8 py-4 rounded-xl font-semibold text-lg text-theme-primary hover:bg-theme-accent/10 transition">
+              Create a Free Account
             </Link>
           </div>
-          <p className="text-theme-muted text-sm mt-4">Free forever tier • Paid plans from $9/mo • Cancel anytime</p>
+          <p className="text-theme-muted text-sm mt-4">
+            The check needs no signup — drop in an order export and your file never leaves your computer.
+          </p>
+          <p className="text-theme-muted text-sm mt-1">Free forever tier • Paid plans from $9/mo • Cancel anytime</p>
         </div>
       </section>
 
@@ -607,7 +612,14 @@ export default function Home() {
           <Link href="/signup" className="inline-block btn-theme-primary px-8 py-4 rounded-xl font-semibold text-lg transition transform hover:scale-105">
             Start Free — No Credit Card
           </Link>
-          <p className="text-theme-muted text-sm mt-4">
+          <p className="text-theme-secondary mt-4">
+            Not ready for an account?{' '}
+            <Link href="/free-scan" className="text-theme-accent font-medium hover:underline">
+              Run the free nexus check
+            </Link>{' '}
+            with an order export.
+          </p>
+          <p className="text-theme-muted text-sm mt-2">
             Questions first? Email support@sails.tax — a real person answers.
           </p>
         </div>

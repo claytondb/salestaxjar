@@ -237,6 +237,15 @@ describe('how sure', () => {
     expect(fl.confidenceReasons.join(' ')).not.toMatch(/marketplace/)
   })
 
+  it('talks about "these files" for the free check', () => {
+    const cov = coverage({ directFrom: '2026-03-01T00:00:00Z', directTo: '2026-04-15T00:00:00Z' })
+    const e = evaluateState(rule('WA'), sales([['2026-03', '2026-04', 40_000, 200]]), { ...ctx({ coverage: cov }), source: 'files' as const })
+    const reasons = e.confidenceReasons.join(' ')
+    expect(reasons).toMatch(/store orders in these files start on Mar 1, 2026/)
+    expect(reasons).toMatch(/most recent store order in these files is from Apr 15, 2026\. Sales since then aren't counted — add a newer export\./)
+    expect(reasons).not.toMatch(/Sails|sync/)
+  })
+
   it('drops when a plan limit kept orders out', () => {
     const cov = coverage({ capped: ['2026-04', '2026-05'], limit: 50 })
     const e = evaluateState(rule('WA'), sales([['2025-01', '2026-06', 60_000, 900]]), ctx({ coverage: cov }))
@@ -358,6 +367,17 @@ describe('all states, summary and top actions', () => {
     const cov = coverage({ capped: ['2026-05'], limit: 50, mktFrom: '2024-01-05T00:00:00Z' })
     const all = evaluateAllStates(new Map([['GA', sales([['2026-01', '2026-06', 80_000, 150]])]]), ctx({ coverage: cov }))
     expect(getTopActions(all, cov, NOW).map((a) => a.kind)).toContain('upgrade')
+  })
+
+  it('words data gaps for dropped-in files', () => {
+    const cov = coverage({ directFrom: '2026-02-01T00:00:00Z', directTo: '2026-04-01T00:00:00Z' })
+    const all = evaluateAllStates(new Map([['GA', sales([['2026-02', '2026-03', 80_000, 150]])]]), { ...ctx({ coverage: cov }), source: 'files' as const })
+    const actions = getTopActions(all, cov, NOW, 5, 'files')
+    const sync = actions.find((a) => a.kind === 'sync')
+    const history = actions.find((a) => a.kind === 'import_history')
+    expect(sync?.title).toBe('Add a newer store export')
+    expect(history?.detail).toMatch(/Your files start on Feb 1, 2026 — if you sold before then, add an older export\./)
+    expect(getTopActions(all, cov, NOW, 5).find((a) => a.kind === 'sync')?.title).toBe('Sync your store')
   })
 
   it('asks for orders when there is no data at all', () => {

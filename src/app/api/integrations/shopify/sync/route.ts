@@ -134,10 +134,11 @@ export async function POST(request: NextRequest) {
         currency: order.currency,
         status: mapShopifyStatus(order.financial_status, order.fulfillment_status),
         customerEmail: undefined, // Privacy - don't store by default
-        shippingState: order.shipping_address?.province_code,
-        shippingCity: order.shipping_address?.city,
-        shippingZip: order.shipping_address?.zip,
-        shippingCountry: order.shipping_address?.country_code || 'US',
+        // Digital orders have no shipping address; use the billing address.
+        shippingState: (order.shipping_address ?? order.billing_address)?.province_code,
+        shippingCity: (order.shipping_address ?? order.billing_address)?.city,
+        shippingZip: (order.shipping_address ?? order.billing_address)?.zip,
+        shippingCountry: (order.shipping_address ?? order.billing_address)?.country_code || 'US',
         billingState: order.billing_address?.province_code,
         lineItems: order.line_items,
         taxBreakdown: {

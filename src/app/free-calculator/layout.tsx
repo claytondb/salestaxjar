@@ -1,15 +1,15 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Free Sales Tax Calculator — All 50 US States (2025)',
+  title: 'Free Sales Tax Calculator — All 50 US States (2026)',
   description:
-    'Calculate sales tax instantly for any US state. Free sales tax calculator with 2025 rates — no sign-up required. Enter your sale amount and state to get tax amount, total, and effective rate.',
+    'Calculate sales tax instantly for any US state. Free sales tax calculator with July 2026 rates — no sign-up required. Enter your sale amount and state to get tax amount, total, and effective rate.',
   keywords:
-    'sales tax calculator, free sales tax calculator, sales tax by state, how to calculate sales tax, 2025 sales tax rates, US sales tax',
+    'sales tax calculator, free sales tax calculator, sales tax by state, how to calculate sales tax, 2026 sales tax rates, US sales tax',
   openGraph: {
-    title: 'Free Sales Tax Calculator — All 50 US States (2025)',
+    title: 'Free Sales Tax Calculator — All 50 US States (2026)',
     description:
-      'Instantly calculate sales tax for any US state. Free, no login required. 2025 rates updated from official state sources.',
+      'Instantly calculate sales tax for any US state. Free, no login required. State and average local rates as of July 2026.',
     type: 'website',
     url: 'https://sails.tax/free-calculator',
     images: [
@@ -23,7 +23,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Free Sales Tax Calculator — All 50 US States (2025)',
+    title: 'Free Sales Tax Calculator — All 50 US States (2026)',
     description:
       'Instantly calculate sales tax for any US state. No sign-up needed.',
     images: ['/og-image.png'],
@@ -42,7 +42,7 @@ const jsonLdWebApp = {
   applicationCategory: 'FinanceApplication',
   operatingSystem: 'Web',
   description:
-    'Free sales tax calculator for all 50 US states. No sign-up required. Uses 2025 combined state + local rates.',
+    'Free sales tax calculator for all 50 US states. No sign-up required. Uses combined state + average local rates as of July 2026.',
   offers: {
     '@type': 'Offer',
     price: '0',

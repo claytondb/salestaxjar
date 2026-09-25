@@ -104,15 +104,15 @@ export default async function BlogPostPage({ params }: Props) {
               <SailsLogo className="w-10 h-10 text-theme-accent" />
               <span className="text-2xl font-bold text-theme-primary">Sails</span>
             </Link>
-            <nav className="hidden md:flex gap-6 items-center">
-              <Link href="/#features" className="text-theme-secondary hover:text-theme-primary transition">Features</Link>
+            <nav className="hidden lg:flex gap-6 items-center">
+              <Link href="/free-scan" className="text-theme-secondary hover:text-theme-primary transition whitespace-nowrap">Nexus Check</Link>
               <Link href="/pricing" className="text-theme-secondary hover:text-theme-primary transition">Pricing</Link>
-              <Link href="/free-calculator" className="text-theme-secondary hover:text-theme-primary transition">Free Calculator</Link>
+              <Link href="/free-calculator" className="text-theme-secondary hover:text-theme-primary transition">Calculator</Link>
               <Link href="/blog" className="text-theme-accent font-medium">Blog</Link>
               <ThemeToggle />
             </nav>
             <div className="flex gap-3 items-center">
-              <div className="md:hidden">
+              <div className="lg:hidden">
                 <ThemeToggle />
               </div>
               <Link href="/login" className="text-theme-secondary hover:text-theme-primary transition">Log in</Link>
@@ -225,14 +225,20 @@ export default async function BlogPostPage({ params }: Props) {
               Find out where you owe sales tax
             </h3>
             <p className="text-theme-secondary mb-6">
-              Sails checks your sales against every state&apos;s nexus rules and shows you what to do next. Free to start, no credit card.
+              Drop in an order export and Sails checks your sales against every state&apos;s nexus rules, then shows you what to
+              do next. Free, no signup — your file never leaves your computer.
             </p>
-            <Link 
-              href="/signup"
-              className="btn-theme-primary px-6 py-3 rounded-lg font-medium inline-block"
-            >
-              Get Started Free
-            </Link>
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              <Link href="/free-scan" className="btn-theme-primary px-6 py-3 rounded-lg font-medium inline-block">
+                Run the free nexus check
+              </Link>
+              <Link
+                href="/signup"
+                className="px-6 py-3 rounded-lg font-medium inline-block border border-theme-secondary text-theme-secondary hover:text-theme-primary"
+              >
+                Create a free account
+              </Link>
+            </div>
           </div>
         </div>
       </article>

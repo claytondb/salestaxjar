@@ -27,6 +27,7 @@ export default function Footer() {
           <div>
             <h3 className="text-theme-primary font-semibold mb-4">Product</h3>
             <ul className="space-y-2 text-theme-muted text-sm">
+              <li><Link href="/free-scan" className="hover:text-theme-primary transition">Free Nexus Check</Link></li>
               <li><Link href="/calculator" className="hover:text-theme-primary transition">Tax Calculator</Link></li>
               <li><Link href="/nexus" className="hover:text-theme-primary transition">Nexus Tracker</Link></li>
               <li><Link href="/filings" className="hover:text-theme-primary transition">Filing Calendar</Link></li>

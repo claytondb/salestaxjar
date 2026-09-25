@@ -70,15 +70,15 @@ export default function FreeCalculatorPage() {
               <SailsLogo className="w-10 h-10 text-theme-accent" />
               <span className="text-2xl font-bold text-theme-primary">Sails</span>
             </Link>
-            <nav className="hidden md:flex gap-6 items-center">
-              <Link href="/#features" className="text-theme-secondary hover:text-theme-primary transition">Features</Link>
+            <nav className="hidden lg:flex gap-6 items-center">
+              <Link href="/free-scan" className="text-theme-secondary hover:text-theme-primary transition whitespace-nowrap">Nexus Check</Link>
               <Link href="/pricing" className="text-theme-secondary hover:text-theme-primary transition">Pricing</Link>
-              <Link href="/free-calculator" className="text-theme-accent font-medium">Free Calculator</Link>
+              <Link href="/free-calculator" className="text-theme-accent font-medium">Calculator</Link>
               <Link href="/blog" className="text-theme-secondary hover:text-theme-primary transition">Blog</Link>
               <ThemeToggle />
             </nav>
             <div className="flex gap-3 items-center">
-              <div className="md:hidden">
+              <div className="lg:hidden">
                 <ThemeToggle />
               </div>
               <Link href="/login" className="text-theme-secondary hover:text-theme-primary px-4 py-2 transition">Log in</Link>
@@ -252,7 +252,7 @@ export default function FreeCalculatorPage() {
         <section className="px-4 pb-16">
           <div className="max-w-4xl mx-auto">
             <h2 className="text-2xl font-bold text-theme-primary text-center mb-2">
-              2025 Sales Tax Rates by State
+              Sales Tax Rates by State (July 2026)
             </h2>
             <p className="text-theme-secondary text-center mb-8">
               Combined state + average local rates across all 50 US states.
@@ -287,7 +287,7 @@ export default function FreeCalculatorPage() {
               </div>
               <div className="p-4 border-t border-theme-primary">
                 <p className="text-theme-muted text-xs text-center">
-                  Rates effective January 1, 2025. Source: Tax Foundation, state DOR websites. For estimation only — not tax advice.
+                  State rates plus average local rates as of July 1, 2026. Source: Tax Foundation. For estimation only — not tax advice.
                 </p>
               </div>
             </div>
@@ -310,9 +310,9 @@ export default function FreeCalculatorPage() {
               </div>
               <div className="text-center">
                 <CheckCircle className="w-10 h-10 text-theme-accent mx-auto mb-3" />
-                <h3 className="font-semibold text-theme-primary mb-2">2025 Rates</h3>
+                <h3 className="font-semibold text-theme-primary mb-2">Dated, Sourced Rates</h3>
                 <p className="text-theme-secondary text-sm">
-                  Our state rates are updated annually from Tax Foundation data and state revenue departments.
+                  Rates as of July 1, 2026, from the Tax Foundation&apos;s state and average local rates, so you know how current they are.
                 </p>
               </div>
               <div className="text-center">

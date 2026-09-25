@@ -101,10 +101,17 @@ export interface DataCoverage {
 /** What the seller told Sails about a state (Nexus → Manual tracking). */
 export type Registration = 'registered' | 'tracked' | 'none';
 
+/**
+ * Where the orders came from, for wording: 'sails' = stores connected to a
+ * Sails account; 'files' = exports dropped into the free check.
+ */
+export type OrderSource = 'sails' | 'files';
+
 export interface EvaluationContext {
   now: Date;
   coverage: DataCoverage;
   registrations?: Map<string, Registration>;
+  source?: OrderSource;
 }
 
 export function emptyTotals(): Totals {
@@ -413,6 +420,7 @@ export function evaluateState(
   ctx: EvaluationContext
 ): StateEvaluation {
   const { now, coverage } = ctx;
+  const fromFiles = ctx.source === 'files';
   const data: StateMonths = months ?? new Map();
   const includeMarketplace = rule.marketplaceSales === 'included';
   const registration: Registration = ctx.registrations?.get(rule.stateCode) ?? 'none';
@@ -668,14 +676,16 @@ export function evaluateState(
         const span = now.getTime() - neededStart.getTime();
         const missingShare = span > 0 ? (cov.earliest.getTime() - neededStart.getTime()) / span : 1;
         noteReason(
-          `Your ${label} orders in Sails start on ${formatDay(cov.earliest)}, but ${state} looks back to ${formatDay(neededStart)}. Earlier sales aren't counted, so your real total may be higher.`,
+          `Your ${label} orders ${fromFiles ? 'in these files' : 'in Sails'} start on ${formatDay(cov.earliest)}, but ${state} looks back to ${formatDay(neededStart)}. Earlier sales aren't counted, so your real total may be higher.`,
           missingShare > 0.5 ? 'low' : 'medium'
         );
       }
       const staleDays = (now.getTime() - cov.latest.getTime()) / DAY;
       if (staleDays > STALE_AFTER_DAYS) {
         noteReason(
-          `Your most recent ${label} order in Sails is from ${formatDay(cov.latest)}. Sales since then aren't counted${label === 'store' ? ' — sync your store to bring them in' : ' — upload a newer report'}.`,
+          `Your most recent ${label} order ${fromFiles ? 'in these files' : 'in Sails'} is from ${formatDay(cov.latest)}. Sales since then aren't counted${
+            fromFiles ? ' — add a newer export' : label === 'store' ? ' — sync your store to bring them in' : ' — upload a newer report'
+          }.`,
           staleDays > 120 ? 'low' : 'medium'
         );
       }
@@ -916,16 +926,26 @@ export interface TopAction {
  * you're over → plan for next-year states → check past exposure → check
  * marketplace-only/local cases → fix missing data → watch close states.
  */
-export function getTopActions(evaluations: StateEvaluation[], coverage: DataCoverage, now: Date, limit = 3): TopAction[] {
+export function getTopActions(
+  evaluations: StateEvaluation[],
+  coverage: DataCoverage,
+  now: Date,
+  limit = 3,
+  source: OrderSource = 'sails'
+): TopAction[] {
   const actions: TopAction[] = [];
   const year = now.getUTCFullYear();
+  const fromFiles = source === 'files';
+  const where = fromFiles ? 'in these files' : 'in Sails';
 
   if (!coverage.earliestOrder) {
     return [
       {
         kind: 'connect_store',
-        title: 'Bring in your orders',
-        detail: 'Connect your store (or upload an Amazon report) so Sails can check every state for you.',
+        title: fromFiles ? 'Add your order files' : 'Bring in your orders',
+        detail: fromFiles
+          ? 'Drop in an order export so Sails can check every state for you.'
+          : 'Connect your store (or upload an Amazon report) so Sails can check every state for you.',
       },
     ];
   }
@@ -974,14 +994,14 @@ export function getTopActions(evaluations: StateEvaluation[], coverage: DataCove
   if (stale(coverage.direct)) {
     actions.push({
       kind: 'sync',
-      title: 'Sync your store',
-      detail: `Your newest store order in Sails is from ${formatDay(coverage.direct.latest!)}.`,
+      title: fromFiles ? 'Add a newer store export' : 'Sync your store',
+      detail: `Your newest store order ${where} is from ${formatDay(coverage.direct.latest!)}.`,
     });
   } else if (coverage.hasMarketplaceData && stale(coverage.marketplace)) {
     actions.push({
       kind: 'sync',
-      title: 'Upload a newer Amazon report',
-      detail: `Your newest Amazon order in Sails is from ${formatDay(coverage.marketplace.latest!)}.`,
+      title: fromFiles ? 'Add a newer marketplace export' : 'Upload a newer Amazon report',
+      detail: `Your newest ${fromFiles ? 'marketplace' : 'Amazon'} order ${where} is from ${formatDay(coverage.marketplace.latest!)}.`,
     });
   }
 
@@ -991,7 +1011,9 @@ export function getTopActions(evaluations: StateEvaluation[], coverage: DataCove
     actions.push({
       kind: 'import_history',
       title: `Add orders back to January 1, ${year - 1}`,
-      detail: `Many states look at all of last year. Your history in Sails starts on ${formatDay(coverage.earliestOrder)} — if you sold before then, add those orders.`,
+      detail: fromFiles
+        ? `Many states look at all of last year. Your files start on ${formatDay(coverage.earliestOrder)} — if you sold before then, add an older export.`
+        : `Many states look at all of last year. Your history in Sails starts on ${formatDay(coverage.earliestOrder)} — if you sold before then, add those orders.`,
     });
   }
 
