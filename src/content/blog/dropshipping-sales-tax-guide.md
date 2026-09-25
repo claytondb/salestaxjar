@@ -171,7 +171,7 @@ Managing sales tax across multiple states and suppliers is complex. Sails simpli
 - **Tax estimates**: Our calculator estimates tax using state and average local rates
 - **Nexus tracking**: We alert you when you're approaching thresholds
 - **Multi-platform support**: Connect your Shopify, WooCommerce, or other stores
-- **Filing reminders**: Email reminders 7 days and 1 day before each deadline
+- **Filing calendar**: Upcoming due dates for the states you track
 
 [Start your free trial →](/pricing)
 

@@ -114,6 +114,6 @@ But if you're a growing BigCommerce store trying to get compliant without bleedi
 
 ## Ready to Make the Switch?
 
-Setting up Sails takes about 15 minutes. You'll get nexus monitoring, deadline reminders, and clean reporting — for a price that actually makes sense for your business.
+Setting up Sails takes about 15 minutes. You'll get nexus monitoring, a filing deadline calendar, and clean reporting — for a price that actually makes sense for your business.
 
 **[Connect BigCommerce to Sails](https://sails.tax/signup)** — free to start, no contracts.

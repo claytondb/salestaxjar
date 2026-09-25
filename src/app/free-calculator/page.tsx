@@ -102,7 +102,7 @@ export default function FreeCalculatorPage() {
               Free Sales Tax Calculator
             </h1>
             <p className="text-xl text-theme-secondary max-w-2xl mx-auto">
-              Instantly calculate sales tax for any US state. Enter your sale amount, pick a state, and get accurate results in seconds.
+              Estimate sales tax for any US state in seconds. Enter your sale amount and pick a state — Sails uses the state rate plus the state&apos;s average local rate.
             </p>
           </div>
         </section>
@@ -344,15 +344,15 @@ export default function FreeCalculatorPage() {
                 },
                 {
                   q: 'What is the highest sales tax state?',
-                  a: 'When combining state and average local rates, Louisiana, Tennessee, and Arkansas typically have the highest combined sales tax rates in the US, often above 9%.',
+                  a: 'Combining state rates with average local rates (as of July 2026), Louisiana, Tennessee, Washington, Arkansas and Alabama have the highest combined rates, all above 9%.',
                 },
                 {
                   q: 'Do I need to collect sales tax on all my sales?',
-                  a: 'It depends on whether you have "nexus" in a state — meaning a sufficient business presence or sales volume that triggers a collection obligation. Most states use economic nexus thresholds ($100K in sales or 200 transactions). Sails can help you track your nexus across all states.',
+                  a: 'It depends on whether you have "nexus" in a state — meaning a sufficient business presence or sales volume that triggers a collection obligation. Most states use a $100,000 sales threshold; a few set a higher amount, and some also count transactions. Sails can help you track your nexus across all states.',
                 },
                 {
                   q: 'Are these rates accurate for my city or ZIP code?',
-                  a: 'These are state-level combined rates (state rate + average local rate). Actual local taxes vary by city, county, and special district. For precise ZIP-code-level rates, consider upgrading to Sails to get exact rates for every order.',
+                  a: 'No — these are state-level estimates (state rate + average local rate). Actual local taxes vary by city, county, and special district, so the rate at a specific address can be higher or lower. For an exact rate, use your state\'s official rate lookup.',
                 },
               ].map(({ q, a }) => (
                 <div key={q} className="card-theme rounded-xl p-6">
@@ -368,10 +368,10 @@ export default function FreeCalculatorPage() {
         <section className="px-4 pb-16">
           <div className="max-w-2xl mx-auto text-center card-theme rounded-2xl p-10">
             <h2 className="text-3xl font-bold text-theme-primary mb-4">
-              Ready to automate sales tax for your store?
+              Know where your store owes sales tax
             </h2>
             <p className="text-theme-secondary mb-6 text-lg">
-              Sails connects to Shopify, WooCommerce, and BigCommerce. Track nexus, calculate taxes, and never miss a filing deadline. Free to start.
+              Connect Shopify or WooCommerce (more platforms are in beta) to see how close you are to each state&apos;s threshold, with your filing due dates in one place. Free to start.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <Link

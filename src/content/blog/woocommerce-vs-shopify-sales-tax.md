@@ -128,7 +128,7 @@ Here's something worth being clear about: **both Shopify and WooCommerce handle 
 
 Collecting the right amount at checkout is step one. Step two is taking what you collected, calculating the correct amount owed per state, filing returns on time, and remitting the funds. That's a separate workflow that neither platform's built-in tools fully automate.
 
-This is where a purpose-built compliance tool matters most. The platforms handle the customer-facing calculation. A tool like Sails helps with the back-end compliance: nexus monitoring, deadline reminders, and sales-by-state reports — across both platforms.
+This is where a purpose-built compliance tool matters most. The platforms handle the customer-facing calculation. A tool like Sails helps with the back-end compliance: nexus monitoring, a filing deadline calendar, and sales-by-state reports — across both platforms.
 
 ---
 
@@ -142,7 +142,7 @@ Either way, once you're past basic calculation — once you need to track nexus,
 
 ---
 
-*[Sails](https://sails.tax) integrates with both Shopify and WooCommerce (plus BigCommerce, in beta). Connect your store, and Sails imports your orders, tracks nexus, and emails filing reminders — whether you're on Shopify or WordPress. Plans start free. [See how it works →](https://sails.tax)*
+*[Sails](https://sails.tax) integrates with both Shopify and WooCommerce (plus BigCommerce, in beta). Connect your store, and Sails imports your orders, tracks nexus, and keeps your filing deadlines in one place — whether you're on Shopify or WordPress. Plans start free. [See how it works →](https://sails.tax)*
 
 ---
 

@@ -90,15 +90,15 @@ Your accountant or tax preparer will need to see your tax collected by state. Th
 **Here's how it works:**
 1. Connect your Shopify or WooCommerce store
 2. Sails checks your sales against every state's economic nexus rules
-3. You get email alerts as you approach thresholds, reminders before filing deadlines, and sales-by-state reports you can export to CSV
+3. You get email alerts as you approach thresholds, a calendar of your filing deadlines, and sales-by-state reports you can export to CSV
 
 **Pricing:**
-- **Free**: Nexus monitoring, alerts, reminders and reports — 1 store connection, up to 50 orders/month
+- **Free**: Nexus monitoring, alerts, a filing calendar and reports — 1 store connection, up to 50 orders/month
 - **Starter ($9/mo)**: 2 store connections, up to 500 orders/month — for side hustlers and small stores
 - **Pro ($29/mo)**: 3 store connections, up to 5,000 orders/month, API access
 - **Enterprise ($79/mo)**: Unlimited — for high-volume sellers
 
-At $9/month vs. TaxJar's $39/month Starter plan (as of September 2026), Sails costs about $360 less per year — but it's not the same product: TaxJar calculates tax at checkout and can file returns for you, while Sails focuses on nexus monitoring, deadline reminders and reports.
+At $9/month vs. TaxJar's $39/month Starter plan (as of September 2026), Sails costs about $360 less per year — but it's not the same product: TaxJar calculates tax at checkout and can file returns for you, while Sails focuses on nexus monitoring, deadline tracking and reports.
 
 ## The Bottom Line
 

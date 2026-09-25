@@ -65,7 +65,7 @@ export default function TermsPage() {
                 <li>Sales tax calculation tools for US states and territories</li>
                 <li>Product category-based tax rate estimation</li>
                 <li>Nexus determination assistance</li>
-                <li>Filing deadline tracking and reminders</li>
+                <li>Filing deadline tracking</li>
                 <li>Integration with e-commerce platforms</li>
                 <li>Tax calculation history and reporting</li>
               </ul>

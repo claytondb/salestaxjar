@@ -107,7 +107,7 @@ If you sell anywhere besides Shopify, those sales can count toward your nexus th
 Amazon, Etsy, and other marketplaces typically collect and remit tax for you (marketplace facilitator laws). But those sales still count toward your economic nexus totals in some states. The rules vary by state.
 
 **4. Missing filing deadlines**
-States charge penalties and interest for late filings (the amounts vary by state). In some states, repeat late filing can trigger an audit. Set calendar reminders — or use a tool that tracks deadlines and emails you reminders.
+States charge penalties and interest for late filings (the amounts vary by state). In some states, repeat late filing can trigger an audit. Set calendar reminders — or use a tool that tracks your deadlines for you.
 
 **5. Not tracking historical sales**
 Economic nexus looks at the prior or current calendar year in most states; some use the prior 12 months or another period. If you're new to tracking, you need to look back at your historical sales data to see if you've already crossed thresholds you weren't aware of.
@@ -119,7 +119,7 @@ Economic nexus looks at the prior or current calendar year in most states; some 
 | Tax calculation at checkout | ✅ Excellent | N/A |
 | Economic nexus monitoring | Shopify sales only | ✅ All connected channels |
 | Multi-platform tracking | ❌ | ✅ |
-| Filing deadline reminders | ❌ | ✅ |
+| Filing deadline calendar | ❌ | ✅ |
 | Sales-by-state reports for filing | Tax reports | ✅ |
 | Cost | Free for first $100K in US sales, then 0.35%/order (max $0.99) | Free plan; paid from $9/mo |
 
@@ -139,11 +139,11 @@ To be fully compliant as a Shopify seller in 2026, you need:
 1. ✅ **Shopify Tax** — for accurate calculation at checkout
 2. ✅ **Nexus monitoring** — to know when you need to register in new states
 3. ✅ **Multi-platform tracking** — if you sell beyond Shopify
-4. ✅ **Filing reminders** — so you don't miss a deadline
+4. ✅ **Deadline tracking** — so you don't miss a filing date
 5. ✅ **Clear reporting** — to know what you owe and when
 
 Shopify gives you #1. Everything else requires a separate tool or a lot of manual work.
 
 ---
 
-*[Sails](https://sails.tax) fills the gap, with a free plan and paid plans from $9/month. Connect your Shopify store and get nexus monitoring across your channels, deadline reminders, and sales-by-state reports in one place. [Start free →](https://sails.tax/signup)*
+*[Sails](https://sails.tax) fills the gap, with a free plan and paid plans from $9/month. Connect your Shopify store and get nexus monitoring across your channels, a filing deadline calendar, and sales-by-state reports in one place. [Start free →](https://sails.tax/signup)*

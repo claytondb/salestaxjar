@@ -38,10 +38,21 @@ const FEATURE_ICONS: Record<string, React.ReactNode> = {
   calculator: <Calculator className={ICON_CLASS} />,
   nexus_tracking: <MapPin className={ICON_CLASS} />,
   threshold_alerts: <AlertTriangle className={ICON_CLASS} />,
+  filing_calendar: <Calendar className={ICON_CLASS} />,
   deadline_reminders: <Bell className={ICON_CLASS} />,
   reports: <LayoutDashboard className={ICON_CLASS} />,
   filing_summaries: <ClipboardList className={ICON_CLASS} />,
 };
+
+// Six cards (a full 3×2 grid). Live features first, then one planned feature.
+const HOMEPAGE_FEATURE_IDS = [
+  'nexus_tracking',
+  'threshold_alerts',
+  'filing_calendar',
+  'reports',
+  'calculator',
+  'filing_summaries',
+];
 
 export default function Home() {
   const { user, isLoading } = useAuth();
@@ -137,10 +148,7 @@ export default function Home() {
               <Link href="/blog" className="text-theme-secondary hover:text-theme-primary transition">Blog</Link>
               <ThemeToggle />
             </nav>
-            <div className="flex gap-3 items-center">
-              <div className="md:hidden">
-                <ThemeToggle />
-              </div>
+            <div className="flex gap-2 sm:gap-3 items-center">
               <button
                 className="md:hidden text-theme-secondary hover:text-theme-primary p-2"
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -159,7 +167,7 @@ export default function Home() {
                   <Link href="/login" className="border border-theme-secondary hover:border-theme-primary text-theme-secondary hover:text-theme-primary px-4 py-2 rounded-lg transition text-sm sm:text-base whitespace-nowrap">
                     Log in
                   </Link>
-                  <Link href="/signup" className="btn-theme-primary px-3 sm:px-4 py-2 rounded-lg font-medium transition text-sm sm:text-base">
+                  <Link href="/signup" className="btn-theme-primary px-3 sm:px-4 py-2 rounded-lg font-medium transition text-sm sm:text-base whitespace-nowrap">
                     Start Free
                   </Link>
                 </>
@@ -177,21 +185,16 @@ export default function Home() {
             <Link href="/pricing" onClick={() => setMobileMenuOpen(false)} className="text-theme-secondary hover:text-theme-primary transition py-2">Pricing</Link>
             <a href="#calculator" onClick={() => setMobileMenuOpen(false)} className="text-theme-secondary hover:text-theme-primary transition py-2">Calculator</a>
             <Link href="/blog" onClick={() => setMobileMenuOpen(false)} className="text-theme-secondary hover:text-theme-primary transition py-2">Blog</Link>
+            <div className="py-2 flex items-center gap-3">
+              <span className="text-theme-secondary">Theme</span>
+              <ThemeToggle />
+            </div>
           </nav>
         </div>
       )}
 
       {/* Hero Section */}
       <section className="relative py-12 sm:py-20 px-4 overflow-hidden">
-        {/* Background Image */}
-        <div 
-          className="absolute inset-0 z-0 opacity-20"
-          style={{
-            backgroundImage: `url('https://images.unsplash.com/photo-1493106641515-6b5631de4bb9?auto=format&fit=crop&w=1920&q=80')`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-          }}
-        />
         {/* Gradient Overlay */}
         <div className="absolute inset-0 z-0 bg-theme-gradient opacity-95" />
         
@@ -219,7 +222,7 @@ export default function Home() {
           
           {/* What it does */}
           <p className="text-lg sm:text-xl text-theme-secondary mb-8 max-w-2xl mx-auto">
-            Sails checks your sales against every state&apos;s economic nexus rules, flags the states you&apos;re close to or over, and reminds you before filing deadlines. Built for Shopify and WooCommerce sellers. <span className="text-theme-primary font-medium">Free to start.</span>
+            Sails checks your sales against every state&apos;s economic nexus rules, flags the states you&apos;re close to or over, and keeps your filing due dates in one place. Built for Shopify and WooCommerce sellers. <span className="text-theme-primary font-medium">Free to start.</span>
           </p>
 
           {/* Trust Signals */}
@@ -347,7 +350,7 @@ export default function Home() {
             {[
               { pain: "\"I sell on Shopify and Amazon but I have no idea if I should be collecting sales tax.\"", solution: "See your nexus picture across all 50 states and DC, with every channel combined." },
               { pain: "\"I'm scared I'll get a letter from a state saying I owe thousands in back taxes.\"", solution: "Spot the states you're close to or over — before a state spots them first." },
-              { pain: "\"Filing deadlines are different for every state and I can't keep track.\"", solution: "Get an email 7 days and 1 day before each deadline you track." },
+              { pain: "\"Filing deadlines are different for every state and I can't keep track.\"", solution: "See the upcoming due dates for every state you track on one calendar." },
               { pain: "\"I don't have time to figure out sales tax rules for 45 states.\"", solution: `We keep each state's thresholds up to date, with sources (last reviewed ${NEXUS_RULES_REVIEWED_LABEL}).` }
             ].map((item, i) => (
               <div key={i} className="card-theme rounded-xl p-6">
@@ -482,14 +485,14 @@ export default function Home() {
       <section id="features" className="py-12 sm:py-20 px-4 bg-theme-secondary/30">
         <div className="max-w-6xl mx-auto">
           <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-theme-primary text-center mb-4">
-            Everything You Need to Stay Compliant
+            What You Get
           </h2>
           <p className="text-theme-muted text-center mb-8 sm:mb-12 max-w-2xl mx-auto">
-            No more spreadsheets. No more guessing. Just clear answers.
+            Clear answers about where you owe, without the spreadsheets.
           </p>
           
           <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8">
-            {FEATURES.filter((f) => f.id !== 'auto_filing').map((feature) => (
+            {HOMEPAGE_FEATURE_IDS.flatMap((id) => FEATURES.filter((f) => f.id === id)).map((feature) => (
               <div key={feature.id} className="card-theme rounded-xl p-6 hover:border-theme-accent transition relative">
                 {feature.status !== 'live' && (
                   <span className="absolute top-3 right-3 text-xs px-2 py-1 rounded-full font-medium" style={{ backgroundColor: 'rgba(234, 179, 8, 0.2)', color: 'var(--warning)' }}>

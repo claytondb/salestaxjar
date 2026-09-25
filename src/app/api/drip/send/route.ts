@@ -15,6 +15,7 @@
  *   Day 14 — still on free plan (no active subscription)
  *
  * Duplicate-safe: skips if an EmailLog entry for this template already exists.
+ * Sends nothing unless ONBOARDING_EMAILS_ENABLED=true.
  */
 
 import { NextRequest, NextResponse } from 'next/server';
@@ -25,6 +26,7 @@ import {
   sendDripDay7Email,
   sendDripDay14Email,
 } from '@/lib/email';
+import { onboardingEmailsEnabled } from '@/lib/scheduled-email-flags';
 
 const DRIP_SECRET = process.env.DRIP_SECRET;
 
@@ -47,6 +49,16 @@ export async function POST(request: NextRequest) {
     body = await request.json();
   } catch {
     return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 });
+  }
+
+  // Same off switch as the daily job: nothing is sent until the owner turns
+  // onboarding emails on.
+  if (!onboardingEmailsEnabled()) {
+    return NextResponse.json({
+      sent: false,
+      skipped: true,
+      reason: 'Onboarding emails are turned off (ONBOARDING_EMAILS_ENABLED is not true).',
+    });
   }
 
   const { userId, dripDay } = body;

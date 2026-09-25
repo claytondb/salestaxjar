@@ -148,11 +148,11 @@ Export your filing schedule from each state's portal, add the dates to your cale
 
 If you're registered in 10 states and filing monthly in half of them, you're managing 60+ due dates per year. Manual tracking at that scale is how things get missed.
 
-### Option 2: Use a tool that handles it for you
+### Option 2: Use a tool that tracks them for you
 
-[Sails](https://sails.tax) keeps a filing deadline calendar for the states you're registered in and emails you reminders 7 days and 1 day before each due date, so you have lead time to actually prepare — just confirm your assigned filing frequency and due dates with each state.
+[Sails](https://sails.tax) keeps a filing deadline calendar for the states you're registered in, so you can see what's coming and prepare ahead — just confirm your assigned filing frequency and due dates with each state.
 
-Connect your Shopify or WooCommerce store (BigCommerce is in beta) and Sails imports your orders — so when the deadline reminder arrives, your sales-by-state report is ready to export.
+Connect your Shopify or WooCommerce store (BigCommerce is in beta) and Sails imports your orders — so when a deadline comes up, your sales-by-state report is ready to export.
 
 ## Key Takeaways
 
@@ -165,7 +165,7 @@ Connect your Shopify or WooCommerce store (BigCommerce is in beta) and Sails imp
 
 ---
 
-*Stop tracking deadlines manually. [Sails](https://sails.tax) emails you filing deadline reminders 7 days and 1 day before each due date for the states you're registered in. [Start free →](https://sails.tax/signup)*
+*Stop tracking deadlines in a spreadsheet. [Sails](https://sails.tax) keeps the filing due dates for the states you're registered in on one calendar. [Start free →](https://sails.tax/signup)*
 
 ---
 

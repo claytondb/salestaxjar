@@ -258,10 +258,16 @@ export async function sendNexusAlertEmail(
     const result = await resend.emails.send({
       from: FROM_EMAIL,
       to: params.to,
+      replyTo: process.env.REPLY_TO_EMAIL || 'support@sails.tax',
       subject: template.subject,
       html: template.html,
       text: template.text,
     });
+
+    // Resend reports API failures in `error` instead of throwing.
+    if (result.error) {
+      throw new Error(result.error.message || 'Email provider rejected the message');
+    }
 
     logData.messageId = result.data?.id;
 

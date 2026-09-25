@@ -115,7 +115,7 @@ Sails connects directly to your OpenCart store via the Session API (the OpenCart
 
 - **Rate estimates** — a tax calculator that uses state and average local rates (not exact address-level rates), so you'll still maintain your actual rates in OpenCart
 - **Nexus tracking** — Sails checks your sales against every state's economic nexus rules and emails you when you're approaching a threshold
-- **Filing deadline reminders** by email, 7 days and 1 day before each deadline, for every state where you collect
+- **A filing deadline calendar** for every state where you collect
 - **Order import** — Sails imports your orders into one dashboard
 
 ### Connecting OpenCart to Sails
@@ -126,7 +126,7 @@ Sails connects directly to your OpenCart store via the Session API (the OpenCart
 4. Enter your store URL, API username, and API key
 5. Sails will import your order history and start tracking
 
-From there, you can see your nexus exposure across all states, get email reminders before filing deadlines, and export sales-by-state reports to CSV.
+From there, you can see your nexus exposure across all states, see upcoming filing deadlines, and export sales-by-state reports to CSV.
 
 ## OpenCart vs. WooCommerce for Tax Compliance
 
@@ -163,7 +163,7 @@ Collecting tax is only half the job — you also have to send the money to each 
 
 **Missing a deadline** typically results in penalties and interest. Grace periods vary by state, and some have zero tolerance — don't count on one.
 
-Tools like Sails track your filing deadlines and email you reminders 7 days and 1 day before each due date.
+Tools like Sails keep your filing deadlines for every state on one calendar.
 
 ## Summary
 

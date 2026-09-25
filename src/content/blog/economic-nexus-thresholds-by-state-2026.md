@@ -155,7 +155,7 @@ This works if you have one or two sales channels. It gets unwieldy fast.
 
 ### With Sails
 
-[Sails](https://sails.tax) imports your orders from Shopify or WooCommerce (other platforms are in beta) plus your Amazon order reports, and checks them against every state's current rules — including each state's measurement period and marketplace treatment. You'll get an email when you're approaching a threshold, so you have time to register.
+[Sails](https://sails.tax) imports your orders from Shopify or WooCommerce (other platforms are in beta) plus your Amazon order reports, and checks them against every state's current thresholds. You'll get an email when you're approaching a threshold, so you have time to register.
 
 ## State Sales Tax Registration: Quick Overview
 

@@ -139,7 +139,7 @@ Consider using a tool like Sails if you:
 - Sell on multiple platforms (Gumroad + website + others)
 - Are approaching economic nexus thresholds in multiple states
 - Want to track tax exposure from your own store (Sails imports Shopify and WooCommerce orders; it doesn't connect to Gumroad)
-- Need filing reminders for states that require returns
+- Need to keep track of filing deadlines in states that require returns
 
 ## The Bottom Line
 
@@ -154,4 +154,4 @@ For most small creators, Gumroad's marketplace facilitator status means you can 
 
 ---
 
-*Selling across multiple platforms and losing track of your tax obligations? [Try Sails free](/signup) to monitor your nexus and get filing deadline reminders.*
+*Selling across multiple platforms and losing track of your tax obligations? [Try Sails free](/signup) to monitor your nexus and keep your filing deadlines in one place.*

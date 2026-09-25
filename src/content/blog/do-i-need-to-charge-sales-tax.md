@@ -128,7 +128,7 @@ No state sales tax means no state sales tax obligations.
 
 Most online sellers need to charge sales tax somewhere, even if it's just their home state. The key is understanding where you have nexus and making sure you're collecting in those states.
 
-Tools like Sails can help with much of this: tracking your nexus, estimating rates, and reminding you when to file.
+Tools like Sails can help with much of this: tracking your nexus, estimating rates, and keeping your filing deadlines in one place.
 
 ---
 

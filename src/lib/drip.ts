@@ -8,7 +8,8 @@
  *   Day 14 — signed up ~14 days ago, still on the free plan
  *
  * Each email is sent at most once per user (checked against EmailLog), so
- * overlapping windows or a re-run never double-send.
+ * overlapping windows or a re-run never double-send. Only verified addresses
+ * are emailed, and anyone who turned off "Getting-started tips" is skipped.
  */
 
 import { prisma } from './prisma';
@@ -34,6 +35,26 @@ async function alreadySent(userId: string, templateName: string): Promise<boolea
     where: { userId, template: templateName, status: 'sent' },
   });
   return !!log;
+}
+
+/**
+ * Drop users who turned off "Getting-started tips" in Settings → Notifications.
+ * (That toggle is stored in NotificationPreference.emailWeeklyDigest.)
+ */
+async function withoutOptedOut<T extends { id: string }>(users: T[]): Promise<T[]> {
+  if (users.length === 0) return users;
+  const optedOut = await prisma.notificationPreference.findMany({
+    where: { userId: { in: users.map((u) => u.id) }, emailWeeklyDigest: false },
+    select: { userId: true },
+  });
+  const skip = new Set(optedOut.map((p) => p.userId));
+  return users.filter((u) => !skip.has(u.id));
+}
+
+/** Paid (or trialing) users don't get the upgrade-focused emails. */
+function isOnPaidPlan(subscription: { status: string | null; plan: string | null } | null | undefined): boolean {
+  if (!subscription) return false;
+  return ['active', 'trialing', 'past_due'].includes(subscription.status ?? '') && subscription.plan !== 'free';
 }
 
 export interface DripStepResult {
@@ -64,12 +85,14 @@ export async function runDripCampaign(): Promise<DripResults> {
 
   // ── Day 1: signed up ~24h ago, no platform connections ──────────────────────
   const day1Window = dripWindowFor(24);
-  const day1Users = await prisma.user.findMany({
+  const day1Candidates = await prisma.user.findMany({
     where: {
       createdAt: { gte: day1Window.from, lte: day1Window.to },
+      emailVerified: true,
     },
     select: { id: true, email: true, name: true },
   });
+  const day1Users = await withoutOptedOut(day1Candidates);
 
   for (const user of day1Users) {
     results.day1.processed++;
@@ -94,12 +117,14 @@ export async function runDripCampaign(): Promise<DripResults> {
 
   // ── Day 3: signed up ~72h ago, no imported orders ───────────────────────────
   const day3Window = dripWindowFor(72);
-  const day3Users = await prisma.user.findMany({
+  const day3Candidates = await prisma.user.findMany({
     where: {
       createdAt: { gte: day3Window.from, lte: day3Window.to },
+      emailVerified: true,
     },
     select: { id: true, email: true, name: true },
   });
+  const day3Users = await withoutOptedOut(day3Candidates);
 
   for (const user of day3Users) {
     results.day3.processed++;
@@ -124,12 +149,14 @@ export async function runDripCampaign(): Promise<DripResults> {
 
   // ── Day 7: signed up ~7d ago, still on free plan ────────────────────────────
   const day7Window = dripWindowFor(7 * 24);
-  const day7Users = await prisma.user.findMany({
+  const day7Candidates = await prisma.user.findMany({
     where: {
       createdAt: { gte: day7Window.from, lte: day7Window.to },
+      emailVerified: true,
     },
     select: { id: true, email: true, name: true, subscription: { select: { status: true, plan: true } } },
   });
+  const day7Users = await withoutOptedOut(day7Candidates);
 
   for (const user of day7Users) {
     results.day7.processed++;
@@ -138,9 +165,7 @@ export async function runDripCampaign(): Promise<DripResults> {
         results.day7.skipped++;
         continue;
       }
-      const isPaid =
-        user.subscription?.status === 'active' && user.subscription?.plan !== 'free';
-      if (isPaid) {
+      if (isOnPaidPlan(user.subscription)) {
         results.day7.skipped++;
         continue;
       }
@@ -155,12 +180,14 @@ export async function runDripCampaign(): Promise<DripResults> {
 
   // ── Day 14: signed up ~14d ago, still on free plan ──────────────────────────
   const day14Window = dripWindowFor(14 * 24);
-  const day14Users = await prisma.user.findMany({
+  const day14Candidates = await prisma.user.findMany({
     where: {
       createdAt: { gte: day14Window.from, lte: day14Window.to },
+      emailVerified: true,
     },
     select: { id: true, email: true, name: true, subscription: { select: { status: true, plan: true } } },
   });
+  const day14Users = await withoutOptedOut(day14Candidates);
 
   for (const user of day14Users) {
     results.day14.processed++;
@@ -169,9 +196,7 @@ export async function runDripCampaign(): Promise<DripResults> {
         results.day14.skipped++;
         continue;
       }
-      const isPaid =
-        user.subscription?.status === 'active' && user.subscription?.plan !== 'free';
-      if (isPaid) {
+      if (isOnPaidPlan(user.subscription)) {
         results.day14.skipped++;
         continue;
       }

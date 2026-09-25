@@ -189,4 +189,4 @@ But if you ship physical goods, sell clearly-defined digital products, or run a 
 
 ---
 
-*Managing tax across Patreon, Gumroad, and your own store? [Try Sails free](/signup) to track nexus for your own store and get email reminders before filing deadlines.*
+*Managing tax across Patreon, Gumroad, and your own store? [Try Sails free](/signup) to track nexus for your own store and keep your filing deadlines in one place.*

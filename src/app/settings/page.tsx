@@ -736,14 +736,20 @@ function SettingsPageContent() {
                     <div className="space-y-3">
                       {[
                         {
-                          key: 'emailDeadlineReminders',
-                          label: 'Filing deadline reminders',
-                          help: 'An email 7 days and 1 day before each filing deadline you track.',
-                        },
-                        {
                           key: 'emailNexusAlerts',
                           label: 'Threshold alerts',
                           help: "An email when your sales approach or pass a state's economic nexus threshold.",
+                        },
+                        {
+                          key: 'emailDeadlineReminders',
+                          label: 'Filing deadline reminders (coming soon)',
+                          help: 'An email a week and a day before each filing deadline you track. Leave this on to get them when they launch.',
+                        },
+                        {
+                          // Stored in emailWeeklyDigest; the onboarding emails check it.
+                          key: 'emailWeeklyDigest',
+                          label: 'Getting-started tips',
+                          help: 'A few emails in your first two weeks with tips for setting up Sails.',
                         },
                       ].map((item) => {
                         const enabled = notifications[item.key as keyof typeof notifications] !== false;

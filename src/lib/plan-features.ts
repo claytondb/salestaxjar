@@ -35,7 +35,7 @@ export const PLAN_MARKETING: Record<PlanTier, PlanMarketing> = {
     description: 'See if you even need to worry about sales tax',
     features: [
       { text: 'Nexus monitoring for all 50 states + DC' },
-      { text: 'Threshold alerts and deadline reminders' },
+      { text: 'Threshold alerts and a filing calendar' },
       { text: 'Sales-by-state reports and CSV export' },
       { text: '1 store connection, up to 50 orders/month' },
       { text: 'Unlimited tax calculations' },
@@ -43,7 +43,7 @@ export const PLAN_MARKETING: Record<PlanTier, PlanMarketing> = {
     ],
     highlights: [
       'Nexus monitoring (50 states + DC)',
-      'Alerts and deadline reminders',
+      'Threshold alerts and filing calendar',
       '1 store connection, 50 orders/month',
       'Unlimited calculations',
     ],

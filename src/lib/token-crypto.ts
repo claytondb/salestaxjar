@@ -163,9 +163,27 @@ export function decryptConnectionResult<R>(result: R): R {
   if (!hasField) return result;
   const copy: AnyRecord = { ...record };
   for (const field of ENCRYPTED_CONNECTION_FIELDS) {
-    if (typeof copy[field] === 'string') copy[field] = decryptToken(copy[field] as string);
+    if (typeof copy[field] !== 'string') continue;
+    try {
+      copy[field] = decryptToken(copy[field] as string);
+    } catch (error) {
+      // Never let one unreadable credential break every query on the table
+      // (listing, reconnecting or deleting a store must keep working). The
+      // field comes back empty, so a sync fails with a normal "reconnect your
+      // store" error and saving new credentials overwrites the bad value.
+      console.error(
+        `[token-crypto] Could not decrypt ${field} for connection ${String(record.id ?? 'unknown')}:`,
+        error instanceof Error ? error.message : error
+      );
+      copy[field] = '';
+    }
   }
   return copy as R;
+}
+
+/** The key id new values are encrypted with right now ('k1', 'j1' or null). */
+export function currentTokenKeyId(): 'k1' | 'j1' | null {
+  return currentKeyId();
 }
 
 export const WRITE_OPERATIONS = new Set([

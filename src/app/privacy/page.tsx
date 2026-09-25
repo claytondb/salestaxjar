@@ -55,12 +55,12 @@ export default function PrivacyPage() {
               <h3 className="text-lg font-medium text-theme-accent mt-4 mb-2">2.3 Information Collected Automatically</h3>
               <ul className="list-disc pl-6 space-y-2">
                 <li><strong>Log Data:</strong> IP address, access times, browser type and pages requested, kept by our hosting provider for security and troubleshooting</li>
-                <li><strong>Error Reports:</strong> When something breaks, our error-monitoring service (Sentry) records technical details and may record a short replay of the page with all text and images masked</li>
+                <li><strong>Error Reports:</strong> When something breaks, our error-monitoring service (Sentry) records technical details about the error, like the page address, your browser and the code that failed. It doesn&apos;t record your screen.</li>
               </ul>
 
               <h3 className="text-lg font-medium text-theme-accent mt-4 mb-2">2.4 Cookies and Tracking</h3>
               <p>
-                We use cookies and similar technologies to enhance your experience. See our{' '}
+                Sails uses one cookie, to keep you signed in. We don&apos;t use tracking or advertising cookies. See our{' '}
                 <Link href="/cookies" className="text-theme-accent hover:text-emerald-300">Cookie Policy</Link> for details.
               </p>
             </section>
@@ -71,7 +71,7 @@ export default function PrivacyPage() {
               <ul className="list-disc pl-6 space-y-2 mt-2">
                 <li>Provide, maintain, and improve our sales tax calculation services</li>
                 <li>Process tax calculations and generate compliance reports</li>
-                <li>Send you the emails you&apos;ve asked for, like deadline reminders and threshold alerts (you can turn these off in Settings)</li>
+                <li>Send you the emails you&apos;ve asked for, like threshold alerts (you can turn these off in Settings)</li>
                 <li>Respond to your inquiries and provide customer support</li>
                 <li>Detect, prevent, and address technical issues and fraud</li>
                 <li>Comply with legal obligations and enforce our terms</li>
@@ -184,7 +184,7 @@ export default function PrivacyPage() {
                 <li><strong>Vercel</strong> — website and application hosting</li>
                 <li><strong>Neon</strong> — database hosting</li>
                 <li><strong>Stripe</strong> — subscription billing and payments</li>
-                <li><strong>Resend</strong> — sending account and reminder emails</li>
+                <li><strong>Resend</strong> — sending account emails and the alerts you&apos;ve turned on</li>
                 <li><strong>Sentry</strong> — error monitoring</li>
                 <li><strong>Upstash</strong> — rate limiting</li>
                 <li><strong>TaxJar</strong> — tax rate lookups for some calculations (the destination address and amount are sent)</li>

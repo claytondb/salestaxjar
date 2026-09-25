@@ -86,7 +86,7 @@ A sales tax permit is different from a business license. You may need both, depe
 Even though Etsy handles the heavy lifting, Sails can help you:
 
 - **Track nexus** for sales from your Shopify or WooCommerce store (Sails doesn't connect to Etsy)
-- **Get filing reminders** for states that require returns
+- **Keep a filing deadline calendar** for states that require returns
 - **Generate sales-by-state reports** for your connected stores
 
 ## The Bottom Line

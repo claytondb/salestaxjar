@@ -154,10 +154,18 @@ export const FEATURES: FeatureCapability[] = [
     summary: "Get an email when your sales approach or pass a state's threshold.",
   },
   {
-    id: 'deadline_reminders',
-    name: 'Deadline reminders',
+    id: 'filing_calendar',
+    name: 'Filing calendar',
     status: 'live',
-    summary: 'Get an email 7 days and 1 day before each filing deadline you track.',
+    summary: 'See upcoming filing due dates for the states you track, in one place.',
+  },
+  {
+    // Built, but switched off (DEADLINE_REMINDERS_ENABLED) until due dates
+    // follow each state's own schedule. Flip to 'live' when that env flag is on.
+    id: 'deadline_reminders',
+    name: 'Deadline reminder emails',
+    status: 'planned',
+    summary: 'An email a week and a day before each filing deadline you track.',
   },
   {
     id: 'reports',

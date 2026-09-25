@@ -231,9 +231,10 @@ export function buildFilingReminderEmail(params: FilingReminderParams): {
               </p>
 
               <p style="margin: 0; color: #94a3b8; font-size: 12px; line-height: 1.6;">
-                This is a reminder from Sails based on your configured nexus states. 
+                This is a reminder from Sails based on your configured nexus states. The due date is Sails'
+                estimate for this filing period — your state may assign you a different filing frequency or due date.
                 Verify exact amounts and deadlines with your state's department of revenue before filing.
-                <a href="${APP_URL}/dashboard/settings" style="color: #10b981;">Manage notification preferences</a>.
+                <a href="${APP_URL}/settings#notifications" style="color: #10b981;">Manage notification preferences</a>.
               </p>
             </td>
           </tr>
@@ -273,7 +274,7 @@ Once filed, mark this deadline as complete in Sails to keep your records current
 
 —
 Sails · Sales Tax Made Breezy · ${APP_URL}
-Manage notifications: ${APP_URL}/dashboard/settings`;
+Manage notifications: ${APP_URL}/settings#notifications`;
 
   return { subject, html, text };
 }
@@ -344,10 +345,16 @@ export async function sendFilingReminder(
     const result = await resend.emails.send({
       from: FROM_EMAIL,
       to: params.to,
+      replyTo: process.env.REPLY_TO_EMAIL || 'support@sails.tax',
       subject: template.subject,
       html: template.html,
       text: template.text,
     });
+
+    // Resend reports API failures in `error` instead of throwing.
+    if (result.error) {
+      throw new Error(result.error.message || 'Email provider rejected the message');
+    }
 
     const messageId = result.data?.id;
 
@@ -472,6 +479,7 @@ export async function processBatchReminders(
   for (const filing of filings) {
     const user = filing.business.user;
     if (!user?.email) continue;
+    if (!user.emailVerified) continue; // only email verified addresses
     if (optedOut.has(user.id)) continue;
 
     const reminderResult = await sendFilingReminder({

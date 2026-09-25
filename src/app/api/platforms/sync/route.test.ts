@@ -643,7 +643,8 @@ describe('order trimming', () => {
     expect(res.status).toBe(200);
     const body = await res.json();
     expect(body.trimmed).toBeDefined();
-    expect(body.trimmed.message).toMatch(/monthly limit/i);
+    expect(body.trimmed.message).toMatch(/over your plan's limit of 500 orders a month/i);
+    expect(body.trimmed.message).toMatch(/state totals don't include them/i);
   });
 });
 

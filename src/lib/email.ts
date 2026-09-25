@@ -1,5 +1,8 @@
 import { Resend } from 'resend';
 import { prisma } from './prisma';
+import { getIntegrationsByStatus, betaIntegrationNames } from './capabilities';
+import { PLAN_ORDER_LIMITS, PLAN_PLATFORM_LIMITS } from './plans';
+import { PLAN_MARKETING } from './plan-features';
 
 // Initialize Resend client
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
@@ -9,6 +12,8 @@ const resend = RESEND_API_KEY ? new Resend(RESEND_API_KEY) : null;
 const FROM_EMAIL = process.env.FROM_EMAIL || 'Sails <noreply@sails.tax>';
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://sails.tax';
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'claytondb@gmail.com';
+// Replies to any Sails email go here (the address the site lists for support).
+const REPLY_TO_EMAIL = process.env.REPLY_TO_EMAIL || 'support@sails.tax';
 
 // Check if email is configured
 export function isEmailConfigured(): boolean {
@@ -504,10 +509,17 @@ async function sendEmail(params: {
     const result = await resend.emails.send({
       from: FROM_EMAIL,
       to: params.to,
+      replyTo: REPLY_TO_EMAIL,
       subject: params.template.subject,
       html: params.template.html,
       text: params.template.text,
     });
+
+    // Resend reports API failures (bad domain, invalid address, rate limit) in
+    // `error` instead of throwing — treat those as failed sends.
+    if (result.error) {
+      throw new Error(result.error.message || 'Email provider rejected the message');
+    }
 
     logData.messageId = result.data?.id;
 
@@ -658,6 +670,8 @@ export async function sendMonthlySummaryEmail(params: {
 
 // Day 1 — "Connect Your Store" (send ~24h after signup if no platform connected)
 function dripDay1Template(params: { name: string; platformsUrl: string }): EmailTemplate {
+  const liveIntegrations = getIntegrationsByStatus('live');
+  const betaNames = betaIntegrationNames();
   return {
     subject: 'One step away from knowing your sales tax exposure',
     html: `
@@ -693,9 +707,8 @@ function dripDay1Template(params: { name: string; platformsUrl: string }): Email
 
               <!-- Platform list -->
               <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f8fafc; border-radius: 8px; padding: 0; margin: 0 0 30px; overflow: hidden;">
-                <tr><td style="padding: 16px 20px; border-bottom: 1px solid #e2e8f0; color: #0f172a; font-size: 15px;">🛍️ <strong>Shopify</strong> — OAuth connect in seconds</td></tr>
-                <tr><td style="padding: 16px 20px; border-bottom: 1px solid #e2e8f0; color: #0f172a; font-size: 15px;">🔌 <strong>WooCommerce</strong> — Install our free plugin, paste an API key</td></tr>
-                <tr><td style="padding: 16px 20px; color: #0f172a; font-size: 15px;">🏪 <strong>BigCommerce</strong> (beta) — Connect with your store credentials</td></tr>
+${liveIntegrations.map((i) => `                <tr><td style="padding: 16px 20px; border-bottom: 1px solid #e2e8f0; color: #0f172a; font-size: 15px;"><strong>${i.name}</strong> — ${i.connection}</td></tr>`).join('\n')}
+                <tr><td style="padding: 16px 20px; color: #64748b; font-size: 14px;">In beta: ${betaNames}</td></tr>
               </table>
 
               <!-- CTA -->
@@ -736,13 +749,14 @@ You're one step away from knowing your sales tax exposure.
 Connect your store and Sails will import your orders, check them against each state's nexus rules, and flag any states where you may need to register.
 
 Supported platforms:
-• Shopify — OAuth connect in seconds
-• WooCommerce — Install our free plugin, paste an API key
-• BigCommerce (beta) — Connect with your store credentials
+${liveIntegrations.map((i) => `• ${i.name} — ${i.connection}`).join('\n')}
+• In beta: ${betaNames}
 
 Connect My Store: ${params.platformsUrl}
 
-Takes about 2 minutes. No credit card needed.`,
+Takes about 2 minutes. No credit card needed.
+
+Unsubscribe from tips: ${APP_URL}/settings#notifications`,
   };
 }
 
@@ -781,16 +795,16 @@ function dripDay3Template(params: { name: string; dashboardUrl: string }): Email
               <!-- Alert box -->
               <div style="background-color: #fef3c7; border-left: 4px solid #f59e0b; padding: 16px 20px; border-radius: 4px; margin: 0 0 24px;">
                 <p style="margin: 0; color: #92400e; font-size: 15px; font-weight: 600;">
-                  ⚠️ After $100K in sales to a single state (or 200 transactions), you likely have <em>economic nexus</em> there — meaning you're required to collect and remit sales tax.
+                  In most states, once your sales into the state pass $100,000 in a year, you have <em>economic nexus</em> there — you need to register, collect and file sales tax. A few states set a higher bar, and some also count the number of orders.
                 </p>
               </div>
 
               <h3 style="margin: 0 0 12px; color: #0f172a; font-size: 18px;">Why does this matter?</h3>
               <p style="margin: 0 0 20px; color: #475569; font-size: 16px; line-height: 1.6;">
-                In 2018, the Supreme Court's <strong>South Dakota v. Wayfair</strong> decision changed everything. States can now require out-of-state sellers to collect sales tax once they cross certain thresholds — even with zero physical presence.
+                In 2018, the Supreme Court's <strong>South Dakota v. Wayfair</strong> decision let states require out-of-state sellers to collect sales tax once they pass a sales threshold — even with no physical presence there.
               </p>
               <p style="margin: 0 0 20px; color: #475569; font-size: 16px; line-height: 1.6;">
-                Most sellers don't realize this until they receive an audit notice. By then, penalties and back taxes can add up fast.
+                Sellers who find out late can owe the tax they didn't collect, plus penalties and interest. Finding out early is much cheaper.
               </p>
 
               <h3 style="margin: 0 0 12px; color: #0f172a; font-size: 18px;">How Sails helps</h3>
@@ -829,20 +843,44 @@ function dripDay3Template(params: { name: string; dashboardUrl: string }): Email
 
 Here's a fact that surprises most online sellers: you may owe sales tax in states you've never set foot in.
 
-⚠️ After $100K in sales to a single state (or 200 transactions), you likely have economic nexus there — meaning you're required to collect and remit sales tax.
+In most states, once your sales into the state pass $100,000 in a year, you have economic nexus there — you need to register, collect and file sales tax. A few states set a higher bar, and some also count the number of orders.
 
-In 2018, the Supreme Court's South Dakota v. Wayfair decision changed everything. States can now require out-of-state sellers to collect sales tax once they cross certain thresholds — even with zero physical presence.
+In 2018, the Supreme Court's South Dakota v. Wayfair decision let states require out-of-state sellers to collect sales tax once they pass a sales threshold — even with no physical presence there. Sellers who find out late can owe the tax they didn't collect, plus penalties and interest.
 
 Sails tracks your sales by state and emails you when you're approaching economic nexus thresholds. Connect your store and we'll show you where you stand.
 
-Check My Nexus Exposure: ${params.dashboardUrl}`,
+Check My Nexus Exposure: ${params.dashboardUrl}
+
+Unsubscribe from tips: ${APP_URL}/settings#notifications`,
   };
 }
 
-// Day 7 — "Free Plan Limits" (send 7 days after signup if still on free)
+// Day 7 — "When the free plan stops being enough" (send 7 days after signup if still on free)
+// Built from the plan config so the numbers can never drift from what's enforced.
 function dripDay7Template(params: { name: string; pricingUrl: string }): EmailTemplate {
+  const free = PLAN_MARKETING.free;
+  const starter = PLAN_MARKETING.starter;
+  const fmtOrders = (n: number | null) => (n === null ? 'Unlimited' : n.toLocaleString('en-US'));
+  const fmtStores = (n: number | null) => (n === null ? 'Unlimited' : String(n));
+  const rows: Array<[string, string, string]> = [
+    ['Orders per month', fmtOrders(PLAN_ORDER_LIMITS.free), fmtOrders(PLAN_ORDER_LIMITS.starter)],
+    ['Store connections', fmtStores(PLAN_PLATFORM_LIMITS.free), fmtStores(PLAN_PLATFORM_LIMITS.starter)],
+    ['Nexus monitoring and threshold alerts', '✓', '✓'],
+    ['Filing calendar and sales-by-state reports', '✓', '✓'],
+  ];
+  const rowHtml = rows
+    .map(
+      ([label, a, b], i) => `
+                <tr${i < rows.length - 1 ? ' style="border-bottom: 1px solid #f1f5f9;"' : ''}>
+                  <td style="padding: 12px 16px; color: #475569; font-size: 14px;">${label}</td>
+                  <td style="padding: 12px 16px; color: #64748b; font-size: 14px; text-align: center;">${a}</td>
+                  <td style="padding: 12px 16px; color: #059669; font-weight: 600; font-size: 14px; text-align: center; background-color: #f0fdf4;">${b}</td>
+                </tr>`
+    )
+    .join('');
+
   return {
-    subject: "Your free Sails account is limited — here's what you're missing",
+    subject: 'When the free Sails plan stops being enough',
     html: `
 <!DOCTYPE html>
 <html>
@@ -867,63 +905,35 @@ function dripDay7Template(params: { name: string; pricingUrl: string }): EmailTe
           <tr>
             <td style="padding: 40px;">
               <h2 style="margin: 0 0 20px; color: #0f172a; font-size: 24px;">Hi ${params.name},</h2>
+              <p style="margin: 0 0 16px; color: #475569; font-size: 16px; line-height: 1.6;">
+                You've been on Sails for a week. The ${free.name} plan covers most small sellers. If you sell more than ${fmtOrders(PLAN_ORDER_LIMITS.free)} orders in a month, or run more than one store, ${starter.name} ($${starter.price}/month) keeps every order in your state totals.
+              </p>
               <p style="margin: 0 0 30px; color: #475569; font-size: 16px; line-height: 1.6;">
-                You've been on Sails for a week — here's a quick look at what's included in each plan and what you'd unlock with Starter.
+                Orders over your plan's monthly limit aren't imported, so they don't count toward your nexus numbers.
               </p>
 
               <!-- Comparison table -->
               <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse: collapse; border-radius: 8px; overflow: hidden;">
-                <!-- Header row -->
                 <tr>
-                  <td style="padding: 12px 16px; background-color: #f1f5f9; color: #64748b; font-size: 13px; font-weight: 600; text-transform: uppercase; border-bottom: 2px solid #e2e8f0;">Feature</td>
-                  <td style="padding: 12px 16px; background-color: #f1f5f9; color: #64748b; font-size: 13px; font-weight: 600; text-transform: uppercase; text-align: center; border-bottom: 2px solid #e2e8f0;">Free</td>
-                  <td style="padding: 12px 16px; background-color: #ecfdf5; color: #059669; font-size: 13px; font-weight: 600; text-transform: uppercase; text-align: center; border-bottom: 2px solid #d1fae5;">Starter — $9/mo</td>
-                </tr>
-                <!-- Rows -->
-                <tr style="border-bottom: 1px solid #f1f5f9;">
-                  <td style="padding: 12px 16px; color: #475569; font-size: 14px;">Orders tracked / mo</td>
-                  <td style="padding: 12px 16px; color: #94a3b8; font-size: 14px; text-align: center;">50</td>
-                  <td style="padding: 12px 16px; color: #059669; font-weight: 600; font-size: 14px; text-align: center; background-color: #f0fdf4;">1,000</td>
-                </tr>
-                <tr style="border-bottom: 1px solid #f1f5f9;">
-                  <td style="padding: 12px 16px; color: #475569; font-size: 14px;">Platform connections</td>
-                  <td style="padding: 12px 16px; color: #94a3b8; font-size: 14px; text-align: center;">1</td>
-                  <td style="padding: 12px 16px; color: #059669; font-weight: 600; font-size: 14px; text-align: center; background-color: #f0fdf4;">3</td>
-                </tr>
-                <tr style="border-bottom: 1px solid #f1f5f9;">
-                  <td style="padding: 12px 16px; color: #475569; font-size: 14px;">Nexus threshold alerts</td>
-                  <td style="padding: 12px 16px; color: #94a3b8; font-size: 14px; text-align: center;">—</td>
-                  <td style="padding: 12px 16px; color: #059669; font-weight: 600; font-size: 14px; text-align: center; background-color: #f0fdf4;">✓ All states</td>
-                </tr>
-                <tr style="border-bottom: 1px solid #f1f5f9;">
-                  <td style="padding: 12px 16px; color: #475569; font-size: 14px;">Filing reminders</td>
-                  <td style="padding: 12px 16px; color: #94a3b8; font-size: 14px; text-align: center;">—</td>
-                  <td style="padding: 12px 16px; color: #059669; font-weight: 600; font-size: 14px; text-align: center; background-color: #f0fdf4;">✓ Included</td>
-                </tr>
-                <tr>
-                  <td style="padding: 12px 16px; color: #475569; font-size: 14px;">Monthly tax reports</td>
-                  <td style="padding: 12px 16px; color: #94a3b8; font-size: 14px; text-align: center;">—</td>
-                  <td style="padding: 12px 16px; color: #059669; font-weight: 600; font-size: 14px; text-align: center; background-color: #f0fdf4;">✓ Included</td>
-                </tr>
+                  <td style="padding: 12px 16px; background-color: #f1f5f9; color: #64748b; font-size: 13px; font-weight: 600; text-transform: uppercase; border-bottom: 2px solid #e2e8f0;">Plan</td>
+                  <td style="padding: 12px 16px; background-color: #f1f5f9; color: #64748b; font-size: 13px; font-weight: 600; text-transform: uppercase; text-align: center; border-bottom: 2px solid #e2e8f0;">${free.name}</td>
+                  <td style="padding: 12px 16px; background-color: #ecfdf5; color: #059669; font-size: 13px; font-weight: 600; text-transform: uppercase; text-align: center; border-bottom: 2px solid #d1fae5;">${starter.name} — $${starter.price}/mo</td>
+                </tr>${rowHtml}
               </table>
 
-              <p style="margin: 30px 0 30px; color: #475569; font-size: 16px; line-height: 1.6;">
-                At <strong>$9/month</strong>, Starter pays for itself with a single missed nexus alert. No annual commitment required.
-              </p>
-
               <!-- CTA -->
-              <table width="100%" cellpadding="0" cellspacing="0">
+              <table width="100%" cellpadding="0" cellspacing="0" style="margin-top: 30px;">
                 <tr>
                   <td align="center">
                     <a href="${params.pricingUrl}" style="display: inline-block; background-color: #10b981; color: #ffffff; text-decoration: none; padding: 14px 32px; border-radius: 6px; font-weight: 600; font-size: 16px;">
-                      Upgrade to Starter — $9/mo →
+                      Compare plans →
                     </a>
                   </td>
                 </tr>
               </table>
 
               <p style="margin: 20px 0 0; color: #94a3b8; font-size: 14px; text-align: center;">
-                Cancel anytime. No tricks.
+                Monthly billing. Cancel anytime from Settings.
               </p>
             </td>
           </tr>
@@ -944,31 +954,22 @@ function dripDay7Template(params: { name: string; pricingUrl: string }): EmailTe
 </html>`,
     text: `Hi ${params.name},
 
-You've been on Sails for a week — here's a look at what you'd unlock with Starter ($9/mo):
+You've been on Sails for a week. The ${free.name} plan covers most small sellers. If you sell more than ${fmtOrders(PLAN_ORDER_LIMITS.free)} orders in a month, or run more than one store, ${starter.name} ($${starter.price}/month) keeps every order in your state totals.
 
-FREE PLAN:
-- 50 orders/mo
-- 1 platform connection
-- No nexus alerts
-- No filing reminders
+Orders over your plan's monthly limit aren't imported, so they don't count toward your nexus numbers.
 
-STARTER — $9/mo:
-- 1,000 orders/mo
-- 3 platform connections
-- Nexus alerts for all states
-- Filing reminders
-- Monthly tax reports
+${rows.map(([label, a, b]) => `${label}: ${free.name} ${a} / ${starter.name} ${b}`).join('\n')}
 
-At $9/month, Starter pays for itself with a single missed nexus alert. No annual commitment.
+Compare plans: ${params.pricingUrl}
 
-Upgrade to Starter: ${params.pricingUrl}
+Monthly billing. Cancel anytime from Settings.
 
-Cancel anytime.`,
+Unsubscribe from tips: ${APP_URL}/settings#notifications`,
   };
 }
 
 // Day 14 — "How are things going?" (send 14 days after, if still on free)
-function dripDay14Template(params: { name: string; woocommerceUrl: string }): EmailTemplate {
+function dripDay14Template(params: { name: string; connectUrl: string }): EmailTemplate {
   return {
     subject: 'Quick question about your sales tax situation',
     html: `
@@ -1002,15 +1003,15 @@ function dripDay14Template(params: { name: string; woocommerceUrl: string }): Em
                 Are you running into any friction getting set up? Have questions about nexus, filing deadlines, or how Sails works? Just hit reply — I read every response and will get back to you directly.
               </p>
               <p style="margin: 0 0 30px; color: #475569; font-size: 16px; line-height: 1.6;">
-                If you're running a WooCommerce store, connect it with a read-only WooCommerce API key (Settings → Platforms) to import your orders and start tracking your tax exposure.
+                If you haven't connected your store yet, it takes a couple of minutes: Shopify connects in one click, and WooCommerce uses a read-only API key. Once your orders are in, Sails shows where you stand in every state.
               </p>
 
               <!-- CTA -->
               <table width="100%" cellpadding="0" cellspacing="0">
                 <tr>
                   <td align="center">
-                    <a href="${params.woocommerceUrl}" style="display: inline-block; background-color: #10b981; color: #ffffff; text-decoration: none; padding: 14px 32px; border-radius: 6px; font-weight: 600; font-size: 16px;">
-                      Check Out the WooCommerce Plugin →
+                    <a href="${params.connectUrl}" style="display: inline-block; background-color: #10b981; color: #ffffff; text-decoration: none; padding: 14px 32px; border-radius: 6px; font-weight: 600; font-size: 16px;">
+                      Connect your store →
                     </a>
                   </td>
                 </tr>
@@ -1045,13 +1046,15 @@ It's been two weeks since you signed up for Sails, and I wanted to check in pers
 
 Are you running into any friction getting set up? Have questions about nexus, filing deadlines, or how Sails works? Just hit reply — I read every response and will get back to you directly.
 
-If you're running a WooCommerce store, connect it with a read-only WooCommerce API key (Settings → Platforms) to import your orders and start tracking your tax exposure.
+If you haven't connected your store yet, it takes a couple of minutes: Shopify connects in one click, and WooCommerce uses a read-only API key. Once your orders are in, Sails shows where you stand in every state.
 
-WooCommerce plugin: ${params.woocommerceUrl}
+Connect your store: ${params.connectUrl}
 
 Or just reply and tell me what's going on with your store. Happy to help.
 
-— David at Sails`,
+— David at Sails
+
+Unsubscribe from tips: ${APP_URL}/settings#notifications`,
   };
 }
 
@@ -1102,7 +1105,7 @@ export async function sendDripDay14Email(params: {
 }): Promise<{ success: boolean; error?: string }> {
   const template = dripDay14Template({
     name: params.name,
-    woocommerceUrl: `${APP_URL}/integrations/woocommerce`,
+    connectUrl: `${APP_URL}/settings#platforms`,
   });
   return sendEmail({ to: params.to, template, templateName: 'drip_day14', userId: params.userId });
 }
@@ -1183,14 +1186,17 @@ export async function sendNewSignupNotification(params: {
   });
 
   try {
-    await resend.emails.send({
+    const result = await resend.emails.send({
       from: FROM_EMAIL,
       to: ADMIN_EMAIL,
       subject: template.subject,
       html: template.html,
       text: template.text,
     });
-    console.log('Admin notification sent for new signup:', params.userEmail);
+    if (result.error) {
+      throw new Error(result.error.message || 'Email provider rejected the message');
+    }
+    console.log('Admin notification sent for new signup');
     return { success: true };
   } catch (error) {
     console.error('Failed to send admin notification:', error);

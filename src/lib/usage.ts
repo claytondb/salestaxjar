@@ -46,7 +46,8 @@ export function getCurrentBillingPeriod(): { start: Date; end: Date } {
  * Plan limits are "orders per month" — the seller's monthly order volume — so
  * we count by order date, not by when the order was imported. Importing older
  * history (which nexus measurement needs: states look at the previous and
- * current calendar year, or the last 12 months) never uses up the monthly cap.
+ * current calendar year, or the last 12 months) doesn't use up THIS month's
+ * cap; each past month is capped on its own (see applyMonthlyOrderCap).
  */
 export async function getCurrentMonthOrderCount(userId: string): Promise<number> {
   const { start } = getCurrentBillingPeriod();
@@ -138,15 +139,15 @@ export async function canImportOrders(
   const wouldExceed = (currentCount + orderCount) > limit;
   
   if (currentCount >= limit) {
-    // Still allowed: order history from earlier months can always be imported
-    // (applyMonthlyOrderCap skips only NEW orders dated this month).
+    // Still allowed: earlier months have their own monthly limits
+    // (applyMonthlyOrderCap caps each calendar month separately).
     return {
       allowed: true,
       currentCount,
       limit,
       remaining: 0,
       wouldExceed: true,
-      error: `You've reached your monthly limit of ${limit.toLocaleString()} orders on the ${getPlanDisplayName(plan)} plan. Older orders will still be imported.`,
+      error: `You've reached this month's limit of ${limit.toLocaleString()} orders on the ${getPlanDisplayName(plan)} plan. Orders from earlier months can still be imported, up to the same monthly limit.`,
     };
   }
   
@@ -208,10 +209,13 @@ export async function getImportableOrderCount(
 /**
  * Apply the monthly order cap to a batch of fetched orders.
  *
- * - Orders dated before this month are always kept (history is free).
- * - Orders dated this month that were already imported are kept (re-syncs
- *   update them and don't use up the cap).
- * - New orders dated this month are kept until the plan's monthly limit is used.
+ * Plans allow "N orders per month", counted by ORDER DATE. The cap applies to
+ * every calendar month separately, so:
+ * - importing order history is fine as long as each past month is within the
+ *   plan's monthly volume (a store that sells 300 orders a month can import two
+ *   years of history on Starter);
+ * - a month's overflow can't sneak in later — each month keeps its own limit;
+ * - orders that were already imported never use up capacity (re-syncs update them).
  */
 export async function applyMonthlyOrderCap<T>(params: {
   userId: string;
@@ -225,6 +229,7 @@ export async function applyMonthlyOrderCap<T>(params: {
   truncated: boolean;
   skipped: number;
   limit: number | null;
+  /** Orders still available this calendar month (null = unlimited) */
   remaining: number | null;
 }> {
   const { userId, subscription, platform, items, getOrderDate, getPlatformOrderId } = params;
@@ -235,33 +240,72 @@ export async function applyMonthlyOrderCap<T>(params: {
     return { items, truncated: false, skipped: 0, limit: null, remaining: null };
   }
 
-  const { start } = getCurrentBillingPeriod();
-  const currentCount = await getCurrentMonthOrderCount(userId);
-  let remaining = Math.max(0, limit - currentCount);
+  // Which calendar months (UTC) does this batch touch?
+  const monthOf = (d: Date) => `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, '0')}`;
+  const months = new Map<string, { start: Date; end: Date }>();
+  for (const item of items) {
+    const d = getOrderDate(item);
+    if (Number.isNaN(d.getTime())) continue;
+    const key = monthOf(d);
+    if (!months.has(key)) {
+      months.set(key, {
+        start: new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), 1)),
+        end: new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth() + 1, 1)),
+      });
+    }
+  }
 
-  const alreadyImported = new Set(
-    (
-      await prisma.importedOrder.findMany({
-        where: { userId, platform, orderDate: { gte: start } },
-        select: { platformOrderId: true },
-      })
-    ).map((o) => o.platformOrderId)
+  // How many orders already exist in each of those months (all platforms)?
+  const remainingByMonth = new Map<string, number>();
+  await Promise.all(
+    [...months.entries()].map(async ([key, range]) => {
+      const existing = await prisma.importedOrder.count({
+        where: { userId, orderDate: { gte: range.start, lt: range.end } },
+      });
+      remainingByMonth.set(key, Math.max(0, limit - existing));
+    })
   );
+
+  // Orders from this batch that were imported before don't use up capacity.
+  const ids = [...new Set(items.map(getPlatformOrderId))];
+  const alreadyImported = new Set<string>();
+  for (let i = 0; i < ids.length; i += 1000) {
+    const chunk = ids.slice(i, i + 1000);
+    const rows = await prisma.importedOrder.findMany({
+      where: { userId, platform, platformOrderId: { in: chunk } },
+      select: { platformOrderId: true },
+    });
+    for (const r of rows) alreadyImported.add(r.platformOrderId);
+  }
 
   const kept: T[] = [];
   let skipped = 0;
   for (const item of items) {
-    const date = getOrderDate(item);
-    const isThisMonth = !Number.isNaN(date.getTime()) && date >= start;
-    if (!isThisMonth || alreadyImported.has(getPlatformOrderId(item))) {
+    const d = getOrderDate(item);
+    if (Number.isNaN(d.getTime())) {
+      // Unparseable date: keep it so the save step reports a clear error.
       kept.push(item);
-    } else if (remaining > 0) {
+      continue;
+    }
+    if (alreadyImported.has(getPlatformOrderId(item))) {
       kept.push(item);
-      remaining--;
+      continue;
+    }
+    const key = monthOf(d);
+    const left = remainingByMonth.get(key) ?? 0;
+    if (left > 0) {
+      kept.push(item);
+      remainingByMonth.set(key, left - 1);
     } else {
       skipped++;
     }
   }
+
+  const { start } = getCurrentBillingPeriod();
+  const thisMonth = monthOf(new Date(Date.UTC(start.getFullYear(), start.getMonth(), 15)));
+  const remaining = remainingByMonth.has(thisMonth)
+    ? remainingByMonth.get(thisMonth)!
+    : Math.max(0, limit - (await getCurrentMonthOrderCount(userId)));
 
   return { items: kept, truncated: skipped > 0, skipped, limit, remaining };
 }

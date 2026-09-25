@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getCurrentUser } from '@/lib/auth';
-import { prisma } from '@/lib/prisma';
+import { getCurrentMonthOrderCount, getCurrentBillingPeriod } from '@/lib/usage';
 import { resolveUserPlan, checkOrderLimit, getOrderLimitDisplay, getPlanDisplayName } from '@/lib/plans';
 
 /**
@@ -17,15 +17,10 @@ export async function GET() {
 
     const userPlan = resolveUserPlan(user.subscription);
     
-    // Count orders imported this month
-    const now = new Date();
-    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
-    const currentMonthOrderCount = await prisma.importedOrder.count({
-      where: {
-        userId: user.id,
-        createdAt: { gte: monthStart },
-      },
-    });
+    // Orders DATED this month (plan limits are orders per month by order date;
+    // importing older history doesn't count toward this month — see usage.ts)
+    const currentMonthOrderCount = await getCurrentMonthOrderCount(user.id);
+    const { start: monthStart, end: monthEnd } = getCurrentBillingPeriod();
 
     const limitCheck = checkOrderLimit(userPlan, currentMonthOrderCount);
     const percentUsed = limitCheck.limit !== null && limitCheck.limit > 0
@@ -46,7 +41,7 @@ export async function GET() {
       },
       billingPeriod: {
         start: monthStart.toISOString(),
-        end: new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString(),
+        end: monthEnd.toISOString(),
       },
     });
   } catch (error) {

@@ -270,7 +270,7 @@ Consider consulting a tax professional if you:
 Tools like Sails can help you:
 
 - Track nexus for your Shopify, WooCommerce and Amazon sales (Sails doesn't connect to TikTok Shop)
-- Keep track of filing deadlines with email reminders
+- Keep track of filing deadlines on one calendar
 - Generate sales-by-state reports for tax preparation
 - Get email alerts as you approach state thresholds
 

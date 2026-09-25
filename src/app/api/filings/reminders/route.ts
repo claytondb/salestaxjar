@@ -3,6 +3,7 @@ import { getCurrentUser } from '@/lib/auth';
 import { processBatchReminders } from '@/lib/filing-reminders';
 import { isCronAuthorized } from '@/lib/cron-auth';
 import { isAdminUser } from '@/lib/admin';
+import { deadlineRemindersEnabled } from '@/lib/scheduled-email-flags';
 
 /**
  * GET /api/filings/reminders
@@ -14,7 +15,8 @@ import { isAdminUser } from '@/lib/admin';
  *  - CRON_SECRET (Authorization: Bearer … or x-cron-secret header)
  *  - Authenticated, verified admin user
  *
- * The scheduled daily run happens in /api/cron/daily.
+ * The scheduled daily run happens in /api/cron/daily. Like that job, this
+ * sends nothing unless DEADLINE_REMINDERS_ENABLED=true.
  *
  * Returns a summary of emails sent.
  */
@@ -33,6 +35,13 @@ export async function GET(request: NextRequest) {
     if (!isAdminUser(user)) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
+  }
+
+  if (!deadlineRemindersEnabled()) {
+    return NextResponse.json({
+      ok: true,
+      skipped: 'Deadline reminders are turned off (DEADLINE_REMINDERS_ENABLED is not true).',
+    });
   }
 
   try {

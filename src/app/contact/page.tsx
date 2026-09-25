@@ -45,7 +45,7 @@ const faqs: FAQItem[] = [
   },
   {
     question: "Do you file tax returns for me?",
-    answer: "No. Sails shows your sales and tax collected by state and tracks your deadlines (with email reminders 7 days and 1 day before), and you or your accountant file with each state. Sails provides tax tools, not tax advice — consult a tax professional for specific guidance."
+    answer: "No. Sails shows your sales and tax collected by state and keeps your filing deadlines on one calendar, and you or your accountant file with each state. Sails provides tax tools, not tax advice — consult a tax professional for specific guidance."
   },
   {
     question: "What if I get audited?",

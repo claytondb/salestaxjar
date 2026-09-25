@@ -31,7 +31,7 @@ const faqs = [
   },
   {
     q: 'What does the free plan include?',
-    a: 'Nexus monitoring across all 50 states + DC, threshold alerts, deadline reminders, unlimited tax calculations, and one store connection with up to 50 orders a month. Importing your older order history doesn\'t count toward the monthly limit. No time limit, no credit card.',
+    a: 'Nexus monitoring across all 50 states + DC, threshold alerts, a filing calendar, unlimited tax calculations, and one store connection with up to 50 orders a month. The limit counts orders by the month they were placed, so you can import past months too, up to 50 orders in each. No time limit, no credit card.',
   },
   {
     q: 'Do you file my sales tax returns for me?',
@@ -275,7 +275,7 @@ export default function PricingPage() {
             Ready to stop stressing about sales tax?
           </h2>
           <p className="text-theme-muted mb-8">
-            Join small business owners who finally understand their tax obligations.
+            See where you stand in every state in a few minutes. The free plan has no time limit.
           </p>
           <Link href="/signup" className="inline-block btn-theme-primary text-white px-8 py-4 rounded-xl font-semibold text-lg transition">
             Start Free — No Credit Card

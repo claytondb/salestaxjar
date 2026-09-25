@@ -266,13 +266,13 @@ describe('GET /api/usage - billing period', () => {
 // =============================================================================
 
 describe('GET /api/usage - order counting', () => {
-  it('should count orders from start of current month', async () => {
+  it('should count orders DATED this month (by orderDate, not import time)', async () => {
     await GET();
     expect(prisma.importedOrder.count).toHaveBeenCalledWith(
       expect.objectContaining({
         where: expect.objectContaining({
           userId: 'user-123',
-          createdAt: expect.objectContaining({ gte: expect.any(Date) }),
+          orderDate: expect.objectContaining({ gte: expect.any(Date) }),
         }),
       })
     );

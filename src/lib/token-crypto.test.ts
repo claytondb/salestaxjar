@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, afterEach } from 'vitest'
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import {
   encryptToken,
   decryptToken,
@@ -6,6 +6,7 @@ import {
   encryptConnectionWriteArgs,
   decryptConnectionResult,
   TOKEN_PREFIX,
+  currentTokenKeyId,
 } from './token-crypto'
 
 const ORIGINAL_ENV = { ...process.env }
@@ -131,6 +132,28 @@ describe('token-crypto', () => {
       expect(decryptConnectionResult(null)).toBeNull()
       expect(decryptConnectionResult({ count: 3 })).toEqual({ count: 3 })
       expect(decryptConnectionResult(5)).toBe(5)
+    })
+  })
+
+  describe('failure tolerance', () => {
+    it('returns an empty value (instead of throwing) when a stored credential cannot be decrypted', () => {
+      const encrypted = encryptToken('secret')
+      delete process.env.JWT_SECRET
+      const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+      const result = decryptConnectionResult({ id: 'c1', accessToken: encrypted, platformName: 'Shop' })
+      expect(result.accessToken).toBe('')
+      expect(result.platformName).toBe('Shop')
+      expect(errorSpy).toHaveBeenCalled()
+      errorSpy.mockRestore()
+    })
+
+    it('reports which key new values use', () => {
+      expect(currentTokenKeyId()).toBe('j1')
+      process.env.PLATFORM_TOKEN_KEY = 'dedicated'
+      expect(currentTokenKeyId()).toBe('k1')
+      delete process.env.PLATFORM_TOKEN_KEY
+      delete process.env.JWT_SECRET
+      expect(currentTokenKeyId()).toBeNull()
     })
   })
 })

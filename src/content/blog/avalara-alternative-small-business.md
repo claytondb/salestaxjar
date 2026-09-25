@@ -49,14 +49,14 @@ Here's a straightforward comparison of the main options:
 [Sails](https://sails.tax) is designed specifically for small online sellers. It imports orders from Shopify and WooCommerce (BigCommerce is in beta), checks your sales against every state's nexus rules, and starts completely free.
 
 **Pricing:**
-- **Free**: $0 — nexus monitoring, alerts, reminders and reports for 1 store connection, up to 50 orders/month
+- **Free**: $0 — nexus monitoring, alerts, a filing calendar and reports for 1 store connection, up to 50 orders/month
 - **Starter**: $9/month — 2 stores, up to 500 orders/month
 - **Pro**: $29/month — 3 stores, up to 5,000 orders/month, API access
 - **Enterprise**: $79/month — unlimited
 
 For a seller doing a few hundred orders a month, Starter at $9 handles it. For a seller doing 2,000+ orders, Pro at $29 covers up to 5,000 orders a month.
 
-**What you get:** Nexus monitoring with email threshold alerts, a filing deadline calendar with email reminders, sales-by-state reports with CSV export, and a tax calculator for rate estimates.
+**What you get:** Nexus monitoring with email threshold alerts, a filing deadline calendar, sales-by-state reports with CSV export, and a tax calculator for rate estimates.
 
 **What's missing:** Sails doesn't file returns or remit tax, and its calculator uses state and average local rates (estimates), not exact address-level rates. If you need automated filing, TaxJar has the edge.
 
@@ -115,7 +115,7 @@ Under 500/month → Sails Starter ($9/mo) or TaxJar Starter (from $39/mo as of S
 
 **2. Do you need automatic return filing?**
 Yes → TaxJar with AutoFile is your best bet
-No / Not yet → Sails is cheaper and handles nexus monitoring, deadline reminders and reports
+No / Not yet → Sails is cheaper and handles nexus monitoring, a filing calendar and reports
 
 **3. Do you sell digital goods internationally?**
 Yes → Quaderno
@@ -125,6 +125,6 @@ No → Sails or TaxJar
 
 Avalara is the right tool for larger businesses with complex tax needs. For small sellers, it's a heavyweight solution to a problem that doesn't require heavyweight tools.
 
-If you're doing less than $500K/year, Sails starts free and grows with you. You'll get nexus monitoring, deadline reminders and sales-by-state reports, plus an email when you're approaching a nexus threshold in a new state.
+If you're doing less than $500K/year, Sails starts free and grows with you. You'll get nexus monitoring, a filing deadline calendar and sales-by-state reports, plus an email when you're approaching a nexus threshold in a new state.
 
 **[Try Sails free](https://sails.tax/signup)** — no credit card required. If you outgrow it, you'll know. But most small sellers won't.

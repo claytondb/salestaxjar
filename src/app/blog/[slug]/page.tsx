@@ -222,10 +222,10 @@ export default async function BlogPostPage({ params }: Props) {
           {/* CTA */}
           <div className="mt-12 p-8 bg-theme-card border border-theme-primary rounded-xl text-center">
             <h3 className="text-2xl font-bold text-theme-primary mb-3">
-              Ready to simplify your sales tax?
+              Find out where you owe sales tax
             </h3>
             <p className="text-theme-secondary mb-6">
-              Join thousands of small sellers who trust Sails to handle the complexity.
+              Sails checks your sales against every state&apos;s nexus rules and shows you what to do next. Free to start, no credit card.
             </p>
             <Link 
               href="/signup"

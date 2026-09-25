@@ -114,7 +114,7 @@ For sellers who want help tracking where they have nexus and when returns are du
 
 - **Rate estimates** — a tax calculator that uses state and average local rates (not exact address-level rates), so you'll still maintain your actual rates in PrestaShop
 - **Nexus exposure dashboard** — see which states you're close to thresholds in, with email alerts
-- **Filing deadline reminders** — 7-day and 1-day email reminders for every state
+- **Filing deadline calendar** — upcoming due dates for every state you track
 - **Order import** — Sails imports your PrestaShop orders into one dashboard
 
 ### How to Connect PrestaShop to Sails
@@ -180,7 +180,7 @@ After you register and start collecting, you need to file returns and remit the 
 
 **What:** A return showing total sales, taxable sales, tax collected, and tax owed. Some states require a breakdown by county or city.
 
-Sails tracks your filing deadlines and emails you reminders 7 days and 1 day before each one. The [sales tax filing deadlines by state](/blog/sales-tax-filing-deadlines-by-state) guide has state-specific details.
+Sails keeps your filing deadlines for every state on one calendar. The [sales tax filing deadlines by state](/blog/sales-tax-filing-deadlines-by-state) guide has state-specific details.
 
 ## Summary
 
@@ -194,4 +194,4 @@ PrestaShop's built-in tax system gives you complete control but requires ongoing
 5. Monitor economic nexus thresholds as you grow
 6. File returns on time
 
-**Want to automate?** [Connect PrestaShop to Sails](https://sails.tax/signup) (beta) for nexus monitoring and filing deadline reminders — free for up to 50 orders per month.
+**Want to automate?** [Connect PrestaShop to Sails](https://sails.tax/signup) (beta) for nexus monitoring and a filing deadline calendar — free for up to 50 orders per month.

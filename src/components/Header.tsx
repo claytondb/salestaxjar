@@ -181,7 +181,7 @@ export default function Header() {
               Log in
             </Link>
             <Link href="/signup" className="btn-theme-primary px-4 py-2 rounded-lg font-medium transition">
-              Start Free Trial
+              Start Free
             </Link>
           </div>
         </div>

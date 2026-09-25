@@ -110,8 +110,8 @@ Repeated late filings can put your sales tax permit at risk and may affect your 
 
 Sales tax deadlines aren't complicated once you know your schedule. The key is setting up systems that remind you ahead of time and keep your data organized throughout the month.
 
-Sails keeps a filing deadline calendar and emails you reminders 7 days and 1 day before each due date — just confirm your assigned filing frequency and due dates with each state.
+Sails keeps a filing deadline calendar for the states you track, so every due date is in one place — just confirm your assigned filing frequency and due dates with each state.
 
 ---
 
-*Want deadline reminders sent straight to your inbox? [Sign up for Sails](/signup). It's free to start.*
+*Want every due date in one place? [Sign up for Sails](/signup). It's free to start.*

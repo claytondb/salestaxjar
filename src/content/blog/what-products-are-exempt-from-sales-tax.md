@@ -206,7 +206,7 @@ Even with good tooling, periodic review helps catch products that may have been 
 
 ---
 
-*Exemption rules are complex. [Sails](https://sails.tax) doesn't apply exemptions at checkout, but it does check your sales against every state's nexus rules and email you threshold alerts and filing reminders — so you know where you need to collect. [Start free →](https://sails.tax/signup)*
+*Exemption rules are complex. [Sails](https://sails.tax) doesn't apply exemptions at checkout, but it does check your sales against every state's nexus rules emails you threshold alerts and keeps your filing deadlines in one place — so you know where you need to collect. [Start free →](https://sails.tax/signup)*
 
 ---
 

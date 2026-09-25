@@ -242,7 +242,7 @@ export async function POST(request: NextRequest) {
         success: true,
         imported,
         trimmed: trimmed ? { 
-          message: `${capped.skipped} new order${capped.skipped === 1 ? '' : 's'} from this month weren't imported because you've reached your plan's monthly limit. Older orders were imported. Upgrade for more.`,
+          message: `${capped.skipped} order${capped.skipped === 1 ? '' : 's'} weren't imported because ${capped.skipped === 1 ? 'its month is' : 'their months are'} over your plan's limit of ${(capped.limit ?? 0).toLocaleString()} orders a month, so your state totals don't include ${capped.skipped === 1 ? 'it' : 'them'}. Upgrade to import ${capped.skipped === 1 ? 'it' : 'them'}.`,
           totalAvailable: fetchedCount,
           skipped: capped.skipped,
         } : undefined,
