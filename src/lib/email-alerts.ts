@@ -25,6 +25,8 @@ export interface NexusAlertEmailParams {
   salesAmount: number;
   threshold: number;
   percentage: number;
+  /** What to do next for this state (overrides the generic text for the level) */
+  detail?: string;
 }
 
 // Export for testing
@@ -96,6 +98,7 @@ export function nexusAlertEmailTemplate(params: NexusAlertEmailParams): {
   const salesFormatted = formatCurrency(params.salesAmount);
   const thresholdFormatted = formatCurrency(params.threshold);
   const percentRounded = Math.round(params.percentage);
+  const actionText = params.detail || config.actionText;
 
   const subject = `${config.emoji} ${config.urgency}: ${params.stateName} nexus threshold at ${percentRounded}%`;
 
@@ -158,7 +161,7 @@ export function nexusAlertEmailTemplate(params: NexusAlertEmailParams): {
               </div>
               
               <p style="margin: 0 0 24px; color: #475569; font-size: 15px; line-height: 1.6;">
-                ${config.actionText}
+                ${actionText}
               </p>
               
               <!-- CTA -->
@@ -196,7 +199,7 @@ Hi ${params.name},
 
 Your sales in ${params.stateName} have reached ${salesFormatted} — that's ${percentRounded}% of the ${thresholdFormatted} economic nexus threshold.
 
-${config.actionText}
+${actionText}
 
 View your nexus exposure: ${APP_URL}/nexus
 

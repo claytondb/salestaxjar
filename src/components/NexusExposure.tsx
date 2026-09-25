@@ -1,527 +1,406 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { AlertTriangle, CheckCircle, TrendingUp, ShieldAlert, ShieldCheck, Info, Bell, ExternalLink } from 'lucide-react';
+import { useEffect, useMemo, useState } from 'react';
+import Link from 'next/link';
+import {
+  AlertTriangle,
+  CalendarClock,
+  ChevronDown,
+  ExternalLink,
+  Info,
+  ShieldAlert,
+  ShieldCheck,
+  TrendingUp,
+} from 'lucide-react';
 import { getStateRegistrationUrl } from '@/lib/state-registration-urls';
+import NexusActionList from '@/components/NexusActionList';
+import { formatMoney, formatPercent } from '@/lib/nexus-engine';
+import type { StateEvaluation, TopAction, ExposureSummary, Confidence } from '@/lib/nexus-engine';
 
-interface StateExposure {
-  stateCode: string;
-  stateName: string;
-  hasSalesTax: boolean;
-  currentSales: number;
-  currentTransactions: number;
-  salesThreshold: number | null;
-  transactionThreshold: number | null;
-  salesPercentage: number;
-  transactionPercentage: number;
-  highestPercentage: number;
-  status: 'safe' | 'approaching' | 'warning' | 'exceeded';
-  measurementPeriod: string;
-  notes: string;
+interface NexusReportResponse {
+  generatedAt: string;
+  coverage: { earliestOrder: string | null; latestOrder: string | null; hasMarketplaceData: boolean };
+  evaluations: StateEvaluation[];
+  summary: ExposureSummary;
+  topActions: TopAction[];
 }
 
-interface ExposureSummary {
-  totalStatesWithSales: number;
-  exceededCount: number;
-  warningCount: number;
-  approachingCount: number;
-  safeCount: number;
-  noSalesTaxCount: number;
+type Filter = 'attention' | 'with_sales' | 'all';
+
+function formatDay(iso: string | null): string {
+  if (!iso) return '';
+  return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' });
 }
 
-interface NexusAlert {
-  id: string;
-  stateCode: string;
-  stateName: string;
-  alertLevel: string;
-  salesAmount: number;
-  threshold: number;
-  percentage: number;
-  message: string;
-  read: boolean;
-  createdAt: string;
+function needsAttention(e: StateEvaluation): boolean {
+  return e.hasSalesTax && e.status !== 'safe';
 }
 
-// Reserved for future use
-function _formatCurrency(amount: number): string {
-  if (amount >= 1000000) {
-    return `$${(amount / 1000000).toFixed(1)}M`;
-  }
-  if (amount >= 1000) {
-    return `$${(amount / 1000).toFixed(0)}K`;
-  }
-  return `$${amount.toFixed(0)}`;
+const STATUS_STYLES: Record<string, { chip: string; bar: string; track: string; icon: React.ReactNode }> = {
+  exceeded: {
+    chip: 'bg-red-500/15 text-red-500',
+    bar: 'bg-red-500',
+    track: 'bg-red-500/15',
+    icon: <ShieldAlert className="w-5 h-5 text-red-500" aria-hidden />,
+  },
+  next_year: {
+    chip: 'bg-purple-500/15 text-purple-500',
+    bar: 'bg-purple-500',
+    track: 'bg-purple-500/15',
+    icon: <CalendarClock className="w-5 h-5 text-purple-500" aria-hidden />,
+  },
+  warning: {
+    chip: 'bg-orange-500/15 text-orange-500',
+    bar: 'bg-orange-500',
+    track: 'bg-orange-500/15',
+    icon: <AlertTriangle className="w-5 h-5 text-orange-500" aria-hidden />,
+  },
+  approaching: {
+    chip: 'bg-yellow-500/15 text-yellow-600',
+    bar: 'bg-yellow-500',
+    track: 'bg-yellow-500/15',
+    icon: <TrendingUp className="w-5 h-5 text-yellow-600" aria-hidden />,
+  },
+  safe: {
+    chip: 'bg-emerald-500/15 text-emerald-600',
+    bar: 'bg-emerald-500',
+    track: 'bg-emerald-500/15',
+    icon: <ShieldCheck className="w-5 h-5 text-emerald-600" aria-hidden />,
+  },
+};
+
+function styleFor(e: StateEvaluation) {
+  if (e.startsNextYear) return STATUS_STYLES.next_year;
+  return STATUS_STYLES[e.status] ?? STATUS_STYLES.safe;
 }
 
-function formatFullCurrency(amount: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(amount);
+const CONFIDENCE_LABEL: Record<Confidence, string> = { high: 'High', medium: 'Medium', low: 'Low' };
+const CONFIDENCE_STYLE: Record<Confidence, string> = {
+  high: 'text-emerald-600 border-emerald-500/40',
+  medium: 'text-yellow-600 border-yellow-500/40',
+  low: 'text-red-500 border-red-500/40',
+};
+
+function ProgressBar({ label, value, max, pct, e }: { label: string; value: string; max: string; pct: number; e: StateEvaluation }) {
+  const s = styleFor(e);
+  return (
+    <div>
+      <div className="flex items-center justify-between text-sm mb-1">
+        <span className="text-theme-muted">{label}</span>
+        <span className="text-theme-secondary">
+          {value} of {max} <span className="text-theme-muted">({formatPercent(pct)})</span>
+        </span>
+      </div>
+      <div
+        className={`h-2 rounded-full ${s.track} overflow-hidden`}
+        role="progressbar"
+        aria-label={`${label} toward the ${e.stateName} threshold`}
+        aria-valuemin={0}
+        aria-valuemax={100}
+        aria-valuenow={Math.min(Math.round(pct), 100)}
+      >
+        <div className={`h-full rounded-full ${s.bar}`} style={{ width: `${Math.min(pct, 100)}%` }} />
+      </div>
+    </div>
+  );
 }
 
-function getStatusColor(status: string): string {
-  switch (status) {
-    case 'exceeded':
-      return 'text-red-400';
-    case 'warning':
-      return 'text-orange-400';
-    case 'approaching':
-      return 'text-yellow-400';
-    default:
-      return 'text-emerald-400';
-  }
-}
+function StateCard({ e, defaultOpen }: { e: StateEvaluation; defaultOpen: boolean }) {
+  const s = styleFor(e);
+  const reg = getStateRegistrationUrl(e.stateCode);
+  const showRegister = (e.nextStep.kind === 'register_now' || e.nextStep.kind === 'plan_registration') && reg;
 
-function getStatusBgColor(status: string): string {
-  switch (status) {
-    case 'exceeded':
-      return 'bg-red-500';
-    case 'warning':
-      return 'bg-orange-500';
-    case 'approaching':
-      return 'bg-yellow-500';
-    default:
-      return 'bg-emerald-500';
-  }
-}
+  return (
+    <article id={`state-${e.stateCode}`} className="p-5 scroll-mt-24">
+      <div className="flex flex-wrap items-start justify-between gap-3 mb-3">
+        <div className="flex items-center gap-3 min-w-0">
+          {s.icon}
+          <div className="min-w-0">
+            <h3 className="font-semibold text-theme-primary">
+              {e.stateName} <span className="text-theme-muted font-normal text-sm">{e.stateCode}</span>
+            </h3>
+            <p className="text-xs text-theme-muted">
+              Measured over: {e.window.label}
+              {e.marketplace.sales > 0 && (e.marketplace.counted ? ' · includes marketplace sales' : ' · marketplace sales not counted')}
+            </p>
+          </div>
+        </div>
+        <div className="flex items-center gap-2">
+          <span className={`px-2.5 py-1 rounded-full text-xs font-semibold ${s.chip}`}>{e.headline}</span>
+          <span
+            className={`px-2 py-0.5 rounded-full text-xs border ${CONFIDENCE_STYLE[e.confidence]}`}
+            title="How sure Sails is about this result"
+          >
+            How sure: {CONFIDENCE_LABEL[e.confidence]}
+          </span>
+        </div>
+      </div>
 
-function getStatusBarBg(status: string): string {
-  switch (status) {
-    case 'exceeded':
-      return 'bg-red-500/20';
-    case 'warning':
-      return 'bg-orange-500/20';
-    case 'approaching':
-      return 'bg-yellow-500/20';
-    default:
-      return 'bg-emerald-500/20';
-  }
-}
+      {e.salesThreshold && (
+        <div className="space-y-2 mb-3">
+          <ProgressBar
+            label="Sales"
+            value={formatMoney(e.measuredSales)}
+            max={formatMoney(e.salesThreshold)}
+            pct={e.salesPercentage}
+            e={e}
+          />
+          {e.transactionThreshold && e.measuredOrders > 0 && (
+            <ProgressBar
+              label={e.logic === 'and' ? 'Orders (both needed)' : 'Orders'}
+              value={e.measuredOrders.toLocaleString('en-US')}
+              max={e.transactionThreshold.toLocaleString('en-US')}
+              pct={e.transactionPercentage}
+              e={e}
+            />
+          )}
+        </div>
+      )}
 
-function getStatusLabel(status: string): string {
-  switch (status) {
-    case 'exceeded':
-      return 'Exceeded';
-    case 'warning':
-      return 'Warning';
-    case 'approaching':
-      return 'Approaching';
-    default:
-      return 'Safe';
-  }
-}
+      <p className="text-sm text-theme-primary">
+        <span className="font-semibold">What next: </span>
+        {e.nextStep.text}
+      </p>
+      {showRegister && reg && (
+        <a
+          href={reg.registrationUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={`mt-2 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm transition-colors ${
+            e.nextStep.kind === 'register_now'
+              ? 'bg-red-500/10 text-red-500 hover:bg-red-500/20'
+              : 'bg-purple-500/10 text-purple-500 hover:bg-purple-500/20'
+          }`}
+        >
+          <ExternalLink className="w-3.5 h-3.5" aria-hidden />
+          {e.nextStep.kind === 'register_now' ? 'Register' : 'See how to register'} with {reg.portalName}
+        </a>
+      )}
 
-function getStatusIcon(status: string) {
-  switch (status) {
-    case 'exceeded':
-      return <ShieldAlert className="w-5 h-5 text-red-400" />;
-    case 'warning':
-      return <AlertTriangle className="w-5 h-5 text-orange-400" />;
-    case 'approaching':
-      return <TrendingUp className="w-5 h-5 text-yellow-400" />;
-    default:
-      return <ShieldCheck className="w-5 h-5 text-emerald-400" />;
-  }
+      <details className="mt-3 group" open={defaultOpen}>
+        <summary className="cursor-pointer list-none inline-flex items-center gap-1 text-sm text-theme-accent hover:underline">
+          <ChevronDown className="w-4 h-4 transition-transform group-open:rotate-180" aria-hidden />
+          Why, how sure, and the rule
+        </summary>
+        <div className="mt-3 grid gap-4 md:grid-cols-2 text-sm">
+          <section>
+            <h4 className="font-semibold text-theme-primary mb-1">Why</h4>
+            <ul className="list-disc pl-5 space-y-1 text-theme-secondary">
+              {e.why.map((line, i) => (
+                <li key={i}>{line}</li>
+              ))}
+            </ul>
+          </section>
+          <section>
+            <h4 className="font-semibold text-theme-primary mb-1">How sure: {CONFIDENCE_LABEL[e.confidence]}</h4>
+            {e.confidenceReasons.length === 0 ? (
+              <p className="text-theme-secondary">Your order history covers the period {e.stateName} looks at, and the result isn&apos;t close to the line.</p>
+            ) : (
+              <ul className="list-disc pl-5 space-y-1 text-theme-secondary">
+                {e.confidenceReasons.map((line, i) => (
+                  <li key={i}>{line}</li>
+                ))}
+              </ul>
+            )}
+          </section>
+          <section className="md:col-span-2">
+            <h4 className="font-semibold text-theme-primary mb-1">{e.stateName}&apos;s rule</h4>
+            <dl className="grid sm:grid-cols-3 gap-2 text-theme-secondary">
+              <div>
+                <dt className="text-theme-muted text-xs">Period</dt>
+                <dd>{e.rule.measurementLabel}{e.rule.measurementNote ? ` — ${e.rule.measurementNote}` : ''}</dd>
+              </div>
+              <div>
+                <dt className="text-theme-muted text-xs">Sales that count</dt>
+                <dd>{e.rule.countedSalesLabel}</dd>
+              </div>
+              <div>
+                <dt className="text-theme-muted text-xs">Marketplace sales (Amazon, Etsy…)</dt>
+                <dd>{e.rule.marketplaceSales === 'included' ? 'Counted' : 'Not counted'}{e.rule.marketplaceNote ? ` — ${e.rule.marketplaceNote}` : ''}</dd>
+              </div>
+            </dl>
+            {e.rule.notes && <p className="mt-2 text-theme-secondary">{e.rule.notes}</p>}
+            <p className="mt-2 text-xs text-theme-muted">
+              Rules reviewed {e.rulesReviewed}. Sources:{' '}
+              {e.sources.map((src, i) => (
+                <span key={src.url}>
+                  {i > 0 && ' · '}
+                  <a href={src.url} target="_blank" rel="noopener noreferrer" className="text-theme-accent hover:underline">
+                    {src.name}
+                  </a>
+                </span>
+              ))}
+            </p>
+          </section>
+        </div>
+      </details>
+    </article>
+  );
 }
 
 export default function NexusExposure() {
-  const [exposures, setExposures] = useState<StateExposure[]>([]);
-  const [summary, setSummary] = useState<ExposureSummary | null>(null);
-  const [alerts, setAlerts] = useState<NexusAlert[]>([]);
-  const [unreadCount, setUnreadCount] = useState(0);
+  const [report, setReport] = useState<NexusReportResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [filter, setFilter] = useState<'all' | 'attention' | 'safe'>('all');
-  const [showAlerts, setShowAlerts] = useState(false);
+  const [filter, setFilter] = useState<Filter | null>(null);
 
   useEffect(() => {
-    fetchExposureData();
-    fetchAlerts();
+    let cancelled = false;
+    (async () => {
+      try {
+        const response = await fetch('/api/nexus/exposure');
+        if (!response.ok) throw new Error('Could not load your nexus results. Please refresh the page.');
+        const data = (await response.json()) as NexusReportResponse;
+        if (!cancelled) setReport(data);
+      } catch (err) {
+        if (!cancelled) setError(err instanceof Error ? err.message : 'Could not load your nexus results.');
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
-  const fetchExposureData = async () => {
-    try {
-      const response = await fetch('/api/nexus/exposure');
-      if (!response.ok) throw new Error('Failed to fetch exposure data');
-      const data = await response.json();
-      setExposures(data.exposures);
-      setSummary(data.summary);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load data');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const fetchAlerts = async () => {
-    try {
-      const response = await fetch('/api/nexus/alerts?unreadOnly=false&limit=20');
-      if (!response.ok) return;
-      const data = await response.json();
-      setAlerts(data.alerts);
-      setUnreadCount(data.unreadCount);
-    } catch {
-      // Non-critical
-    }
-  };
-
-  const markAllRead = async () => {
-    try {
-      await fetch('/api/nexus/alerts', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({}),
-      });
-      setAlerts(prev => prev.map(a => ({ ...a, read: true })));
-      setUnreadCount(0);
-    } catch {
-      // Non-critical
-    }
-  };
-
-  const filteredExposures = exposures.filter(e => {
-    if (filter === 'attention') {
-      return e.status !== 'safe' && e.hasSalesTax;
-    }
-    if (filter === 'safe') {
-      return e.status === 'safe' && e.hasSalesTax && e.currentSales > 0;
-    }
-    return e.hasSalesTax;
-  });
-
-  const noSalesTaxStates = exposures.filter(e => !e.hasSalesTax);
-  const hasData = exposures.some(e => e.currentSales > 0);
+  const evaluations = useMemo(() => report?.evaluations ?? [], [report]);
+  const attention = evaluations.filter(needsAttention);
+  const withSales = evaluations.filter((e) => e.hasSalesTax && e.hasAnySales);
+  const activeFilter: Filter = filter ?? (attention.length > 0 ? 'attention' : 'with_sales');
+  const shown =
+    activeFilter === 'attention' ? attention : activeFilter === 'with_sales' ? withSales : evaluations.filter((e) => e.hasSalesTax);
+  const noSalesTaxStates = evaluations.filter((e) => !e.hasSalesTax);
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-16">
+      <div className="flex items-center justify-center py-16" role="status" aria-label="Loading nexus results">
         <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-theme-accent"></div>
       </div>
     );
   }
 
-  if (error) {
+  if (error || !report) {
     return (
       <div className="rounded-xl p-6 card-theme border border-red-500/30">
-        <p className="text-red-400">{error}</p>
+        <p className="text-red-500">{error ?? 'Could not load your nexus results.'}</p>
       </div>
     );
   }
 
-  if (!hasData) {
+  if (!report.coverage.earliestOrder) {
     return (
       <div className="rounded-xl p-8 card-theme border border-theme-primary text-center">
-        <TrendingUp className="w-12 h-12 text-theme-accent mx-auto mb-4" />
-        <h3 className="text-xl font-semibold text-theme-primary mb-2">
-          No Sales Data Yet
-        </h3>
+        <TrendingUp className="w-12 h-12 text-theme-accent mx-auto mb-4" aria-hidden />
+        <h2 className="text-xl font-semibold text-theme-primary mb-2">No orders yet</h2>
         <p className="text-theme-muted mb-6 max-w-md mx-auto">
-          Connect a sales platform and sync your orders to see your nexus exposure 
-          across all states automatically.
+          Connect your store, or upload an Amazon order report, and Sails will check your sales against every
+          state&apos;s rules — including which states count marketplace sales.
         </p>
-        <a
-          href="/settings#platforms"
-          className="btn-theme-primary px-6 py-3 rounded-lg font-medium inline-block"
-        >
-          Connect a Platform
-        </a>
+        <Link href="/settings#platforms" className="btn-theme-primary px-6 py-3 rounded-lg font-medium inline-block">
+          Connect a store
+        </Link>
       </div>
     );
   }
+
+  const { summary, coverage, topActions } = report;
 
   return (
     <div className="space-y-6">
-      {/* Alert Banner for Exceeded States */}
-      {summary && summary.exceededCount > 0 && (
-        <div className="rounded-xl p-5 border border-red-500/40 bg-red-500/10">
-          <div className="flex items-start gap-3">
-            <ShieldAlert className="w-6 h-6 text-red-400 mt-0.5 flex-shrink-0" />
-            <div>
-              <h3 className="font-semibold text-red-400 text-lg">
-                Action Required — {summary.exceededCount} State{summary.exceededCount > 1 ? 's' : ''} Exceeded
-              </h3>
-              <p className="text-red-300/80 text-sm mt-1">
-                You&apos;ve crossed the economic nexus threshold in {summary.exceededCount} state{summary.exceededCount > 1 ? 's' : ''}. 
-                You need to register and begin collecting sales tax.
-              </p>
-            </div>
-          </div>
-        </div>
+      {/* What to do next */}
+      {topActions.length > 0 && (
+        <section className="card-theme rounded-xl border border-theme-primary p-5" aria-labelledby="top-actions-heading">
+          <h2 id="top-actions-heading" className="text-lg font-semibold text-theme-primary mb-3">
+            What to do next
+          </h2>
+          <NexusActionList actions={topActions} />
+        </section>
       )}
 
-      {/* Summary Cards */}
-      {summary && (
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-          <div className="card-theme rounded-xl p-4 border border-red-500/30">
-            <div className="text-2xl font-bold text-red-400">{summary.exceededCount}</div>
-            <div className="text-sm text-theme-muted">Exceeded</div>
-          </div>
-          <div className="card-theme rounded-xl p-4 border border-orange-500/30">
-            <div className="text-2xl font-bold text-orange-400">{summary.warningCount}</div>
-            <div className="text-sm text-theme-muted">Warning (90%+)</div>
-          </div>
-          <div className="card-theme rounded-xl p-4 border border-yellow-500/30">
-            <div className="text-2xl font-bold text-yellow-400">{summary.approachingCount}</div>
-            <div className="text-sm text-theme-muted">Approaching (75%+)</div>
-          </div>
-          <div className="card-theme rounded-xl p-4 border border-emerald-500/30">
-            <div className="text-2xl font-bold text-emerald-400">{summary.totalStatesWithSales}</div>
-            <div className="text-sm text-theme-muted">States with Sales</div>
-          </div>
+      {/* Summary */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <div className="card-theme rounded-xl p-4 border border-red-500/30">
+          <div className="text-2xl font-bold text-red-500">{summary.exceededCount}</div>
+          <div className="text-sm text-theme-muted">Register now</div>
         </div>
-      )}
-
-      {/* Filter + Alert Toggle */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-        <div className="flex gap-2">
-          <button
-            onClick={() => setFilter('all')}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition ${
-              filter === 'all'
-                ? 'btn-theme-primary text-white'
-                : 'bg-white/10 text-theme-secondary hover:bg-white/20'
-            }`}
-          >
-            All States
-          </button>
-          <button
-            onClick={() => setFilter('attention')}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition ${
-              filter === 'attention'
-                ? 'btn-theme-primary text-white'
-                : 'bg-white/10 text-theme-secondary hover:bg-white/20'
-            }`}
-          >
-            Needs Attention
-          </button>
-          <button
-            onClick={() => setFilter('safe')}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition ${
-              filter === 'safe'
-                ? 'btn-theme-primary text-white'
-                : 'bg-white/10 text-theme-secondary hover:bg-white/20'
-            }`}
-          >
-            Safe
-          </button>
+        <div className="card-theme rounded-xl p-4 border border-purple-500/30">
+          <div className="text-2xl font-bold text-purple-500">{summary.startsNextYearCount}</div>
+          <div className="text-sm text-theme-muted">Register by Jan 1</div>
         </div>
+        <div className="card-theme rounded-xl p-4 border border-orange-500/30">
+          <div className="text-2xl font-bold text-orange-500">{summary.warningCount + summary.approachingCount}</div>
+          <div className="text-sm text-theme-muted">Getting close (75%+)</div>
+        </div>
+        <div className="card-theme rounded-xl p-4 border border-emerald-500/30">
+          <div className="text-2xl font-bold text-emerald-600">{summary.totalStatesWithSales}</div>
+          <div className="text-sm text-theme-muted">States with sales</div>
+        </div>
+      </div>
 
-        {alerts.length > 0 && (
+      {/* Method */}
+      <details className="card-theme rounded-xl border border-theme-primary p-4 text-sm">
+        <summary className="cursor-pointer list-none flex items-start gap-2 text-theme-secondary">
+          <Info className="w-4 h-4 mt-0.5 text-theme-accent flex-shrink-0" aria-hidden />
+          <span>
+            Based on your orders from {formatDay(coverage.earliestOrder)} to {formatDay(coverage.latestOrder)}
+            {coverage.hasMarketplaceData ? ', including marketplace sales' : ''}. State rules reviewed{' '}
+            {evaluations[0]?.rulesReviewed}. <span className="text-theme-accent">How Sails measures</span>
+          </span>
+        </summary>
+        <ul className="mt-3 list-disc pl-5 space-y-1 text-theme-secondary">
+          <li>Sales are your order totals minus the sales tax you collected. Shipping is included; cancelled and refunded orders are not.</li>
+          <li>Each state is measured over its own period: last calendar year, this year, or the last 12 months.</li>
+          <li>Marketplace sales (Amazon, Etsy, eBay…) only count in states that count them toward your threshold.</li>
+          <li>Each order counts as one transaction.</li>
+          <li>These are estimates to help you decide what to check. They aren&apos;t tax advice — confirm with the state or a tax professional before registering.</li>
+        </ul>
+      </details>
+
+      {/* Filters */}
+      <div className="flex flex-wrap gap-2" role="group" aria-label="Filter states">
+        {(
+          [
+            ['attention', `Needs attention (${attention.length})`],
+            ['with_sales', `States with sales (${withSales.length})`],
+            ['all', 'All states'],
+          ] as [Filter, string][]
+        ).map(([key, label]) => (
           <button
-            onClick={() => setShowAlerts(!showAlerts)}
-            className="relative flex items-center gap-2 px-4 py-2 rounded-lg bg-white/10 text-theme-secondary hover:bg-white/20 transition text-sm"
+            key={key}
+            type="button"
+            onClick={() => setFilter(key)}
+            aria-pressed={activeFilter === key}
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition ${
+              activeFilter === key ? 'btn-theme-primary text-white' : 'bg-white/10 text-theme-secondary hover:bg-white/20'
+            }`}
           >
-            <Bell className="w-4 h-4" />
-            <span>Alerts</span>
-            {unreadCount > 0 && (
-              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                {unreadCount}
-              </span>
-            )}
+            {label}
           </button>
+        ))}
+      </div>
+
+      {/* State cards */}
+      <div className="card-theme rounded-xl border border-theme-primary overflow-hidden divide-y divide-[var(--border-primary)]">
+        {shown.map((e) => (
+          <StateCard key={e.stateCode} e={e} defaultOpen={false} />
+        ))}
+        {shown.length === 0 && (
+          <div className="p-8 text-center text-theme-muted">
+            <Info className="w-8 h-8 mx-auto mb-3 opacity-50" aria-hidden />
+            <p>{activeFilter === 'attention' ? 'No states need attention right now.' : 'No states match this filter.'}</p>
+          </div>
         )}
       </div>
 
-      {/* Alerts Panel */}
-      {showAlerts && alerts.length > 0 && (
-        <div className="card-theme rounded-xl border border-theme-primary overflow-hidden">
-          <div className="p-4 border-b border-theme-primary flex items-center justify-between">
-            <h3 className="font-semibold text-theme-primary">Recent Alerts</h3>
-            {unreadCount > 0 && (
-              <button
-                onClick={markAllRead}
-                className="text-theme-accent text-sm hover:opacity-80"
-              >
-                Mark all read
-              </button>
-            )}
-          </div>
-          <div className="divide-y divide-white/5 max-h-64 overflow-y-auto">
-            {alerts.map(alert => (
-              <div
-                key={alert.id}
-                className={`p-4 ${!alert.read ? 'bg-white/5' : ''}`}
-              >
-                <div className="flex items-start gap-3">
-                  <div className="mt-0.5">
-                    {alert.alertLevel === 'exceeded' && <ShieldAlert className="w-4 h-4 text-red-400" />}
-                    {alert.alertLevel === 'warning' && <AlertTriangle className="w-4 h-4 text-orange-400" />}
-                    {alert.alertLevel === 'approaching' && <TrendingUp className="w-4 h-4 text-yellow-400" />}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm text-theme-primary">{alert.message}</p>
-                    <p className="text-xs text-theme-muted mt-1">
-                      {new Date(alert.createdAt).toLocaleDateString('en-US', {
-                        month: 'short',
-                        day: 'numeric',
-                        year: 'numeric',
-                      })}
-                    </p>
-                  </div>
-                </div>
-              </div>
+      {activeFilter === 'all' && noSalesTaxStates.length > 0 && (
+        <div className="card-theme rounded-xl border border-theme-primary p-4">
+          <h3 className="text-sm font-medium text-theme-muted mb-2">States with no statewide sales tax</h3>
+          <div className="flex flex-wrap gap-2">
+            {noSalesTaxStates.map((state) => (
+              <span key={state.stateCode} className="px-3 py-1 rounded-lg bg-white/5 text-theme-muted text-sm" title={state.why[0]}>
+                {state.stateName}
+              </span>
             ))}
-          </div>
-        </div>
-      )}
-
-      {/* State Exposure List */}
-      <div className="card-theme rounded-xl border border-theme-primary overflow-hidden">
-        <div className="divide-y divide-white/5">
-          {filteredExposures.map(exposure => (
-            <div
-              key={exposure.stateCode}
-              className={`p-5 ${
-                exposure.status === 'exceeded' ? 'bg-red-500/5' : ''
-              }`}
-            >
-              <div className="flex items-start justify-between mb-3">
-                <div className="flex items-center gap-3">
-                  {getStatusIcon(exposure.status)}
-                  <div>
-                    <h4 className="font-medium text-theme-primary">
-                      {exposure.stateName}
-                      <span className="text-theme-muted ml-2 text-sm">{exposure.stateCode}</span>
-                    </h4>
-                    <p className="text-xs text-theme-muted mt-0.5">
-                      {exposure.measurementPeriod === 'rolling_12_months'
-                        ? 'Rolling 12 months'
-                        : 'Calendar year'}
-                    </p>
-                  </div>
-                </div>
-                <span
-                  className={`px-3 py-1 rounded-full text-sm font-medium ${
-                    exposure.status === 'exceeded'
-                      ? 'bg-red-500/20 text-red-400'
-                      : exposure.status === 'warning'
-                      ? 'bg-orange-500/20 text-orange-400'
-                      : exposure.status === 'approaching'
-                      ? 'bg-yellow-500/20 text-yellow-400'
-                      : 'bg-emerald-500/20 text-emerald-400'
-                  }`}
-                >
-                  {getStatusLabel(exposure.status)}
-                </span>
-              </div>
-
-              {/* Sales Progress Bar */}
-              {exposure.salesThreshold && (
-                <div className="mb-2">
-                  <div className="flex items-center justify-between text-sm mb-1.5">
-                    <span className="text-theme-muted">Sales</span>
-                    <span className={`font-medium ${getStatusColor(exposure.status)}`}>
-                      {formatFullCurrency(exposure.currentSales)} / {formatFullCurrency(exposure.salesThreshold)}
-                      {' '}
-                      <span className="text-theme-muted">
-                        ({Math.min(Math.round(exposure.salesPercentage), 999)}%)
-                      </span>
-                    </span>
-                  </div>
-                  <div className={`h-2.5 rounded-full ${getStatusBarBg(exposure.status)} overflow-hidden`}>
-                    <div
-                      className={`h-full rounded-full transition-all duration-500 ${getStatusBgColor(exposure.status)}`}
-                      style={{
-                        width: `${Math.min(exposure.salesPercentage, 100)}%`,
-                      }}
-                    />
-                  </div>
-                </div>
-              )}
-
-              {/* Transaction Progress Bar (only show if there's a threshold and it's relevant) */}
-              {exposure.transactionThreshold &&
-                exposure.transactionPercentage > 0 && (
-                  <div className="mt-2">
-                    <div className="flex items-center justify-between text-sm mb-1.5">
-                      <span className="text-theme-muted">Transactions</span>
-                      <span className="text-theme-secondary font-medium">
-                        {exposure.currentTransactions.toLocaleString()} / {exposure.transactionThreshold.toLocaleString()}
-                        {' '}
-                        <span className="text-theme-muted">
-                          ({Math.min(Math.round(exposure.transactionPercentage), 999)}%)
-                        </span>
-                      </span>
-                    </div>
-                    <div className="h-2 rounded-full bg-white/10 overflow-hidden">
-                      <div
-                        className={`h-full rounded-full transition-all duration-500 ${
-                          exposure.transactionPercentage >= 100
-                            ? 'bg-red-500'
-                            : exposure.transactionPercentage >= 90
-                            ? 'bg-orange-500'
-                            : exposure.transactionPercentage >= 75
-                            ? 'bg-yellow-500'
-                            : 'bg-emerald-500'
-                        }`}
-                        style={{
-                          width: `${Math.min(exposure.transactionPercentage, 100)}%`,
-                        }}
-                      />
-                    </div>
-                  </div>
-                )}
-
-              {/* Action Items for Exceeded States */}
-              {exposure.status === 'exceeded' && (
-                <div className="mt-3 flex flex-wrap gap-2">
-                  {(() => {
-                    const regInfo = getStateRegistrationUrl(exposure.stateCode);
-                    return regInfo ? (
-                      <a
-                        href={regInfo.registrationUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-500/10 text-red-400 text-sm hover:bg-red-500/20 transition-colors"
-                      >
-                        <ExternalLink className="w-3.5 h-3.5" />
-                        Register in {exposure.stateName}
-                      </a>
-                    ) : (
-                      <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-500/10 text-red-400 text-sm">
-                        <ExternalLink className="w-3.5 h-3.5" />
-                        Register in {exposure.stateName}
-                      </span>
-                    );
-                  })()}
-                  <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-500/10 text-red-400 text-sm">
-                    <CheckCircle className="w-3.5 h-3.5" />
-                    Start collecting tax
-                  </span>
-                </div>
-              )}
-            </div>
-          ))}
-
-          {filteredExposures.length === 0 && (
-            <div className="p-8 text-center text-theme-muted">
-              <Info className="w-8 h-8 mx-auto mb-3 opacity-50" />
-              <p>No states match this filter.</p>
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* No Sales Tax States (collapsed section) */}
-      {filter === 'all' && noSalesTaxStates.length > 0 && (
-        <div className="card-theme rounded-xl border border-theme-primary overflow-hidden opacity-60">
-          <div className="p-4">
-            <h3 className="text-sm font-medium text-theme-muted mb-3">
-              States With No Sales Tax
-            </h3>
-            <div className="flex flex-wrap gap-2">
-              {noSalesTaxStates.map(state => (
-                <span
-                  key={state.stateCode}
-                  className="px-3 py-1 rounded-lg bg-white/5 text-theme-muted text-sm"
-                >
-                  {state.stateCode}
-                </span>
-              ))}
-            </div>
           </div>
         </div>
       )}

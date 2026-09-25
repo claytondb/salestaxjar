@@ -55,27 +55,6 @@ export default function PlanUsage() {
 
   if (!usage) return null;
 
-  // Free plan — show CTA to upgrade
-  if (usage.plan === 'free') {
-    return (
-      <div className="card-theme rounded-xl p-6">
-        <div className="flex items-center justify-between mb-3">
-          <h3 className="text-sm font-semibold text-theme-primary">Plan Usage</h3>
-          <span className="text-xs px-2 py-0.5 rounded-full bg-theme-secondary/30 text-theme-muted">Free Plan</span>
-        </div>
-        <p className="text-sm text-theme-muted mb-4">
-          Connect your store and start importing orders to track your nexus exposure automatically.
-        </p>
-        <Link
-          href="/pricing"
-          className="block w-full text-center btn-theme-primary text-white py-2 rounded-lg text-sm font-medium transition"
-        >
-          Upgrade to Starter — $9/mo
-        </Link>
-      </div>
-    );
-  }
-
   // Unlimited plan (enterprise)
   if (usage.orders.limit === null) {
     return (
@@ -137,6 +116,8 @@ export default function PlanUsage() {
           style={{ width: `${Math.min(percentUsed, 100)}%` }}
         />
       </div>
+
+      <p className="text-xs text-theme-muted mb-2">Orders are counted by the month they were placed.</p>
 
       {/* Status line */}
       <div className="flex items-center justify-between">

@@ -88,7 +88,7 @@ const jsonLdFaq = {
       name: 'Do I need to collect sales tax on all my sales?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'It depends on nexus — your business presence in a state. Most states use economic nexus thresholds ($100K in sales or 200 transactions per year).',
+        text: 'It depends on nexus — your business presence in a state. Most states use a $100,000 sales threshold; a few set a higher amount, and some also count transactions.',
       },
     },
   ],

@@ -111,7 +111,7 @@ export default function Home() {
     },
     {
       question: "What if I sell on multiple platforms?",
-      answer: "Connect your store and upload your Amazon order reports, and Sails combines them into one state-by-state picture. States treat marketplace sales differently — some count them toward your threshold and some don't — so it's important to include every channel."
+      answer: "Connect your store and upload your Amazon order reports, and Sails combines them into one state-by-state picture. States treat marketplace sales differently — some count them toward your threshold and some don't — and Sails applies each state's rule for you."
     },
     {
       question: "How is Sails different from TaxJar or Avalara?",
@@ -123,14 +123,8 @@ export default function Home() {
     },
   ];
 
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-theme-gradient flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2" style={{ borderColor: 'var(--accent-primary)' }}></div>
-      </div>
-    );
-  }
-
+  // The page renders right away (and on the server) so visitors and search
+  // engines see the content; only the header buttons wait for the auth check.
   return (
     <div className="min-h-screen bg-theme-gradient">
       {/* Header */}
@@ -156,7 +150,7 @@ export default function Home() {
               >
                 {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
               </button>
-              {user ? (
+              {!isLoading && user ? (
                 // Logged in - show dashboard link
                 <Link href="/dashboard" className="btn-theme-primary px-4 py-2 rounded-lg font-medium transition">
                   Go to Dashboard

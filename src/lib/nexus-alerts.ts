@@ -10,12 +10,9 @@
  */
 
 import { prisma } from './prisma';
-import { getExposureTotals } from './sales-aggregation';
-import {
-  STATE_NEXUS_THRESHOLDS,
-  calculateExposureStatus,
-  ExposureStatus,
-} from './nexus-thresholds';
+import { loadNexusInputs } from './nexus-data';
+import { evaluateAllStates } from './nexus-engine';
+import type { ExposureStatus } from './nexus-thresholds';
 import { sendNexusAlertEmail } from './email-alerts';
 
 export interface NexusAlertResult {
@@ -26,6 +23,8 @@ export interface NexusAlertResult {
   threshold: number;
   percentage: number;
   message: string;
+  /** What to do next, in plain words (from the nexus engine) */
+  detail?: string;
 }
 
 /**
@@ -40,10 +39,12 @@ export const ALERT_LEVEL_ORDER: Record<string, number> = {
 
 /**
  * Check all states for a user and create new alerts as needed.
- * Returns the list of newly created alerts.
+ * Uses the nexus engine, so each state's own measurement window and
+ * marketplace rule apply. Returns the list of newly created alerts.
  */
-export async function checkAndCreateAlerts(userId: string): Promise<NexusAlertResult[]> {
-  const exposureTotals = await getExposureTotals(userId);
+export async function checkAndCreateAlerts(userId: string, now: Date = new Date()): Promise<NexusAlertResult[]> {
+  const { byState, coverage } = await loadNexusInputs(userId, now);
+  const evaluations = evaluateAllStates(byState, { now, coverage });
   const newAlerts: NexusAlertResult[] = [];
 
   // Get existing alerts so we don't duplicate
@@ -56,80 +57,56 @@ export async function checkAndCreateAlerts(userId: string): Promise<NexusAlertRe
     existingAlertMap.set(`${alert.stateCode}:${alert.alertLevel}`, alert.id);
   }
 
-  for (const threshold of STATE_NEXUS_THRESHOLDS) {
-    if (!threshold.hasSalesTax || !threshold.salesThreshold) continue;
-
-    const totals = exposureTotals.get(threshold.stateCode);
-    if (!totals) continue;
-
-    // Pick the right measurement period
-    let sales: number;
-    let transactions: number;
-
-    if (
-      threshold.measurementPeriod === 'rolling_12_months'
-    ) {
-      sales = totals.rolling12MonthSales;
-      transactions = totals.rolling12MonthTransactions;
-    } else {
-      // calendar_year or previous_or_current_calendar_year
-      // Use the higher of rolling 12-month or calendar year
-      sales = Math.max(totals.rolling12MonthSales, totals.calendarYearSales);
-      transactions = Math.max(
-        totals.rolling12MonthTransactions,
-        totals.calendarYearTransactions
-      );
-    }
-
-    const exposure = calculateExposureStatus(sales, transactions, threshold);
-
-    if (exposure.status === 'safe') continue;
+  for (const evaluation of evaluations) {
+    if (!evaluation.hasSalesTax || !evaluation.salesThreshold) continue;
+    if (evaluation.status === 'safe') continue;
 
     // Determine which alert levels to create
     const levelsToCreate: ExposureStatus[] = [];
-    
-    if (exposure.status === 'exceeded') {
+    if (evaluation.status === 'exceeded') {
       levelsToCreate.push('exceeded', 'warning', 'approaching');
-    } else if (exposure.status === 'warning') {
+    } else if (evaluation.status === 'warning') {
       levelsToCreate.push('warning', 'approaching');
-    } else if (exposure.status === 'approaching') {
+    } else if (evaluation.status === 'approaching') {
       levelsToCreate.push('approaching');
     }
 
     for (const level of levelsToCreate) {
-      const key = `${threshold.stateCode}:${level}`;
-      
+      const key = `${evaluation.stateCode}:${level}`;
+
       // Skip if alert already exists at this level
       if (existingAlertMap.has(key)) continue;
 
       const message = generateAlertMessage(
-        threshold.stateName,
+        evaluation.stateName,
         level,
-        sales,
-        threshold.salesThreshold,
-        exposure.highestPercentage
+        evaluation.measuredSales,
+        evaluation.salesThreshold,
+        evaluation.highestPercentage,
+        { startsNextYear: evaluation.startsNextYear && level === 'warning', year: now.getUTCFullYear() }
       );
 
       const alertResult: NexusAlertResult = {
-        stateCode: threshold.stateCode,
-        stateName: threshold.stateName,
+        stateCode: evaluation.stateCode,
+        stateName: evaluation.stateName,
         alertLevel: level,
-        salesAmount: sales,
-        threshold: threshold.salesThreshold,
-        percentage: exposure.highestPercentage,
+        salesAmount: evaluation.measuredSales,
+        threshold: evaluation.salesThreshold,
+        percentage: evaluation.highestPercentage,
         message,
+        detail: evaluation.nextStep.text,
       };
 
       // Create in database
       await prisma.nexusAlert.create({
         data: {
           userId,
-          stateCode: threshold.stateCode,
-          stateName: threshold.stateName,
+          stateCode: evaluation.stateCode,
+          stateName: evaluation.stateName,
           alertLevel: level,
-          salesAmount: sales,
-          threshold: threshold.salesThreshold,
-          percentage: Math.min(exposure.highestPercentage, 999.99),
+          salesAmount: evaluation.measuredSales,
+          threshold: evaluation.salesThreshold,
+          percentage: Math.min(evaluation.highestPercentage, 999.99),
           message,
         },
       });
@@ -190,6 +167,7 @@ async function sendNexusAlertEmails(
         salesAmount: alert.salesAmount,
         threshold: alert.threshold,
         percentage: alert.percentage,
+        detail: alert.detail,
       });
 
       // Mark email as sent
@@ -217,7 +195,8 @@ export function generateAlertMessage(
   level: ExposureStatus,
   sales: number,
   threshold: number,
-  percentage: number
+  percentage: number,
+  opts: { startsNextYear?: boolean; year?: number } = {}
 ): string {
   const salesFormatted = new Intl.NumberFormat('en-US', {
     style: 'currency',
@@ -232,6 +211,10 @@ export function generateAlertMessage(
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
   }).format(threshold);
+
+  if (opts.startsNextYear && opts.year) {
+    return `Your ${opts.year} sales in ${stateName} have reached ${salesFormatted}, over the ${thresholdFormatted} threshold. ${stateName} looks at the previous year, so you'll likely need to register by January 1, ${opts.year + 1}.`;
+  }
 
   switch (level) {
     case 'exceeded':

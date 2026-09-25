@@ -6,7 +6,7 @@
  * require integration testing with a test database.
  */
 
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 // Mock Prisma before importing the module
 vi.mock('./prisma', () => ({
@@ -31,16 +31,21 @@ vi.mock('./email-alerts', () => ({
   sendNexusAlertEmail: vi.fn().mockResolvedValue({ success: true }),
 }));
 
-// Mock sales-aggregation
-vi.mock('./sales-aggregation', () => ({
-  getExposureTotals: vi.fn().mockResolvedValue(new Map()),
+// Mock the order loader (the nexus engine itself runs for real)
+vi.mock('./nexus-data', () => ({
+  loadNexusInputs: vi.fn(),
 }));
 
 import {
   ALERT_LEVEL_ORDER,
   generateAlertMessage,
+  checkAndCreateAlerts,
   NexusAlertResult,
 } from './nexus-alerts';
+import { loadNexusInputs } from './nexus-data';
+import { emptyWindows } from './nexus-engine';
+import { prisma } from './prisma';
+import { sendNexusAlertEmail } from './email-alerts';
 
 describe('nexus-alerts', () => {
   describe('ALERT_LEVEL_ORDER', () => {
@@ -230,5 +235,83 @@ describe('nexus-alerts', () => {
 
       expect(result.alertLevel).toBe('approaching');
     });
+  });
+});
+
+describe('checkAndCreateAlerts (uses the nexus engine)', () => {
+  const NOW = new Date('2026-07-01T12:00:00Z');
+  const coverage = {
+    earliestOrder: new Date('2024-06-01T00:00:00Z'),
+    latestOrder: new Date('2026-06-30T00:00:00Z'),
+    hasMarketplaceData: false,
+  };
+
+  function withSales(entries: Record<string, { prev?: number; cur?: number; roll?: number; orders?: number }>) {
+    const byState = new Map();
+    for (const [code, v] of Object.entries(entries)) {
+      const w = emptyWindows();
+      w.previousYear.direct = { sales: v.prev ?? 0, orders: v.orders ?? 1 };
+      w.currentYear.direct = { sales: v.cur ?? 0, orders: v.orders ?? 1 };
+      w.rolling12.direct = { sales: v.roll ?? 0, orders: v.orders ?? 1 };
+      byState.set(code, w);
+    }
+    vi.mocked(loadNexusInputs).mockResolvedValue({ byState, coverage });
+  }
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    vi.mocked(prisma.nexusAlert.findMany).mockResolvedValue([] as never);
+    vi.mocked(prisma.nexusAlert.create).mockResolvedValue({} as never);
+    vi.mocked(prisma.nexusAlert.updateMany).mockResolvedValue({ count: 1 } as never);
+    vi.mocked(prisma.notificationPreference.findUnique).mockResolvedValue(null as never);
+    vi.mocked(prisma.user.findUnique).mockResolvedValue({ email: 'seller@example.com', name: 'Sam' } as never);
+    vi.mocked(sendNexusAlertEmail).mockResolvedValue({ success: true } as never);
+  });
+
+  it('creates the exceeded alert plus the lower levels, and emails only the highest', async () => {
+    withSales({ WA: { cur: 150_000 } });
+    const alerts = await checkAndCreateAlerts('user-1', NOW);
+    expect(alerts).toHaveLength(1);
+    expect(alerts[0]).toMatchObject({ stateCode: 'WA', alertLevel: 'exceeded', salesAmount: 150_000 });
+    expect(prisma.nexusAlert.create).toHaveBeenCalledTimes(3);
+    expect(sendNexusAlertEmail).toHaveBeenCalledTimes(1);
+    expect(vi.mocked(sendNexusAlertEmail).mock.calls[0][0]).toMatchObject({
+      stateCode: 'WA',
+      detail: expect.stringContaining('Register for a sales tax permit in Washington'),
+    });
+  });
+
+  it("uses each state's own window: last year's sales don't trigger Texas (last 12 months)", async () => {
+    withSales({ TX: { prev: 900_000, roll: 100_000 } });
+    const alerts = await checkAndCreateAlerts('user-1', NOW);
+    expect(alerts).toEqual([]);
+    expect(prisma.nexusAlert.create).not.toHaveBeenCalled();
+  });
+
+  it('explains next-year registration for previous-year states crossed this year', async () => {
+    withSales({ FL: { prev: 20_000, cur: 120_000 } });
+    const alerts = await checkAndCreateAlerts('user-1', NOW);
+    expect(alerts[0].alertLevel).toBe('warning');
+    expect(alerts[0].message).toContain('register by January 1, 2027');
+  });
+
+  it('does not repeat alerts that already exist', async () => {
+    withSales({ WA: { cur: 150_000 } });
+    vi.mocked(prisma.nexusAlert.findMany).mockResolvedValue([
+      { id: 'a1', stateCode: 'WA', alertLevel: 'exceeded' },
+      { id: 'a2', stateCode: 'WA', alertLevel: 'warning' },
+      { id: 'a3', stateCode: 'WA', alertLevel: 'approaching' },
+    ] as never);
+    const alerts = await checkAndCreateAlerts('user-1', NOW);
+    expect(alerts).toEqual([]);
+    expect(sendNexusAlertEmail).not.toHaveBeenCalled();
+  });
+
+  it('respects the email preference', async () => {
+    withSales({ WA: { cur: 150_000 } });
+    vi.mocked(prisma.notificationPreference.findUnique).mockResolvedValue({ emailNexusAlerts: false } as never);
+    const alerts = await checkAndCreateAlerts('user-1', NOW);
+    expect(alerts).toHaveLength(1);
+    expect(sendNexusAlertEmail).not.toHaveBeenCalled();
   });
 });

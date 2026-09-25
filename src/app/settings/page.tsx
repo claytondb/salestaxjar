@@ -7,6 +7,7 @@ import { useAuth } from '@/context/AuthContext';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import PlatformsManager from '@/components/PlatformsManager';
+import { AmazonManualImport } from '@/components/AmazonManualImport';
 import { BusinessProfile, BillingInfo } from '@/types';
 import { stateTaxRates } from '@/data/taxRates';
 import { deleteAllUserData } from '@/lib/security';
@@ -795,7 +796,17 @@ function SettingsPageContent() {
 
             {/* Platforms Tab */}
             {activeTab === 'platforms' && (
-              <PlatformsManager />
+              <div className="space-y-6">
+                <PlatformsManager />
+                <section id="amazon" className="card-theme rounded-xl border border-theme-primary p-6" aria-labelledby="amazon-import-heading">
+                  <h2 id="amazon-import-heading" className="text-xl font-semibold text-theme-primary mb-1">Amazon sales</h2>
+                  <p className="text-theme-muted text-sm mb-6">
+                    Amazon collects sales tax for you, but many states still count Amazon sales toward your own
+                    threshold. Upload an Amazon report and Sails will include those sales in the states that count them.
+                  </p>
+                  <AmazonManualImport />
+                </section>
+              </div>
             )}
 
             {/* API Keys Tab */}

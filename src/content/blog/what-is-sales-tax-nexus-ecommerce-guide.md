@@ -157,7 +157,7 @@ Once you're doing consistent six-figure revenue, monitoring nexus should be auto
 
 ## Track Your Nexus With Sails
 
-Manually tracking sales thresholds across 45 states is tedious and error-prone. Sails checks your sales by state against each state's economic nexus thresholds and emails you threshold alerts.
+Manually tracking sales thresholds across 45 states is tedious and error-prone. Sails checks your sales by state against each state's economic nexus rules — including measurement periods and whether marketplace sales count — and emails you threshold alerts.
 
 Connect your Shopify or WooCommerce store (BigCommerce is in beta), and Sails imports your orders and tracks your sales by state for you.
 

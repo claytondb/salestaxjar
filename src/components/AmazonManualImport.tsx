@@ -8,6 +8,8 @@ interface ImportResult {
   ordersImported?: number;
   totalSales?: number;
   totalTax?: number;
+  newAlerts?: number;
+  message?: string;
   errors?: string[];
 }
 
@@ -71,6 +73,8 @@ export function AmazonManualImport() {
           ordersImported: data.ordersImported,
           totalSales: data.totalSales,
           totalTax: data.totalTax,
+          newAlerts: data.newAlerts,
+          message: data.message,
         });
         setFile(null);
       } else {
@@ -173,7 +177,7 @@ export function AmazonManualImport() {
         <button
           onClick={handleUpload}
           disabled={uploading}
-          className="w-full py-3 px-4 bg-green-600 hover:bg-green-700 disabled:bg-green-400 text-theme-primary font-medium rounded-lg transition-colors flex items-center justify-center gap-2"
+          className="w-full py-3 px-4 bg-green-600 hover:bg-green-700 disabled:bg-green-400 text-white font-medium rounded-lg transition-colors flex items-center justify-center gap-2"
         >
           {uploading ? (
             <>
@@ -209,6 +213,17 @@ export function AmazonManualImport() {
                   <p><strong>{result.ordersImported}</strong> orders imported</p>
                   <p>Total sales: <strong>${result.totalSales?.toLocaleString()}</strong></p>
                   <p>Total tax collected: <strong>${result.totalTax?.toLocaleString()}</strong></p>
+                  {result.message && <p>{result.message}</p>}
+                  {result.newAlerts ? (
+                    <p>
+                      <strong>{result.newAlerts}</strong> state{result.newAlerts === 1 ? '' : 's'} crossed an alert level.{' '}
+                      <a href="/nexus" className="underline">See your nexus results</a>
+                    </p>
+                  ) : (
+                    <p>
+                      <a href="/nexus" className="underline">See your updated nexus results</a>
+                    </p>
+                  )}
                 </div>
               </div>
             </div>

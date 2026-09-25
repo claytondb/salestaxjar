@@ -4,7 +4,6 @@ import {
   getConnection, 
   updateSyncStatus,
   saveImportedOrders,
-  updateSalesSummary,
   ImportedOrderData,
 } from '@/lib/platforms';
 import { userCanConnectPlatform, tierGateError, resolveUserPlan, checkOrderLimit, orderLimitError, getOrderLimitDisplay, getPlanDisplayName } from '@/lib/plans';
@@ -46,7 +45,6 @@ import {
   fetchOrders as fetchOpenCartOrders,
   mapOrderToImport as mapOpenCartOrder,
 } from '@/lib/platforms/opencart';
-import { aggregateForStates } from '@/lib/sales-aggregation';
 import { checkAndCreateAlerts } from '@/lib/nexus-alerts';
 
 /**
@@ -161,27 +159,10 @@ export async function POST(request: NextRequest) {
         orders
       );
 
-      // Update sales summaries for affected states
-      const affectedStates = new Set(orders.map(o => o.shippingState).filter(Boolean));
-      const affectedStateArray = Array.from(affectedStates).filter((s): s is string => !!s);
-      const currentMonth = new Date().toISOString().slice(0, 7); // YYYY-MM
-      
-      for (const state of affectedStates) {
-        if (state) {
-          await updateSalesSummary(user.id, state, currentMonth);
-        }
-      }
+      const affectedStateArray = Array.from(new Set(orders.map(o => o.shippingState).filter((s): s is string => !!s)));
 
-      // Run full aggregation for affected states (rolling 12-month + calendar year)
-      if (affectedStateArray.length > 0) {
-        try {
-          await aggregateForStates(user.id, affectedStateArray);
-        } catch (aggError) {
-          console.error('Sales aggregation error (non-fatal):', aggError);
-        }
-      }
-
-      // Check nexus thresholds and create alerts
+      // Check nexus thresholds and create alerts. The nexus engine reads the
+      // imported orders directly, so no per-month summaries need rebuilding.
       let newAlerts: unknown[] = [];
       try {
         newAlerts = await checkAndCreateAlerts(user.id);

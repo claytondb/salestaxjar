@@ -11,7 +11,7 @@ import { NexusState } from '@/types';
 
 const nexusReasons = [
   { value: 'physical', label: 'Physical Presence', description: 'Office, warehouse, employees, or inventory in state' },
-  { value: 'economic', label: 'Economic Nexus', description: 'Exceeded sales threshold ($100K or 200 transactions in most states)' },
+  { value: 'economic', label: 'Economic Nexus', description: "Passed a state's sales threshold (usually $100,000 a year)" },
   { value: 'affiliate', label: 'Affiliate Nexus', description: 'Affiliates or referral partners in state' },
   { value: 'click-through', label: 'Click-Through Nexus', description: 'In-state website links driving sales' },
   { value: 'marketplace', label: 'Marketplace Facilitator', description: 'Sales through marketplace like Amazon' },

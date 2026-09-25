@@ -1,9 +1,13 @@
 /**
  * Sales Aggregation Service
- * 
- * Aggregates imported orders into per-state sales summaries.
- * Handles both rolling 12-month and calendar year periods,
- * since different states use different measurement periods.
+ *
+ * Aggregates imported orders into per-state monthly summaries (SalesSummary).
+ *
+ * NOTE: nexus results no longer read these summaries. The nexus engine
+ * (nexus-engine.ts, loaded by nexus-data.ts) reads ImportedOrder directly so it
+ * can apply each state's measurement window and marketplace rule, and so it's
+ * current no matter which import path brought orders in. getExposureTotals()
+ * is kept only for its tests and possible reporting use.
  */
 
 import { prisma } from './prisma';
