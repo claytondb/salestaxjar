@@ -140,11 +140,17 @@ export async function POST(request: NextRequest) {
         shippingZip: (order.shipping_address ?? order.billing_address)?.zip,
         shippingCountry: (order.shipping_address ?? order.billing_address)?.country_code || 'US',
         billingState: order.billing_address?.province_code,
-        lineItems: order.line_items,
+        lineItems: (order.line_items ?? []).map((item) => ({
+          name: item.title,
+          quantity: item.quantity,
+          price: parseFloat(item.price),
+          sku: item.sku,
+          taxable: item.taxable,
+          taxLines: item.tax_lines,
+        })),
         taxBreakdown: {
           taxLines: order.tax_lines,
         },
-        rawData: order,
       }));
 
       // Save orders to database

@@ -486,6 +486,37 @@ describe('Shopify sync', () => {
     const saved = vi.mocked(saveImportedOrders).mock.calls[0][2] as { shippingState?: string }[];
     expect(saved.map((o) => o.shippingState)).toEqual(['TX', 'NY', undefined]);
   });
+
+  it('keeps only what tax work needs from line items (no buyer-entered custom fields)', async () => {
+    vi.mocked(fetchShopifyOrders).mockResolvedValue({
+      orders: [
+        {
+          ...baseOrder,
+          id: 7,
+          shipping_address: address('CA'),
+          line_items: [
+            {
+              id: 1,
+              title: 'Engraved mug',
+              quantity: 2,
+              price: '20.00',
+              sku: 'MUG-1',
+              taxable: true,
+              tax_lines: [{ title: 'CA State Tax', price: '2.90', rate: 0.0725 }],
+              properties: [{ name: 'Engraving', value: 'For Jane Doe' }],
+            },
+          ],
+        },
+      ],
+      complete: true,
+    } as never);
+    await POST(postRequest({ platform: 'shopify', platformId: 'shop.myshopify.com' }));
+    const [saved] = vi.mocked(saveImportedOrders).mock.calls[0][2] as { lineItems?: unknown }[];
+    expect(saved.lineItems).toEqual([
+      { name: 'Engraved mug', quantity: 2, price: 20, sku: 'MUG-1', taxable: true, taxLines: [{ title: 'CA State Tax', price: '2.90', rate: 0.0725 }] },
+    ]);
+    expect(JSON.stringify(saved)).not.toContain('Jane Doe');
+  });
 });
 
 // ─── Magento sync ───────────────────────────────────────────────────────────

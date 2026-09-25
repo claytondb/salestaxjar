@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import { SERVICE_PROVIDERS } from '@/lib/service-providers';
 
 export default function PrivacyPage() {
   return (
@@ -183,15 +184,17 @@ export default function PrivacyPage() {
               <h2 className="text-xl font-semibold text-theme-primary mb-4">10. Third-Party Services</h2>
               <p>Sails uses these service providers to run the service:</p>
               <ul className="list-disc pl-6 space-y-2 mt-2">
-                <li><strong>Vercel</strong> — website and application hosting</li>
-                <li><strong>Neon</strong> — database hosting</li>
-                <li><strong>Stripe</strong> — subscription billing and payments</li>
-                <li><strong>Resend</strong> — sending account emails and the alerts you&apos;ve turned on</li>
-                <li><strong>Sentry</strong> — error monitoring</li>
-                <li><strong>Upstash</strong> — rate limiting</li>
-                <li><strong>TaxJar</strong> — tax rate lookups for some calculations (the destination address and amount are sent)</li>
+                {SERVICE_PROVIDERS.map((p) => (
+                  <li key={p.name}>
+                    <strong>{p.name}</strong> — {p.purpose.charAt(0).toLowerCase() + p.purpose.slice(1)}. {p.data}
+                  </li>
+                ))}
                 <li><strong>Your store platform</strong> (for example Shopify or WooCommerce) — only when you connect it</li>
               </ul>
+              <p className="mt-2">
+                See our <Link href="/security" className="text-theme-accent hover:text-emerald-300">security page</Link> for how
+                your data is protected.
+              </p>
               <p className="mt-2">
                 Each provider has its own privacy policy governing the information it processes for us.
               </p>

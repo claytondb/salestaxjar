@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getCurrentUser } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
+import { buildActivationFunnel } from '@/lib/activation-funnel';
 
 const ADMIN_EMAILS = (process.env.ADMIN_EMAILS || 'david@sails.tax,claytondb@gmail.com')
   .split(',')
@@ -22,7 +23,7 @@ export async function GET() {
     // Fetch all users with their subscriptions, plus platform connections and
     // imported-order counts (there is no Prisma back-relation on User for these,
     // so we query them separately and join in memory).
-    const [customers, connections, orderCounts] = await Promise.all([
+    const [customers, connections, orderCounts, nexusOwners, filedOwners] = await Promise.all([
       prisma.user.findMany({
         select: {
           id: true,
@@ -52,6 +53,14 @@ export async function GET() {
         select: { userId: true, platform: true, platformName: true, lastSyncAt: true },
       }),
       prisma.importedOrder.groupBy({ by: ['userId'], _count: { _all: true } }),
+      prisma.business.findMany({
+        where: { nexusStates: { some: { hasNexus: true } } },
+        select: { userId: true },
+      }),
+      prisma.business.findMany({
+        where: { filings: { some: { status: 'filed' } } },
+        select: { userId: true },
+      }),
     ]);
 
     type PlatformSummary = { platform: string; name: string | null; lastSync: string | null };
@@ -87,7 +96,24 @@ export async function GET() {
       },
     };
 
+    // Activation funnel, from our own data (no third-party analytics)
+    const funnel = buildActivationFunnel(
+      customers.map(c => ({
+        id: c.id,
+        createdAt: c.createdAt,
+        emailVerified: c.emailVerified,
+        subscriptionStatus: c.subscription?.status ?? null,
+      })),
+      {
+        connected: new Set(connections.map(c => c.userId)),
+        withOrders: new Set(orderCounts.filter(o => o._count._all > 0).map(o => o.userId)),
+        markedNexus: new Set(nexusOwners.map(b => b.userId)),
+        markedFiled: new Set(filedOwners.map(b => b.userId)),
+      }
+    );
+
     return NextResponse.json({
+      funnel,
       customers: customers.map(c => ({
         id: c.id,
         email: c.email,

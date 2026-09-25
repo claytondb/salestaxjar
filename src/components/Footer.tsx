@@ -43,6 +43,7 @@ export default function Footer() {
               <li><Link href="/terms" className="hover:text-theme-primary transition">Terms of Service</Link></li>
               <li><Link href="/privacy" className="hover:text-theme-primary transition">Privacy Policy</Link></li>
               <li><Link href="/cookies" className="hover:text-theme-primary transition">Cookie Policy</Link></li>
+              <li><Link href="/security" className="hover:text-theme-primary transition">Security</Link></li>
               <li><Link href="/terms#disclaimer" className="hover:text-theme-primary transition">Tax Disclaimer</Link></li>
             </ul>
           </div>
@@ -83,8 +84,12 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* Compliance Badges */}
-        <div className="flex justify-center gap-4 mt-8 text-theme-muted text-xs">
+        {/* Security facts (explained on /security) */}
+        <Link
+          href="/security"
+          className="flex flex-wrap justify-center gap-4 mt-8 text-theme-muted text-xs hover:text-theme-primary transition"
+          aria-label="How Sails protects your data"
+        >
           <span className="px-2 py-1 border border-theme-secondary rounded flex items-center gap-1">
             <Lock className="w-3 h-3" /> Encrypted connections
           </span>
@@ -94,7 +99,7 @@ export default function Footer() {
           <span className="px-2 py-1 border border-theme-secondary rounded flex items-center gap-1">
             <Shield className="w-3 h-3" /> No tracking cookies
           </span>
-        </div>
+        </Link>
       </div>
     </footer>
   );
