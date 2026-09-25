@@ -41,7 +41,12 @@ export function getCurrentBillingPeriod(): { start: Date; end: Date } {
 }
 
 /**
- * Get current month order count for a user
+ * Get the number of this user's orders DATED in the current month.
+ *
+ * Plan limits are "orders per month" — the seller's monthly order volume — so
+ * we count by order date, not by when the order was imported. Importing older
+ * history (which nexus measurement needs: states look at the previous and
+ * current calendar year, or the last 12 months) never uses up the monthly cap.
  */
 export async function getCurrentMonthOrderCount(userId: string): Promise<number> {
   const { start } = getCurrentBillingPeriod();
@@ -49,7 +54,7 @@ export async function getCurrentMonthOrderCount(userId: string): Promise<number>
   return prisma.importedOrder.count({
     where: {
       userId,
-      createdAt: { gte: start },
+      orderDate: { gte: start },
     },
   });
 }
@@ -133,13 +138,15 @@ export async function canImportOrders(
   const wouldExceed = (currentCount + orderCount) > limit;
   
   if (currentCount >= limit) {
+    // Still allowed: order history from earlier months can always be imported
+    // (applyMonthlyOrderCap skips only NEW orders dated this month).
     return {
-      allowed: false,
+      allowed: true,
       currentCount,
       limit,
       remaining: 0,
       wouldExceed: true,
-      error: `You've reached your monthly limit of ${limit.toLocaleString()} orders on the ${getPlanDisplayName(plan)} plan.`,
+      error: `You've reached your monthly limit of ${limit.toLocaleString()} orders on the ${getPlanDisplayName(plan)} plan. Older orders will still be imported.`,
     };
   }
   
@@ -199,6 +206,67 @@ export async function getImportableOrderCount(
 }
 
 /**
+ * Apply the monthly order cap to a batch of fetched orders.
+ *
+ * - Orders dated before this month are always kept (history is free).
+ * - Orders dated this month that were already imported are kept (re-syncs
+ *   update them and don't use up the cap).
+ * - New orders dated this month are kept until the plan's monthly limit is used.
+ */
+export async function applyMonthlyOrderCap<T>(params: {
+  userId: string;
+  subscription: { plan?: string | null; status?: string | null } | null | undefined;
+  platform: string;
+  items: T[];
+  getOrderDate: (item: T) => Date;
+  getPlatformOrderId: (item: T) => string;
+}): Promise<{
+  items: T[];
+  truncated: boolean;
+  skipped: number;
+  limit: number | null;
+  remaining: number | null;
+}> {
+  const { userId, subscription, platform, items, getOrderDate, getPlatformOrderId } = params;
+  const plan = resolveUserPlan(subscription);
+  const limit = PLAN_ORDER_LIMITS[plan];
+
+  if (limit === null) {
+    return { items, truncated: false, skipped: 0, limit: null, remaining: null };
+  }
+
+  const { start } = getCurrentBillingPeriod();
+  const currentCount = await getCurrentMonthOrderCount(userId);
+  let remaining = Math.max(0, limit - currentCount);
+
+  const alreadyImported = new Set(
+    (
+      await prisma.importedOrder.findMany({
+        where: { userId, platform, orderDate: { gte: start } },
+        select: { platformOrderId: true },
+      })
+    ).map((o) => o.platformOrderId)
+  );
+
+  const kept: T[] = [];
+  let skipped = 0;
+  for (const item of items) {
+    const date = getOrderDate(item);
+    const isThisMonth = !Number.isNaN(date.getTime()) && date >= start;
+    if (!isThisMonth || alreadyImported.has(getPlatformOrderId(item))) {
+      kept.push(item);
+    } else if (remaining > 0) {
+      kept.push(item);
+      remaining--;
+    } else {
+      skipped++;
+    }
+  }
+
+  return { items: kept, truncated: skipped > 0, skipped, limit, remaining };
+}
+
+/**
  * Error response for order limit exceeded
  */
 export function orderLimitExceededError(
@@ -207,7 +275,11 @@ export function orderLimitExceededError(
   limit: number,
   requested: number
 ) {
-  const nextPlan = plan === 'starter' ? 'Pro' : plan === 'pro' ? 'Business' : null;
+  const nextPlan =
+    plan === 'free' ? getPlanDisplayName('starter')
+    : plan === 'starter' ? getPlanDisplayName('pro')
+    : plan === 'pro' ? getPlanDisplayName('enterprise')
+    : null;
   
   return {
     error: 'Order limit exceeded',

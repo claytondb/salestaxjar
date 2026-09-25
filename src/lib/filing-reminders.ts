@@ -456,9 +456,23 @@ export async function processBatchReminders(
     results: [],
   };
 
+  // Respect each user's "Deadline reminders" email setting (default: on).
+  const userIds = [...new Set(filings.map((f) => f.business.user?.id).filter((id): id is string => !!id))];
+  const optedOut = new Set(
+    userIds.length === 0
+      ? []
+      : (
+          await prisma.notificationPreference.findMany({
+            where: { userId: { in: userIds }, emailDeadlineReminders: false },
+            select: { userId: true },
+          })
+        ).map((p) => p.userId)
+  );
+
   for (const filing of filings) {
     const user = filing.business.user;
     if (!user?.email) continue;
+    if (optedOut.has(user.id)) continue;
 
     const reminderResult = await sendFilingReminder({
       to: user.email,
@@ -472,7 +486,7 @@ export async function processBatchReminders(
         : `${new Date(filing.dueDate).getUTCFullYear()}`,
       dueDate: new Date(filing.dueDate),
       daysUntilDue: window,
-      estimatedTax: typeof filing.estimatedTax === 'number' ? Math.round(filing.estimatedTax * 100) : null,
+      estimatedTax: filing.estimatedTax != null ? Math.round(Number(filing.estimatedTax) * 100) : null,
     });
 
     result.results.push(reminderResult);

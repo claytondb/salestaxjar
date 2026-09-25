@@ -17,7 +17,7 @@ import {
 } from '@/lib/platforms/bigcommerce';
 import { saveImportedOrders, updateSyncStatus } from '@/lib/platforms';
 import { userCanConnectPlatform, tierGateError } from '@/lib/plans';
-import { canImportOrders, getImportableOrderCount, freeUserImportError, orderLimitExceededError, getUserUsageStatus } from '@/lib/usage';
+import { canImportOrders, applyMonthlyOrderCap, freeUserImportError, orderLimitExceededError, getUserUsageStatus } from '@/lib/usage';
 import { z } from 'zod';
 
 const syncSchema = z.object({
@@ -123,13 +123,18 @@ export async function POST(request: NextRequest) {
       );
 
       // Check and enforce order limits - truncate if necessary
-      const importableInfo = await getImportableOrderCount(user.id, user.subscription, allValidOrders.length);
-      const validOrders = importableInfo.truncated 
-        ? allValidOrders.slice(0, importableInfo.canImport)
-        : allValidOrders;
+      const capped = await applyMonthlyOrderCap({
+        userId: user.id,
+        subscription: user.subscription,
+        platform: 'bigcommerce',
+        items: allValidOrders,
+        getOrderDate: (o) => new Date(o.date_created),
+        getPlatformOrderId: (o) => String(o.id),
+      });
+      const validOrders = capped.items;
       
-      const truncated = importableInfo.truncated;
-      const skippedCount = allValidOrders.length - validOrders.length;
+      const truncated = capped.truncated;
+      const skippedCount = capped.skipped;
 
       // Map orders to our format
       // For better accuracy, we fetch shipping addresses for each order

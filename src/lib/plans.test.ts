@@ -42,8 +42,8 @@ describe('plans', () => {
   })
 
   describe('PLAN_ORDER_LIMITS', () => {
-    it('should have correct limit for free (0 orders)', () => {
-      expect(PLAN_ORDER_LIMITS.free).toBe(0)
+    it('should have correct limit for free (50 orders)', () => {
+      expect(PLAN_ORDER_LIMITS.free).toBe(50)
     })
     it('should have correct limit for starter (500 orders)', () => {
       expect(PLAN_ORDER_LIMITS.starter).toBe(500)
@@ -253,8 +253,8 @@ describe('plans', () => {
   })
 
   describe('getOrderLimit', () => {
-    it('should return 0 for free tier', () => {
-      expect(getOrderLimit('free')).toBe(0)
+    it('should return 50 for free tier', () => {
+      expect(getOrderLimit('free')).toBe(50)
     })
     it('should return 500 for starter tier', () => {
       expect(getOrderLimit('starter')).toBe(500)
@@ -269,10 +269,16 @@ describe('plans', () => {
 
   describe('checkOrderLimit', () => {
     describe('free tier', () => {
-      it('should not allow any imports', () => {
+      it('should allow imports up to 50 orders this month', () => {
         const result = checkOrderLimit('free', 0)
+        expect(result.allowed).toBe(true)
+        expect(result.limit).toBe(50)
+        expect(result.remaining).toBe(50)
+        expect(result.upgradeNeeded).toBeNull()
+      })
+      it('should suggest Starter once the free monthly limit is reached', () => {
+        const result = checkOrderLimit('free', 50)
         expect(result.allowed).toBe(false)
-        expect(result.limit).toBe(0)
         expect(result.remaining).toBe(0)
         expect(result.upgradeNeeded).toBe('starter')
       })
@@ -358,7 +364,7 @@ describe('plans', () => {
 
   describe('getOrderLimitDisplay', () => {
     it('should format free tier correctly', () => {
-      expect(getOrderLimitDisplay('free')).toBe('No order imports')
+      expect(getOrderLimitDisplay('free')).toBe('Up to 50 orders/month')
     })
     it('should format starter tier correctly', () => {
       expect(getOrderLimitDisplay('starter')).toBe('Up to 500 orders/month')

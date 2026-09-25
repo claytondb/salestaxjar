@@ -107,6 +107,24 @@ vi.mock('@/lib/nexus-alerts', () => ({
   checkAndCreateAlerts: vi.fn(),
 }));
 
+// Test adapter for the usage module: the month's order count comes from the
+// prisma.importedOrder.count mock, and the cap trims to (limit - currentCount)
+// from the checkOrderLimit mock. The real cap logic is unit-tested in
+// src/lib/usage.test.ts.
+vi.mock('@/lib/usage', async () => {
+  const { prisma } = await import('@/lib/prisma');
+  const plans = await import('@/lib/plans');
+  return {
+    getCurrentMonthOrderCount: vi.fn(async () => (await prisma.importedOrder.count({} as never)) as unknown as number),
+    applyMonthlyOrderCap: vi.fn(async ({ items }: { items: unknown[] }) => {
+      const check = ((plans.checkOrderLimit as unknown as (...a: unknown[]) => { currentCount?: number; limit?: number | null } | undefined)('starter', 0)) ?? {};
+      const remaining = check.limit == null ? Infinity : Math.max(0, check.limit - (check.currentCount ?? 0));
+      const kept = items.length > remaining ? items.slice(0, remaining) : items;
+      return { items: kept, truncated: kept.length < items.length, skipped: items.length - kept.length, limit: check.limit ?? null, remaining: 0 };
+    }),
+  };
+});
+
 import { POST } from './route';
 import { getCurrentUser } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
@@ -255,12 +273,12 @@ describe('tier gate', () => {
 // ─── Order limit ────────────────────────────────────────────────────────────
 
 describe('order limit', () => {
-  it('returns 403 when monthly order limit is exceeded before sync', async () => {
+  it('returns 403 when the plan cannot import orders at all (zero limit)', async () => {
     vi.mocked(checkOrderLimit).mockReturnValue({
       allowed: false,
-      currentCount: 500,
-      limit: 500,
-      upgradeNeeded: 'growth',
+      currentCount: 0,
+      limit: 0,
+      upgradeNeeded: 'starter',
     } as never);
     vi.mocked(orderLimitError).mockReturnValue({ error: 'order_limit_exceeded' } as never);
 
@@ -268,6 +286,20 @@ describe('order limit', () => {
     expect(res.status).toBe(403);
     const body = await res.json();
     expect(body.error).toBe('order_limit_exceeded');
+  });
+
+  it('still syncs (older history) when this month\'s limit is already used up', async () => {
+    vi.mocked(checkOrderLimit).mockReturnValue({
+      allowed: false,
+      currentCount: 500,
+      limit: 500,
+      upgradeNeeded: 'pro',
+    } as never);
+    vi.mocked(getEcwidCredentials).mockResolvedValue({ storeId: 'store-123', secretKey: 'secret-abc' } as never);
+    vi.mocked(fetchEcwidOrders).mockResolvedValue([] as never);
+
+    const res = await POST(postRequest({ platform: 'ecwid', platformId: 'store-123' }));
+    expect(res.status).toBe(200);
   });
 });
 
@@ -629,7 +661,8 @@ describe('usage warnings', () => {
 
   it('returns approaching warning at 75-89% usage', async () => {
     // 350 existing + 50 imported = 400 / 500 = 80% → 'approaching'
-    vi.mocked(prisma.importedOrder.count).mockResolvedValue(350);
+    // Month's count before the sync, then after it (the route re-counts)
+    vi.mocked(prisma.importedOrder.count).mockResolvedValueOnce(350).mockResolvedValue(400);
     vi.mocked(checkOrderLimit).mockReturnValue({ allowed: true, currentCount: 350, limit: 500 } as never);
     vi.mocked(saveImportedOrders).mockResolvedValue({ imported: 50, errors: [] } as never);
 
@@ -642,7 +675,8 @@ describe('usage warnings', () => {
 
   it('returns warning at 90-99% usage', async () => {
     // 420 existing + 50 imported = 470 / 500 = 94% → 'warning'
-    vi.mocked(prisma.importedOrder.count).mockResolvedValue(420);
+    // Month's count before the sync, then after it (the route re-counts)
+    vi.mocked(prisma.importedOrder.count).mockResolvedValueOnce(420).mockResolvedValue(470);
     vi.mocked(checkOrderLimit).mockReturnValue({ allowed: true, currentCount: 420, limit: 500 } as never);
     vi.mocked(saveImportedOrders).mockResolvedValue({ imported: 50, errors: [] } as never);
 
@@ -654,7 +688,8 @@ describe('usage warnings', () => {
   });
 
   it('returns at_limit warning at 100% usage', async () => {
-    vi.mocked(prisma.importedOrder.count).mockResolvedValue(450);
+    // Month's count before the sync, then after it (the route re-counts)
+    vi.mocked(prisma.importedOrder.count).mockResolvedValueOnce(450).mockResolvedValue(500);
     vi.mocked(checkOrderLimit).mockReturnValue({ allowed: true, currentCount: 450, limit: 500 } as never);
     vi.mocked(saveImportedOrders).mockResolvedValue({ imported: 50, errors: [] } as never);
 
@@ -667,7 +702,8 @@ describe('usage warnings', () => {
   });
 
   it('omits usageWarning below 75% usage', async () => {
-    vi.mocked(prisma.importedOrder.count).mockResolvedValue(10);
+    // Month's count before the sync, then after it (the route re-counts)
+    vi.mocked(prisma.importedOrder.count).mockResolvedValueOnce(10).mockResolvedValue(15);
     vi.mocked(checkOrderLimit).mockReturnValue({ allowed: true, currentCount: 10, limit: 500 } as never);
     vi.mocked(saveImportedOrders).mockResolvedValue({ imported: 5, errors: [] } as never);
 

@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getCurrentUser } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { userCanConnectPlatform, tierGateError } from '@/lib/plans';
-import { canImportOrders, getImportableOrderCount, freeUserImportError, orderLimitExceededError, getUserUsageStatus } from '@/lib/usage';
+import { canImportOrders, applyMonthlyOrderCap, freeUserImportError, orderLimitExceededError, getUserUsageStatus } from '@/lib/usage';
 import { parse } from 'csv-parse/sync';
 
 /**
@@ -106,13 +106,18 @@ export async function POST(request: NextRequest) {
     }
 
     // Check and enforce order limits - truncate if necessary
-    const importableInfo = await getImportableOrderCount(user.id, user.subscription, allOrders.length);
-    const orders = importableInfo.truncated 
-      ? allOrders.slice(0, importableInfo.canImport)
-      : allOrders;
+    const capped = await applyMonthlyOrderCap({
+      userId: user.id,
+      subscription: user.subscription,
+      platform: 'amazon',
+      items: allOrders,
+      getOrderDate: (o) => o.orderDate,
+      getPlatformOrderId: (o) => o.orderId,
+    });
+    const orders = capped.items;
     
-    const truncated = importableInfo.truncated;
-    const skippedCount = allOrders.length - orders.length;
+    const truncated = capped.truncated;
+    const skippedCount = capped.skipped;
 
     // Calculate totals
     const totalSales = orders.reduce((sum, o) => sum + o.totalAmount, 0);

@@ -6,6 +6,8 @@ import {
   getSalesTaxStates,
   getNoSalesTaxStates,
   calculateExposureStatus,
+  NEXUS_RULES_REVIEWED_ON,
+  NEXUS_RULES_SOURCES,
 } from './nexus-thresholds'
 
 describe('nexus-thresholds', () => {
@@ -175,7 +177,7 @@ describe('nexus-thresholds', () => {
     // sales-dollar test only. Setting a high transaction count must NOT trigger nexus.
     // Sources: Avalara "States eliminating economic nexus transaction thresholds";
     // Sales Tax Institute state guides.
-    const repealed = ['ME', 'SD', 'LA', 'IN', 'WY', 'NC', 'IL', 'UT']
+    const repealed = ['ME', 'SD', 'LA', 'IN', 'WY', 'NC', 'IL', 'UT', 'KY']
 
     it.each(repealed)('%s should have a null transaction threshold', (code) => {
       expect(THRESHOLD_BY_STATE[code].transactionThreshold).toBeNull()
@@ -187,6 +189,60 @@ describe('nexus-thresholds', () => {
       const result = calculateExposureStatus(10000, 1000, threshold)
       expect(result.transactionPercentage).toBe(0)
       expect(result.status).toBe('safe')
+    })
+  })
+
+  describe('rule metadata (reviewed Sep 2026 against Sales Tax Institute)', () => {
+    it('every state declares whether marketplace sales count toward the threshold', () => {
+      for (const t of STATE_NEXUS_THRESHOLDS) {
+        expect(['included', 'excluded']).toContain(t.marketplaceSales)
+      }
+    })
+
+    it('every state declares which sales count', () => {
+      for (const t of STATE_NEXUS_THRESHOLDS) {
+        expect(['gross', 'retail', 'taxable']).toContain(t.countedSales)
+      }
+    })
+
+    it('has a review date and named sources', () => {
+      expect(NEXUS_RULES_REVIEWED_ON).toMatch(/^\d{4}-\d{2}-\d{2}$/)
+      expect(NEXUS_RULES_SOURCES.length).toBeGreaterThan(0)
+      for (const s of NEXUS_RULES_SOURCES) {
+        expect(s.url).toMatch(/^https:\/\//)
+      }
+    })
+
+    // Spot checks against the source (TaxJar gives CA/CT/NY vs CO/FL/GA as examples too)
+    it.each(['CA', 'CT', 'NY', 'TX', 'WA', 'PA'])('%s counts marketplace sales toward the threshold', (code) => {
+      expect(THRESHOLD_BY_STATE[code].marketplaceSales).toBe('included')
+    })
+
+    it.each(['CO', 'FL', 'GA', 'IL', 'IN', 'AZ', 'VA', 'TN'])('%s excludes marketplace sales from the threshold', (code) => {
+      expect(THRESHOLD_BY_STATE[code].marketplaceSales).toBe('excluded')
+    })
+
+    it.each(['AL', 'FL', 'MI', 'NM', 'PA', 'RI'])('%s measures the previous calendar year only', (code) => {
+      expect(THRESHOLD_BY_STATE[code].measurementPeriod).toBe('previous_calendar_year')
+    })
+
+    it.each(['IL', 'MN', 'MS', 'MO', 'NY', 'TN', 'TX', 'VT', 'CT'])('%s uses a trailing 12-month window', (code) => {
+      expect(THRESHOLD_BY_STATE[code].measurementPeriod).toBe('rolling_12_months')
+    })
+
+    it('Kentucky repealed its transaction threshold effective Aug 1, 2026', () => {
+      expect(THRESHOLD_BY_STATE.KY.transactionThreshold).toBeNull()
+      expect(THRESHOLD_BY_STATE.KY.notes).toContain('Aug 1, 2026')
+    })
+
+    it('states that still have a transaction threshold', () => {
+      const withTxn = STATE_NEXUS_THRESHOLDS
+        .filter(t => t.transactionThreshold !== null)
+        .map(t => t.stateCode)
+        .sort()
+      expect(withTxn).toEqual(
+        ['AR', 'CT', 'DC', 'GA', 'HI', 'MD', 'MI', 'MN', 'NE', 'NJ', 'NV', 'NY', 'OH', 'RI', 'VA', 'VT', 'WV'].sort()
+      )
     })
   })
 })

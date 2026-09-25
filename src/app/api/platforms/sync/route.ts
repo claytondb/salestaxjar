@@ -8,6 +8,7 @@ import {
   ImportedOrderData,
 } from '@/lib/platforms';
 import { userCanConnectPlatform, tierGateError, resolveUserPlan, checkOrderLimit, orderLimitError, getOrderLimitDisplay, getPlanDisplayName } from '@/lib/plans';
+import { applyMonthlyOrderCap, getCurrentMonthOrderCount } from '@/lib/usage';
 import { prisma } from '@/lib/prisma';
 import { fetchOrders as fetchShopifyOrders, ShopifyOrder } from '@/lib/platforms/shopify';
 import { 
@@ -81,29 +82,19 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Check order limit before syncing
+    // Plan limits count orders DATED this month (see usage.ts). A plan with a
+    // zero limit can't import at all; otherwise older history is always imported
+    // and only new orders dated this month are capped (applyMonthlyOrderCap below).
     const userPlan = resolveUserPlan(user.subscription);
-    const now = new Date();
-    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
-    const currentMonthOrderCount = await prisma.importedOrder.count({
-      where: {
-        userId: user.id,
-        createdAt: { gte: monthStart },
-      },
-    });
+    const currentMonthOrderCount = await getCurrentMonthOrderCount(user.id);
     
     const limitCheck = checkOrderLimit(userPlan, currentMonthOrderCount);
-    if (!limitCheck.allowed) {
+    if (limitCheck.limit === 0) {
       return NextResponse.json(
-        orderLimitError(userPlan, limitCheck.currentCount, limitCheck.limit!, limitCheck.upgradeNeeded),
+        orderLimitError(userPlan, limitCheck.currentCount, limitCheck.limit, limitCheck.upgradeNeeded),
         { status: 403 }
       );
     }
-
-    // Calculate how many more orders we can import this month
-    const remainingCapacity = limitCheck.limit !== null 
-      ? limitCheck.limit - currentMonthOrderCount 
-      : Infinity;
 
     // Get the connection
     const connection = await getConnection(user.id, platform, platformId);
@@ -151,12 +142,18 @@ export async function POST(request: NextRequest) {
           throw new Error(`Unsupported platform: ${platform}`);
       }
 
-      // Trim orders to remaining capacity if needed
-      let trimmed = false;
-      if (orders.length > remainingCapacity && remainingCapacity !== Infinity) {
-        orders = orders.slice(0, remainingCapacity);
-        trimmed = true;
-      }
+      // Apply the monthly cap (history is always kept; new orders dated this month are capped)
+      const fetchedCount = orders.length;
+      const capped = await applyMonthlyOrderCap({
+        userId: user.id,
+        subscription: user.subscription,
+        platform,
+        items: orders,
+        getOrderDate: (o) => o.orderDate,
+        getPlatformOrderId: (o) => o.platformOrderId,
+      });
+      orders = capped.items;
+      const trimmed = capped.truncated;
 
       // Save orders to database
       const { imported, errors } = await saveImportedOrders(
@@ -197,7 +194,7 @@ export async function POST(request: NextRequest) {
       await updateSyncStatus(user.id, platform, platformId, 'success');
 
       // Check order usage after import for approaching-limit warnings
-      const updatedOrderCount = currentMonthOrderCount + imported;
+      const updatedOrderCount = await getCurrentMonthOrderCount(user.id);
       const updatedLimitCheck = checkOrderLimit(userPlan, updatedOrderCount);
       
       let usageWarning: {
@@ -246,8 +243,9 @@ export async function POST(request: NextRequest) {
         success: true,
         imported,
         trimmed: trimmed ? { 
-          message: `Only ${imported} of your orders were imported due to your monthly limit. Upgrade for more.`,
-          totalAvailable: orders.length + (trimmed ? 1 : 0), // approximate
+          message: `${capped.skipped} new order${capped.skipped === 1 ? '' : 's'} from this month weren't imported because you've reached your plan's monthly limit. Older orders were imported. Upgrade for more.`,
+          totalAvailable: fetchedCount,
+          skipped: capped.skipped,
         } : undefined,
         errors: errors.length > 0 ? errors : undefined,
         affectedStates: affectedStateArray,

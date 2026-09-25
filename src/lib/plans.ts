@@ -12,11 +12,11 @@
  *   - Nexus monitoring (all states)
  *   - Tax calculator
  *   - Calculation history + CSV export
- *   - 1 platform connection
+ *   - 1 platform connection, up to 50 orders/month (history import is free)
  *
  * Starter adds:
- *   - ALL platform integrations (up to 2 connections)
- *   - Order import / sync (up to 500 orders/month)
+ *   - Up to 2 platform connections
+ *   - Up to 500 orders/month
  *   - Email deadline reminders
  *   - CSV order import
  *
@@ -65,9 +65,13 @@ export type Feature =
 
 const PLAN_TIER_ORDER: PlanTier[] = ['free', 'starter', 'pro', 'enterprise'];
 
-/** Monthly order limits per plan */
+/**
+ * Monthly order limits per plan, counted by ORDER DATE (the seller's monthly
+ * order volume). Importing older history never counts against the limit —
+ * see applyMonthlyOrderCap() in usage.ts.
+ */
 export const PLAN_ORDER_LIMITS: Record<PlanTier, number | null> = {
-  free: 0,        // No order imports
+  free: 50,       // 1 store connection, up to 50 orders/month (matches STRATEGY.md)
   starter: 500,   // Up to 500 orders/month
   pro: 5000,      // Up to 5,000 orders/month
   enterprise: null,  // Unlimited
@@ -262,7 +266,7 @@ export function checkOrderLimit(
     return { allowed: true, currentCount: currentMonthOrderCount, limit: null, remaining: null, upgradeNeeded: null };
   }
 
-  // Free users can't import
+  // A zero limit means the plan can't import at all
   if (limit === 0) {
     return { allowed: false, currentCount: currentMonthOrderCount, limit: 0, remaining: 0, upgradeNeeded: 'starter' };
   }
@@ -273,7 +277,8 @@ export function checkOrderLimit(
   // Suggest next tier if at limit
   let upgradeNeeded: PlanTier | null = null;
   if (!allowed) {
-    if (tier === 'starter') upgradeNeeded = 'pro';
+    if (tier === 'free') upgradeNeeded = 'starter';
+    else if (tier === 'starter') upgradeNeeded = 'pro';
     else if (tier === 'pro') upgradeNeeded = 'enterprise';
   }
 

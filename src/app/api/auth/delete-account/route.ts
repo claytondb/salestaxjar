@@ -29,7 +29,7 @@ export async function DELETE() {
     }
 
     // Delete in order to respect foreign key constraints
-    // Tables without cascade: NotificationPreference, PlatformConnection, ImportedOrder, ApiKey, SalesSummary, EmailLog
+    // Tables without cascade: NotificationPreference, PlatformConnection, ImportedOrder, ApiKey, SalesSummary, EmailLog, NexusAlert
     await prisma.$transaction([
       // Tables without User relation (manual cleanup)
       prisma.notificationPreference.deleteMany({ where: { userId } }),
@@ -38,6 +38,7 @@ export async function DELETE() {
       prisma.apiKey.deleteMany({ where: { userId } }),
       prisma.salesSummary.deleteMany({ where: { userId } }),
       prisma.emailLog.deleteMany({ where: { userId } }),
+      prisma.nexusAlert.deleteMany({ where: { userId } }),
       
       // User deletion will cascade to: Session, Business (->NexusState, Filing), Calculation, Subscription
       prisma.user.delete({ where: { id: userId } }),

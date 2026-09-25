@@ -5,6 +5,15 @@ import Link from 'next/link';
 import { stateTaxRates, calculateTax, getNoTaxStates, taxRateMetadata } from '@/data/taxRates';
 import { useAuth } from '@/context/AuthContext';
 import Footer from '@/components/Footer';
+import {
+  INTEGRATIONS,
+  FEATURES,
+  STATUS_LABEL,
+  liveIntegrationNames,
+  betaIntegrationNames,
+} from '@/lib/capabilities';
+import { COMPETITOR_FACTS_CHECKED_LABEL } from '@/lib/competitors';
+import { NEXUS_RULES_REVIEWED_LABEL, NEXUS_RULES_REVIEWED_MONTH } from '@/lib/nexus-thresholds';
 import SailsLogo from '@/components/SailsLogo';
 import ThemeToggle from '@/components/ThemeToggle';
 import { 
@@ -73,27 +82,27 @@ export default function Home() {
   const faqs = [
     {
       question: "Do I need to file sales taxes myself?",
-      answer: "Sails tells you exactly what you owe and when — but you file directly with the state. We give you the numbers and the filing-ready reports; you (or your accountant) submit. No black boxes, no surprises. Filing automation is on our roadmap."
+      answer: "Yes. Sails shows you where you're likely required to collect, your deadlines, and your sales and tax collected by state — then you (or your accountant) file with each state. Sails does not file returns for you today, and we'll only offer that once the process has been reviewed by licensed tax professionals."
     },
     {
       question: "What platforms do you support?",
-      answer: "We currently integrate with Shopify (direct OAuth connection) and WooCommerce (via our plugin). BigCommerce integration is in active development. You can also manually import orders via CSV for any other platform like Etsy, Amazon, or eBay."
+      answer: `${liveIntegrationNames()} are live today. ${betaIntegrationNames()} are in beta — they work, but haven't been tested with many real stores yet, so please double-check the numbers they produce.`
     },
     {
       question: "Is my data secure?",
-      answer: "Yes. All data is encrypted in transit (TLS) and at rest. We never sell or share your business data with third parties. Your store connection uses read-only OAuth tokens — we can see your orders but can't modify anything."
+      answer: "Data travels over encrypted connections (TLS), our database provider encrypts stored data, and store connection keys are encrypted again by Sails before they're saved. Store connections only ask for read access — Sails can't change anything in your store. You can disconnect a store at any time, and deleting your account deletes your data. We never sell your data. Our Privacy Policy lists the services we use."
     },
     {
       question: "What if I sell on multiple platforms?",
-      answer: "Great question — this is exactly where Sails shines. Connect Shopify, import WooCommerce orders, and manually upload Amazon or Etsy sales. Sails aggregates everything to give you one unified nexus picture across all your sales channels."
+      answer: "Connect your store and upload your Amazon order reports, and Sails combines them into one state-by-state picture. States treat marketplace sales differently — some count them toward your threshold and some don't — so it's important to include every channel."
     },
     {
       question: "How is Sails different from TaxJar or Avalara?",
-      answer: "TaxJar starts at $99/month and was recently acquired by Stripe — it's increasingly focused on Stripe Tax and enterprise customers. Avalara averages $15,000–$23,000/year and is built for companies with dedicated finance teams. Sails starts at $9/month and is designed specifically for small online sellers doing under $1M/year."
+      answer: `Those tools calculate tax at checkout and can file returns for you. Sails focuses on the step before that: showing a small seller where they're likely required to register and collect, and what to do next. Sails has a free plan and paid plans from $9/month; TaxJar's Starter plan is listed at $39/month (checked ${COMPETITOR_FACTS_CHECKED_LABEL}).`
     },
     {
       question: "What happens when I hit economic nexus in a new state?",
-      answer: "You'll get an alert. Sails monitors your sales volume in every state and notifies you when you're approaching or have crossed a state's economic nexus threshold ($100K in sales or 200 transactions in most states). You'll know before you're out of compliance."
+      answer: "Sails emails you when your sales approach or pass a state's economic nexus threshold (usually $100,000 in sales; some states also count 200 transactions). Passing a threshold usually means you need to register with that state before you start collecting its sales tax — Sails links you to the state's registration page."
     },
   ];
 
@@ -192,7 +201,7 @@ export default function Home() {
             Sales Tax for Small Online Sellers.
           </h1>
           <p className="text-2xl sm:text-3xl font-bold mb-6" style={{ color: 'var(--accent-primary)' }}>
-            Not $19,000/year. <span className="text-theme-primary">$9/month.</span>
+            Know where you owe. <span className="text-theme-primary">Know what to do next.</span>
           </p>
 
           <p className="text-xl sm:text-2xl text-theme-secondary mb-4">
@@ -204,12 +213,12 @@ export default function Home() {
           
           {/* What it does */}
           <p className="text-lg sm:text-xl text-theme-secondary mb-8 max-w-2xl mx-auto">
-            Know where you owe, how much, and when it&apos;s due — across all 50 states. Built for Shopify, WooCommerce, and BigCommerce sellers. <span className="text-theme-primary font-medium">Free to start.</span>
+            Sails checks your sales against every state&apos;s economic nexus rules, flags the states you&apos;re close to or over, and reminds you before filing deadlines. Built for Shopify and WooCommerce sellers. <span className="text-theme-primary font-medium">Free to start.</span>
           </p>
 
           {/* Trust Signals */}
           <div className="flex flex-wrap justify-center gap-3 mb-8">
-            {["5-minute setup", "No accounting degree needed", "Free tier forever", "No credit card required"].map((text, i) => (
+            {["Free plan, no credit card", "No accounting degree needed", `State rules reviewed ${NEXUS_RULES_REVIEWED_LABEL}`, "Read-only store access"].map((text, i) => (
               <div key={i} className="px-3 py-1.5 rounded-full flex items-center text-sm" style={{ backgroundColor: 'var(--bg-card)', opacity: 0.8 }}>
                 <Check className="w-3.5 h-3.5 text-theme-muted" />
                 <span className="text-theme-muted ml-1.5">{text}</span>
@@ -234,86 +243,54 @@ export default function Home() {
         <div className="max-w-5xl mx-auto">
           {/* Platform Integrations */}
           <p className="text-center text-theme-muted text-sm uppercase tracking-wider font-medium mb-6">Works with your store</p>
-          <div className="flex flex-wrap justify-center items-center gap-6 mb-10">
-            {/* Shopify */}
-            <div className="flex items-center gap-2 px-6 py-3 rounded-xl card-theme border border-theme-primary">
-              <div className="w-8 h-8 rounded-lg flex items-center justify-center text-white font-bold text-sm" style={{ backgroundColor: '#96bf48' }}>S</div>
-              <span className="font-semibold text-theme-primary">Shopify</span>
-            </div>
-            {/* WooCommerce */}
-            <div className="flex items-center gap-2 px-6 py-3 rounded-xl card-theme border border-theme-primary">
-              <div className="w-8 h-8 rounded-lg flex items-center justify-center text-white font-bold text-sm" style={{ backgroundColor: '#7f54b3' }}>W</div>
-              <span className="font-semibold text-theme-primary">WooCommerce</span>
-            </div>
-            {/* BigCommerce */}
-            <div className="flex items-center gap-2 px-6 py-3 rounded-xl card-theme border border-theme-primary">
-              <div className="w-8 h-8 rounded-lg flex items-center justify-center text-white font-bold text-sm" style={{ backgroundColor: '#34313f' }}>B</div>
-              <span className="font-semibold text-theme-primary">BigCommerce</span>
-            </div>
-            {/* CSV Import */}
-            <div className="flex items-center gap-2 px-6 py-3 rounded-xl card-theme border border-theme-primary border-dashed">
-              <div className="w-8 h-8 rounded-lg flex items-center justify-center font-bold text-sm text-theme-muted" style={{ backgroundColor: 'var(--bg-secondary)' }}>+</div>
-              <span className="font-semibold text-theme-muted">CSV Import</span>
-            </div>
+          <div className="flex flex-wrap justify-center items-center gap-4 mb-10">
+            {INTEGRATIONS.filter((p) => p.status !== 'planned').map((p) => (
+              <div
+                key={p.id}
+                className={`flex items-center gap-2 px-5 py-3 rounded-xl card-theme border border-theme-primary ${p.status === 'beta' ? 'border-dashed' : ''}`}
+              >
+                <div className="w-8 h-8 rounded-lg flex items-center justify-center text-white font-bold text-sm" style={{ backgroundColor: p.color }}>
+                  {p.name.charAt(0)}
+                </div>
+                <span className={`font-semibold ${p.status === 'beta' ? 'text-theme-muted' : 'text-theme-primary'}`}>{p.name}</span>
+                {p.status === 'beta' && (
+                  <span className="text-[10px] uppercase tracking-wide px-1.5 py-0.5 rounded-full font-semibold" style={{ backgroundColor: 'var(--accent-subtle)', color: 'var(--accent-primary)' }}>
+                    {STATUS_LABEL.beta}
+                  </span>
+                )}
+              </div>
+            ))}
           </div>
 
-          {/* Social Proof Stats */}
+          {/* Facts, not vanity numbers */}
           <div className="grid grid-cols-3 gap-6 max-w-2xl mx-auto text-center">
             <div>
-              <div className="text-2xl sm:text-3xl font-bold text-theme-accent mb-1">500+</div>
-              <div className="text-theme-muted text-sm">Sellers onboarded</div>
+              <div className="text-2xl sm:text-3xl font-bold text-theme-accent mb-1">50 + DC</div>
+              <div className="text-theme-muted text-sm">States tracked</div>
             </div>
             <div>
-              <div className="text-2xl sm:text-3xl font-bold text-theme-accent mb-1">50</div>
-              <div className="text-theme-muted text-sm">States monitored</div>
+              <div className="text-2xl sm:text-3xl font-bold text-theme-accent mb-1">{NEXUS_RULES_REVIEWED_MONTH}</div>
+              <div className="text-theme-muted text-sm">State rules last reviewed</div>
             </div>
             <div>
-              <div className="text-2xl sm:text-3xl font-bold text-theme-accent mb-1">$9</div>
-              <div className="text-theme-muted text-sm">Starting price/mo</div>
+              <div className="text-2xl sm:text-3xl font-bold text-theme-accent mb-1">$0</div>
+              <div className="text-theme-muted text-sm">To start</div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Customer Testimonials */}
+      {/* Early access — honest about where Sails is today */}
       <section className="py-12 px-4 border-b border-theme-primary">
-        <div className="max-w-5xl mx-auto">
-          <h2 className="text-xl sm:text-2xl font-bold text-theme-primary text-center mb-8">What sellers are saying</h2>
-          <div className="grid sm:grid-cols-3 gap-6">
-            {[
-              {
-                quote: "I was terrified I'd get a huge tax bill out of nowhere. Sails showed me exactly where I had nexus and I finally feel in control.",
-                name: "Sarah M.",
-                store: "Shopify candle seller",
-                stars: 5,
-              },
-              {
-                quote: "TaxJar was $99/month for features I didn't even use. Sails does what I actually need for $9. It's a no-brainer.",
-                name: "Marcus T.",
-                store: "WooCommerce apparel store",
-                stars: 5,
-              },
-              {
-                quote: "I sell on both Shopify and Etsy. Sails is the only tool that pulls everything together so I can see my actual nexus exposure.",
-                name: "Jamie L.",
-                store: "Multi-platform jewelry seller",
-                stars: 5,
-              }
-            ].map((t, i) => (
-              <div key={i} className="card-theme rounded-xl p-6 flex flex-col gap-4">
-                <div className="flex gap-1">
-                  {Array.from({ length: t.stars }).map((_, s) => (
-                    <Star key={s} className="w-4 h-4 fill-current" style={{ color: 'var(--accent-primary)' }} />
-                  ))}
-                </div>
-                <p className="text-theme-secondary italic text-sm flex-1">&ldquo;{t.quote}&rdquo;</p>
-                <div>
-                  <div className="font-semibold text-theme-primary text-sm">{t.name}</div>
-                  <div className="text-theme-muted text-xs">{t.store}</div>
-                </div>
-              </div>
-            ))}
-          </div>
+        <div className="max-w-3xl mx-auto text-center">
+          <h2 className="text-xl sm:text-2xl font-bold text-theme-primary mb-3">Sails is new, and we&apos;re building it with our first sellers</h2>
+          <p className="text-theme-secondary mb-2">
+            If you&apos;re a small seller trying to figure out sales tax, we&apos;d love to help you get set up
+            and hear what would make Sails more useful to you.
+          </p>
+          <p className="text-theme-muted text-sm">
+            Email <a href="mailto:support@sails.tax" className="text-theme-accent hover:underline">support@sails.tax</a> — a real person reads every message.
+          </p>
         </div>
       </section>
 
@@ -329,9 +306,9 @@ export default function Home() {
           
           <div className="grid md:grid-cols-3 gap-8">
             {[
-              { num: "1", title: "Connect Your Store", desc: "Link your Shopify, WooCommerce, or BigCommerce store. We automatically import your sales data — no manual entry." },
-              { num: "2", title: "We Track Your Sales", desc: "Sails monitors your sales across all 50 states, tracks your nexus exposure, and flags when you're approaching a threshold." },
-              { num: "3", title: "Know What You Owe", desc: "Get a clear breakdown of what you owe by state, when each deadline is, and a filing-ready report. No guessing." }
+              { num: "1", title: "Connect Your Store", desc: "Connect Shopify or WooCommerce (other platforms are in beta) and upload Amazon order reports. Sails imports your orders, so there's no retyping." },
+              { num: "2", title: "We Track Your Sales", desc: "Sails adds up your sales into each state, compares them with that state's threshold, and flags the states you're approaching or have passed." },
+              { num: "3", title: "Know What To Do", desc: "See which states you may need to register in, your filing deadlines, and your sales and tax collected by state — ready for your returns." }
             ].map((step, i) => (
               <div key={i} className="text-center">
                 <div className="w-16 h-16 bg-accent-subtle rounded-full flex items-center justify-center mx-auto mb-4">
@@ -349,7 +326,7 @@ export default function Home() {
             <span>→</span>
             <span className="card-theme px-4 py-2 rounded-lg text-theme-primary">We Track Your Sales</span>
             <span>→</span>
-            <span className="card-theme px-4 py-2 rounded-lg text-theme-primary flex items-center gap-1">Know What You Owe <Check className="w-4 h-4 text-theme-accent" /></span>
+            <span className="card-theme px-4 py-2 rounded-lg text-theme-primary flex items-center gap-1">Know What To Do <Check className="w-4 h-4 text-theme-accent" /></span>
           </div>
         </div>
       </section>
@@ -362,10 +339,10 @@ export default function Home() {
           </h2>
           <div className="grid sm:grid-cols-2 gap-6">
             {[
-              { pain: "\"I sell on Shopify and Amazon but I have no idea if I should be collecting sales tax.\"", solution: "We track your nexus (tax obligations) across all 50 states automatically." },
-              { pain: "\"I'm scared I'll get a letter from a state saying I owe thousands in back taxes.\"", solution: "Know exactly where you owe before states come knocking." },
-              { pain: "\"Filing deadlines are different for every state and I can't keep track.\"", solution: "Get reminders before every deadline. Never file late again." },
-              { pain: "\"I don't have time to figure out sales tax rules for 45 states.\"", solution: "We do the research. You just see what you owe." }
+              { pain: "\"I sell on Shopify and Amazon but I have no idea if I should be collecting sales tax.\"", solution: "See your nexus picture across all 50 states and DC, with every channel combined." },
+              { pain: "\"I'm scared I'll get a letter from a state saying I owe thousands in back taxes.\"", solution: "Spot the states you're close to or over — before a state spots them first." },
+              { pain: "\"Filing deadlines are different for every state and I can't keep track.\"", solution: "Get an email 7 days and 1 day before each deadline you track." },
+              { pain: "\"I don't have time to figure out sales tax rules for 45 states.\"", solution: `We keep each state's thresholds up to date, with sources (last reviewed ${NEXUS_RULES_REVIEWED_LABEL}).` }
             ].map((item, i) => (
               <div key={i} className="card-theme rounded-xl p-6">
                 <p className="text-theme-secondary italic mb-4">{item.pain}</p>
