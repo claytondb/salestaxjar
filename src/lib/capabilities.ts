@@ -169,12 +169,11 @@ export const FEATURES: FeatureCapability[] = [
     summary: "See upcoming filing due dates for the states you track, using each state's own schedule.",
   },
   {
-    // Built, and due dates now follow each state's own schedule, but the emails
-    // stay off (DEADLINE_REMINDERS_ENABLED) until the owner decides to send them.
-    // Flip to 'live' when that env flag is on.
+    // Sent by the daily job when DEADLINE_REMINDERS_ENABLED=true (on since Sept 2026).
+    // One email per person per day, listing every return due.
     id: 'deadline_reminders',
     name: 'Deadline reminder emails',
-    status: 'planned',
+    status: 'live',
     summary: 'An email a week and a day before each filing deadline you track.',
   },
   {
