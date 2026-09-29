@@ -209,7 +209,18 @@ function normalizeHeaders(headers: string[]): string[] {
 
 /** An order read from a file. The id lets the scan spot the same order in two files. */
 export interface FileOrder extends NexusOrder {
+  /** The order's id or number in the file (null when the file has none) */
   orderId: string | null;
+  /**
+   * The platform's own id for the order when the file has one — Shopify's
+   * numeric "Id" column, which matches the id Sails gets from Shopify's API,
+   * so an imported file and a store sync don't double-count.
+   */
+  externalId: string | null;
+  /** Stable key within this file: "id:<order id>" or "row:<row number>" */
+  rowKey: string;
+  /** Sales tax on the order, when the file shows it (0 otherwise) */
+  tax: number;
 }
 
 export interface ParsedOrderFile {
@@ -260,6 +271,7 @@ export function parseOrderFile(text: string, options: ParseOptions = {}): Parsed
     billingState: string;
     billingCountry: string;
     otherChannel: boolean;
+    externalId: string;
     total: number;
     tax: number;
     refunded: number;
@@ -268,6 +280,8 @@ export function parseOrderFile(text: string, options: ParseOptions = {}): Parsed
   }
   const drafts = new Map<string, Draft>();
   const idCol = format === 'amazon' ? headers.indexOf('amazon order id') : format === 'shopify' ? headers.indexOf('name') : col('id');
+  // Shopify exports also carry the order's numeric id (on the order's first row)
+  const externalIdCol = format === 'shopify' ? headers.indexOf('id') : -1;
   const get = (row: string[], i: number) => (i >= 0 ? (row[i] ?? '').trim() : '');
 
   const amazon = format === 'amazon'
@@ -306,6 +320,7 @@ export function parseOrderFile(text: string, options: ParseOptions = {}): Parsed
         billingState: '',
         billingCountry: '',
         otherChannel: false,
+        externalId: '',
         total: 0,
         tax: 0,
         refunded: 0,
@@ -320,6 +335,7 @@ export function parseOrderFile(text: string, options: ParseOptions = {}): Parsed
     if (!d.country) d.country = get(row, countryCol);
     if (!d.billingState) d.billingState = get(row, billingStateCol);
     if (!d.billingCountry) d.billingCountry = get(row, billingCountryCol);
+    if (!d.externalId) d.externalId = get(row, externalIdCol);
     const status = amazon ? get(row, amazon.status) : get(row, statusCol);
     if (isNotASale(status) || get(row, cancelledCol)) d.notSale = true;
 
@@ -380,7 +396,16 @@ export function parseOrderFile(text: string, options: ParseOptions = {}): Parsed
     // Amazon: prices exclude tax already. Others: total includes tax.
     const sales = amazon ? d.total : d.total - d.tax - Math.max(0, d.refunded);
     const orderId = key.startsWith('id:') ? key.slice(3) : null;
-    orders.push({ date: d.date, stateCode, sales: Math.max(0, sales), channel, orderId });
+    orders.push({
+      date: d.date,
+      stateCode,
+      sales: Math.max(0, sales),
+      channel,
+      orderId,
+      externalId: d.externalId || null,
+      rowKey: key,
+      tax: Math.max(0, Math.round(d.tax * 100) / 100),
+    });
     if (!from || d.date < from) from = d.date;
     if (!to || d.date > to) to = d.date;
   }

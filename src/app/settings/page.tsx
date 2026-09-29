@@ -7,6 +7,7 @@ import { useAuth } from '@/context/AuthContext';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import PlatformsManager from '@/components/PlatformsManager';
+import OrderFileImport from '@/components/OrderFileImport';
 import { AmazonManualImport } from '@/components/AmazonManualImport';
 import { BusinessProfile, BillingInfo } from '@/types';
 import { stateTaxRates } from '@/data/taxRates';
@@ -153,10 +154,10 @@ function SettingsPageContent() {
     const hash = window.location.hash.replace('#', '');
     if (hash && ['profile', 'account', 'notifications', 'platforms', 'apikeys', 'billing', 'privacy'].includes(hash)) {
       setActiveTab(hash);
-    } else if (hash === 'amazon') {
-      // The Amazon upload lives on the Platforms tab
+    } else if (hash === 'amazon' || hash === 'import') {
+      // The file imports live on the Platforms tab
       setActiveTab('platforms');
-      setTimeout(() => document.getElementById('amazon')?.scrollIntoView({ behavior: 'smooth' }), 300);
+      setTimeout(() => document.getElementById(hash)?.scrollIntoView({ behavior: 'smooth' }), 300);
     }
   }, []);
 
@@ -802,11 +803,21 @@ function SettingsPageContent() {
             {activeTab === 'platforms' && (
               <div className="space-y-6">
                 <PlatformsManager />
+                <section id="import" className="card-theme rounded-xl border border-theme-primary p-6 scroll-mt-24" aria-labelledby="order-import-heading">
+                  <h2 id="order-import-heading" className="text-xl font-semibold text-theme-primary mb-1">Import order history</h2>
+                  <p className="text-theme-muted text-sm mb-6">
+                    Add past orders from a Shopify, Amazon, Etsy or other store&apos;s order export — for history older than
+                    your store connection reaches, or for places you sell that Sails can&apos;t connect to yet. States look
+                    at up to two calendar years of sales, so include everything since January 1 of last year.
+                  </p>
+                  <OrderFileImport />
+                </section>
                 <section id="amazon" className="card-theme rounded-xl border border-theme-primary p-6" aria-labelledby="amazon-import-heading">
-                  <h2 id="amazon-import-heading" className="text-xl font-semibold text-theme-primary mb-1">Amazon sales</h2>
+                  <h2 id="amazon-import-heading" className="text-xl font-semibold text-theme-primary mb-1">Amazon sales tax report</h2>
                   <p className="text-theme-muted text-sm mb-6">
                     Amazon collects sales tax for you, but many states still count Amazon sales toward your own
-                    threshold. Upload an Amazon report and Sails will include those sales in the states that count them.
+                    threshold. Upload Amazon&apos;s sales tax report here, or add an All Orders report under Import order
+                    history above — either way, Sails includes those sales in the states that count them.
                   </p>
                   <AmazonManualImport />
                 </section>

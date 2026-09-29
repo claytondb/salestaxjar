@@ -77,7 +77,7 @@ function RecentAlerts() {
   );
 }
 
-export default function NexusExposure() {
+export default function NexusExposure({ onManualTracking }: { onManualTracking?: () => void } = {}) {
   const [report, setReport] = useState<NexusReportResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -123,12 +123,28 @@ export default function NexusExposure() {
         <TrendingUp className="w-12 h-12 text-theme-accent mx-auto mb-4" aria-hidden />
         <h2 className="text-xl font-semibold text-theme-primary mb-2">No orders yet</h2>
         <p className="text-theme-muted mb-6 max-w-md mx-auto">
-          Connect your store, or upload an Amazon order report, and Sails will check your sales against every state&apos;s
-          rules — including which states count marketplace sales.
+          Connect your store, or import order exports from Shopify, Amazon, Etsy or any store, and Sails will check your
+          sales against every state&apos;s rules — including which states count marketplace sales.
         </p>
-        <Link href="/settings#platforms" className="btn-theme-primary px-6 py-3 rounded-lg font-medium inline-block">
-          Connect a store
-        </Link>
+        <div className="flex flex-col sm:flex-row gap-3 justify-center">
+          <Link href="/settings#platforms" className="btn-theme-primary px-6 py-3 rounded-lg font-medium inline-block">
+            Connect a store
+          </Link>
+          <Link
+            href="/settings#import"
+            className="px-6 py-3 rounded-lg font-medium inline-block border border-theme-secondary text-theme-secondary hover:text-theme-primary"
+          >
+            Import order exports
+          </Link>
+        </div>
+        {onManualTracking && (
+          <p className="text-sm text-theme-muted mt-5">
+            Already know where you&apos;re registered?{' '}
+            <button type="button" onClick={onManualTracking} className="text-theme-accent hover:underline">
+              Track states by hand
+            </button>
+          </p>
+        )}
       </div>
     );
   }

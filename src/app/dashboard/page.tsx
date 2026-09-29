@@ -50,6 +50,25 @@ export default function DashboardPage() {
   const [currentTime] = useState<number>(() => Date.now());
   const [isGeneratingDeadlines, setIsGeneratingDeadlines] = useState(false);
   const [deadlinesGenerated, setDeadlinesGenerated] = useState(false);
+  // Orders imported from files (Settings → Platforms → Import order history)
+  const [fileImportOrders, setFileImportOrders] = useState(0);
+  const userId = user?.id;
+
+  useEffect(() => {
+    if (!userId) return;
+    let cancelled = false;
+    fetch('/api/orders/import')
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data: { imports?: { orders: number }[] } | null) => {
+        if (!cancelled && data?.imports) {
+          setFileImportOrders(data.imports.reduce((sum, i) => sum + i.orders, 0));
+        }
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [userId]);
 
   useEffect(() => {
     if (!isLoading && !user) {
@@ -67,6 +86,7 @@ export default function DashboardPage() {
 
   const activeNexusCount = nexusStates.filter(s => s.hasNexus).length;
   const connectedCount = connectedPlatforms.filter(p => p.connected).length;
+  const hasOrders = connectedCount > 0 || fileImportOrders > 0;
   const pendingFilings = filingDeadlines.filter(f => f.status === 'pending').length;
   const totalTaxCollected = calculations.reduce((sum, c) => sum + c.taxAmount, 0);
 
@@ -118,21 +138,25 @@ export default function DashboardPage() {
         )}
 
         {/* Setup Checklist (if not complete) */}
-        {(!businessProfile || connectedCount === 0) && (
+        {(!businessProfile || !hasOrders) && (
           <div className="rounded-xl p-6 mb-8 card-theme border-2" style={{ borderColor: 'var(--accent-primary)' }}>
             <h2 className="text-lg font-semibold mb-4 text-theme-accent">Complete your setup</h2>
             <div className="-my-1">
-              {connectedCount === 0 && (
+              {!hasOrders && (
                 <Link href="/settings#platforms" className="group flex items-center gap-3 text-theme-secondary hover:text-theme-primary transition-all duration-150 hover:duration-0 px-3 py-2 -mx-3 rounded-lg hover:bg-[var(--bg-accent)]">
                   <div className="w-6 h-6 rounded-full border-2 border-theme-secondary flex items-center justify-center text-sm">1</div>
-                  <span>Connect your store (or upload an Amazon report)</span>
+                  <span>Connect your store or import an order export</span>
                   <span className="ml-auto text-theme-accent opacity-0 group-hover:opacity-100 transition-opacity duration-150 group-hover:duration-0">→</span>
                 </Link>
               )}
-              {connectedCount > 0 && (
+              {hasOrders && (
                 <div className="flex items-center gap-3 text-theme-accent px-3 py-2 -mx-3">
                   <div className="w-6 h-6 rounded-full bg-accent-subtle flex items-center justify-center text-sm">✓</div>
-                  <span>Store connected ({connectedCount} {connectedCount === 1 ? 'connection' : 'connections'})</span>
+                  <span>
+                    {connectedCount > 0
+                      ? `Store connected (${connectedCount} ${connectedCount === 1 ? 'connection' : 'connections'})`
+                      : `${fileImportOrders.toLocaleString('en-US')} ${fileImportOrders === 1 ? 'order' : 'orders'} imported`}
+                  </span>
                 </div>
               )}
               {!businessProfile && (
@@ -214,6 +238,11 @@ export default function DashboardPage() {
               <Link2 className={ICON_CLASS} />
             </div>
             <div className="text-3xl font-bold text-theme-primary">{connectedCount}</div>
+            {fileImportOrders > 0 && (
+              <p className="text-theme-muted text-xs mt-1">
+                Plus {fileImportOrders.toLocaleString('en-US')} {fileImportOrders === 1 ? 'order' : 'orders'} imported from files
+              </p>
+            )}
             <Link href="/settings#platforms" className="text-theme-accent text-sm hover:opacity-80 mt-2 inline-block">
               Connect more →
             </Link>

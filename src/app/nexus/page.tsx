@@ -18,26 +18,17 @@ const nexusReasons = [
 ];
 
 export default function NexusPage() {
-  const { user, nexusStates, connectedPlatforms, updateNexusStates, isLoading } = useAuth();
+  const { user, nexusStates, updateNexusStates, isLoading } = useAuth();
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState('');
   const [showOnlyNexus, setShowOnlyNexus] = useState(false);
   const [activeTab, setActiveTab] = useState<'exposure' | 'manual'>('exposure');
-
-  const hasConnectedPlatform = connectedPlatforms?.some(p => p.connected);
 
   useEffect(() => {
     if (!isLoading && !user) {
       router.push('/login');
     }
   }, [user, isLoading, router]);
-
-  // If no connected platforms, default to manual tab
-  useEffect(() => {
-    if (!isLoading && !hasConnectedPlatform) {
-      setActiveTab('manual'); // eslint-disable-line react-hooks/set-state-in-effect -- Initialize tab based on loaded state
-    }
-  }, [isLoading, hasConnectedPlatform]);
 
   // Initialize nexus states if empty
   useEffect(() => {
@@ -140,7 +131,7 @@ export default function NexusPage() {
 
         {/* My Exposure Tab */}
         {activeTab === 'exposure' && (
-          <NexusExposure />
+          <NexusExposure onManualTracking={() => setActiveTab('manual')} />
         )}
 
         {/* Manual Tracking Tab */}
