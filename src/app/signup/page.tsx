@@ -47,7 +47,7 @@ export default function SignupPage() {
         <ThemeToggle />
       </div>
 
-      <div className="flex-1 flex items-center justify-center px-4 py-12">
+      <main className="flex-1 flex items-center justify-center px-4 py-12">
         <div className="w-full max-w-md">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2 justify-center mb-8">
@@ -122,9 +122,9 @@ export default function SignupPage() {
 
             <div className="text-sm text-theme-muted">
               By signing up, you agree to our{' '}
-              <Link href="/terms" className="text-theme-accent hover:opacity-80">Terms of Service</Link>
+              <Link href="/terms" className="text-theme-accent underline underline-offset-2 hover:opacity-80">Terms of Service</Link>
               {' '}and{' '}
-              <Link href="/privacy" className="text-theme-accent hover:opacity-80">Privacy Policy</Link>.
+              <Link href="/privacy" className="text-theme-accent underline underline-offset-2 hover:opacity-80">Privacy Policy</Link>.
             </div>
 
             <button
@@ -164,7 +164,7 @@ export default function SignupPage() {
           ))}
         </div>
         </div>
-      </div>
+      </main>
 
       <Footer />
     </div>

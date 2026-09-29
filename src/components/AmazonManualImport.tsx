@@ -145,6 +145,7 @@ export function AmazonManualImport() {
         <input
           type="file"
           accept=".csv"
+          aria-label="Choose an Amazon sales tax report (CSV)"
           onChange={handleFileChange}
           className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
         />

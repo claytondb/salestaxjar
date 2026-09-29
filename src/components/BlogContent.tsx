@@ -76,7 +76,7 @@ export default function BlogContent({ posts }: BlogContentProps) {
                 onClick={() => setSelectedCategory(null)}
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition ${
                   selectedCategory === null
-                    ? 'bg-[var(--accent-primary-hover)] text-white shadow-md'
+                    ? 'bg-[var(--button-primary-bg)] text-white shadow-md'
                     : 'bg-theme-card border border-theme-primary text-theme-secondary hover:border-theme-accent hover:text-theme-accent'
                 }`}
               >
@@ -90,7 +90,7 @@ export default function BlogContent({ posts }: BlogContentProps) {
                     onClick={() => setSelectedCategory(category)}
                     className={`px-4 py-2 rounded-lg text-sm font-medium transition ${
                       selectedCategory === category
-                        ? 'bg-[var(--accent-primary-hover)] text-white shadow-md'
+                        ? 'bg-[var(--button-primary-bg)] text-white shadow-md'
                         : 'bg-theme-card border border-theme-primary text-theme-secondary hover:border-theme-accent hover:text-theme-accent'
                     }`}
                   >
@@ -106,7 +106,7 @@ export default function BlogContent({ posts }: BlogContentProps) {
                 onClick={() => setViewMode('grid')}
                 className={`p-2 rounded transition ${
                   viewMode === 'grid'
-                    ? 'bg-[var(--accent-primary-hover)] text-white shadow-sm'
+                    ? 'bg-[var(--button-primary-bg)] text-white shadow-sm'
                     : 'text-theme-secondary hover:text-theme-accent hover:bg-[var(--bg-card-hover)]'
                 }`}
                 title="Grid view"
@@ -117,7 +117,7 @@ export default function BlogContent({ posts }: BlogContentProps) {
                 onClick={() => setViewMode('list')}
                 className={`p-2 rounded transition ${
                   viewMode === 'list'
-                    ? 'bg-[var(--accent-primary-hover)] text-white shadow-sm'
+                    ? 'bg-[var(--button-primary-bg)] text-white shadow-sm'
                     : 'text-theme-secondary hover:text-theme-accent hover:bg-[var(--bg-card-hover)]'
                 }`}
                 title="List view"

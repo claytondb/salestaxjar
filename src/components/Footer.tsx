@@ -25,7 +25,7 @@ export default function Footer() {
 
           {/* Product Links */}
           <div>
-            <h3 className="text-theme-primary font-semibold mb-4">Product</h3>
+            <h2 className="text-theme-primary font-semibold mb-4">Product</h2>
             <ul className="space-y-2 text-theme-muted text-sm">
               <li><Link href="/free-scan" className="hover:text-theme-primary transition">Free Nexus Check</Link></li>
               <li><Link href="/calculator" className="hover:text-theme-primary transition">Tax Calculator</Link></li>
@@ -38,7 +38,7 @@ export default function Footer() {
 
           {/* Legal Links */}
           <div>
-            <h3 className="text-theme-primary font-semibold mb-4">Legal</h3>
+            <h2 className="text-theme-primary font-semibold mb-4">Legal</h2>
             <ul className="space-y-2 text-theme-muted text-sm">
               <li><Link href="/terms" className="hover:text-theme-primary transition">Terms of Service</Link></li>
               <li><Link href="/privacy" className="hover:text-theme-primary transition">Privacy Policy</Link></li>
@@ -50,7 +50,7 @@ export default function Footer() {
 
           {/* Resources */}
           <div>
-            <h3 className="text-theme-primary font-semibold mb-4">Resources</h3>
+            <h2 className="text-theme-primary font-semibold mb-4">Resources</h2>
             <ul className="space-y-2 text-theme-muted text-sm">
               <li><Link href="/blog" className="hover:text-theme-primary transition">Blog</Link></li>
               <li><Link href="/contact" className="hover:text-theme-primary transition">Contact Us</Link></li>

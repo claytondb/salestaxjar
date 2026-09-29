@@ -212,7 +212,7 @@ export default function FreeCalculatorPage() {
                     </div>
                     <div className="col-span-1">
                       <div className="text-theme-muted text-sm mb-1">Total</div>
-                      <div className="text-2xl font-bold" style={{ color: 'var(--accent-primary)' }}>
+                      <div className="text-2xl font-bold" style={{ color: 'var(--text-accent)' }}>
                         ${result.total.toFixed(2)}
                       </div>
                     </div>
@@ -230,9 +230,9 @@ export default function FreeCalculatorPage() {
             {/* CTA Banner */}
             <div className="mt-6 p-6 card-theme rounded-2xl border border-theme-accent text-center">
               <Store className="w-8 h-8 text-theme-accent mx-auto mb-3" />
-              <h3 className="font-bold text-theme-primary text-lg mb-2">
+              <h2 className="font-bold text-theme-primary text-lg mb-2">
                 Need to track this for your whole store?
-              </h3>
+              </h2>
               <p className="text-theme-secondary mb-4">
                 Sails connects to Shopify, WooCommerce, and BigCommerce — automatically calculating and tracking sales tax across all your orders.{' '}
                 <strong className="text-theme-primary">Free to start.</strong>

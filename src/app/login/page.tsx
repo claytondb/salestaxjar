@@ -40,7 +40,7 @@ export default function LoginPage() {
         <ThemeToggle />
       </div>
 
-      <div className="flex-1 flex items-center justify-center px-4 py-12">
+      <main className="flex-1 flex items-center justify-center px-4 py-12">
         <div className="w-full max-w-md">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2 justify-center mb-8">
@@ -147,7 +147,7 @@ export default function LoginPage() {
           </button>
         </div>
         </div>
-      </div>
+      </main>
 
       <Footer />
     </div>

@@ -106,6 +106,7 @@ export default function PricingPage() {
         </div>
       </header>
 
+      <main>
       {/* Hero */}
       <section className="py-12 sm:py-16 px-4">
         <div className="max-w-4xl mx-auto text-center">
@@ -138,7 +139,7 @@ export default function PricingPage() {
                 }`}
               >
                 {plan.popular && (
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 text-sm font-medium px-3 py-1 rounded-full flex items-center gap-1" style={{ backgroundColor: 'var(--accent-primary)', color: 'white' }}>
+                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 text-sm font-medium px-3 py-1 rounded-full flex items-center gap-1" style={{ backgroundColor: 'var(--button-primary-bg)', color: 'white' }}>
                     <Sparkles className="w-3 h-3" /> Most Popular
                   </div>
                 )}
@@ -203,7 +204,9 @@ export default function PricingPage() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-theme-primary">
-                  <th className="text-left py-3 px-4 text-theme-muted font-medium"></th>
+                  <th className="text-left py-3 px-4 text-theme-muted font-medium">
+                    <span className="sr-only">Feature</span>
+                  </th>
                   <th className="text-center py-3 px-4 text-theme-accent font-bold">Sails</th>
                   <th className="text-center py-3 px-4 text-theme-muted font-medium">TaxJar</th>
                 </tr>
@@ -282,6 +285,7 @@ export default function PricingPage() {
           </Link>
         </div>
       </section>
+      </main>
 
       <Footer />
     </div>

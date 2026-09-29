@@ -57,21 +57,21 @@ function toneFor(e: StateEvaluation): Tone {
 }
 
 const TONE_STYLES: Record<Tone, { chip: string; bar: string; track: string; icon: React.ReactNode }> = {
-  register: { chip: 'bg-red-500/15 text-red-500', bar: 'bg-red-500', track: 'bg-red-500/15', icon: <ShieldAlert className="w-5 h-5 text-red-500" aria-hidden /> },
-  plan: { chip: 'bg-purple-500/15 text-purple-500', bar: 'bg-purple-500', track: 'bg-purple-500/15', icon: <CalendarClock className="w-5 h-5 text-purple-500" aria-hidden /> },
-  past: { chip: 'bg-orange-500/15 text-orange-500', bar: 'bg-orange-500', track: 'bg-orange-500/15', icon: <Receipt className="w-5 h-5 text-orange-500" aria-hidden /> },
-  review: { chip: 'bg-blue-500/15 text-blue-500', bar: 'bg-blue-500', track: 'bg-blue-500/15', icon: <Info className="w-5 h-5 text-blue-500" aria-hidden /> },
-  close: { chip: 'bg-orange-500/15 text-orange-500', bar: 'bg-orange-500', track: 'bg-orange-500/15', icon: <AlertTriangle className="w-5 h-5 text-orange-500" aria-hidden /> },
-  watch: { chip: 'bg-yellow-500/15 text-yellow-600', bar: 'bg-yellow-500', track: 'bg-yellow-500/15', icon: <TrendingUp className="w-5 h-5 text-yellow-600" aria-hidden /> },
-  ok: { chip: 'bg-emerald-500/15 text-emerald-600', bar: 'bg-emerald-500', track: 'bg-emerald-500/15', icon: <ShieldCheck className="w-5 h-5 text-emerald-600" aria-hidden /> },
-  registered: { chip: 'bg-emerald-500/15 text-emerald-600', bar: 'bg-emerald-500', track: 'bg-emerald-500/15', icon: <CheckCircle className="w-5 h-5 text-emerald-600" aria-hidden /> },
+  register: { chip: 'tone-red', bar: 'bg-red-500', track: 'bg-red-500/15', icon: <ShieldAlert className="w-5 h-5 text-red-500" aria-hidden /> },
+  plan: { chip: 'tone-purple', bar: 'bg-purple-500', track: 'bg-purple-500/15', icon: <CalendarClock className="w-5 h-5 text-purple-500" aria-hidden /> },
+  past: { chip: 'tone-orange', bar: 'bg-orange-500', track: 'bg-orange-500/15', icon: <Receipt className="w-5 h-5 text-orange-500" aria-hidden /> },
+  review: { chip: 'tone-blue', bar: 'bg-blue-500', track: 'bg-blue-500/15', icon: <Info className="w-5 h-5 text-blue-500" aria-hidden /> },
+  close: { chip: 'tone-orange', bar: 'bg-orange-500', track: 'bg-orange-500/15', icon: <AlertTriangle className="w-5 h-5 text-orange-500" aria-hidden /> },
+  watch: { chip: 'tone-yellow', bar: 'bg-yellow-500', track: 'bg-yellow-500/15', icon: <TrendingUp className="w-5 h-5 text-yellow-600" aria-hidden /> },
+  ok: { chip: 'tone-green', bar: 'bg-emerald-500', track: 'bg-emerald-500/15', icon: <ShieldCheck className="w-5 h-5 text-emerald-600" aria-hidden /> },
+  registered: { chip: 'tone-green', bar: 'bg-emerald-500', track: 'bg-emerald-500/15', icon: <CheckCircle className="w-5 h-5 text-emerald-600" aria-hidden /> },
 };
 
 const CONFIDENCE_LABEL: Record<Confidence, string> = { high: 'High', medium: 'Medium', low: 'Low' };
 const CONFIDENCE_STYLE: Record<Confidence, string> = {
-  high: 'text-emerald-600 border-emerald-500/40',
-  medium: 'text-yellow-600 border-yellow-500/40',
-  low: 'text-red-500 border-red-500/40',
+  high: 'tone-green border-emerald-500/40',
+  medium: 'tone-yellow border-yellow-500/40',
+  low: 'tone-red border-red-500/40',
 };
 
 function ProgressBar({ label, value, max, pct, tone, stateName }: { label: string; value: string; max: string; pct: number; tone: Tone; stateName: string }) {
@@ -161,9 +161,7 @@ function StateCard({ e }: { e: StateEvaluation }) {
           target="_blank"
           rel="noopener noreferrer"
           className={`mt-2 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm transition-colors ${
-            e.nextStep.kind === 'register_now'
-              ? 'bg-red-500/10 text-red-500 hover:bg-red-500/20'
-              : 'bg-purple-500/10 text-purple-500 hover:bg-purple-500/20'
+            e.nextStep.kind === 'register_now' ? 'tone-red hover:opacity-90' : 'tone-purple hover:opacity-90'
           }`}
         >
           <ExternalLink className="w-3.5 h-3.5" aria-hidden />
@@ -175,7 +173,7 @@ function StateCard({ e }: { e: StateEvaluation }) {
           href={e.rule.localNexus.url}
           target="_blank"
           rel="noopener noreferrer"
-          className="mt-2 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm bg-blue-500/10 text-blue-500 hover:bg-blue-500/20 transition-colors"
+          className="mt-2 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm tone-blue hover:opacity-90 transition-colors"
         >
           <ExternalLink className="w-3.5 h-3.5" aria-hidden />
           {e.rule.localNexus.body}
@@ -311,7 +309,7 @@ export function NexusResultsView({ report, mode = 'app' }: { report: NexusReport
           <div className="text-sm text-theme-muted">Register by Jan 1</div>
         </div>
         <div className="card-theme rounded-xl p-4 border border-orange-500/30">
-          <div className="text-2xl font-bold text-orange-500">{summary.closeCount}</div>
+          <div className="text-2xl font-bold text-orange-600">{summary.closeCount}</div>
           <div className="text-sm text-theme-muted">Getting close (75%+)</div>
         </div>
         <div className="card-theme rounded-xl p-4 border border-blue-500/30">
