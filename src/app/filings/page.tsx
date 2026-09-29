@@ -408,7 +408,7 @@ export default function FilingsPage() {
                                <ClipboardList className="w-6 h-6 text-theme-accent" />}
                             </div>
                             <div>
-                              <h3 className="font-medium text-theme-primary">{deadline.state}</h3>
+                              <h2 className="font-medium text-theme-primary">{deadline.state}</h2>
                               <p className="text-theme-muted text-sm">
                                 {deadline.period.charAt(0).toUpperCase() + deadline.period.slice(1)} filing
                                 {deadline.periodStart && deadline.periodEnd
@@ -526,7 +526,7 @@ export default function FilingsPage() {
                   return (
                     <div key={month} className="card-theme rounded-xl border border-theme-primary overflow-hidden">
                       <div className="p-4 border-b border-theme-primary bg-white/5">
-                        <h3 className="text-lg font-semibold text-theme-primary">{monthName}</h3>
+                        <h2 className="text-lg font-semibold text-theme-primary">{monthName}</h2>
                       </div>
                       <div className="p-4 grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
                         {deadlines.map((deadline) => {

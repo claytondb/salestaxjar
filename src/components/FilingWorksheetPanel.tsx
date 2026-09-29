@@ -55,9 +55,9 @@ export default function FilingWorksheetPanel({ filingId }: { filingId: string })
 
   return (
     <div className="space-y-4 text-sm">
-      <h4 className="font-semibold text-theme-primary">
+      <h3 className="font-semibold text-theme-primary">
         Your {worksheet.stateName} numbers for {worksheet.periodLabel}
-      </h4>
+      </h3>
 
       {worksheet.warnings.length > 0 && (
         <ul className="space-y-1.5">
