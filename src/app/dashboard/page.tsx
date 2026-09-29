@@ -21,6 +21,7 @@ import { platformLogos } from '@/components/PlatformLogos';
 import PlanUsage from '@/components/PlanUsage';
 import TopActionsCard from '@/components/TopActionsCard';
 import BetaSurveyCard from '@/components/BetaSurveyCard';
+import { loadScanHandoff } from '@/lib/scan-handoff';
 
 const ICON_CLASS = "w-6 h-6 text-theme-accent";
 
@@ -52,6 +53,13 @@ export default function DashboardPage() {
   const [deadlinesGenerated, setDeadlinesGenerated] = useState(false);
   // Orders imported from files (Settings → Platforms → Import order history)
   const [fileImportOrders, setFileImportOrders] = useState(0);
+  // Orders checked on the free nexus check in this tab, not imported yet
+  const [freeCheckOrders, setFreeCheckOrders] = useState(0);
+
+  useEffect(() => {
+    // sessionStorage is only readable after mount
+    setFreeCheckOrders(loadScanHandoff()?.orders ?? 0);
+  }, []);
   const userId = user?.id;
 
   useEffect(() => {
@@ -129,6 +137,23 @@ export default function DashboardPage() {
             Here&apos;s an overview of your sales tax compliance status.
           </p>
         </div>
+
+        {/* Orders from the free nexus check, ready to import */}
+        {freeCheckOrders > 0 && (
+          <Link
+            href="/settings#import"
+            className="group block rounded-xl p-5 mb-8 card-theme border-2 transition-colors"
+            style={{ borderColor: 'var(--accent-primary)' }}
+          >
+            <p className="font-semibold text-theme-primary">
+              Import the {freeCheckOrders.toLocaleString('en-US')} {freeCheckOrders === 1 ? 'order' : 'orders'} from your free nexus check
+            </p>
+            <p className="text-sm text-theme-secondary mt-1">
+              They&apos;re ready in this browser tab. Import them and your state-by-state results carry over.{' '}
+              <span className="text-theme-accent font-medium group-hover:underline">Import now →</span>
+            </p>
+          </Link>
+        )}
 
         {/* Beta Survey Card - show at top for beta users */}
         {user.isBetaUser && (

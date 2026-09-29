@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { ArrowRight, FileText, Lock, ShieldCheck } from 'lucide-react';
 import SailsLogo from '@/components/SailsLogo';
@@ -8,6 +8,8 @@ import ThemeToggle from '@/components/ThemeToggle';
 import Footer from '@/components/Footer';
 import { NexusResultsView, type NexusReportResponse } from '@/components/NexusResults';
 import OrderFileDrop, { useOrderFiles } from '@/components/OrderFileDrop';
+import { buildImportBatches } from '@/lib/order-file-import';
+import { clearScanHandoff, saveScanHandoff } from '@/lib/scan-handoff';
 import { sampleOrders } from '@/lib/scan-sample';
 import { PLAN_ORDER_LIMITS, type PlanTier } from '@/lib/plans';
 import { PLAN_MARKETING } from '@/lib/plan-features';
@@ -50,8 +52,20 @@ function planHint(orders: NexusOrder[], now: Date): string {
 
 export default function FreeScanPage() {
   const fileState = useOrderFiles();
-  const { combined, clear } = fileState;
+  const { combined, clear, files, parsed } = fileState;
   const [useSample, setUseSample] = useState(false);
+  // Keep the checked orders in this tab so they can be imported in one click after sign-up
+  const [handoffReady, setHandoffReady] = useState(false);
+
+  useEffect(() => {
+    if (useSample || parsed.length === 0) {
+      clearScanHandoff();
+      setHandoffReady(false); // eslint-disable-line react-hooks/set-state-in-effect -- mirrors what was saved
+      return;
+    }
+    const names = files.filter((f) => !('error' in f.result)).map((f) => f.name);
+    setHandoffReady(saveScanHandoff(names, buildImportBatches(parsed)));
+  }, [files, parsed, useSample]);
 
   const scan = useMemo(() => {
     const now = new Date();
@@ -169,9 +183,11 @@ export default function FreeScanPage() {
               <ShieldCheck className="w-10 h-10 text-theme-accent mx-auto mb-3" aria-hidden />
               <h2 className="text-2xl font-bold text-theme-primary mb-2">Keep this up to date</h2>
               <p className="text-theme-secondary max-w-xl mx-auto mb-2">
-                Create a free account and import these same files. Then connect your Shopify or WooCommerce store, and
-                Sails adds new orders every day — with alerts as you near a threshold and each state&apos;s filing due
-                dates in one calendar.
+                {handoffReady
+                  ? 'Create a free account and import these orders in one click.'
+                  : 'Create a free account and import these same files.'}{' '}
+                Then connect your Shopify or WooCommerce store, and Sails adds new orders every day — with alerts as you
+                near a threshold and each state&apos;s filing due dates in one calendar.
               </p>
               <p className="text-theme-muted text-sm max-w-xl mx-auto mb-5">
                 {scan?.hint ?? `The free plan has no time limit and counts up to ${PLAN_ORDER_LIMITS.free} orders a month. No credit card needed.`}
@@ -206,8 +222,9 @@ export default function FreeScanPage() {
         )}
 
         <p className="mt-8 text-xs text-theme-muted text-center max-w-2xl mx-auto">
-          Your files are read by your browser and never sent to Sails or anyone else. Results are estimates to help you decide
-          what to check — not tax advice. Confirm with the state or a tax professional before registering.
+          Your files are read by your browser and never sent to Sails or anyone else. The orders you check stay in this
+          browser tab until you close it, so you can import them if you create an account. Results are estimates to help you
+          decide what to check — not tax advice. Confirm with the state or a tax professional before registering.
         </p>
       </main>
 

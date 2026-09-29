@@ -16,6 +16,7 @@ import {
   type ImportBatchResult,
   type ImportTotals,
 } from '@/lib/order-file-import';
+import { clearScanHandoff, loadScanHandoff, type ScanHandoff } from '@/lib/scan-handoff';
 
 interface ImportSummary {
   platform: FileImportPlatform;
@@ -32,6 +33,13 @@ interface SummaryResponse {
 }
 
 const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+function fileList(names: string[]): string {
+  if (names.length === 0) return 'your files';
+  if (names.length === 1) return names[0];
+  if (names.length === 2) return `${names[0]} and ${names[1]}`;
+  return `${names.length} files`;
+}
 
 /** Send one batch; retries brief network hiccups, busy servers and rate limits. */
 async function sendBatch(batch: ImportBatch, final: boolean): Promise<ImportBatchResult> {
@@ -87,6 +95,14 @@ export default function OrderFileImport() {
   const [confirmRemove, setConfirmRemove] = useState<FileImportPlatform | null>(null);
   const [removing, setRemoving] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
+  // Orders checked on the free nexus check in this tab, ready to import
+  const [handoff, setHandoff] = useState<ScanHandoff | null>(null);
+  const [importSource, setImportSource] = useState<'files' | 'handoff'>('files');
+
+  useEffect(() => {
+    // sessionStorage is only readable after mount
+    setHandoff(loadScanHandoff());
+  }, []);
 
   const loadSummary = useCallback(async () => {
     try {
@@ -105,19 +121,39 @@ export default function OrderFileImport() {
   const orderCount = countImportOrders(batches);
   const monthlyLimit = summary?.monthlyLimit ?? null;
   const overLimit = useMemo(() => estimateOverLimit(batches, monthlyLimit), [batches, monthlyLimit]);
+  const handoffOverLimit = useMemo(
+    () => (handoff ? estimateOverLimit(handoff.batches, monthlyLimit) : { months: 0, orders: 0 }),
+    [handoff, monthlyLimit]
+  );
 
-  const startImport = async () => {
-    if (batches.length === 0 || importing) return;
+  const runImport = async (toSend: ImportBatch[], source: 'files' | 'handoff', onSuccess: () => void) => {
+    if (toSend.length === 0 || importing) return;
     setImporting(true);
+    setImportSource(source);
     setResult(null);
     setNotice(null);
-    setProgress({ sent: 0, total: orderCount });
-    const outcome = await runImportBatches(batches, sendBatch, (sent, total) => setProgress({ sent, total }));
+    setProgress({ sent: 0, total: countImportOrders(toSend) });
+    const outcome = await runImportBatches(toSend, sendBatch, (sent, total) => setProgress({ sent, total }));
     setResult(outcome);
     setImporting(false);
     setProgress(null);
-    if (!outcome.error) clear();
+    if (!outcome.error) onSuccess();
     void loadSummary();
+  };
+
+  const startImport = () => runImport(batches, 'files', clear);
+
+  const importHandoff = () => {
+    if (!handoff) return;
+    void runImport(handoff.batches, 'handoff', () => {
+      clearScanHandoff();
+      setHandoff(null);
+    });
+  };
+
+  const dismissHandoff = () => {
+    clearScanHandoff();
+    setHandoff(null);
   };
 
   const remove = async (platform: FileImportPlatform) => {
@@ -141,8 +177,135 @@ export default function OrderFileImport() {
   const imports = summary?.imports ?? [];
   const totals = result?.totals;
 
+  // Progress while importing, then the outcome
+  const statusPanels = (
+    <>
+    {importing && progress && (
+      <div className="mt-5 rounded-lg border border-theme-primary p-4 text-sm" role="status" aria-live="polite">
+        <p className="text-theme-primary font-medium flex items-center gap-2 mb-2">
+          <Loader2 className="w-4 h-4 animate-spin" aria-hidden />
+          Importing {progress.sent.toLocaleString('en-US')} of {plural(progress.total, 'order')}…
+        </p>
+        <div
+          className="h-2 rounded-full overflow-hidden"
+          style={{ backgroundColor: 'var(--border-primary)' }}
+          role="progressbar"
+          aria-label="Import progress"
+          aria-valuemin={0}
+          aria-valuemax={progress.total}
+          aria-valuenow={progress.sent}
+        >
+          <div
+            className="h-full transition-all"
+            style={{
+              width: `${progress.total ? Math.round((progress.sent / progress.total) * 100) : 0}%`,
+              backgroundColor: 'var(--accent-primary)',
+            }}
+          />
+        </div>
+        <p className="text-theme-muted mt-2">Keep this page open until it finishes.</p>
+      </div>
+    )}
+
+    {result && totals && (
+      <div
+        className="mt-5 rounded-lg p-4 text-sm space-y-2"
+        role={result.error ? 'alert' : 'status'}
+        style={{
+          backgroundColor: result.error ? 'var(--error-bg)' : 'var(--accent-bg)',
+          border: `1px solid ${result.error ? 'var(--error-border)' : 'var(--border-accent)'}`,
+        }}
+      >
+        <p className="font-medium text-theme-primary flex items-center gap-2">
+          {result.error ? (
+            <AlertCircle className="w-4 h-4 flex-shrink-0" style={{ color: 'var(--error-text)' }} aria-hidden />
+          ) : (
+            <CheckCircle className="w-4 h-4 flex-shrink-0" style={{ color: 'var(--success)' }} aria-hidden />
+          )}
+          {result.error
+            ? totals.imported > 0
+              ? `Imported ${plural(totals.imported, 'order')}, then the import stopped.`
+              : 'The import stopped.'
+            : `Imported ${plural(totals.imported, 'order')}.`}
+        </p>
+        {result.error && <p className="text-theme-secondary">{result.error}</p>}
+        {totals.skippedOverLimit > 0 && (
+          <p className="text-theme-secondary">
+            {plural(totals.skippedOverLimit, 'order')} {totals.skippedOverLimit === 1 ? 'wasn’t' : 'weren’t'} counted because{' '}
+            {totals.skippedOverLimit === 1 ? 'its month is' : 'their months are'} over your plan&apos;s limit of{' '}
+            {totals.monthlyLimit?.toLocaleString('en-US')} orders a month.{' '}
+            <Link href="/pricing" className="text-theme-accent underline">
+              Compare plans
+            </Link>
+          </p>
+        )}
+        {totals.rejected > 0 && (
+          <p className="text-theme-secondary">
+            {plural(totals.rejected, 'order')} left out: not shipped to a US state, or dated before 2015 or in the future.
+          </p>
+        )}
+        {totals.failed > 0 && (
+          <p className="text-theme-secondary">
+            {plural(totals.failed, 'order')} couldn&apos;t be saved. Importing the same files again will retry{' '}
+            {totals.failed === 1 ? 'it' : 'them'}.
+          </p>
+        )}
+        {totals.newAlerts > 0 && (
+          <p className="text-theme-secondary">
+            New threshold alerts for {plural(totals.newAlerts, 'state')}.
+          </p>
+        )}
+        {!result.error && (
+          <Link href="/nexus" className="inline-flex items-center gap-1 text-theme-accent font-medium">
+            See where you may owe sales tax <ArrowRight className="w-4 h-4" aria-hidden />
+          </Link>
+        )}
+      </div>
+    )}
+    </>
+  );
+
   return (
     <div className="space-y-5">
+      {handoff && !(importing && importSource === 'handoff') && (
+        <div className="rounded-lg p-4 text-sm space-y-3" style={{ backgroundColor: 'var(--info-bg)', border: '1px solid var(--info-border)' }}>
+          <p className="font-semibold text-theme-primary">From your free nexus check</p>
+          <p className="text-theme-secondary">
+            {plural(handoff.orders, 'order')} from {fileList(handoff.files)} {handoff.orders === 1 ? 'is' : 'are'} ready to
+            import. Only each order&apos;s number, date, ship-to state, sales and tax are sent.
+            {handoffOverLimit.orders > 0 && monthlyLimit !== null && (
+              <>
+                {' '}
+                Your {summary?.planName ?? 'current'} plan counts up to {monthlyLimit.toLocaleString('en-US')} orders a month,
+                so about {plural(handoffOverLimit.orders, 'order')} won&apos;t be counted.{' '}
+                <Link href="/pricing" className="text-theme-accent underline">
+                  Compare plans
+                </Link>
+              </>
+            )}
+          </p>
+          <div className="flex flex-wrap gap-3">
+            <button
+              type="button"
+              onClick={importHandoff}
+              disabled={importing}
+              className="btn-theme-primary px-5 py-2.5 rounded-lg font-medium disabled:opacity-50"
+            >
+              Import {plural(handoff.orders, 'order')}
+            </button>
+            <button
+              type="button"
+              onClick={dismissHandoff}
+              disabled={importing}
+              className="px-4 py-2.5 rounded-lg border border-theme-secondary text-theme-secondary hover:text-theme-primary disabled:opacity-50"
+            >
+              Not now
+            </button>
+          </div>
+        </div>
+      )}
+      {importSource === 'handoff' && statusPanels}
+
       {imports.length > 0 && (
         <div>
           <h3 className="text-sm font-semibold text-theme-primary mb-2">Imported so far</h3>
@@ -234,88 +397,7 @@ export default function OrderFileImport() {
           </div>
         )}
 
-        {importing && progress && (
-          <div className="mt-5 rounded-lg border border-theme-primary p-4 text-sm" role="status" aria-live="polite">
-            <p className="text-theme-primary font-medium flex items-center gap-2 mb-2">
-              <Loader2 className="w-4 h-4 animate-spin" aria-hidden />
-              Importing {progress.sent.toLocaleString('en-US')} of {plural(progress.total, 'order')}…
-            </p>
-            <div
-              className="h-2 rounded-full overflow-hidden"
-              style={{ backgroundColor: 'var(--border-primary)' }}
-              role="progressbar"
-              aria-label="Import progress"
-              aria-valuemin={0}
-              aria-valuemax={progress.total}
-              aria-valuenow={progress.sent}
-            >
-              <div
-                className="h-full transition-all"
-                style={{
-                  width: `${progress.total ? Math.round((progress.sent / progress.total) * 100) : 0}%`,
-                  backgroundColor: 'var(--accent-primary)',
-                }}
-              />
-            </div>
-            <p className="text-theme-muted mt-2">Keep this page open until it finishes.</p>
-          </div>
-        )}
-
-        {result && totals && (
-          <div
-            className="mt-5 rounded-lg p-4 text-sm space-y-2"
-            role={result.error ? 'alert' : 'status'}
-            style={{
-              backgroundColor: result.error ? 'var(--error-bg)' : 'var(--accent-bg)',
-              border: `1px solid ${result.error ? 'var(--error-border)' : 'var(--border-accent)'}`,
-            }}
-          >
-            <p className="font-medium text-theme-primary flex items-center gap-2">
-              {result.error ? (
-                <AlertCircle className="w-4 h-4 flex-shrink-0" style={{ color: 'var(--error-text)' }} aria-hidden />
-              ) : (
-                <CheckCircle className="w-4 h-4 flex-shrink-0" style={{ color: 'var(--success)' }} aria-hidden />
-              )}
-              {result.error
-                ? totals.imported > 0
-                  ? `Imported ${plural(totals.imported, 'order')}, then the import stopped.`
-                  : 'The import stopped.'
-                : `Imported ${plural(totals.imported, 'order')}.`}
-            </p>
-            {result.error && <p className="text-theme-secondary">{result.error}</p>}
-            {totals.skippedOverLimit > 0 && (
-              <p className="text-theme-secondary">
-                {plural(totals.skippedOverLimit, 'order')} {totals.skippedOverLimit === 1 ? 'wasn’t' : 'weren’t'} counted because{' '}
-                {totals.skippedOverLimit === 1 ? 'its month is' : 'their months are'} over your plan&apos;s limit of{' '}
-                {totals.monthlyLimit?.toLocaleString('en-US')} orders a month.{' '}
-                <Link href="/pricing" className="text-theme-accent underline">
-                  Compare plans
-                </Link>
-              </p>
-            )}
-            {totals.rejected > 0 && (
-              <p className="text-theme-secondary">
-                {plural(totals.rejected, 'order')} left out: not shipped to a US state, or dated before 2015 or in the future.
-              </p>
-            )}
-            {totals.failed > 0 && (
-              <p className="text-theme-secondary">
-                {plural(totals.failed, 'order')} couldn&apos;t be saved. Importing the same files again will retry{' '}
-                {totals.failed === 1 ? 'it' : 'them'}.
-              </p>
-            )}
-            {totals.newAlerts > 0 && (
-              <p className="text-theme-secondary">
-                New threshold alerts for {plural(totals.newAlerts, 'state')}.
-              </p>
-            )}
-            {!result.error && (
-              <Link href="/nexus" className="inline-flex items-center gap-1 text-theme-accent font-medium">
-                See where you may owe sales tax <ArrowRight className="w-4 h-4" aria-hidden />
-              </Link>
-            )}
-          </div>
-        )}
+        {importSource === 'files' && statusPanels}
       </OrderFileDrop>
 
       <p className="text-xs text-theme-muted flex items-start gap-2">
