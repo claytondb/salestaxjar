@@ -415,3 +415,13 @@ export function describeFilingPeriod(period: string | null | undefined, start: D
     ? `${SHORT_MONTHS[sm]}–${SHORT_MONTHS[em]} ${sy}`
     : `${SHORT_MONTHS[sm]} ${sy}–${SHORT_MONTHS[em]} ${ey}`;
 }
+
+/** The filing frequencies a state offers (monthly always; quarterly and annual where the state has them). */
+export function offeredFilingPeriods(stateCode: string): FilingPeriod[] {
+  const config = getStateFilingConfig(stateCode);
+  if (config.noStateSalesTax) return [];
+  const periods: FilingPeriod[] = ['monthly'];
+  if (config.quarterlyDue !== undefined) periods.push('quarterly');
+  if (config.annual) periods.push('annual');
+  return periods;
+}

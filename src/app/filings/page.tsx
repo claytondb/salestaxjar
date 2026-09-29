@@ -8,6 +8,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { FilingDeadline } from '@/types';
 import FilingWorksheetPanel from '@/components/FilingWorksheetPanel';
+import FilingFrequencySettings from '@/components/FilingFrequencySettings';
 import { describeFilingPeriod } from '@/lib/filing-deadlines';
 import { daysUntilDue, dueInWords, dueMonthKey, formatDueDate } from '@/lib/due-dates';
 import { Calendar, ClipboardList, CheckCircle2, AlertTriangle, Check, List, Wand2, RefreshCw, X, DollarSign, Hash, FileText } from 'lucide-react';
@@ -242,7 +243,8 @@ export default function FilingsPage() {
             <p className="text-theme-muted text-sm mt-1 max-w-xl">
               Due dates follow each state&apos;s published schedule (checked September 2026) for the filing frequency
               Sails assumes — usually quarterly. Your state assigns your frequency when you register, so check your
-              registration notice, and remember a due date on a weekend or holiday usually moves to the next business day.
+              registration notice and set it under &ldquo;How often you file in each state&rdquo; below. A due date on a
+              weekend or holiday usually moves to the next business day.
             </p>
           </div>
           {hasNexus && (
@@ -296,7 +298,7 @@ export default function FilingsPage() {
                   filter === 'pending' ? 'border-amber-500/50' : 'border-theme-primary hover:border-white/20'
                 }`}
               >
-                <div className="text-2xl font-bold text-amber-400">{pendingCount}</div>
+                <div className="text-2xl font-bold text-amber-600">{pendingCount}</div>
                 <div className="text-sm text-theme-muted">Pending Filings</div>
               </button>
               <button
@@ -319,6 +321,8 @@ export default function FilingsPage() {
                 <div className="text-sm text-theme-muted">Overdue</div>
               </button>
             </div>
+
+            <FilingFrequencySettings nexusStates={nexusStates} filings={filingDeadlines} onChanged={refreshData} />
 
             {/* View Controls */}
             <div className="flex flex-col sm:flex-row justify-between gap-4 mb-6">

@@ -2,13 +2,19 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 
 vi.mock('./prisma', () => ({
   prisma: {
-    filing: { findFirst: vi.fn(), create: vi.fn(), findMany: vi.fn(), update: vi.fn() },
+    filing: { findFirst: vi.fn(), create: vi.fn(), findMany: vi.fn(), update: vi.fn(), deleteMany: vi.fn() },
     business: { findMany: vi.fn() },
   },
 }))
 
 import { prisma } from './prisma'
-import { ensureCurrentFilings, ensureCurrentFilingsForAll, correctPendingDueDates } from './filing-schedule'
+import {
+  ensureCurrentFilings,
+  ensureCurrentFilingsForAll,
+  correctPendingDueDates,
+  getFilingFrequencies,
+  setFilingFrequency,
+} from './filing-schedule'
 
 const created = () => vi.mocked(prisma.filing.create).mock.calls.map(([arg]) => arg.data)
 const ymd = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
@@ -17,6 +23,8 @@ beforeEach(() => {
   vi.resetAllMocks()
   vi.mocked(prisma.filing.findFirst).mockResolvedValue(null)
   vi.mocked(prisma.filing.create).mockResolvedValue({} as never)
+  // No earlier filings: each state starts on its usual frequency
+  vi.mocked(prisma.filing.findMany).mockResolvedValue([] as never)
 })
 
 describe('ensureCurrentFilings', () => {
@@ -32,6 +40,15 @@ describe('ensureCurrentFilings', () => {
     ])
   })
 
+  it('follows the frequency the seller chose for the state', async () => {
+    vi.mocked(prisma.filing.findMany).mockResolvedValueOnce([{ stateCode: 'TX', period: 'monthly' }] as never)
+    await ensureCurrentFilings('biz-1', [{ stateCode: 'TX', stateName: 'Texas' }], new Date(2026, 9, 5))
+    expect(created().map((f) => [f.period, ymd(f.periodStart as Date), ymd(f.dueDate as Date)])).toEqual([
+      ['monthly', '2026-09-01', '2026-10-20'],
+      ['monthly', '2026-10-01', '2026-11-20'],
+    ])
+  })
+
   it('also creates a return that ended but is not due yet', async () => {
     await ensureCurrentFilings('biz-1', [{ stateCode: 'TX', stateName: 'Texas' }], new Date(2026, 9, 5))
     expect(created().map((f) => ymd(f.dueDate as Date))).toEqual(['2026-10-20', '2027-01-20'])
@@ -44,7 +61,10 @@ describe('ensureCurrentFilings', () => {
   })
 
   it('skips periods that already exist and states without a sales tax', async () => {
-    vi.mocked(prisma.filing.findFirst).mockResolvedValue({ id: 'f-1' } as never)
+    // Frequencies lookup, then the existing Texas return for the quarter
+    vi.mocked(prisma.filing.findMany)
+      .mockResolvedValueOnce([] as never)
+      .mockResolvedValueOnce([{ periodStart: new Date(2026, 6, 1), periodEnd: new Date(2026, 8, 30) }] as never)
     const count = await ensureCurrentFilings(
       'biz-1',
       [
@@ -60,6 +80,34 @@ describe('ensureCurrentFilings', () => {
   it('tolerates a filing created at the same moment by another request', async () => {
     vi.mocked(prisma.filing.create).mockRejectedValue(new Error('Unique constraint failed on the fields'))
     await expect(ensureCurrentFilings('biz-1', [{ stateCode: 'TX', stateName: 'Texas' }], new Date(2026, 8, 25))).resolves.toBe(0)
+  })
+})
+
+describe('filing frequency', () => {
+  it("uses the latest filing's frequency, or the state's usual one", async () => {
+    vi.mocked(prisma.filing.findMany).mockResolvedValueOnce([
+      { stateCode: 'TX', period: 'monthly' },
+      { stateCode: 'OH', period: 'quarterly' }, // Ohio has no quarterly filing: ignored
+    ] as never)
+    const frequencies = await getFilingFrequencies('biz-1', ['TX', 'OH', 'CA'])
+    expect(Object.fromEntries(frequencies)).toEqual({ TX: 'monthly', OH: 'monthly', CA: 'quarterly' })
+  })
+
+  it('replaces upcoming unfiled returns and skips periods a filed return covers', async () => {
+    vi.mocked(prisma.filing.deleteMany).mockResolvedValue({ count: 1 } as never)
+    // Q3 was filed before the switch; it covers September
+    vi.mocked(prisma.filing.findMany).mockResolvedValueOnce([{ periodStart: new Date(2026, 6, 1), periodEnd: new Date(2026, 8, 30) }] as never)
+    const result = await setFilingFrequency('biz-1', { stateCode: 'TX', stateName: 'Texas' }, 'monthly', new Date(2026, 9, 5))
+    expect(result).toEqual({ removed: 1, created: 1 })
+    expect(vi.mocked(prisma.filing.deleteMany).mock.calls[0][0]).toMatchObject({
+      where: { businessId: 'biz-1', stateCode: 'TX', status: 'pending', NOT: { period: 'monthly' } },
+    })
+    expect(created().map((f) => [f.period, ymd(f.periodStart as Date)])).toEqual([['monthly', '2026-10-01']])
+  })
+
+  it("refuses a frequency the state doesn't offer", async () => {
+    await expect(setFilingFrequency('biz-1', { stateCode: 'OH', stateName: 'Ohio' }, 'quarterly')).rejects.toThrow(/Ohio doesn't offer quarterly/)
+    expect(prisma.filing.deleteMany).not.toHaveBeenCalled()
   })
 })
 

@@ -25,6 +25,7 @@ vi.mock('@/lib/prisma', () => ({
     },
     filing: {
       findFirst: vi.fn(),
+      findMany: vi.fn(),
       create: vi.fn(),
     },
   },
@@ -112,6 +113,7 @@ beforeEach(() => {
   vi.mocked(prisma.nexusState.findMany).mockResolvedValue([mockNexusState]);
   vi.mocked(prisma.nexusState.upsert).mockResolvedValue(mockNexusState);
   vi.mocked(prisma.filing.findFirst).mockResolvedValue(null);
+  vi.mocked(prisma.filing.findMany).mockResolvedValue([] as never);
   vi.mocked(prisma.filing.create).mockResolvedValue({} as never);
 });
 
@@ -427,7 +429,10 @@ describe('PUT /api/nexus - auto-filing creation', () => {
 
   it('should not create filing if one already exists for period', async () => {
     vi.mocked(prisma.nexusState.findMany).mockResolvedValue([mockNexusState]);
-    vi.mocked(prisma.filing.findFirst).mockResolvedValue({ id: 'filing-123' } as never);
+    // An existing California return covering every current period
+    vi.mocked(prisma.filing.findMany).mockResolvedValue([
+      { stateCode: 'CA', period: 'quarterly', periodStart: new Date(2000, 0, 1), periodEnd: new Date(2100, 0, 1) },
+    ] as never);
     await PUT(putRequest({
       states: [{ stateCode: 'CA', hasNexus: true }],
     }));
