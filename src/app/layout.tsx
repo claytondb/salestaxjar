@@ -25,7 +25,7 @@ export const metadata: Metadata = {
   publisher: "Sails",
   openGraph: {
     title: "Sails - Sales Tax Made Breezy",
-    description: "Automatically calculate, collect, and file sales tax for all 45+ US states. Free to start.",
+    description: "Know where you owe sales tax, when it's due, and how much. Built for small online sellers. Free to start.",
     url: "https://sails.tax",
     siteName: "Sails",
     locale: "en_US",

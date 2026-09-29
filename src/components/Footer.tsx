@@ -52,6 +52,7 @@ export default function Footer() {
           <div>
             <h3 className="text-theme-primary font-semibold mb-4">Resources</h3>
             <ul className="space-y-2 text-theme-muted text-sm">
+              <li><Link href="/sales-tax" className="hover:text-theme-primary transition">Sales Tax by State</Link></li>
               <li><Link href="/blog" className="hover:text-theme-primary transition">Blog</Link></li>
               <li><Link href="/contact" className="hover:text-theme-primary transition">Contact Us</Link></li>
               <li><Link href="/contact#faq" className="hover:text-theme-primary transition">FAQ</Link></li>

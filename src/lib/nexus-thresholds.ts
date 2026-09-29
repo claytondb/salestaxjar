@@ -48,6 +48,13 @@ export interface NexusThreshold {
   /** Transaction count threshold (null = no transaction threshold) */
   transactionThreshold: number | null;
   /**
+   * The state's test is MORE THAN the amount rather than at least it
+   * (Mississippi: more than $250K; New York: more than 100 sales). Used for
+   * wording; the engine treats both as reaching the threshold.
+   */
+  salesThresholdExclusive?: boolean;
+  transactionThresholdExclusive?: boolean;
+  /**
    * How the sales and transaction thresholds combine.
    * 'or' (default): meeting EITHER threshold establishes nexus.
    * 'and': BOTH thresholds must be met (currently only CT and NY).
@@ -375,6 +382,7 @@ export const STATE_NEXUS_THRESHOLDS: NexusThreshold[] = [
     stateCode: 'MS',
     stateName: 'Mississippi',
     salesThreshold: 250000,
+    salesThresholdExclusive: true,
     transactionThreshold: null,
     hasSalesTax: true,
     measurementPeriod: 'rolling_12_months',
@@ -464,6 +472,7 @@ export const STATE_NEXUS_THRESHOLDS: NexusThreshold[] = [
     stateName: 'New York',
     salesThreshold: 500000,
     transactionThreshold: 100,
+    transactionThresholdExclusive: true,
     logic: 'and',
     hasSalesTax: true,
     measurementPeriod: 'rolling_12_months',

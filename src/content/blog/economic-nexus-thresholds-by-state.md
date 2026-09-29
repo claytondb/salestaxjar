@@ -11,6 +11,8 @@ image: "/blog/images/05-economic-nexus-thresholds-illustration.jpg"
 
 Understanding economic nexus thresholds is crucial for any online seller. Since the 2018 *South Dakota v. Wayfair* Supreme Court decision, states can require you to collect sales tax even without a physical presence — if you exceed their economic nexus threshold.
 
+For a single state's threshold, filing due dates and registration link, see [sales tax by state](/sales-tax).
+
 This comprehensive guide covers every state's current thresholds, updated for 2026. Rules change often, so always verify with the state before you register.
 
 ## Quick Reference: States by Threshold Type
