@@ -10,6 +10,8 @@ keyword: "sales tax filing deadlines by state"
 
 Sales tax compliance isn't just about collecting the right amount — it's about getting that money to the state on time. Miss a deadline and you're looking at penalties, interest, and a paper trail that could complicate future audits.
 
+Each state also has its own page with its due dates, threshold and registration link: [sales tax by state](/sales-tax).
+
 The tricky part? Every state sets its own deadlines. Your filing frequency depends on how much sales tax you collect. And the due date isn't always the 20th.
 
 This guide breaks down how filing frequencies work, lists the due dates for every state with a sales tax, and explains what happens if you're late. The dates below were checked against each state's department of revenue in September 2026. Each state assigns your filing frequency, so confirm your schedule with every state where you're registered.

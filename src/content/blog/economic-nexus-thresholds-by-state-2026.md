@@ -13,7 +13,7 @@ Before 2018, you only had to collect sales tax in states where you had a physica
 
 Now every state with a sales tax can require you to collect sales tax based purely on your sales into that state — even if you've never set foot there. This is called **economic nexus**, and it's the most important sales tax concept for online sellers in 2026.
 
-This guide covers every state's current economic nexus threshold, how each state measures it, and whether your marketplace sales count.
+This guide covers every state's current economic nexus threshold, how each state measures it, and whether your marketplace sales count. Looking for one state? [Sales tax by state](/sales-tax) has a page for each, with its threshold, filing due dates and registration link.
 
 ## What Is Economic Nexus?
 

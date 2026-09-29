@@ -1,5 +1,7 @@
 import { MetadataRoute } from 'next';
 import { getAllPosts } from '@/lib/blog';
+import { STATE_GUIDES } from '@/lib/state-guides';
+import { NEXUS_RULES_REVIEWED_ON } from '@/lib/nexus-thresholds';
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = 'https://sails.tax';
@@ -56,6 +58,18 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'monthly',
       priority: 0.9,
     },
+    {
+      url: `${baseUrl}/sales-tax`,
+      lastModified: new Date(NEXUS_RULES_REVIEWED_ON),
+      changeFrequency: 'monthly',
+      priority: 0.8,
+    },
+    ...STATE_GUIDES.map((guide) => ({
+      url: `${baseUrl}/sales-tax/${guide.slug}`,
+      lastModified: new Date(NEXUS_RULES_REVIEWED_ON),
+      changeFrequency: 'monthly' as const,
+      priority: 0.7,
+    })),
     {
       url: `${baseUrl}/free-calculator`,
       lastModified: new Date(),

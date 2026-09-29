@@ -14,6 +14,7 @@ import {
   TrendingUp,
 } from 'lucide-react';
 import { getStateRegistrationUrl } from '@/lib/state-registration-urls';
+import { stateSlug } from '@/lib/state-slug';
 import NexusActionList from '@/components/NexusActionList';
 import { formatMoney, formatPercent } from '@/lib/nexus-engine';
 import type { StateEvaluation, TopAction, ExposureSummary, Confidence } from '@/lib/nexus-engine';
@@ -235,6 +236,11 @@ function StateCard({ e }: { e: StateEvaluation }) {
               </div>
             </dl>
             {e.rule.notes && <p className="mt-2 text-theme-secondary">{e.rule.notes}</p>}
+            <p className="mt-2">
+              <a href={`/sales-tax/${stateSlug(e.stateName)}`} className="text-theme-accent hover:underline">
+                {e.stateName} filing dates and registration
+              </a>
+            </p>
             <p className="mt-2 text-xs text-theme-muted">
               Rules reviewed {e.rulesReviewed}. Sources:{' '}
               {e.sources.map((src, i) => (
