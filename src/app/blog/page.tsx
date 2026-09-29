@@ -56,6 +56,7 @@ export default function BlogPage() {
         </div>
       </header>
 
+      <main>
       {/* Hero */}
       <section className="py-16 px-4">
         <div className="max-w-4xl mx-auto text-center">
@@ -74,6 +75,7 @@ export default function BlogPage() {
 
       {/* Blog Content (Client Component with Search, Filters, View Toggle) */}
       <BlogContent posts={posts} />
+      </main>
 
       <Footer />
     </div>

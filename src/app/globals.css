@@ -37,6 +37,9 @@
   --accent-primary-hover: #059669; /* emerald-600 */
   --accent-secondary: #34d399;     /* emerald-400 */
   --accent-bg: rgba(16, 185, 129, 0.2);
+  /* Filled buttons: dark enough for white text (WCAG AA 4.5:1) */
+  --button-primary-bg: #047857;    /* emerald-700 */
+  --button-primary-hover: #065f46; /* emerald-800 */
   
   /* Status colors */
   --success: #10b981;
@@ -88,7 +91,7 @@
   --text-primary: #0c4a6e;         /* navy/ocean deep */
   --text-secondary: #334155;       /* slate-700 */
   --text-muted: #64748b;           /* slate-500 */
-  --text-accent: #0d9488;          /* teal-600 */
+  --text-accent: #0f766e;          /* teal-700: 4.5:1 or better on the light backgrounds */
   
   /* Borders - soft and subtle */
   --border-primary: rgba(12, 74, 110, 0.1);
@@ -100,6 +103,9 @@
   --accent-primary-hover: #0d9488; /* teal-600 */
   --accent-secondary: #2dd4bf;     /* teal-400 */
   --accent-bg: rgba(20, 184, 166, 0.15);
+  /* Filled buttons: dark enough for white text (WCAG AA 4.5:1) */
+  --button-primary-bg: #0f766e;    /* teal-700 */
+  --button-primary-hover: #115e59; /* teal-800 */
   
   /* Status colors - slightly warmer, WCAG AA compliant */
   --success: #0d7a6e;              /* darker teal for contrast */
@@ -193,12 +199,33 @@ body {
 
 /* Buttons */
 .btn-theme-primary {
-  background-color: var(--accent-primary);
+  background-color: var(--button-primary-bg);
   color: white;
   transition: background-color 0.2s ease;
 }
 .btn-theme-primary:hover {
-  background-color: var(--accent-primary-hover);
+  background-color: var(--button-primary-hover);
+}
+
+/* Status chips and tinted links: 4.5:1 or better in both themes */
+.tone-red { color: #b91c1c; background-color: rgba(239, 68, 68, 0.12); }
+.tone-purple { color: #7e22ce; background-color: rgba(168, 85, 247, 0.12); }
+.tone-orange { color: #9a3412; background-color: rgba(249, 115, 22, 0.12); }
+.tone-yellow { color: #854d0e; background-color: rgba(234, 179, 8, 0.15); }
+.tone-blue { color: #1d4ed8; background-color: rgba(59, 130, 246, 0.12); }
+.tone-green { color: #047857; background-color: rgba(16, 185, 129, 0.12); }
+.theme-default .tone-red { color: #fca5a5; background-color: rgba(239, 68, 68, 0.15); }
+.theme-default .tone-purple { color: #d8b4fe; background-color: rgba(168, 85, 247, 0.15); }
+.theme-default .tone-orange { color: #fdba74; background-color: rgba(249, 115, 22, 0.15); }
+.theme-default .tone-yellow { color: #fde047; background-color: rgba(234, 179, 8, 0.15); }
+.theme-default .tone-blue { color: #93c5fd; background-color: rgba(59, 130, 246, 0.15); }
+.theme-default .tone-green { color: #6ee7b7; background-color: rgba(16, 185, 129, 0.15); }
+
+/* Links inside running text are underlined, so they don't rely on color alone */
+p a:not([class*="btn"]),
+li > a.text-theme-accent {
+  text-decoration-line: underline;
+  text-underline-offset: 2px;
 }
 
 /* Cards */

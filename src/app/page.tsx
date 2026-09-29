@@ -205,7 +205,7 @@ export default function Home() {
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-theme-primary mb-3 leading-tight">
             Sales Tax for Small Online Sellers.
           </h1>
-          <p className="text-2xl sm:text-3xl font-bold mb-6" style={{ color: 'var(--accent-primary)' }}>
+          <p className="text-2xl sm:text-3xl font-bold mb-6" style={{ color: 'var(--text-accent)' }}>
             Know where you owe. <span className="text-theme-primary">Know what to do next.</span>
           </p>
 
@@ -262,7 +262,7 @@ export default function Home() {
                 </div>
                 <span className={`font-semibold ${p.status === 'beta' ? 'text-theme-muted' : 'text-theme-primary'}`}>{p.name}</span>
                 {p.status === 'beta' && (
-                  <span className="text-[10px] uppercase tracking-wide px-1.5 py-0.5 rounded-full font-semibold" style={{ backgroundColor: 'var(--accent-subtle)', color: 'var(--accent-primary)' }}>
+                  <span className="text-[10px] uppercase tracking-wide px-1.5 py-0.5 rounded-full font-semibold" style={{ backgroundColor: 'var(--accent-subtle)', color: 'var(--text-accent)' }}>
                     {STATUS_LABEL.beta}
                   </span>
                 )}
@@ -377,7 +377,7 @@ export default function Home() {
                   {p.name.charAt(0)}
                 </div>
                 <h3 className="text-xl font-semibold text-theme-primary mb-2">{p.name}</h3>
-                <span className="inline-block text-xs px-2 py-1 rounded-full font-medium mb-3" style={{ backgroundColor: 'var(--accent-subtle)', color: 'var(--accent-primary)' }}>
+                <span className="inline-block text-xs px-2 py-1 rounded-full font-medium mb-3" style={{ backgroundColor: 'var(--accent-subtle)', color: 'var(--text-accent)' }}>
                   {STATUS_LABEL[p.status]} · {p.connection}
                 </span>
                 <p className="text-theme-muted text-sm">{p.summary}</p>
@@ -415,8 +415,9 @@ export default function Home() {
                 />
               </div>
               <div>
-                <label className="block text-theme-secondary mb-2 font-medium">State</label>
+                <label htmlFor="home-calc-state" className="block text-theme-secondary mb-2 font-medium">State</label>
                 <select
+                  id="home-calc-state"
                   value={selectedState}
                   onChange={(e) => setSelectedState(e.target.value)}
                   className="w-full px-4 py-3 bg-theme-input border border-theme-secondary rounded-lg text-theme-primary text-lg focus:outline-none focus:ring-2"

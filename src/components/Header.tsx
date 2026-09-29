@@ -32,7 +32,7 @@ export default function Header() {
               </Link>
               
               {/* Desktop Navigation */}
-              <nav className="hidden md:flex gap-1">
+              <nav className="hidden md:flex gap-1" aria-label="Main">
                 <Link 
                   href="/dashboard" 
                   className={`px-4 py-2 rounded-lg transition ${isActive('/dashboard') ? 'nav-active' : 'nav-inactive'}`}
@@ -107,7 +107,7 @@ export default function Header() {
 
           {/* Mobile Navigation */}
           {mobileMenuOpen && (
-            <nav className="md:hidden mt-4 pb-2 border-t border-theme-primary pt-4 space-y-1">
+            <nav className="md:hidden mt-4 pb-2 border-t border-theme-primary pt-4 space-y-1" aria-label="Main (mobile)">
               <Link 
                 href="/dashboard" 
                 className={`block px-4 py-2 rounded-lg transition ${isActive('/dashboard') ? 'nav-active' : 'nav-inactive'}`}
