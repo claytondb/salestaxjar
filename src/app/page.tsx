@@ -243,6 +243,11 @@ export default function Home() {
             The check needs no signup — drop in an order export and your file never leaves your computer.
           </p>
           <p className="text-theme-muted text-sm mt-1">Free forever tier • Paid plans from $9/mo • Cancel anytime</p>
+          <p className="text-sm mt-3">
+            <Link href="/sales-tax" className="text-theme-accent hover:underline">
+              Look up any state&apos;s threshold and due dates →
+            </Link>
+          </p>
         </div>
       </section>
 
