@@ -58,11 +58,13 @@ const formatCurrency = (amount: number) => {
   }).format(amount);
 };
 
+// Report ranges are calendar dates (stored as midnight UTC), so show them as such
 const formatDate = (dateString: string) => {
   return new Date(dateString).toLocaleDateString('en-US', {
     month: 'short',
     day: 'numeric',
     year: 'numeric',
+    timeZone: 'UTC',
   });
 };
 

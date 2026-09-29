@@ -7,6 +7,9 @@ import { useAuth } from '@/context/AuthContext';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { FilingDeadline } from '@/types';
+import FilingWorksheetPanel from '@/components/FilingWorksheetPanel';
+import { describeFilingPeriod } from '@/lib/filing-deadlines';
+import { daysUntilDue, dueInWords, dueMonthKey, formatDueDate } from '@/lib/due-dates';
 import { Calendar, ClipboardList, CheckCircle2, AlertTriangle, Check, List, Wand2, RefreshCw, X, DollarSign, Hash, FileText } from 'lucide-react';
 
 interface FilingModalProps {
@@ -147,6 +150,8 @@ export default function FilingsPage() {
   const [generateResult, setGenerateResult] = useState<{ created: number; skipped: number } | null>(null);
   const [generateError, setGenerateError] = useState<string | null>(null);
   const [modalDeadline, setModalDeadline] = useState<FilingDeadline | null>(null);
+  // The filing whose "Prepare return" numbers are showing
+  const [openWorksheet, setOpenWorksheet] = useState<string | null>(null);
   
   // Use state for current time to avoid calling Date.now() during render
   // Initialize with a function to avoid the impure call during render
@@ -170,8 +175,7 @@ export default function FilingsPage() {
   // Group deadlines by month for calendar view
   const groupedByMonth: Record<string, typeof filingDeadlines> = {};
   filteredDeadlines.forEach(d => {
-    const date = new Date(d.dueDate);
-    const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+    const key = dueMonthKey(d.dueDate);
     if (!groupedByMonth[key]) groupedByMonth[key] = [];
     groupedByMonth[key].push(d);
   });
@@ -383,13 +387,14 @@ export default function FilingsPage() {
                 ) : (
                   <div className="divide-y divide-white/10">
                     {filteredDeadlines.map((deadline) => {
-                      const dueDate = new Date(deadline.dueDate);
-                      const daysUntil = Math.ceil((dueDate.getTime() - currentTime) / (1000 * 60 * 60 * 24));
-                      const isUrgent = daysUntil <= 7 && daysUntil > 0;
-                      const isPast = daysUntil < 0;
+                      const daysUntil = daysUntilDue(deadline.dueDate, currentTime);
+                      const isUrgent = daysUntil <= 7 && daysUntil >= 0;
+                      // A filed return isn't late, whenever it was due
+                      const isPast = daysUntil < 0 && deadline.status !== 'filed';
                       
                       return (
-                        <div key={deadline.id} className="p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <div key={deadline.id} className="p-6">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                           <div className="flex items-start gap-4">
                             <div 
                               className={`w-12 h-12 rounded-xl flex items-center justify-center ${
@@ -406,6 +411,9 @@ export default function FilingsPage() {
                               <h3 className="font-medium text-theme-primary">{deadline.state}</h3>
                               <p className="text-theme-muted text-sm">
                                 {deadline.period.charAt(0).toUpperCase() + deadline.period.slice(1)} filing
+                                {deadline.periodStart && deadline.periodEnd
+                                  ? ` · ${describeFilingPeriod(deadline.period, new Date(deadline.periodStart), new Date(deadline.periodEnd))}`
+                                  : ''}
                               </p>
                               {/* Show filed details */}
                               {deadline.status === 'filed' && deadline.actualTax !== undefined && (
@@ -436,7 +444,7 @@ export default function FilingsPage() {
                             </div>
                           </div>
 
-                          <div className="flex items-center gap-4">
+                          <div className="flex flex-wrap items-center gap-3 sm:gap-4">
                             <div className="text-right">
                               <div 
                                 className={`font-medium ${
@@ -446,11 +454,11 @@ export default function FilingsPage() {
                                 }`}
                                 style={(deadline.status === 'overdue' || isPast) ? { color: 'var(--error-text)' } : {}}
                               >
-                                {dueDate.toLocaleDateString('en-US', { 
+                                {formatDueDate(deadline.dueDate, {
                                   weekday: 'short',
-                                  month: 'short', 
+                                  month: 'short',
                                   day: 'numeric',
-                                  year: 'numeric'
+                                  year: 'numeric',
                                 })}
                               </div>
                               <div 
@@ -465,12 +473,17 @@ export default function FilingsPage() {
                                   ? deadline.filedAt
                                     ? `Filed ${new Date(deadline.filedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`
                                     : 'Filed'
-                                  : isPast
-                                  ? `${Math.abs(daysUntil)} days overdue`
-                                  : `${daysUntil} days left`}
+                                  : dueInWords(daysUntil)}
                               </div>
                             </div>
 
+                            <button
+                              onClick={() => setOpenWorksheet(openWorksheet === deadline.id ? null : deadline.id)}
+                              aria-expanded={openWorksheet === deadline.id}
+                              className="border border-theme-secondary text-theme-secondary hover:text-theme-primary px-4 py-2 rounded-lg text-sm font-medium transition whitespace-nowrap"
+                            >
+                              {openWorksheet === deadline.id ? 'Hide numbers' : 'Prepare return'}
+                            </button>
                             {deadline.status !== 'filed' && (
                               <button
                                 onClick={() => setModalDeadline(deadline)}
@@ -488,6 +501,12 @@ export default function FilingsPage() {
                               </button>
                             )}
                           </div>
+                        </div>
+                        {openWorksheet === deadline.id && (
+                          <div className="mt-4 pt-4 border-t border-theme-primary">
+                            <FilingWorksheetPanel filingId={deadline.id} />
+                          </div>
+                        )}
                         </div>
                       );
                     })}
@@ -511,8 +530,6 @@ export default function FilingsPage() {
                       </div>
                       <div className="p-4 grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
                         {deadlines.map((deadline) => {
-                          const dueDate = new Date(deadline.dueDate);
-                          
                           return (
                             <div 
                               key={deadline.id}
@@ -527,7 +544,7 @@ export default function FilingsPage() {
                                 <span className={`text-sm ${
                                   deadline.status === 'filed' ? 'text-theme-accent' : 'text-theme-muted'
                                 }`}>
-                                  {dueDate.getDate()}
+                                  {formatDueDate(deadline.dueDate, { day: 'numeric' })}
                                 </span>
                               </div>
                               <div className="text-sm text-theme-muted mb-1">

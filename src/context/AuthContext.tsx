@@ -134,11 +134,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (filingsRes.status === 'fulfilled' && filingsRes.value.ok) {
         const data = await filingsRes.value.json();
         if (data.filings) {
-          setFilingDeadlines(data.filings.map((f: { id: string; state: string; stateCode: string; period: string; dueDate: string; status: string; estimatedTax: number | null; actualTax: number | null; confirmationNumber: string | null; filedAt: string | null; notes: string | null }) => ({
+          setFilingDeadlines(data.filings.map((f: { id: string; state: string; stateCode: string; period: string; periodStart?: string; periodEnd?: string; dueDate: string; status: string; estimatedTax: number | null; actualTax: number | null; confirmationNumber: string | null; filedAt: string | null; notes: string | null }) => ({
             id: f.id,
             state: f.state,
             stateCode: f.stateCode,
             period: f.period,
+            periodStart: f.periodStart,
+            periodEnd: f.periodEnd,
             dueDate: f.dueDate,
             status: f.status,
             estimatedTax: f.estimatedTax ?? undefined,
