@@ -38,6 +38,7 @@ export const PLAN_MARKETING: Record<PlanTier, PlanMarketing> = {
       { text: 'Threshold alerts, a filing calendar and deadline reminders' },
       { text: 'Sales-by-state reports and CSV export' },
       { text: '1 store connection, up to 50 orders/month' },
+      { text: 'Import order history from Shopify, Amazon, Etsy or any CSV export' },
       { text: 'Unlimited tax calculations' },
       { text: 'Email support' },
     ],

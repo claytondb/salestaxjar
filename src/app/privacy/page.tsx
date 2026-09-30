@@ -13,7 +13,7 @@ export default function PrivacyPage() {
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="card-theme rounded-2xl p-8">
           <h1 className="text-3xl font-bold text-theme-primary mb-2">Privacy Policy</h1>
-          <p className="text-theme-muted mb-8">Last updated: September 25, 2026</p>
+          <p className="text-theme-muted mb-8">Last updated: September 29, 2026</p>
 
           <div className="prose legal-prose max-w-none space-y-8 text-theme-secondary">
             <section>
@@ -47,6 +47,11 @@ export default function PrivacyPage() {
                 number and date, amounts, tax collected, order status, the items sold, and the ship-to city, state, ZIP
                 and country. We do <strong>not</strong> store your buyers&apos; names, email addresses, phone numbers or
                 street addresses, even when the platform provides them.
+              </p>
+              <p className="mt-2">
+                When you import an order export (a Shopify, Amazon, Etsy or other CSV file), your browser reads the file
+                and sends Sails only each order&apos;s number, date, ship-to state, sales and tax. The file itself is not
+                uploaded. The free nexus check works the same way but sends nothing at all.
               </p>
               <p className="mt-2">
                 Store connections only ask for read access. The keys that let Sails read your orders are encrypted

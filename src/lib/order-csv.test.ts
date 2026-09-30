@@ -69,8 +69,8 @@ describe('Shopify orders export', () => {
     expect(r.format).toBe('shopify')
     expect(r.channel).toBe('direct')
     expect(r.orders).toEqual([
-      { date: new Date('2026-03-01T15:15:00Z'), stateCode: 'CA', sales: 105, channel: 'direct', orderId: '#1001' },
-      { date: new Date('2026-03-02T14:00:00Z'), stateCode: 'TX', sales: 40, channel: 'direct', orderId: '#1002' },
+      { date: new Date('2026-03-01T15:15:00Z'), stateCode: 'CA', sales: 105, channel: 'direct', orderId: '#1001', externalId: null, rowKey: 'id:#1001', tax: 8.25 },
+      { date: new Date('2026-03-02T14:00:00Z'), stateCode: 'TX', sales: 40, channel: 'direct', orderId: '#1002', externalId: null, rowKey: 'id:#1002', tax: 0 },
     ])
     expect(r.skipped).toMatchObject({ notSales: 1, outsideUS: 1 })
     expect(r.missingTax).toBe(false)
@@ -90,6 +90,22 @@ describe('Shopify orders export', () => {
       ['#2002', 'OR', 25],
     ])
     expect(r.skipped).toMatchObject({ outsideUS: 1, notSales: 1 })
+  })
+})
+
+describe("Shopify's numeric order id", () => {
+  it('is read from the Id column even when only the first line-item row has it', () => {
+    const file = [
+      'Name,Financial Status,Taxes,Total,Created at,Lineitem name,Shipping Province,Shipping Country,Id',
+      '#3001,paid,1.00,21.00,2026-05-01 10:00:00 -0500,Mug,CA,US,5550001',
+      '#3001,,,,,Coaster,,,',
+      '#3002,paid,0,10.00,2026-05-02 10:00:00 -0500,Tee,TX,US,5550002',
+    ].join('\n')
+    const r = ok(parseOrderFile(file))
+    expect(r.orders.map((o) => [o.orderId, o.externalId, o.tax, o.sales])).toEqual([
+      ['#3001', '5550001', 1, 20],
+      ['#3002', '5550002', 0, 10],
+    ])
   })
 })
 
@@ -168,7 +184,7 @@ describe('generic export (e.g. a WooCommerce export plugin)', () => {
     const r = ok(parseOrderFile(csv))
     expect(r.format).toBe('generic')
     expect(r.orders).toEqual([
-      { date: new Date('2026-01-15T12:00:00Z'), stateCode: 'GA', sales: 100, channel: 'direct', orderId: '501' },
+      { date: new Date('2026-01-15T12:00:00Z'), stateCode: 'GA', sales: 100, channel: 'direct', orderId: '501', externalId: null, rowKey: 'id:501', tax: 8 },
     ])
     expect(r.skipped).toMatchObject({ notSales: 1, noState: 1 })
   })

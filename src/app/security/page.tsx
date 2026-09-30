@@ -71,7 +71,9 @@ export default function SecurityPage() {
               </p>
               <p>
                 The <Link href="/free-scan" className="text-theme-accent hover:underline">free nexus check</Link> reads
-                your files in your browser. They&apos;re never uploaded to Sails or anyone else.
+                your files in your browser. They&apos;re never uploaded to Sails or anyone else. When you import order
+                exports into your account, your browser reads them the same way and sends only each order&apos;s number,
+                date, ship-to state, sales and tax.
               </p>
             </Section>
 

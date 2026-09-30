@@ -30,6 +30,7 @@ import {
   X,
   ChevronDown,
   ChevronUp,
+  FileUp,
 } from 'lucide-react';
 
 const ICON_CLASS = "w-8 h-8 text-theme-accent";
@@ -41,6 +42,7 @@ const FEATURE_ICONS: Record<string, React.ReactNode> = {
   filing_calendar: <Calendar className={ICON_CLASS} />,
   deadline_reminders: <Bell className={ICON_CLASS} />,
   reports: <LayoutDashboard className={ICON_CLASS} />,
+  order_import: <FileUp className={ICON_CLASS} />,
   filing_summaries: <ClipboardList className={ICON_CLASS} />,
 };
 
@@ -50,8 +52,8 @@ const HOMEPAGE_FEATURE_IDS = [
   'threshold_alerts',
   'filing_calendar',
   'deadline_reminders',
+  'order_import',
   'reports',
-  'calculator',
 ];
 
 export default function Home() {
@@ -111,7 +113,7 @@ export default function Home() {
     },
     {
       question: "What if I sell on multiple platforms?",
-      answer: "Connect your store and upload your Amazon order reports, and Sails combines them into one state-by-state picture. States treat marketplace sales differently — some count them toward your threshold and some don't — and Sails applies each state's rule for you."
+      answer: "Connect your store and import your Amazon, Etsy or other marketplace order exports, and Sails combines them into one state-by-state picture. States treat marketplace sales differently — some count them toward your threshold and some don't — and Sails applies each state's rule for you."
     },
     {
       question: "How is Sails different from TaxJar or Avalara?",

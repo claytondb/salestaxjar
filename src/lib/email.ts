@@ -704,6 +704,9 @@ function dripDay1Template(params: { name: string; platformsUrl: string }): Email
               <p style="margin: 0 0 20px; color: #475569; font-size: 16px; line-height: 1.6;">
                 Connect your store and Sails will import your orders, check them against each state's nexus rules, and flag any states where you may need to register.
               </p>
+              <p style="margin: 0 0 20px; color: #475569; font-size: 16px; line-height: 1.6;">
+                Selling on Etsy, Amazon or a platform Sails can't connect to yet? <a href="${APP_URL}/settings#import" style="color: #10b981;">Import an order export</a> instead. Your file is read in your browser, and only each order's number, date, state and amounts are saved.
+              </p>
 
               <!-- Platform list -->
               <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f8fafc; border-radius: 8px; padding: 0; margin: 0 0 30px; overflow: hidden;">
@@ -747,6 +750,8 @@ ${liveIntegrations.map((i) => `                <tr><td style="padding: 16px 20px
 You're one step away from knowing your sales tax exposure.
 
 Connect your store and Sails will import your orders, check them against each state's nexus rules, and flag any states where you may need to register.
+
+Selling on Etsy, Amazon or a platform Sails can't connect to yet? Import an order export instead: ${APP_URL}/settings#import
 
 Supported platforms:
 ${liveIntegrations.map((i) => `• ${i.name} — ${i.connection}`).join('\n')}
@@ -1003,7 +1008,7 @@ function dripDay14Template(params: { name: string; connectUrl: string }): EmailT
                 Are you running into any friction getting set up? Have questions about nexus, filing deadlines, or how Sails works? Just hit reply — I read every response and will get back to you directly.
               </p>
               <p style="margin: 0 0 30px; color: #475569; font-size: 16px; line-height: 1.6;">
-                If you haven't connected your store yet, it takes a couple of minutes: Shopify connects in one click, and WooCommerce uses a read-only API key. Once your orders are in, Sails shows where you stand in every state.
+                If you haven't connected your store yet, it takes a couple of minutes: Shopify connects in one click, and WooCommerce uses a read-only API key. Selling on Etsy, Amazon or somewhere else? <a href="${APP_URL}/settings#import" style="color: #10b981;">Import an order export</a> instead. Once your orders are in, Sails shows where you stand in every state.
               </p>
 
               <!-- CTA -->
@@ -1046,7 +1051,9 @@ It's been two weeks since you signed up for Sails, and I wanted to check in pers
 
 Are you running into any friction getting set up? Have questions about nexus, filing deadlines, or how Sails works? Just hit reply — I read every response and will get back to you directly.
 
-If you haven't connected your store yet, it takes a couple of minutes: Shopify connects in one click, and WooCommerce uses a read-only API key. Once your orders are in, Sails shows where you stand in every state.
+If you haven't connected your store yet, it takes a couple of minutes: Shopify connects in one click, and WooCommerce uses a read-only API key. Selling on Etsy, Amazon or somewhere else? Import an order export instead: ${APP_URL}/settings#import
+
+Once your orders are in, Sails shows where you stand in every state.
 
 Connect your store: ${params.connectUrl}
 

@@ -1,13 +1,15 @@
 'use client';
 
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
-import { ArrowRight, FileText, Lock, ShieldCheck, Upload, X } from 'lucide-react';
+import { ArrowRight, FileText, Lock, ShieldCheck } from 'lucide-react';
 import SailsLogo from '@/components/SailsLogo';
 import ThemeToggle from '@/components/ThemeToggle';
 import Footer from '@/components/Footer';
 import { NexusResultsView, type NexusReportResponse } from '@/components/NexusResults';
-import { combineOrderFiles, parseOrderFile, type ParsedOrderFile } from '@/lib/order-csv';
+import OrderFileDrop, { useOrderFiles } from '@/components/OrderFileDrop';
+import { buildImportBatches } from '@/lib/order-file-import';
+import { clearScanHandoff, saveScanHandoff } from '@/lib/scan-handoff';
 import { sampleOrders } from '@/lib/scan-sample';
 import { PLAN_ORDER_LIMITS, type PlanTier } from '@/lib/plans';
 import { PLAN_MARKETING } from '@/lib/plan-features';
@@ -17,35 +19,7 @@ import {
   getTopActions,
   summarize,
   type NexusOrder,
-  type SalesChannel,
 } from '@/lib/nexus-engine';
-
-interface LoadedFile {
-  id: string;
-  name: string;
-  text: string;
-  result: ParsedOrderFile | { error: string };
-}
-
-const EXPORT_HELP: { name: string; steps: string }[] = [
-  { name: 'Shopify', steps: 'Orders → Export → All orders → "CSV for Excel, Numbers, or other spreadsheet programs". Bigger exports arrive by email.' },
-  { name: 'Amazon', steps: 'Seller Central → Reports → Fulfillment → All Orders (or Order Reports). Pick the date range and download.' },
-  { name: 'Etsy', steps: 'Shop Manager → Settings → Options → Download Data → Orders CSV. Download each year you need.' },
-  { name: 'WooCommerce and others', steps: 'Any order export with an order date, ship-to state and order total works — for example from an order export plugin.' },
-];
-
-function formatDay(d: Date): string {
-  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' });
-}
-
-/** Parse without letting an unexpected file take the page down. */
-function readFile(text: string, channel?: SalesChannel): ParsedOrderFile | { error: string } {
-  try {
-    return parseOrderFile(text, channel ? { channel } : {});
-  } catch {
-    return { error: "Sails couldn't read this file. Make sure it's a CSV or tab-separated export." };
-  }
-}
 
 const PLAN_ORDER: PlanTier[] = ['free', 'starter', 'pro', 'enterprise'];
 
@@ -76,65 +50,22 @@ function planHint(orders: NexusOrder[], now: Date): string {
   }.`;
 }
 
-function plural(n: number, one: string, many = `${one}s`): string {
-  return `${n.toLocaleString('en-US')} ${n === 1 ? one : many}`;
-}
-
-/** "Left out: 3 cancelled or refunded, 1 outside the US" — only the reasons that apply. */
-function leftOutSummary(skipped: ParsedOrderFile['skipped']): string | null {
-  const parts = [
-    skipped.notSales > 0 && `${skipped.notSales.toLocaleString('en-US')} cancelled or refunded`,
-    skipped.outsideUS > 0 && `${skipped.outsideUS.toLocaleString('en-US')} outside the US`,
-    skipped.noState > 0 && `${skipped.noState.toLocaleString('en-US')} with no US state`,
-    skipped.noDate > 0 && `${skipped.noDate.toLocaleString('en-US')} with no readable date`,
-    skipped.otherChannel > 0 &&
-      `${skipped.otherChannel.toLocaleString('en-US')} Amazon shipped for your other sales channels (count those in that channel's export)`,
-  ].filter(Boolean);
-  return parts.length ? `Left out: ${parts.join(', ')}.` : null;
-}
-
 export default function FreeScanPage() {
-  const [files, setFiles] = useState<LoadedFile[]>([]);
+  const fileState = useOrderFiles();
+  const { combined, clear, files, parsed } = fileState;
   const [useSample, setUseSample] = useState(false);
-  const [dragActive, setDragActive] = useState(false);
-  const [reading, setReading] = useState(false);
-  const inputRef = useRef<HTMLInputElement>(null);
+  // Keep the checked orders in this tab so they can be imported in one click after sign-up
+  const [handoffReady, setHandoffReady] = useState(false);
 
-  const addFiles = useCallback(async (list: FileList | File[]) => {
-    const incoming = Array.from(list);
-    setReading(true);
-    // Let the "Reading…" message paint before the (synchronous) parsing starts
-    await new Promise((resolve) => setTimeout(resolve, 30));
-    const loaded: LoadedFile[] = [];
-    for (const file of incoming) {
-      let text = '';
-      try {
-        text = await file.text();
-      } catch {
-        // handled below as an unreadable file
-      }
-      loaded.push({
-        id: `${file.name}-${file.size}-${file.lastModified}`,
-        name: file.name,
-        text,
-        result: text ? readFile(text) : { error: "Sails couldn't open this file." },
-      });
+  useEffect(() => {
+    if (useSample || parsed.length === 0) {
+      clearScanHandoff();
+      setHandoffReady(false); // eslint-disable-line react-hooks/set-state-in-effect -- mirrors what was saved
+      return;
     }
-    setUseSample(false);
-    setFiles((prev) => [...prev.filter((p) => !loaded.some((l) => l.id === p.id)), ...loaded]);
-    setReading(false);
-  }, []);
-
-  const setChannel = (id: string, channel: SalesChannel) => {
-    setFiles((prev) => prev.map((f) => (f.id === id ? { ...f, result: readFile(f.text, channel) } : f)));
-  };
-
-  const removeFile = (id: string) => setFiles((prev) => prev.filter((f) => f.id !== id));
-
-  const combined = useMemo(
-    () => combineOrderFiles(files.flatMap((f) => ('error' in f.result ? [] : [f.result]))),
-    [files]
-  );
+    const names = files.filter((f) => !('error' in f.result)).map((f) => f.name);
+    setHandoffReady(saveScanHandoff(names, buildImportBatches(parsed)));
+  }, [files, parsed, useSample]);
 
   const scan = useMemo(() => {
     const now = new Date();
@@ -218,153 +149,30 @@ export default function FreeScanPage() {
           <h2 id="upload-heading" className="sr-only">
             Add your order files
           </h2>
-          <div
-            className={`relative border-2 border-dashed rounded-xl p-8 text-center transition-colors ${
-              dragActive ? 'border-theme-accent bg-accent-subtle' : 'border-theme-secondary'
-            }`}
-            onDragEnter={(e) => {
-              e.preventDefault();
-              setDragActive(true);
-            }}
-            onDragOver={(e) => e.preventDefault()}
-            onDragLeave={(e) => {
-              e.preventDefault();
-              setDragActive(false);
-            }}
-            onDrop={(e) => {
-              e.preventDefault();
-              setDragActive(false);
-              if (e.dataTransfer.files?.length) void addFiles(e.dataTransfer.files);
-            }}
-          >
-            <Upload className="w-10 h-10 mx-auto mb-3 text-theme-muted" aria-hidden />
-            <p className="text-lg font-medium text-theme-primary">Drop your order exports here</p>
-            <p className="text-sm text-theme-muted mb-4">CSV or tab-separated files. Add as many as you like — one per store or marketplace.</p>
-            <div className="flex flex-col sm:flex-row gap-3 justify-center">
-              <button
-                type="button"
-                onClick={() => inputRef.current?.click()}
-                className="btn-theme-primary px-5 py-2.5 rounded-lg font-medium"
-              >
-                Choose files
-              </button>
+          <OrderFileDrop
+            state={fileState}
+            onAdd={() => setUseSample(false)}
+            actions={
               <button
                 type="button"
                 onClick={() => {
-                  setFiles([]);
+                  clear();
                   setUseSample(true);
                 }}
                 className="px-5 py-2.5 rounded-lg font-medium border border-theme-secondary text-theme-secondary hover:text-theme-primary"
               >
                 Try it with sample data
               </button>
-            </div>
-            <input
-              ref={inputRef}
-              type="file"
-              accept=".csv,.txt,.tsv,text/csv,text/plain"
-              multiple
-              className="hidden"
-              onChange={(e) => {
-                if (e.target.files?.length) void addFiles(e.target.files);
-                e.target.value = '';
-              }}
-            />
-          </div>
-
-          {reading && (
-            <p className="mt-4 text-sm text-theme-secondary" role="status">
-              Reading your files…
-            </p>
-          )}
-
-          {useSample && (
-            <p className="mt-4 text-sm text-theme-secondary flex items-center gap-2">
-              <FileText className="w-4 h-4" aria-hidden />
-              Showing made-up sample data. Add your own files to check your store.
-            </p>
-          )}
-
-          {files.length > 0 && (
-            <ul className="mt-5 space-y-3">
-              {files.map((f) => (
-                <li key={f.id} className="rounded-lg border border-theme-primary p-4 text-sm">
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="min-w-0">
-                      <p className="font-medium text-theme-primary truncate">{f.name}</p>
-                      {'error' in f.result ? (
-                        <p className="text-red-500 mt-1">{f.result.error}</p>
-                      ) : (
-                        <>
-                          <p className="text-theme-secondary mt-1">
-                            {f.result.label} · {plural(f.result.orders.length, 'US order')} counted
-                            {f.result.dateRange ? ` · ${formatDay(f.result.dateRange.from)} to ${formatDay(f.result.dateRange.to)}` : ''}
-                          </p>
-                          {leftOutSummary(f.result.skipped) && (
-                            <p className="text-theme-muted mt-1">{leftOutSummary(f.result.skipped)}</p>
-                          )}
-                          {f.result.missingTax && (
-                            <p className="text-yellow-600 mt-1">No tax column found, so totals may include sales tax.</p>
-                          )}
-                          <fieldset className="mt-2 flex flex-wrap gap-4 text-theme-secondary">
-                            <legend className="sr-only">Where were these sales made?</legend>
-                            <label className="inline-flex items-center gap-2">
-                              <input
-                                type="radio"
-                                name={`channel-${f.id}`}
-                                checked={f.result.channel === 'direct'}
-                                onChange={() => setChannel(f.id, 'direct')}
-                              />
-                              My own store
-                            </label>
-                            <label className="inline-flex items-center gap-2">
-                              <input
-                                type="radio"
-                                name={`channel-${f.id}`}
-                                checked={f.result.channel === 'marketplace'}
-                                onChange={() => setChannel(f.id, 'marketplace')}
-                              />
-                              A marketplace (Amazon, Etsy, eBay…)
-                            </label>
-                          </fieldset>
-                        </>
-                      )}
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => removeFile(f.id)}
-                      className="text-theme-muted hover:text-theme-primary p-1"
-                      aria-label={`Remove ${f.name}`}
-                    >
-                      <X className="w-4 h-4" aria-hidden />
-                    </button>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          )}
-
-          {combined.duplicates > 0 && (
-            <p className="mt-3 text-sm text-theme-secondary">
-              {plural(combined.duplicates, 'order was', 'orders were')} in more than one file, so{' '}
-              {combined.duplicates === 1 ? 'it was' : 'they were'} counted once.
-            </p>
-          )}
-
-          <details className="mt-6 text-sm">
-            <summary className="cursor-pointer text-theme-accent font-medium">How to export your orders</summary>
-            <ul className="mt-3 space-y-2 text-theme-secondary">
-              {EXPORT_HELP.map((h) => (
-                <li key={h.name}>
-                  <span className="font-medium text-theme-primary">{h.name}:</span> {h.steps}
-                </li>
-              ))}
-              <li>
-                Include everything from <span className="font-medium text-theme-primary">January 1 of last year</span> to
-                today — that&apos;s the longest period most states look at.
-              </li>
-            </ul>
-          </details>
+            }
+            notice={
+              useSample && (
+                <p className="mt-4 text-sm text-theme-secondary flex items-center gap-2">
+                  <FileText className="w-4 h-4" aria-hidden />
+                  Showing made-up sample data. Add your own files to check your store.
+                </p>
+              )
+            }
+          />
         </section>
 
         {/* Results */}
@@ -375,8 +183,11 @@ export default function FreeScanPage() {
               <ShieldCheck className="w-10 h-10 text-theme-accent mx-auto mb-3" aria-hidden />
               <h2 className="text-2xl font-bold text-theme-primary mb-2">Keep this up to date</h2>
               <p className="text-theme-secondary max-w-xl mx-auto mb-2">
-                Connect your Shopify or WooCommerce store and Sails brings in new orders every day, so your state-by-state
-                results stay current — with each state&apos;s filing due dates in one calendar.
+                {handoffReady
+                  ? 'Create a free account and import these orders in one click.'
+                  : 'Create a free account and import these same files.'}{' '}
+                Then connect your Shopify or WooCommerce store, and Sails adds new orders every day — with alerts as you
+                near a threshold and each state&apos;s filing due dates in one calendar.
               </p>
               <p className="text-theme-muted text-sm max-w-xl mx-auto mb-5">
                 {scan?.hint ?? `The free plan has no time limit and counts up to ${PLAN_ORDER_LIMITS.free} orders a month. No credit card needed.`}
@@ -411,8 +222,9 @@ export default function FreeScanPage() {
         )}
 
         <p className="mt-8 text-xs text-theme-muted text-center max-w-2xl mx-auto">
-          Your files are read by your browser and never sent to Sails or anyone else. Results are estimates to help you decide
-          what to check — not tax advice. Confirm with the state or a tax professional before registering.
+          Your files are read by your browser and never sent to Sails or anyone else. The orders you check stay in this
+          browser tab until you close it, so you can import them if you create an account. Results are estimates to help you
+          decide what to check — not tax advice. Confirm with the state or a tax professional before registering.
         </p>
       </main>
 

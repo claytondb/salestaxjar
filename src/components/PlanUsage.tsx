@@ -31,7 +31,8 @@ export default function PlanUsage() {
     fetch('/api/usage')
       .then(res => res.json())
       .then(data => {
-        if (!data.error) {
+        // Only use a complete answer: a partial one would break the dashboard
+        if (!data.error && data.orders && data.billingPeriod) {
           setUsage(data);
           // Calculate days left when we get usage data
           const periodEnd = new Date(data.billingPeriod.end);

@@ -46,7 +46,7 @@ import {
 export type SalesChannel = 'direct' | 'marketplace';
 
 /** Platforms where a marketplace facilitator collects the tax for you. */
-export const MARKETPLACE_PLATFORMS = ['amazon', 'etsy', 'ebay', 'walmart', 'tiktok', 'tiktok_shop'] as const;
+export const MARKETPLACE_PLATFORMS = ['amazon', 'etsy', 'ebay', 'walmart', 'tiktok', 'tiktok_shop', 'upload-marketplace'] as const;
 
 export function channelForPlatform(platform: string): SalesChannel {
   return (MARKETPLACE_PLATFORMS as readonly string[]).includes(platform.toLowerCase()) ? 'marketplace' : 'direct';
@@ -945,7 +945,7 @@ export function getTopActions(
         title: fromFiles ? 'Add your order files' : 'Bring in your orders',
         detail: fromFiles
           ? 'Drop in an order export so Sails can check every state for you.'
-          : 'Connect your store (or upload an Amazon report) so Sails can check every state for you.',
+          : 'Connect your store or import an order export so Sails can check every state for you.',
       },
     ];
   }
@@ -1000,8 +1000,8 @@ export function getTopActions(
   } else if (coverage.hasMarketplaceData && stale(coverage.marketplace)) {
     actions.push({
       kind: 'sync',
-      title: fromFiles ? 'Add a newer marketplace export' : 'Upload a newer Amazon report',
-      detail: `Your newest ${fromFiles ? 'marketplace' : 'Amazon'} order ${where} is from ${formatDay(coverage.marketplace.latest!)}.`,
+      title: 'Add a newer marketplace export',
+      detail: `Your newest marketplace order ${where} is from ${formatDay(coverage.marketplace.latest!)}.`,
     });
   }
 
@@ -1013,7 +1013,7 @@ export function getTopActions(
       title: `Add orders back to January 1, ${year - 1}`,
       detail: fromFiles
         ? `Many states look at all of last year. Your files start on ${formatDay(coverage.earliestOrder)} — if you sold before then, add an older export.`
-        : `Many states look at all of last year. Your history in Sails starts on ${formatDay(coverage.earliestOrder)} — if you sold before then, add those orders.`,
+        : `Many states look at all of last year. Your history in Sails starts on ${formatDay(coverage.earliestOrder)} — if you sold before then, import an older order export.`,
     });
   }
 

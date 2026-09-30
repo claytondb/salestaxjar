@@ -88,17 +88,32 @@ export function ActionLink({ action, mode = 'app' }: { action: TopAction; mode?:
         </Link>
       );
     case 'sync':
-    case 'import_history':
-    case 'connect_store':
       return (
         <Link href="/settings#platforms" className={linkClass}>
-          {action.kind === 'connect_store' ? 'Connect a store' : action.kind === 'sync' ? 'Go to your connections' : 'Add older orders'}
+          Go to your connections and imports
+        </Link>
+      );
+    case 'connect_store':
+      return (
+        <span className="inline-flex flex-wrap items-center gap-x-3 gap-y-1">
+          <Link href="/settings#platforms" className={linkClass}>
+            Connect a store
+          </Link>
+          <Link href="/settings#import" className={linkClass}>
+            Import an order export
+          </Link>
+        </span>
+      );
+    case 'import_history':
+      return (
+        <Link href="/settings#import" className={linkClass}>
+          Import older orders
         </Link>
       );
     case 'add_marketplace':
       return (
-        <Link href="/settings#amazon" className={linkClass}>
-          Upload an Amazon report
+        <Link href="/settings#import" className={linkClass}>
+          Import your marketplace orders
         </Link>
       );
     default:
