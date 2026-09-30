@@ -8,6 +8,11 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getCurrentUser } from '@/lib/auth';
+import { EXCLUDED_ORDER_STATUSES } from '@/lib/nexus-engine';
+import { US_COUNTRY_VALUES } from '@/lib/nexus-data';
+
+// Same orders the nexus numbers count: US ship-to (however it's spelled), real sales only
+const US_ONLY = { in: US_COUNTRY_VALUES, mode: 'insensitive' as const };
 
 // State name lookup
 const STATE_NAMES: Record<string, string> = {
@@ -62,14 +67,14 @@ export async function GET(req: Request) {
       by: ['shippingState'],
       where: {
         userId,
-        shippingCountry: 'US',
+        shippingCountry: US_ONLY,
         shippingState: { not: null },
         orderDate: {
           gte: startDate,
           lte: endDate,
         },
         status: {
-          notIn: ['cancelled', 'refunded'],
+          notIn: EXCLUDED_ORDER_STATUSES,
         },
       },
       _sum: {
@@ -86,14 +91,14 @@ export async function GET(req: Request) {
       by: ['shippingState', 'platform'],
       where: {
         userId,
-        shippingCountry: 'US',
+        shippingCountry: US_ONLY,
         shippingState: { not: null },
         orderDate: {
           gte: startDate,
           lte: endDate,
         },
         status: {
-          notIn: ['cancelled', 'refunded'],
+          notIn: EXCLUDED_ORDER_STATUSES,
         },
       },
       _sum: {

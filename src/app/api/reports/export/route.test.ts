@@ -268,7 +268,8 @@ describe('GET /api/reports/export - detailed export', () => {
     expect(headerLine).toContain('Shipping');
     expect(headerLine).toContain('Tax');
     expect(headerLine).toContain('Total');
-    expect(headerLine).toContain('Customer Email');
+    // Buyer emails aren't stored, so there's no column for them
+    expect(headerLine).not.toContain('Customer Email');
   });
 
   it('should include order rows in detailed export', async () => {
@@ -291,6 +292,21 @@ describe('GET /api/reports/export - detailed export', () => {
     const text = await response.text();
     // order-2 has null orderNumber, should use platformOrderId 'plat-002'
     expect(text).toContain('plat-002');
+  });
+
+  it('keeps order numbers from running as spreadsheet formulas', async () => {
+    vi.mocked(prisma.importedOrder.findMany).mockResolvedValueOnce([
+      { ...mockOrders[0], orderNumber: '=HYPERLINK("x")' },
+    ] as never);
+    const text = await (await GET(getRequest({ type: 'detailed' }))).text();
+    expect(text).toContain(`"'=HYPERLINK(""x"")"`);
+  });
+
+  it('counts only US orders and real sales, like the nexus numbers', async () => {
+    await GET(getRequest({ type: 'detailed' }));
+    const where = vi.mocked(prisma.importedOrder.findMany).mock.calls.at(-1)?.[0]?.where as Record<string, unknown>;
+    expect(where.shippingCountry).toEqual({ in: ['US', 'USA', 'UNITED STATES', 'UNITED STATES OF AMERICA'], mode: 'insensitive' });
+    expect(where.status).toEqual({ notIn: expect.arrayContaining(['cancelled', 'refunded', 'voided']) });
   });
 
   it('should handle null customer email gracefully', async () => {

@@ -8,6 +8,8 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getCurrentUser } from '@/lib/auth';
+import { EXCLUDED_ORDER_STATUSES } from '@/lib/nexus-engine';
+import { US_COUNTRY_VALUES } from '@/lib/nexus-data';
 
 // State name lookup
 const STATE_NAMES: Record<string, string> = {
@@ -26,7 +28,9 @@ const STATE_NAMES: Record<string, string> = {
 
 function escapeCSV(value: string | number | null | undefined): string {
   if (value === null || value === undefined) return '';
-  const str = String(value);
+  const raw = String(value);
+  // Keep spreadsheet apps from running a cell as a formula (order numbers come from stores and files)
+  const str = /^[=+\-@\t\r]/.test(raw) && !/^-?\d/.test(raw) ? `'${raw}` : raw;
   if (str.includes(',') || str.includes('"') || str.includes('\n')) {
     return `"${str.replace(/"/g, '""')}"`;
   }
@@ -78,13 +82,14 @@ export async function GET(req: Request) {
     // Build where clause
     const whereClause: Record<string, unknown> = {
       userId,
-      shippingCountry: 'US',
+      // Same orders the nexus numbers count: US ship-to (however it's spelled), real sales only
+      shippingCountry: { in: US_COUNTRY_VALUES, mode: 'insensitive' },
       orderDate: {
         gte: startDate,
         lte: endDate,
       },
       status: {
-        notIn: ['cancelled', 'refunded'],
+        notIn: EXCLUDED_ORDER_STATUSES,
       },
     };
 
@@ -190,7 +195,6 @@ export async function GET(req: Request) {
         'Shipping',
         'Tax',
         'Total',
-        'Customer Email',
       ];
       csv = headers.join(',') + '\n';
 
@@ -207,7 +211,6 @@ export async function GET(req: Request) {
           formatCurrency(Number(order.shippingAmount)),
           formatCurrency(Number(order.taxAmount)),
           formatCurrency(Number(order.totalAmount)),
-          escapeCSV(order.customerEmail),
         ].join(',') + '\n';
       }
 
