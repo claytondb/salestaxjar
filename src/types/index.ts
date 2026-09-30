@@ -119,6 +119,9 @@ export interface FilingDeadline {
   state: string;
   stateCode: string;
   period: 'monthly' | 'quarterly' | 'annual';
+  /** First and last day of the period (ISO) */
+  periodStart?: string;
+  periodEnd?: string;
   dueDate: string;
   status: 'pending' | 'filed' | 'overdue';
   estimatedTax?: number;

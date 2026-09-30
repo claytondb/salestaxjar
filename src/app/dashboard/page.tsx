@@ -20,6 +20,7 @@ import {
 import { platformLogos } from '@/components/PlatformLogos';
 import PlanUsage from '@/components/PlanUsage';
 import TopActionsCard from '@/components/TopActionsCard';
+import { daysUntilDue, dueInWords, formatDueDate } from '@/lib/due-dates';
 import BetaSurveyCard from '@/components/BetaSurveyCard';
 
 const ICON_CLASS = "w-6 h-6 text-theme-accent";
@@ -273,8 +274,7 @@ export default function DashboardPage() {
               ) : (
                 <div className="space-y-4">
                   {upcomingDeadlines.map((deadline) => {
-                    const dueDate = new Date(deadline.dueDate);
-                    const daysUntil = Math.ceil((dueDate.getTime() - currentTime) / (1000 * 60 * 60 * 24));
+                    const daysUntil = daysUntilDue(deadline.dueDate, currentTime);
                     const isUrgent = daysUntil <= 7;
                     
                     return (
@@ -287,10 +287,10 @@ export default function DashboardPage() {
                         </div>
                         <div className="text-right">
                           <div className={`font-medium ${isUrgent ? 'text-amber-500' : 'text-theme-secondary'}`}>
-                            {dueDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                            {formatDueDate(deadline.dueDate, { month: 'short', day: 'numeric' })}
                           </div>
                           <div className={`text-sm ${isUrgent ? 'text-amber-500' : 'text-theme-muted'}`}>
-                            {daysUntil} days left
+                            {dueInWords(daysUntil)}
                           </div>
                         </div>
                       </div>

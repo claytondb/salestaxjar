@@ -49,7 +49,12 @@ vi.mock('@/lib/filing-deadlines', () => ({
   resolveFilingPeriod: vi.fn((_state: string, period?: string) => period ?? 'quarterly'),
 }));
 
+vi.mock('@/lib/filing-schedule', () => ({
+  getFilingFrequencies: vi.fn(),
+}));
+
 import { GET, POST } from './route';
+import { getFilingFrequencies } from '@/lib/filing-schedule';
 import { getCurrentUser } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { getFilingDeadlines, getStateFilingConfig, getCurrentDeadlines, resolveFilingPeriod } from '@/lib/filing-deadlines';
@@ -255,6 +260,14 @@ describe('POST /api/filings/generate', () => {
 
     expect(getFilingDeadlines).toHaveBeenCalledWith('IL', 2026, 'monthly');
     expect(getFilingDeadlines).toHaveBeenCalledWith('CA', 2026, 'monthly');
+  });
+
+  it("keeps each state's chosen frequency when there's no override", async () => {
+    vi.mocked(getFilingFrequencies).mockResolvedValue(new Map([['CA', 'monthly']]) as never);
+    await POST(postRequest({ year: 2026 }));
+
+    expect(getFilingDeadlines).toHaveBeenCalledWith('CA', 2026, 'monthly');
+    expect(getFilingDeadlines).toHaveBeenCalledWith('IL', 2026, undefined);
   });
 
   it('filters out past deadlines when remainingOnly=true', async () => {

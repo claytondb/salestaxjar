@@ -16,6 +16,10 @@
 
 import { Resend } from 'resend';
 import { prisma } from './prisma';
+import { describeFilingPeriod } from './filing-deadlines';
+
+// The period wording lives with the other filing-date helpers, which are safe to use in the browser.
+export { describeFilingPeriod };
 
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
 const resend = RESEND_API_KEY ? new Resend(RESEND_API_KEY) : null;
@@ -107,28 +111,6 @@ export function formatTaxAmount(cents: number | null): string {
   }).format(cents / 100);
 }
 
-const MONTH_NAMES = [
-  'January', 'February', 'March', 'April', 'May', 'June',
-  'July', 'August', 'September', 'October', 'November', 'December',
-];
-const SHORT_MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-
-/**
- * A filing period in words: "September 2026", "Q3 2026", "Annual 2026",
- * or the months for non-calendar periods ("Sep–Nov 2026", "Dec 2025–Feb 2026").
- */
-export function describeFilingPeriod(period: string | null | undefined, start: Date, end: Date): string {
-  const sy = start.getUTCFullYear();
-  const sm = start.getUTCMonth();
-  const ey = end.getUTCFullYear();
-  const em = end.getUTCMonth();
-  if (sy === ey && sm === em) return `${MONTH_NAMES[sm]} ${sy}`;
-  if (period === 'quarterly' && sy === ey && sm % 3 === 0 && em === sm + 2) return `Q${sm / 3 + 1} ${sy}`;
-  if (period === 'annual' && sy === ey && sm === 0 && em === 11) return `Annual ${sy}`;
-  return sy === ey
-    ? `${SHORT_MONTHS[sm]}–${SHORT_MONTHS[em]} ${sy}`
-    : `${SHORT_MONTHS[sm]} ${sy}–${SHORT_MONTHS[em]} ${ey}`;
-}
 
 /**
  * Get the string key used to deduplicate a reminder

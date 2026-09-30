@@ -398,3 +398,30 @@ function ordinal(n: number): string {
   const v = n % 100;
   return s[(v - 20) % 10] ?? s[v] ?? s[0] ?? 'th';
 }
+
+/**
+ * A filing period in words: "September 2026", "Q3 2026", "Annual 2026",
+ * or the months for non-calendar periods ("Sep–Nov 2026", "Dec 2025–Feb 2026").
+ */
+export function describeFilingPeriod(period: string | null | undefined, start: Date, end: Date): string {
+  const sy = start.getUTCFullYear();
+  const sm = start.getUTCMonth();
+  const ey = end.getUTCFullYear();
+  const em = end.getUTCMonth();
+  if (sy === ey && sm === em) return `${MONTH_NAMES[sm]} ${sy}`;
+  if (period === 'quarterly' && sy === ey && sm % 3 === 0 && em === sm + 2) return `Q${sm / 3 + 1} ${sy}`;
+  if (period === 'annual' && sy === ey && sm === 0 && em === 11) return `Annual ${sy}`;
+  return sy === ey
+    ? `${SHORT_MONTHS[sm]}–${SHORT_MONTHS[em]} ${sy}`
+    : `${SHORT_MONTHS[sm]} ${sy}–${SHORT_MONTHS[em]} ${ey}`;
+}
+
+/** The filing frequencies a state offers (monthly always; quarterly and annual where the state has them). */
+export function offeredFilingPeriods(stateCode: string): FilingPeriod[] {
+  const config = getStateFilingConfig(stateCode);
+  if (config.noStateSalesTax) return [];
+  const periods: FilingPeriod[] = ['monthly'];
+  if (config.quarterlyDue !== undefined) periods.push('quarterly');
+  if (config.annual) periods.push('annual');
+  return periods;
+}

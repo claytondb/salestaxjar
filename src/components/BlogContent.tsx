@@ -186,6 +186,7 @@ export default function BlogContent({ posts }: BlogContentProps) {
                           month: 'short',
                           day: 'numeric',
                           year: 'numeric',
+                          timeZone: 'UTC',
                         })}
                       </span>
                       <span className="text-theme-accent font-medium text-sm flex items-center gap-1 group-hover:gap-2 transition-all">
@@ -217,6 +218,7 @@ export default function BlogContent({ posts }: BlogContentProps) {
                             month: 'short',
                             day: 'numeric',
                             year: 'numeric',
+                            timeZone: 'UTC',
                           })}
                         </span>
                         <span className="flex items-center gap-1">

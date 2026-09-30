@@ -9,6 +9,7 @@ import {
   type FilingDeadline,
   type FilingPeriod,
 } from '@/lib/filing-deadlines';
+import { getFilingFrequencies } from '@/lib/filing-schedule';
 
 const generateSchema = z.object({
   year: z.number().int().min(2020).max(2035).optional(),
@@ -128,12 +129,18 @@ export async function POST(request: NextRequest) {
     const created: object[] = [];
     let skippedCount = 0;
 
+    // Without an override, each state keeps the frequency its calendar already uses
+    const frequencies = periodOverride
+      ? null
+      : await getFilingFrequencies(business.id, business.nexusStates.map((n) => n.stateCode));
+
     for (const nexus of business.nexusStates) {
       const stateCode = nexus.stateCode.toUpperCase();
       const stateName = nexus.stateName || STATE_NAMES[stateCode] || stateCode;
+      const statePeriod = (periodOverride as FilingPeriod | undefined) ?? frequencies?.get(stateCode);
 
-      const deadlines = deadlinesFor(stateCode, year, periodOverride as FilingPeriod | undefined, remainingOnly, today);
-      const period = resolveFilingPeriod(stateCode, periodOverride as FilingPeriod | undefined);
+      const deadlines = deadlinesFor(stateCode, year, statePeriod, remainingOnly, today);
+      const period = resolveFilingPeriod(stateCode, statePeriod);
 
       for (const deadline of deadlines) {
         // Idempotency check: skip if this period already exists
