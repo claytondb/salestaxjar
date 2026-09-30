@@ -310,7 +310,7 @@ describe('GET /api/auth/me - edge cases', () => {
     vi.mocked(getCurrentUser).mockResolvedValue({
       ...mockUser,
       name: null,
-    } as any);
+    } as never);
     
     const response = await GET();
     const data = await response.json();
@@ -334,7 +334,7 @@ describe('GET /api/auth/me - edge cases', () => {
     vi.mocked(getCurrentUser).mockResolvedValue({
       ...mockUser,
       passwordHash: '$2b$10$sensitive',
-    } as any);
+    } as never);
     
     const response = await GET();
     const data = await response.json();

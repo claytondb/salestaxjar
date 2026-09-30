@@ -255,7 +255,7 @@ describe('POST /api/auth/logout - session state handling', () => {
       session: {
         userId: 'user-123',
         token: 'valid-session-token',
-      } as any,
+      } as never,
     });
 
     const response = await POST();
@@ -269,7 +269,7 @@ describe('POST /api/auth/logout - session state handling', () => {
     vi.mocked(validateSession).mockResolvedValue({
       valid: false,
       session: undefined,
-    } as any);
+    } as never);
 
     const response = await POST();
     const data = await response.json();

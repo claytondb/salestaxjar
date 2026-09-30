@@ -123,7 +123,7 @@ beforeEach(() => {
   vi.mocked(generateVerificationToken).mockResolvedValue('verify-token-123');
   vi.mocked(sendWelcomeEmail).mockResolvedValue({ success: true });
   vi.mocked(sendNewSignupNotification).mockResolvedValue({ success: true });
-  vi.mocked(prisma.notificationPreference.create).mockResolvedValue({ id: 'pref-1' } as any);
+  vi.mocked(prisma.notificationPreference.create).mockResolvedValue({ id: 'pref-1' } as never);
   vi.mocked(prisma.betaUser.findUnique).mockResolvedValue(null);
 });
 
@@ -412,7 +412,7 @@ describe('POST /api/auth/signup - duplicate user handling', () => {
       id: 'existing-user',
       email: 'test@example.com',
       name: 'Existing User',
-    } as any);
+    } as never);
 
     const request = createSignupRequest({
       email: 'test@example.com',
@@ -452,7 +452,7 @@ describe('POST /api/auth/signup - duplicate user handling', () => {
       id: 'existing-user',
       email: 'test@example.com',
       emailVerified: false,
-    } as any);
+    } as never);
 
     const request = createSignupRequest({
       email: 'test@example.com',
@@ -526,7 +526,7 @@ describe('POST /api/auth/signup - beta user handling', () => {
     vi.mocked(prisma.betaUser.findUnique).mockResolvedValue({
       email: 'beta@example.com',
       status: 'invited',
-    } as any);
+    } as never);
     vi.mocked(prisma.user.create).mockResolvedValue({
       ...mockCreatedUser,
       email: 'beta@example.com',
@@ -561,7 +561,7 @@ describe('POST /api/auth/signup - beta user handling', () => {
     vi.mocked(prisma.betaUser.findUnique).mockResolvedValue({
       email: 'beta@example.com',
       status: 'invited',
-    } as any);
+    } as never);
     vi.mocked(prisma.user.create).mockResolvedValue({
       ...mockCreatedUser,
       email: 'beta@example.com',
@@ -585,7 +585,7 @@ describe('POST /api/auth/signup - beta user handling', () => {
     vi.mocked(prisma.betaUser.findUnique).mockResolvedValue({
       email: 'waitlist@example.com',
       status: 'waitlisted',
-    } as any);
+    } as never);
 
     const request = createSignupRequest({
       email: 'waitlist@example.com',
