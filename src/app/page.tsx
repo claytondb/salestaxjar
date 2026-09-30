@@ -30,6 +30,7 @@ import {
   X,
   ChevronDown,
   ChevronUp,
+  FileUp,
 } from 'lucide-react';
 
 const ICON_CLASS = "w-8 h-8 text-theme-accent";
@@ -41,6 +42,7 @@ const FEATURE_ICONS: Record<string, React.ReactNode> = {
   filing_calendar: <Calendar className={ICON_CLASS} />,
   deadline_reminders: <Bell className={ICON_CLASS} />,
   reports: <LayoutDashboard className={ICON_CLASS} />,
+  order_import: <FileUp className={ICON_CLASS} />,
   filing_summaries: <ClipboardList className={ICON_CLASS} />,
 };
 
@@ -50,8 +52,8 @@ const HOMEPAGE_FEATURE_IDS = [
   'threshold_alerts',
   'filing_calendar',
   'deadline_reminders',
+  'order_import',
   'reports',
-  'calculator',
 ];
 
 export default function Home() {

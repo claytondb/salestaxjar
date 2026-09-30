@@ -157,6 +157,12 @@ export const FEATURES: FeatureCapability[] = [
     summary: "Get an email when your sales approach or pass a state's threshold.",
   },
   {
+    id: 'order_import',
+    name: 'Order history import',
+    status: 'live',
+    summary: "Add past orders from a Shopify, Amazon, Etsy or any store's CSV export. Files are read in your browser.",
+  },
+  {
     id: 'daily_sync',
     name: 'Daily store sync',
     status: 'live',
